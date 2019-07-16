@@ -11,9 +11,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r setup}
+options(stringsAsFactors = FALSE)
+# library(plyr)
+library(tidyverse)
+library(stringr)
+library(knitr)
+library(sf)
+library(git2rdata)
+library (n2khabutils)
+opts_chunk$set(
+  echo = TRUE,
+  dpi = 300
+)
 # install watina-package branch develop_fv
-remotes::install_github("inbo/watina", 
-                        ref = "develop_fv")
+# remotes::install_github("inbo/watina", 
+#                         ref = "develop_fv")
 library(watina)
 ?watina
 
@@ -22,8 +34,113 @@ library(watina)
 #                         build_opts = c("--no-resave-data", "--no-manual"))
 # library(n2khab)
 
-source("../../n2khab/R/read_habitatdata.R")
-getwd()
+# source("../../n2khab/R/read_habitatdata.R")
+# source("../../n2khab/R/read_types.R")
+# inladen van n2khab-functions (workaround for loading error package)
+path_to_n2khabR <- "../../n2khab/R/"
+functions_in_n2khabR <- list.files(path = path_to_n2khabR, pattern = "R")
+path_function_in_n2khabR <- paste0(path_to_n2khabR, functions_in_n2khabR)
+path_function_in_n2khabR <- setNames(path_function_in_n2khabR, 
+         make.names(gsub("*.R$", "", functions_in_n2khabR)))
+list2env(
+  lapply(path_function_in_n2khabR, 
+         source), 
+  envir = .GlobalEnv)
+
+habpath <- "../data/local/n2khab-binaire-databronnen"
+habfile <- "20_processed/habitatmap_stdized/habitatmap_stdized.gpkg"
+# read_habitatmap_stdized(path = path)
+
+        habmap_polygons <- st_read(file.path(habpath, habfile),
+                                   "habitatmap_polygons",
+                                   quiet = TRUE)
+        habmap_polygons <- habmap_polygons %>%
+            mutate( description_orig = as.character( .data$description_orig)) %>%
+            st_transform(31370)
+        habmap_patches <- suppressWarnings(
+            st_read(file.path(habpath, habfile),
+                    "habitatmap_patches",
+                    as_tibble = TRUE,
+                    quiet = TRUE)
+            )
+        getwd()
+
+        types <- suppressWarnings(read_types(path = "../../n2khab/inst/textdata"))
+        
+        namelist <-
+            read_tsv(file.path("../../n2khab/inst/textdata",
+                          "namelist.tsv")) %>% 
+                      filter(lang == "en") %>%
+            select(.data$code,
+                   .data$name,
+                   .data$shortname)
+
+        getwd()
+        types_base <-
+            read_vc("n2khab/inst/textdata/types", root = "C:/R/Repositories")
+        
+
+        type_levels <-
+            tibble(codelevel = types_base$type %>% levels) %>%
+            left_join(namelist,
+                      by = c("codelevel" = "code")) %>% 
+            rename(namelevel = name,
+                   shortnamelevel = shortname)
+
+        typeclass_levels <-
+            tibble(codelevel = types_base$typeclass %>% levels) %>%
+            left_join(namelist %>% select(-.data$shortname),
+                       by = c("codelevel" = "code")) %>%
+            rename(namelevel = name)
+
+        types_base %>%
+            left_join(namelist, by = c("type" = "code")) %>%
+            rename(type_name = name,
+                   type_shortname = shortname) %>%
+            mutate(type = factor(.data$type,
+                                 levels = types_base$type %>%
+                                     levels),
+                   type_name =
+                       .data$type %>%
+                       plyr::mapvalues(from = type_levels$codelevel,
+                                 to = type_levels$namelevel),
+                   type_shortname =
+                       .data$type %>%
+                       plyr::mapvalues(from = type_levels$codelevel,
+                                 to = type_levels$shortnamelevel),
+                   typeclass_name =
+                       .data$typeclass %>%
+                       plyr::mapvalues(from = typeclass_levels$codelevel,
+                                 to = typeclass_levels$namelevel)
+                  ) %>%
+            left_join(namelist,
+                      by = c("tag_1" = "code")) %>%
+            rename(tag_1_name = .data$name,
+                   tag_1_shortname = .data$shortname) %>%
+            left_join(namelist,
+                      by = c("tag_2" = "code")) %>%
+            rename(tag_2_name = .data$name,
+                   tag_2_shortname = .data$shortname) %>%
+            left_join(namelist,
+                      by = c("tag_3" = "code")) %>%
+            rename(tag_3_name = .data$name,
+                   tag_3_shortname = .data$shortname) %>%
+            select(1:3, 8:9,
+                   4, 10,
+                   5, 11:12,
+                   6, 13:14,
+                   7, 15:16) %>%
+            as_tibble
+        types <- types_base    
+        habmap_patches <- habmap_patches %>%
+            mutate( polygon_id = as.factor(.data$polygon_id),
+                    patch_id = as.numeric(.data$patch_id),
+                    certain = .data$certain == 1,
+                    type = factor(.data$type,
+                                  levels = levels(types$type)
+                                  )
+                    )
+
 ```
 
 ## Including Plots

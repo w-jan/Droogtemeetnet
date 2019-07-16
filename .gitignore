@@ -37,3 +37,4 @@ rsconnect/
 
 # local, large binary data
 /data/local/*
+.Rproj.user
