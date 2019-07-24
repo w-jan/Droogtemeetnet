@@ -3,143 +3,457 @@ title: "tube_selection"
 author: "Jan Wouters"
 date: "16 juli 2019"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-
-```{r setup}
+knitr::opts_chunk$set(
+	eval = FALSE,
+	dpi = 300,
+	include = FALSE
+)
 options(stringsAsFactors = FALSE)
 # library(plyr)
+library(raster)
 library(tidyverse)
 library(stringr)
 library(knitr)
 library(sf)
 library(git2rdata)
-library (n2khabutils)
+library(n2khabutils)
 opts_chunk$set(
   echo = TRUE,
   dpi = 300
 )
 # install watina-package branch develop_fv
-# remotes::install_github("inbo/watina", 
+# remotes::install_github("inbo/watina",
 #                         ref = "develop_fv")
 library(watina)
 ?watina
 
 # install n2khab-package
-# remotes::install_github("inbo/n2khab", 
+# remotes::install_github("inbo/n2khab",
 #                         build_opts = c("--no-resave-data", "--no-manual"))
-# library(n2khab)
+library(n2khab)
 
 # source("../../n2khab/R/read_habitatdata.R")
 # source("../../n2khab/R/read_types.R")
 # inladen van n2khab-functions (workaround for loading error package)
-path_to_n2khabR <- "../../n2khab/R/"
-functions_in_n2khabR <- list.files(path = path_to_n2khabR, pattern = "R")
-path_function_in_n2khabR <- paste0(path_to_n2khabR, functions_in_n2khabR)
-path_function_in_n2khabR <- setNames(path_function_in_n2khabR, 
-         make.names(gsub("*.R$", "", functions_in_n2khabR)))
-list2env(
-  lapply(path_function_in_n2khabR, 
-         source), 
-  envir = .GlobalEnv)
+# path_to_n2khabR <- "../../n2khab/R/"
+# functions_in_n2khabR <- list.files(path = path_to_n2khabR, pattern = "R")
+# path_function_in_n2khabR <- paste0(path_to_n2khabR, functions_in_n2khabR)
+# path_function_in_n2khabR <- setNames(path_function_in_n2khabR,
+#          make.names(gsub("*.R$", "", functions_in_n2khabR)))
+# list2env(
+#   lapply(path_function_in_n2khabR,
+#          source),
+#   envir = .GlobalEnv)
+# 
+# source("./R/read_types_local.R")
+# source("./R/read_textdata_local.R")
+```
 
-habpath <- "../data/local/n2khab-binaire-databronnen"
+```{r loading habitatmap}
+habpath <- "./data/local/n2khab-binaire-databronnen"
 habfile <- "20_processed/habitatmap_stdized/habitatmap_stdized.gpkg"
 # read_habitatmap_stdized(path = path)
 
-        habmap_polygons <- st_read(file.path(habpath, habfile),
-                                   "habitatmap_polygons",
-                                   quiet = TRUE)
-        habmap_polygons <- habmap_polygons %>%
-            mutate( description_orig = as.character( .data$description_orig)) %>%
-            st_transform(31370)
-        habmap_patches <- suppressWarnings(
-            st_read(file.path(habpath, habfile),
-                    "habitatmap_patches",
-                    as_tibble = TRUE,
-                    quiet = TRUE)
+habmap_polygons <- st_read(file.path(habpath, habfile),
+                           "habitatmap_polygons",
+                           quiet = TRUE)
+habmap_polygons <- habmap_polygons %>%
+    mutate( description_orig = as.character( .data$description_orig)) %>%
+    st_transform(31370)
+
+st_crs(habmap_polygons)
+
+habmap_patches <- suppressWarnings(
+    st_read(file.path(habpath, habfile),
+            "habitatmap_patches",
+            as_tibble = TRUE,
+            quiet = TRUE)
+    )
+getwd()
+
+types <- suppressWarnings(read_types(path = "../n2khab/inst/textdata", lang = "nl"))
+
+habmap_patches <- habmap_patches %>%
+    mutate( polygon_id = as.factor(.data$polygon_id),
+            patch_id = as.numeric(.data$patch_id),
+            certain = .data$certain == 1,
+            type = factor(.data$type,
+                          levels = levels(types$type)
+                          )
             )
-        getwd()
 
-        types <- suppressWarnings(read_types(path = "../../n2khab/inst/textdata"))
-        
-        namelist <-
-            read_tsv(file.path("../../n2khab/inst/textdata",
-                          "namelist.tsv")) %>% 
-                      filter(lang == "en") %>%
-            select(.data$code,
-                   .data$name,
-                   .data$shortname)
+```
 
-        getwd()
-        types_base <-
-            read_vc("n2khab/inst/textdata/types", root = "C:/R/Repositories")
-        
+```{r loading environmental schemes}
+# read_schemes_local(path = "../../n2khab/inst/textdata")
+gw_types <- read_scheme_types() %>%
+    filter(scheme == "GW_05.1_terr") %>%
+    arrange(typegroup) %>%
+    mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
+    select(type, groupnr)
 
-        type_levels <-
-            tibble(codelevel = types_base$type %>% levels) %>%
-            left_join(namelist,
-                      by = c("codelevel" = "code")) %>% 
-            rename(namelevel = name,
-                   shortnamelevel = shortname)
+```
 
-        typeclass_levels <-
-            tibble(codelevel = types_base$typeclass %>% levels) %>%
-            left_join(namelist %>% select(-.data$shortname),
-                       by = c("codelevel" = "code")) %>%
-            rename(namelevel = name)
+```{r habitat selection, echo=FALSE}
+habmap_patches_gw <- habmap_patches %>% 
+  inner_join(gw_types, by = c("type" = "type"))
+habmap_polygons_gw <- habmap_polygons %>% 
+  inner_join(habmap_patches_gw %>% dplyr::select(-code_orig), by = "polygon_id")
 
-        types_base %>%
-            left_join(namelist, by = c("type" = "code")) %>%
-            rename(type_name = name,
-                   type_shortname = shortname) %>%
-            mutate(type = factor(.data$type,
-                                 levels = types_base$type %>%
-                                     levels),
-                   type_name =
-                       .data$type %>%
-                       plyr::mapvalues(from = type_levels$codelevel,
-                                 to = type_levels$namelevel),
-                   type_shortname =
-                       .data$type %>%
-                       plyr::mapvalues(from = type_levels$codelevel,
-                                 to = type_levels$shortnamelevel),
-                   typeclass_name =
-                       .data$typeclass %>%
-                       plyr::mapvalues(from = typeclass_levels$codelevel,
-                                 to = typeclass_levels$namelevel)
-                  ) %>%
-            left_join(namelist,
-                      by = c("tag_1" = "code")) %>%
-            rename(tag_1_name = .data$name,
-                   tag_1_shortname = .data$shortname) %>%
-            left_join(namelist,
-                      by = c("tag_2" = "code")) %>%
-            rename(tag_2_name = .data$name,
-                   tag_2_shortname = .data$shortname) %>%
-            left_join(namelist,
-                      by = c("tag_3" = "code")) %>%
-            rename(tag_3_name = .data$name,
-                   tag_3_shortname = .data$shortname) %>%
-            select(1:3, 8:9,
-                   4, 10,
-                   5, 11:12,
-                   6, 13:14,
-                   7, 15:16) %>%
-            as_tibble
-        types <- types_base    
-        habmap_patches <- habmap_patches %>%
-            mutate( polygon_id = as.factor(.data$polygon_id),
-                    patch_id = as.numeric(.data$patch_id),
-                    certain = .data$certain == 1,
-                    type = factor(.data$type,
-                                  levels = levels(types$type)
-                                  )
-                    )
+```
+
+```{r loading and selecting tubes watina}
+watina <- connect_watina()
+
+?watina
+?selectlocs_xg3
+?get_locs
+# debugonce(get_locs)
+tubes_hab <- get_locs(watina, mask = habmap_polygons_gw, join_mask = TRUE, buffer = 10, loc_type = "P", loc_validity = c("VLD", "ENT"), collect = TRUE)
+
+DBI::dbDisconnect(watina)
+
+```
+
+```{r watina lokaal}
+
+loc_type <- "P"
+loc_validity <- c("VLD", "ENT")
+max_filterdepth <- 3
+buffer <- 10
+join_mask <- TRUE
+locs <-
+        tbl(watina, "vwDimMeetpunt") %>%
+        filter(MeetpuntTypeCode %in% loc_type,
+               MeetpuntStatusCode %in% loc_validity
+               ) %>%
+        left_join(tbl(watina, "vwDimGebied") %>%
+                      dplyr::select(GebiedWID,
+                             GebiedCode,
+                             GebiedNaam),
+                  by = "GebiedWID")
+# 
+#     if (!is.null(loc_vec)) {
+#         locs <-
+#             locs %>%
+#             filter(.data$MeetpuntCode %in% loc_vec)
+#     }
+# 
+#     if (!is.null(area_codes)) {
+#         locs <-
+#             locs %>%
+#             filter(.data$GebiedCode %in% area_codes)
+#     }
+# 
+#     if (!is.null(bbox)) {
+#         bbox_xmin <- unname(bbox["xmin"])
+#         bbox_xmax <- unname(bbox["xmax"])
+#         bbox_ymin <- unname(bbox["ymin"])
+#         bbox_ymax <- unname(bbox["ymax"])
+#         locs <-
+#             locs %>%
+#             filter(.data$MeetpuntXCoordinaat >= bbox_xmin,
+#                    .data$MeetpuntXCoordinaat <= bbox_xmax,
+#                    .data$MeetpuntYCoordinaat >= bbox_ymin,
+#                    .data$MeetpuntYCoordinaat <= bbox_ymax)
+#     }
+locs_lokaal <- locs %>% collect()
+locs_vervolg_lokaal <-
+        locs %>%
+        left_join(tbl(watina, "vwDimPeilpunt") %>%
+                      dplyr::select(MeetpuntWID,
+                             PeilpuntStatusCode,
+                             PeilbuisLengte,
+                             ReferentieNiveauMaaiveld) %>%
+                      filter(PeilpuntStatusCode %in% c("VLD",
+                                                       "ENT",
+                                                       "CLD")),
+                  by = "MeetpuntWID")  %>%
+        filter(MeetpuntTypeCode == "P" &
+                   (PeilbuisLengte - ReferentieNiveauMaaiveld) <=
+                     max_filterdepth |
+                   MeetpuntTypeCode != "P"
+               )   %>%
+        dplyr::select(loc_wid = MeetpuntWID,
+               loc_code = MeetpuntCode,
+               area_code = GebiedCode,
+               area_name = GebiedNaam,
+               x = MeetpuntXCoordinaat,
+               y = MeetpuntYCoordinaat,
+               loc_validitycode = MeetpuntStatusCode,
+               loc_validity = MeetpuntStatus,
+               loc_typecode = MeetpuntTypeCode,
+               loc_typename = MeetpuntType) %>% 
+        distinct %>%
+        arrange(area_code,
+                loc_code) %>% 
+      collect()
+mask <- habmap_polygons_gw
+    if (!is.null(mask)) {
+
+        nr_dropped_locs <-
+            locs_vervolg_lokaal %>%
+            filter(is.na(x) | is.na(y)) %>%
+            count %>%
+            collect() %>%
+            .$n 
+
+
+        if (nr_dropped_locs > 0) {
+            warning("Dropped ",
+                    nr_dropped_locs,
+                    " locations from which x or y coordinates were missing.")
+        }
+
+        locs <-
+            locs_vervolg_lokaal %>%
+            dplyr::select(-loc_wid) %>%
+            filter(!is.na(x), !is.na(y)) %>%
+            collect %>%
+            as_points
+
+        if (buffer != 0) {
+            mask_expand <-
+                mask %>%
+                st_buffer(dist = buffer)
+        } else {
+            mask_expand <-
+                mask
+        }
+
+        if (join_mask == FALSE) {
+
+            locs <-
+                locs %>%
+                st_join(mask_expand,
+                        left = FALSE) %>%
+                st_drop_geometry
+
+        } else {
+
+            locs <-
+                locs %>%
+                .[mask_expand, ] %>% 
+                st_drop_geometry
+
+        }
+
+    }
+
+    # if (collect & is.null(mask)) {
+    #     locs <-
+    #         locs %>%
+    #         select(-.data$loc_wid) %>%
+    #         collect
+    # }
+```
+
+```{r meetnet ontwerp}
+
+
+# gewenst_totaal_aantal_meetpunten
+tot_n_tub <- 100
+# aantal stratificatielagen
+aantal_strat <- 5
+
+datapath <- "./data/local/n2khab-binaire-databronnen"
+
+
+read_GRTSmh(datapath, brick = TRUE)
+#level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
+# test header 1 ----
+read_GRTSmh_diffres(datapath, level = 7)
+
+raster_meetnet <- read_GRTSmh_diffres(datapath, level = 9)
+raster_meetnet_64m <- read_GRTSmh_diffres(datapath, level = 1)
+
+habmap_raster_group1 <- rasterize(habmap_polygons_gw %>% filter(groupnr == 1),raster_meetnet_64m,field = "groupnr", fun = sum, background = 0)
+habmap_raster_group2 <- rasterize(habmap_polygons_gw %>% filter(groupnr == 2),raster_meetnet_64m,field = "groupnr", fun = 'last' , background = 0)
+
+test <- cellStats(habmap_raster_group2, max)
+plot(habmap_raster_group1)
+plot(habmap_raster_group2)
+plot(raster_meetnet)
+plot(habmap_polygons_gw %>% filter(groupnr == 2) %>% select(groupnr))
+
+writeRaster(habmap_raster_group2, "./data/local/processed/habmap_raster_group2.grd", format = "raster")
+
+raster_meetnet_poly <- read_GRTSmh_diffres(datapath, level = 8, polygon = TRUE)
+st_crs(habmap_polygons_gw)
+st_crs(raster_meetnet_poly)
+raster_meetnet_poly <- st_transform(raster_meetnet_poly, crs = 31370)
+plot(raster_meetnet_poly)
+
+check <- raster_meetnet_poly %>% st_drop_geometry() %>% distinct(value)
+
+raster_meetnet_poly <- raster_meetnet_poly %>% 
+  rename (rasterid =  value)
+
+habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
+  st_intersection(raster_meetnet_poly)
+
+habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+    mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
+
+#oppervlakte gw-groep per rastercel
+raster_gw_opp <- habmap_gw_raster_overlay %>% 
+  st_drop_geometry() %>% 
+  group_by(rasterid,groupnr) %>% 
+  summarise(opp_gw_cel = sum(opp*phab/100)) %>% 
+  ungroup()
+# view(raster_gw_opp)
+raster_gw_opp
+
+#totale opp van een gw-groep
+gw_opp <- raster_gw_opp %>% 
+  group_by(groupnr) %>% 
+  summarise(opp_gw = sum(opp_gw_cel)) %>% 
+  ungroup()
+
+#benodigde oppervlakte van een gw-groep in een cel om hierin 1 meetpunt aan te duiden
+#hier wordt voor de eenvoud nog een gelijke verdeling over de (5) strata genomen
+
+#invoeren van een correctiefactor om het wegvallen van meetpunten bij afronding naar een geheel getal te compenseren. Dit kan routinematig berekend worden.
+
+minaantal_tub_group <- tot_n_tub/aantal_strat
+min_aantal_tub = data.frame("groupnr" = 1:5, minaantal = seq(20,28,length.out = 5))
+
+for (group in seq(1,aantal_strat)) {
+  # group <- 5
+  minaantal_tub_group <- min_aantal_tub[min_aantal_tub$groupnr == group,"minaantal"]
+  aantal_tub_group <- 0
+  corrafronding <- 1
+  while (aantal_tub_group < minaantal_tub_group) {
+    gw_opp <- gw_opp %>% 
+      mutate(minopp = opp_gw/minaantal_tub_group * corrafronding)
+    gw_opp
+    
+    #berekening van het aantal meetpunten per cel
+
+    aantal_meetpunten_cel_group <- raster_gw_opp %>% 
+      inner_join(gw_opp, by = "groupnr") %>% 
+      mutate(gew_aantal_meetptn = opp_gw_cel/minopp) %>% 
+      arrange(desc(gew_aantal_meetptn))
+    
+    aantal_meetpunten_cel_group
+    
+    aantal_meetpunten_cel_group <- aantal_meetpunten_cel_group %>% 
+      filter(gew_aantal_meetptn >= 0.5, groupnr == group) %>% 
+      mutate(gew_aantal_meetptn_afgerond = round(gew_aantal_meetptn+0.01, digits = 0) )
+    
+    df <- aantal_meetpunten_cel_group %>% filter(groupnr == group)  %>% 
+      summarise(aantal  = sum(gew_aantal_meetptn_afgerond)) %>% 
+      ungroup() %>% 
+      summarise(minaantal = min(aantal)) %>% 
+      ungroup() 
+    aantal_tub_group <- as.integer(df[1])
+    corrafronding <- corrafronding - 0.01 
+  }
+  if (group == 1){
+    aantal_meetpunten_cel <- aantal_meetpunten_cel_group
+  } else {
+    aantal_meetpunten_cel <- bind_rows(aantal_meetpunten_cel, aantal_meetpunten_cel_group)
+  }
+}
+df <- aantal_meetpunten_cel %>% group_by(groupnr)  %>% 
+   summarise(aantal  = sum(gew_aantal_meetptn_afgerond)) %>% 
+   ungroup()
+df
+
+# Enkel bij groep 3 komt het opp-gerelateerd aantal meetptn overeen met het vereiste aantal. Voor de overige gw-groepen is het opp-gerelateerd aantal hoger. 
+# Twv de ruimtelijke balancering wordt bij voorkeur voor de gw-groepen waar het minimum aantal wordt overschreden, dit aantal tot het minimum teruggebracht door de hokken te selecteren op basis van hun rangorde in het GTRS-raster. Men kan echter ook de koppeling met geschikte watina-meetptn afwachten. 
+# We doen hier eerst de aanbevolen GRTS-strategie
+# if (df[df$groupnr == 1,"aantal"] > minaantal_tub_group) {}
+# 
+# sel_raster <- raster_meetnet_poly %>% 
+#   st_drop_geometry()  %>% 
+#   inner_join(raster_gw_opp, by = "rasterid") %>% 
+#   inner_join(aantal_meetpunten_cel_group, by =  c("rasterid", "groupnr")) %>% 
+#   inner_join(min_aantal_tub, by = "groupnr") %>% 
+#   group_by(groupnr) %>% 
+#   distinct(rasterid, minaantal) %>% 
+#   top_n(minaantal, rasterid)
+# 
+# sel_raster_meetnet <- raster_meetnet_poly %>% 
+#   inner_join(sel_raster, by = "rasterid")
+# 
+# plot(sel_raster_meetnet)
+
+sel_raster_meetnet <- raster_meetnet_poly %>%
+  inner_join(raster_gw_opp, by = "rasterid") %>%
+  inner_join(aantal_meetpunten_cel %>% 
+               select(rasterid, groupnr, gew_aantal_meetptn_afgerond), 
+             by =  c("rasterid", "groupnr")) %>% 
+  rename(gew_aantal_meetptn = gew_aantal_meetptn_afgerond)
+
+
+
+plot(sel_raster_meetnet %>% filter(groupnr == 1))
+write_vc(habmap_raster)
+raster_meetnet_polyg <- st_as_sf(rasterToPolygons(raster_meetnet))
+raster_meetnet_polyg <- st_transform(raster_meetnet_polyg, crs = 31370)
+test <- intersect(raster_meetnet_polyg, habmap_polygons_gw)
+
+
+
+st_crs(raster_meetnet_polyg)
+ggplot(raster_meetnet_polyg ) +
+  geom_sf() +
+  scale_color_viridis_c(trans = "sqrt", alpha = .9) + 
+  coord_sf(datum = sf::st_crs(31370))
+
+
+
+st_crs(habmap_polygons_gw)
+ggplot(habmap_polygons_gw %>% slice(100:300)) +
+  geom_sf(aes(colour = groupnr)) +
+  scale_color_viridis_c(trans = "sqrt", alpha = .9) + 
+  coord_sf(datum = sf::st_crs(31370))
+
+head(habmap_polygons_gw)
+
+# library(stars)
+# ggplot() +
+#   geom_stars(data = test)
+plot(raster_meetnet)
+zoom(raster_meetnet, ext = drawExtent())
+fromDisk(raster_meetnet)
+hasValues(raster_meetnet)
+
+# cells <- c(1:40000)
+# r <- rasterFromCells(test, cells, values = FALSE)
+# plot(r)
+
+#random selectie van een aantal gebalanceerde rastercellen
+set.seed(12345)
+  #gewenst_totaal_aantal_meetpunten
+tot_n_tub <- 100
+
+
+
+aantal_strat <- 5
+
+for (i in seq(1:aantal_strat)) {
+  random_integer <- as.integer(runif(1, min  = 1, max = maxValue(raster_meetnet) - tot_n_tub))
+  m <- c(0, random_integer - 1, 0, random_integer,  random_integer + (tot_n_tub/aantal_strat) - 1, 1, random_integer + (tot_n_tub/aantal_strat) - 1, maxValue(raster_meetnet), 0)
+  rclmat <- matrix(m, ncol = 3, byrow = TRUE)
+  rc <- reclassify(raster_meetnet, rclmat)  
+  assign(paste0("raster_group", i), rc)
+}
+plot(raster_group3)
+# reclassify the values into three groups 
+# all values >= 0 and <= 0.25 become 1, etc.
+m <- c(0, 60000, 0,  60000, 70000, 1)
+rclmat <- matrix(m, ncol = 3, byrow=TRUE)
+rc <- reclassify(test, rclmat)
+plot(rc)
+
+
 
 ```
 
