@@ -22,8 +22,9 @@ library(knitr)
 library(sf)
 library(git2rdata)
 library(n2khabutils)
+library(lubridate)
 opts_chunk$set(
-  echo = TRUE,
+  echo = FALSE,
   dpi = 300
 )
 # install watina-package branch develop_fv
@@ -53,8 +54,9 @@ library(n2khab)
 # source("./R/read_types_local.R")
 # source("./R/read_textdata_local.R")
 ```
+# Inlezen habitatkaart
 
-```{r loading habitatmap}
+```{r loading habitatmap, include=FALSE}
 habpath <- "./data/local/n2khab-binaire-databronnen"
 habfile <- "20_processed/habitatmap_stdized/habitatmap_stdized.gpkg"
 # read_habitatmap_stdized(path = path)
@@ -88,8 +90,12 @@ habmap_patches <- habmap_patches %>%
             )
 
 ```
+#Inlezen milieudruk-schema's
+Een milieudruk-schema geeft een overzicht van de habitattypen en rbb's die actueel onderhevig zijn aan een bepaalde milieudruk. Voor de monitoring van deze milieudruk bij de grondwatergevoede habitattypen (ggHT) worden deze ggHT opgedeeld in 5 habitattypegroepen. Voor het droogtemeetnet wordt deze 5-delige indeling gebruikt.  
+HTgroep 5 bevat uitsluitend HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms (meestal) niet. De vraag is of en indien ja hoe we dan die grondwatergevoede locaties kunnen selecteren.  
+De HTgroepen lenen zich heel goed om een stratificatie uit te voeren op basis van de verwachte responssnelheid van een locatie op droogte. De permanent gevoede locaties (HT-groep 1) zullen naar verwachting trager reageren dan de tijdelijk of zwak gevoede locaties. Door een stratificatie over de HT-groepen toe te passen kan een zekere (nog af te spreken) balans worden verzekerd. 
 
-```{r loading environmental schemes}
+```{r loading environmental schemes, echo=FALSE}
 # read_schemes_local(path = "../../n2khab/inst/textdata")
 gw_types <- read_scheme_types() %>%
     filter(scheme == "GW_05.1_terr") %>%
@@ -98,7 +104,7 @@ gw_types <- read_scheme_types() %>%
     select(type, groupnr)
 
 ```
-
+#Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
 ```{r habitat selection, echo=FALSE}
 habmap_patches_gw <- habmap_patches %>% 
   inner_join(gw_types, by = c("type" = "type"))
@@ -106,8 +112,9 @@ habmap_polygons_gw <- habmap_polygons %>%
   inner_join(habmap_patches_gw %>% dplyr::select(-code_orig), by = "polygon_id")
 
 ```
-
-```{r loading and selecting tubes watina}
+#Opgave van de grondwater-meetpunten (Watina-databank) die gelegen zijn in een verdrogingsgevoelig type.  
+Hierbij werd met een zoekstraal van 10 meter rond een meetpunt gewerkt.
+```{r loading and selecting tubes watina, echo=FALSE}
 watina <- connect_watina()
 
 ?watina
@@ -120,7 +127,7 @@ DBI::dbDisconnect(watina)
 
 ```
 
-```{r watina lokaal}
+```{r watina lokaal, eval=FALSE, include=FALSE}
 
 loc_type <- "P"
 loc_validity <- c("VLD", "ENT")
@@ -252,48 +259,61 @@ mask <- habmap_polygons_gw
     #         collect
     # }
 ```
+#Ontwerp van een meetnet
+Het basisidee van het meetnet is om zo veel mogelijk ruimtelijk gebalanceerd een vooraf gekozen aantal meetpunten te selecteren. We kunnen geen zuiver ruimtelijk gebalanceerde set opbouwen. Een dergelijke set zou kunnen opgebouwd worden door een overlay te maken van de verspreiding van de HT-groepen met een fijn GTRS raster. In een GTRS-raster vormen een willekeurig gekozen subset van opeenvolgende genummerde punten steeds een ruimtelijk gebalanceerde set. Echter de kans dat zich op een dergelijk punt een bestaand grondwatermeetpunt bevindt is weinig realistisch.
+Om toch een zo goed mogelijk ruimtelijk gebalanceerde spreiding te garanderen wordt Vlaanderen opgedeeld in een raster van cellen van een bepaalde gelijke grootte. De keuze van celgrootte (en dus het aantal) cellen is bepaald door de ingeschatte grootte van het meetnet (en de minimale afstand tussen twee meetpunten). Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans is, omdat men minder vrij is om een locatie te kiezen.  
+We werken gestratificeerd volgens de 5-delige indeling van HT-groepen. Zo verzekeren we dat elke HT-groep voldoende gemonitord zal worden.
+Niet elke cel is even belangrijk voor de monitoring van een HT-groep, want de oppervlakte van ggHT verschilt van cel tot cel. Het heeft geen zin om in een raster een meetpunt te voorzien voor een HT-groep indien die groep daar niet in aanwezig is.  
+
+De raster-cellen zullen dus niet obv GRTS geselecteerd worden, maar in verhouding tot de relatieve oppervlakte van een HT-groep dat het bevat. Hiertoe kan als maat de gemiddelde oppervlakte van een HT-groep per gewenst meetpunt gebruikt worden. 
 
 ```{r meetnet ontwerp}
-
-
 # gewenst_totaal_aantal_meetpunten
 tot_n_tub <- 100
 # aantal stratificatielagen
 aantal_strat <- 5
 
+#importeren van GRTS-lagen, voor het meetnet kiezen we level 8: cellen van 8192 m
 datapath <- "./data/local/n2khab-binaire-databronnen"
 
 
 read_GRTSmh(datapath, brick = TRUE)
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 # test header 1 ----
-read_GRTSmh_diffres(datapath, level = 7)
+# read_GRTSmh_diffres(datapath, level = 7)
 
-raster_meetnet <- read_GRTSmh_diffres(datapath, level = 9)
-raster_meetnet_64m <- read_GRTSmh_diffres(datapath, level = 1)
-
-habmap_raster_group1 <- rasterize(habmap_polygons_gw %>% filter(groupnr == 1),raster_meetnet_64m,field = "groupnr", fun = sum, background = 0)
-habmap_raster_group2 <- rasterize(habmap_polygons_gw %>% filter(groupnr == 2),raster_meetnet_64m,field = "groupnr", fun = 'last' , background = 0)
-
-test <- cellStats(habmap_raster_group2, max)
-plot(habmap_raster_group1)
-plot(habmap_raster_group2)
-plot(raster_meetnet)
-plot(habmap_polygons_gw %>% filter(groupnr == 2) %>% select(groupnr))
-
-writeRaster(habmap_raster_group2, "./data/local/processed/habmap_raster_group2.grd", format = "raster")
+# raster_meetnet <- read_GRTSmh_diffres(datapath, level = 9)
+# raster_meetnet_64m <- read_GRTSmh_diffres(datapath, level = 1)
+# 
+# habmap_raster_group1 <- rasterize(habmap_polygons_gw %>% filter(groupnr == 1),raster_meetnet_64m,field = "groupnr", fun = sum, background = 0)
+# habmap_raster_group2 <- rasterize(habmap_polygons_gw %>% filter(groupnr == 2),raster_meetnet_64m,field = "groupnr", fun = 'last' , background = 0)
+# 
+# test <- cellStats(habmap_raster_group2, max)
+# plot(habmap_raster_group1)
+# plot(habmap_raster_group2)
+# plot(raster_meetnet)
+# plot(habmap_polygons_gw %>% filter(groupnr == 2) %>% select(groupnr))
+# 
+# writeRaster(habmap_raster_group2, "./data/local/processed/habmap_raster_group2.grd", format = "raster")
 
 raster_meetnet_poly <- read_GRTSmh_diffres(datapath, level = 8, polygon = TRUE)
+#welke crs?
 st_crs(habmap_polygons_gw)
 st_crs(raster_meetnet_poly)
-raster_meetnet_poly <- st_transform(raster_meetnet_poly, crs = 31370)
+#raster_meetnet_poly heeft geen crs. Het bronbestand komt van geopunt, de projectie kent geen crs, maar lijkt heel sterk (kwestie van mm) op die van crs31370. Om vervormingen bij transformatie te vermijden wordt hier enkel de crs-code toegevoegd (alsof de projectiestring die van 31370 is)
+
+#de project wordt gewijzigd naar crs 31370 (Lambert)
+st_crs(raster_meetnet_poly) <- 31370
 plot(raster_meetnet_poly)
 
+#check op unieke celwaarden
 check <- raster_meetnet_poly %>% st_drop_geometry() %>% distinct(value)
+#van bepaalde cellen zijn er dus meerdere polygonen, dit zijn rasters die door de gewestgrens verdeeld werden (bijv. streek van Baarle-Nassau) 
 
 raster_meetnet_poly <- raster_meetnet_poly %>% 
-  rename (rasterid =  value)
+  rename(rasterid =  value)
 
+# overlay maken van de habitatkaart (enkel van HT-groepen) en het GTRS-raster (level8)
 habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
   st_intersection(raster_meetnet_poly)
 
@@ -316,12 +336,12 @@ gw_opp <- raster_gw_opp %>%
   ungroup()
 
 #benodigde oppervlakte van een gw-groep in een cel om hierin 1 meetpunt aan te duiden
-#hier wordt voor de eenvoud nog een gelijke verdeling over de (5) strata genomen
+#hier wordt voor de eenvoud nog een gelijke verdeling over de (5) strata genomen. Wijzigingen zijn mogelijk.
 
-#invoeren van een correctiefactor om het wegvallen van meetpunten bij afronding naar een geheel getal te compenseren. Dit kan routinematig berekend worden.
+#invoeren van een correctiefactor om het wegvallen van meetpunten bij afronding naar een geheel getal te compenseren. Deze factor wordt routinematig berekend.
 
 minaantal_tub_group <- tot_n_tub/aantal_strat
-min_aantal_tub = data.frame("groupnr" = 1:5, minaantal = seq(20,28,length.out = 5))
+min_aantal_tub = data.frame("groupnr" = 1:5, minaantal = seq(20,20,length.out = 5))
 
 for (group in seq(1,aantal_strat)) {
   # group <- 5
@@ -360,10 +380,10 @@ for (group in seq(1,aantal_strat)) {
     aantal_meetpunten_cel <- bind_rows(aantal_meetpunten_cel, aantal_meetpunten_cel_group)
   }
 }
-df <- aantal_meetpunten_cel %>% group_by(groupnr)  %>% 
-   summarise(aantal  = sum(gew_aantal_meetptn_afgerond)) %>% 
-   ungroup()
-df
+# df <- aantal_meetpunten_cel %>% group_by(groupnr)  %>% 
+#    summarise(aantal  = sum(gew_aantal_meetptn_afgerond)) %>% 
+#    ungroup()
+# df
 
 # Enkel bij groep 3 komt het opp-gerelateerd aantal meetptn overeen met het vereiste aantal. Voor de overige gw-groepen is het opp-gerelateerd aantal hoger. 
 # Twv de ruimtelijke balancering wordt bij voorkeur voor de gw-groepen waar het minimum aantal wordt overschreden, dit aantal tot het minimum teruggebracht door de hokken te selecteren op basis van hun rangorde in het GTRS-raster. Men kan echter ook de koppeling met geschikte watina-meetptn afwachten. 
@@ -384,6 +404,8 @@ df
 # 
 # plot(sel_raster_meetnet)
 
+
+#cellen selecteren met een gewenst meetpunt, een cel kan voor meerdere HT-groepen geselecteerd zijn
 sel_raster_meetnet <- raster_meetnet_poly %>%
   inner_join(raster_gw_opp, by = "rasterid") %>%
   inner_join(aantal_meetpunten_cel %>% 
@@ -392,8 +414,39 @@ sel_raster_meetnet <- raster_meetnet_poly %>%
   rename(gew_aantal_meetptn = gew_aantal_meetptn_afgerond)
 
 
-
+# voorbeeld van rasters van HT-groep 1 (permanent nat)
 plot(sel_raster_meetnet %>% filter(groupnr == 1))
+
+
+```
+#Opzoeken van Watina-meetpunten in de geselecteerde cellen
+
+```{r tubes (watina) in selected cells}
+tubes_in_raster <- tubes_hab %>% 
+  select(-11:-16) %>% 
+  inner_join(habmap_gw_raster_overlay, by = "polygon_id") %>% 
+  inner_join(sel_raster_meetnet, by = c("rasterid", "groupnr"))
+
+tubes_in_raster
+```
+#Selectie van meetpunten met een goede tijdreeks binnen de geselecteerde cellen
+```{r selection tubes with good time-series in selected cells}
+watina <- connect_watina()
+
+tubes_xg3 <- tubes_in_raster %>% 
+    get_xg3(watina, startyear = year(now()) - 15, vert_crs = "local", truncated =  TRUE, collect = TRUE)
+
+tubes_xg3_avail <- tubes_xg3 %>% 
+    eval_xg3_avail( xg3_type = "L")
+debugonce(eval_xg3_series)
+tubes_xg3_eval <-   tubes_xg3 %>% 
+  eval_xg3_series(xg3_type = c("L"),
+                  max_gap = 2,
+                  min_dur = 5)
+DBI::dbDisconnect(watina)
+```
+
+```{r eval=FALSE, include=FALSE}
 write_vc(habmap_raster)
 raster_meetnet_polyg <- st_as_sf(rasterToPolygons(raster_meetnet))
 raster_meetnet_polyg <- st_transform(raster_meetnet_polyg, crs = 31370)
@@ -452,10 +505,8 @@ m <- c(0, 60000, 0,  60000, 70000, 1)
 rclmat <- matrix(m, ncol = 3, byrow=TRUE)
 rc <- reclassify(test, rclmat)
 plot(rc)
-
-
-
 ```
+
 
 ## Including Plots
 
