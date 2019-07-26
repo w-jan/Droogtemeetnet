@@ -316,6 +316,7 @@ st_crs(raster_meetnet_poly)
 
 #de project wordt gewijzigd naar crs 31370 (Lambert)
 # st_crs(raster_meetnet_poly) <- 31370
+
 plot(raster_meetnet_poly)
 
 #check op unieke celwaarden
@@ -453,11 +454,11 @@ tubes_xg3 <- tubes_in_raster %>%
 
 tubes_xg3_avail <- tubes_xg3 %>% 
     eval_xg3_avail( xg3_type = "L")
-debugonce(eval_xg3_series)
-tubes_xg3_eval <-   tubes_xg3 %>% 
-  eval_xg3_series(xg3_type = c("L"),
-                  max_gap = 2,
-                  min_dur = 5)
+# debugonce(eval_xg3_series)
+# tubes_xg3_eval <-   tubes_xg3 %>%
+#   eval_xg3_series(xg3_type = c("L"),
+#                   max_gap = 2,
+#                   min_dur = 5)
 DBI::dbDisconnect(watina)
 ```
 
