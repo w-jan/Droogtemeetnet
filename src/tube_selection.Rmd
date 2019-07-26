@@ -58,26 +58,15 @@ library(n2khab)
 ```{r loading habitatmap, include=FALSE}
 habpath <- "./data/local/n2khab-binaire-databronnen"
 habfile <- "20_processed/habitatmap_stdized/habitatmap_stdized.gpkg"
-# read_habitatmap_stdized(path = path)
 
-habmap_polygons <- st_read(file.path(habpath, habfile),
-                           "habitatmap_polygons",
-                           quiet = TRUE)
-habmap_polygons <- habmap_polygons %>%
-    mutate( description_orig = as.character( .data$description_orig)) %>%
-    st_transform(31370)
 
-st_crs(habmap_polygons)
+habitatmap_stdized <- read_habitatmap_stdized(path = habpath)
 
-habmap_patches <- suppressWarnings(
-    st_read(file.path(habpath, habfile),
-            "habitatmap_patches",
-            as_tibble = TRUE,
-            quiet = TRUE)
-    )
-getwd()
+habmap_polygons <- habitatmap_stdized$habitatmap_polygons
 
-types <- suppressWarnings(read_types(path = "../n2khab/inst/textdata", lang = "nl"))
+habmap_patches <- habitatmap_stdized$habitatmap_patches
+
+types <- read_types(lang = "nl")
 
 habmap_patches <- habmap_patches %>%
     mutate( polygon_id = as.factor(.data$polygon_id),
