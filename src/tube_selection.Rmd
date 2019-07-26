@@ -78,8 +78,13 @@ habmap_patches <- habmap_patches %>%
             )
 
 ```
-#Inlezen milieudruk-schema's
-Een milieudruk-schema geeft een overzicht van de habitattypen en rbb's die actueel onderhevig zijn aan een bepaalde milieudruk. Voor de monitoring van deze milieudruk bij de grondwatergevoede habitattypen (ggHT) worden deze ggHT opgedeeld in 5 habitattypegroepen. Voor het droogtemeetnet wordt deze 5-delige indeling gebruikt.  
+
+# Inlezen meetnetdefinities Natura 2000 monitoring
+
+Voor elk Natura 2000 meetnet is gedefinieerd welke habitattypen en rbb's daarin worden meegenomen.
+Voor het meetnet voor de milieudruk 'verdroging via grondwater' (in de meetnetten natuurlijk milieu) betreft het grondwatergevoede habitattypen (ggHT).
+Deze ggHT worden opgedeeld in 5 habitattypegroepen.
+Voor het droogtemeetnet wordt deze 5-delige indeling gebruikt.  
 HTgroep 5 bevat uitsluitend HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms (meestal) niet. De vraag is of en indien ja hoe we dan die grondwatergevoede locaties kunnen selecteren.  
 De HTgroepen lenen zich heel goed om een stratificatie uit te voeren op basis van de verwachte responssnelheid van een locatie op droogte. De permanent gevoede locaties (HT-groep 1) zullen naar verwachting trager reageren dan de tijdelijk of zwak gevoede locaties. Door een stratificatie over de HT-groepen toe te passen kan een zekere (nog af te spreken) balans worden verzekerd. 
 
