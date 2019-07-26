@@ -86,7 +86,9 @@ Voor het meetnet voor de milieudruk 'verdroging via grondwater' (in de meetnette
 Deze ggHT worden opgedeeld in 5 habitattypegroepen.
 Voor het droogtemeetnet wordt deze 5-delige indeling gebruikt.  
 HTgroep 5 bevat uitsluitend HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms (meestal) niet. De vraag is of en indien ja hoe we dan die grondwatergevoede locaties kunnen selecteren.  
-De HTgroepen lenen zich heel goed om een stratificatie uit te voeren op basis van de verwachte responssnelheid van een locatie op droogte. De permanent gevoede locaties (HT-groep 1) zullen naar verwachting trager reageren dan de tijdelijk of zwak gevoede locaties. Door een stratificatie over de HT-groepen toe te passen kan een zekere (nog af te spreken) balans worden verzekerd. 
+De HTgroepen lenen zich heel goed om een stratificatie uit te voeren op basis van de verwachte responssnelheid van een locatie op droogte. 
+De permanent gevoede locaties (HT-groep 1) zullen naar verwachting trager reageren dan de tijdelijk of zwak gevoede locaties. 
+Door een stratificatie over de HT-groepen toe te passen kan een zekere (nog af te spreken) balans worden verzekerd. 
 
 ```{r loading environmental schemes, echo=FALSE}
 # read_schemes_local(path = "../../n2khab/inst/textdata")
@@ -259,12 +261,23 @@ mask <- habmap_polygons_gw
 
 # Ontwerp van een meetnet
 
-Het basisidee van het meetnet is om zo veel mogelijk ruimtelijk gebalanceerd een vooraf gekozen aantal meetpunten te selecteren. We kunnen geen zuiver ruimtelijk gebalanceerde set opbouwen. Een dergelijke set zou kunnen opgebouwd worden door een overlay te maken van de verspreiding van de HT-groepen met een fijn GTRS raster. In een GTRS-raster vormen een willekeurig gekozen subset van opeenvolgende genummerde punten steeds een ruimtelijk gebalanceerde set. Echter de kans dat zich op een dergelijk punt een bestaand grondwatermeetpunt bevindt is weinig realistisch.
-Om toch een zo goed mogelijk ruimtelijk gebalanceerde spreiding te garanderen wordt Vlaanderen opgedeeld in een raster van cellen van een bepaalde gelijke grootte. De keuze van celgrootte (en dus het aantal) cellen is bepaald door de ingeschatte grootte van het meetnet (en de minimale afstand tussen twee meetpunten). Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans is, omdat men minder vrij is om een locatie te kiezen.  
-We werken gestratificeerd volgens de 5-delige indeling van HT-groepen. Zo verzekeren we dat elke HT-groep voldoende gemonitord zal worden.
-Niet elke cel is even belangrijk voor de monitoring van een HT-groep, want de oppervlakte van ggHT verschilt van cel tot cel. Het heeft geen zin om in een raster een meetpunt te voorzien voor een HT-groep indien die groep daar niet in aanwezig is.  
+Het basisidee van het meetnet is om zo veel mogelijk een ruimtelijk gebalanceerd en vooraf gekozen aantal meetpunten te selecteren. 
+We kunnen geen zuiver ruimtelijk gebalanceerde set opbouwen. 
+Een dergelijke set zou kunnen opgebouwd worden door een overlay te maken van de verspreiding van de HT-groepen met een fijn GTRS raster. 
+In een GTRS-raster vormen een willekeurig gekozen subset van opeenvolgende genummerde punten steeds een ruimtelijk gebalanceerde set. 
+Echter de kans dat zich op een dergelijk punt een bestaand grondwatermeetpunt bevindt is weinig realistisch.
 
-De raster-cellen zullen dus niet obv GRTS geselecteerd worden, maar in verhouding tot de relatieve oppervlakte van een HT-groep dat het bevat. Hiertoe kan als maat de gemiddelde oppervlakte van een HT-groep per gewenst meetpunt gebruikt worden. 
+Om toch een zo goed mogelijk ruimtelijk gebalanceerde spreiding te garanderen wordt Vlaanderen opgedeeld in een raster van cellen van een bepaalde gelijke grootte. 
+De keuze van celgrootte (en dus het aantal) cellen is bepaald door de ingeschatte grootte van het meetnet (en de minimale afstand tussen twee meetpunten). 
+Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans is, omdat men minder vrij is om een locatie te kiezen.  
+We werken gestratificeerd volgens de 5-delige indeling van HT-groepen. 
+Zo verzekeren we dat elke HT-groep voldoende gemonitord zal worden.
+
+Niet elke cel is even belangrijk voor de monitoring van een HT-groep, want de oppervlakte van ggHT verschilt van cel tot cel. 
+Het heeft geen zin om in een raster een meetpunt te voorzien voor een HT-groep indien die groep daar niet in aanwezig is.  
+
+De raster-cellen zullen dus niet obv GRTS geselecteerd worden, maar in verhouding tot de relatieve oppervlakte van een HT-groep dat het bevat. 
+Hiertoe kan als maat de gemiddelde oppervlakte van een HT-groep per gewenst meetpunt gebruikt worden. 
 
 ```{r meetnet ontwerp}
 # gewenst_totaal_aantal_meetpunten
