@@ -21,7 +21,6 @@ library(stringr)
 library(knitr)
 library(sf)
 library(git2rdata)
-library(n2khabutils)
 library(lubridate)
 opts_chunk$set(
   echo = FALSE,
