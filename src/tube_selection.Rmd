@@ -302,7 +302,7 @@ st_crs(raster_meetnet_poly)
 #raster_meetnet_poly heeft geen crs. Het bronbestand komt van geopunt, de projectie kent geen crs, maar lijkt heel sterk (kwestie van mm) op die van crs31370. Om vervormingen bij transformatie te vermijden wordt hier enkel de crs-code toegevoegd (alsof de projectiestring die van 31370 is)
 
 #de project wordt gewijzigd naar crs 31370 (Lambert)
-st_crs(raster_meetnet_poly) <- 31370
+# st_crs(raster_meetnet_poly) <- 31370
 plot(raster_meetnet_poly)
 
 #check op unieke celwaarden
