@@ -97,7 +97,9 @@ gw_types <- read_scheme_types() %>%
     select(type, groupnr)
 
 ```
-#Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
+
+# Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
+
 ```{r habitat selection, echo=FALSE}
 habmap_patches_gw <- habmap_patches %>% 
   inner_join(gw_types, by = c("type" = "type"))
@@ -105,7 +107,9 @@ habmap_polygons_gw <- habmap_polygons %>%
   inner_join(habmap_patches_gw %>% dplyr::select(-code_orig), by = "polygon_id")
 
 ```
-#Opgave van de grondwater-meetpunten (Watina-databank) die gelegen zijn in een verdrogingsgevoelig type.  
+
+# Opgave van de grondwater-meetpunten (Watina-databank) die gelegen zijn in een verdrogingsgevoelig type.  
+
 Hierbij werd met een zoekstraal van 10 meter rond een meetpunt gewerkt.
 ```{r loading and selecting tubes watina, echo=FALSE}
 watina <- connect_watina()
@@ -252,7 +256,9 @@ mask <- habmap_polygons_gw
     #         collect
     # }
 ```
-#Ontwerp van een meetnet
+
+# Ontwerp van een meetnet
+
 Het basisidee van het meetnet is om zo veel mogelijk ruimtelijk gebalanceerd een vooraf gekozen aantal meetpunten te selecteren. We kunnen geen zuiver ruimtelijk gebalanceerde set opbouwen. Een dergelijke set zou kunnen opgebouwd worden door een overlay te maken van de verspreiding van de HT-groepen met een fijn GTRS raster. In een GTRS-raster vormen een willekeurig gekozen subset van opeenvolgende genummerde punten steeds een ruimtelijk gebalanceerde set. Echter de kans dat zich op een dergelijk punt een bestaand grondwatermeetpunt bevindt is weinig realistisch.
 Om toch een zo goed mogelijk ruimtelijk gebalanceerde spreiding te garanderen wordt Vlaanderen opgedeeld in een raster van cellen van een bepaalde gelijke grootte. De keuze van celgrootte (en dus het aantal) cellen is bepaald door de ingeschatte grootte van het meetnet (en de minimale afstand tussen twee meetpunten). Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans is, omdat men minder vrij is om een locatie te kiezen.  
 We werken gestratificeerd volgens de 5-delige indeling van HT-groepen. Zo verzekeren we dat elke HT-groep voldoende gemonitord zal worden.
@@ -412,7 +418,8 @@ plot(sel_raster_meetnet %>% filter(groupnr == 1))
 
 
 ```
-#Opzoeken van Watina-meetpunten in de geselecteerde cellen
+
+# Opzoeken van Watina-meetpunten in de geselecteerde cellen
 
 ```{r tubes (watina) in selected cells}
 tubes_in_raster <- tubes_hab %>% 
@@ -422,7 +429,9 @@ tubes_in_raster <- tubes_hab %>%
 
 tubes_in_raster
 ```
-#Selectie van meetpunten met een goede tijdreeks binnen de geselecteerde cellen
+
+# Selectie van meetpunten met een goede tijdreeks binnen de geselecteerde cellen
+
 ```{r selection tubes with good time-series in selected cells}
 watina <- connect_watina()
 
