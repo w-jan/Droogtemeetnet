@@ -4,7 +4,7 @@ author: "Jan Wouters"
 date: "16 juli 2019"
 output: html_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -121,7 +121,14 @@ watina <- connect_watina()
 ?get_locs
 # debugonce(get_locs)
 tubes_hab <- get_locs(watina, mask = habmap_polygons_gw, join_mask = TRUE, buffer = 10, loc_type = "P", loc_validity = c("VLD", "ENT"), collect = TRUE)
+str(tubes_hab)
 
+# een peilbuis kan meerdere keren voorkomen, wanneer de pb in een bwk-complex ligt. We kunnen ze groeperen als de verschillende eenheden tot eenzelfde gw-groep behoren.
+test <- tubes_hab %>% 
+  group_by(loc_code, polygon_id, groupnr) %>% 
+  summarise(phab_gw = sum(phab),
+            aantal =  n()) %>% 
+  ungroup()
 DBI::dbDisconnect(watina)
 
 ```
@@ -312,10 +319,7 @@ raster_meetnet_poly <- read_GRTSmh_diffres(datapath, level = 8, polygon = TRUE)
 #welke crs?
 st_crs(habmap_polygons_gw)
 st_crs(raster_meetnet_poly)
-#raster_meetnet_poly heeft geen crs. Het bronbestand komt van geopunt, de projectie kent geen crs, maar lijkt heel sterk (kwestie van mm) op die van crs31370. Om vervormingen bij transformatie te vermijden wordt hier enkel de crs-code toegevoegd (alsof de projectiestring die van 31370 is)
 
-#de project wordt gewijzigd naar crs 31370 (Lambert)
-# st_crs(raster_meetnet_poly) <- 31370
 
 plot(raster_meetnet_poly)
 
@@ -433,21 +437,48 @@ plot(sel_raster_meetnet %>% filter(groupnr == 1))
 
 ```
 
-# Opzoeken van Watina-meetpunten in de geselecteerde cellen
+# Opzoeken van Watina-meetpunten in de geselecteerde cellen ('sel-cellen')
 
 ```{r tubes (watina) in selected cells}
 tubes_in_raster <- tubes_hab %>% 
   select(-11:-16) %>% 
-  inner_join(habmap_gw_raster_overlay, by = "polygon_id") %>% 
-  inner_join(sel_raster_meetnet, by = c("rasterid", "groupnr"))
+  inner_join(habmap_gw_raster_overlay %>% 
+               st_drop_geometry(), by = "polygon_id") %>% 
+  inner_join(sel_raster_meetnet %>% 
+               select(rasterid, groupnr) %>% 
+               st_drop_geometry(), by = c("rasterid", "groupnr"))
 
 tubes_in_raster
 ```
+# Zijn er sel-cellen zonder watina-meetpunt?
+
+```{r tubeless selcells, warning== FALSE}
+sel_zonder_meetpunt <- sel_raster_meetnet %>% 
+  anti_join(tubes_in_raster, group_by = c("rasterid", "groupnr")) %>% 
+  distinct(rasterid, groupnr) %>% 
+  arrange(rasterid)
+
+plot(sel_zonder_meetpunt %>% select(groupnr) %>% filter(groupnr == 2))
+
+sel_zonder_meetpunt_tabel <- sel_raster_meetnet %>% 
+  anti_join(tubes_in_raster, group_by = c("rasterid", "groupnr")) %>% 
+  st_drop_geometry() %>% 
+  distinct(rasterid, groupnr) %>% 
+  arrange(rasterid)
+
+sel_zonder_meetpunt_tabel %>%
+  group_by(groupnr ) %>% 
+  summarise('aantal cellen zonder meetpunt' = n())
+
+
+```
+Ja, een 'r as.integer(sel_zonder_meetpunt_tabel %>% count %>% magrittr::extract(1,1))'-tal
 
 # Selectie van meetpunten met een goede tijdreeks binnen de geselecteerde cellen
 
 ```{r selection tubes with good time-series in selected cells}
 watina <- connect_watina()
+
 
 tubes_xg3 <- tubes_in_raster %>% 
     get_xg3(watina, startyear = year(now()) - 15, vert_crs = "local", truncated =  TRUE, collect = TRUE)
@@ -455,12 +486,31 @@ tubes_xg3 <- tubes_in_raster %>%
 tubes_xg3_avail <- tubes_xg3 %>% 
     eval_xg3_avail( xg3_type = "L")
 # debugonce(eval_xg3_series)
-# tubes_xg3_eval <-   tubes_xg3 %>%
-#   eval_xg3_series(xg3_type = c("L"),
-#                   max_gap = 2,
-#                   min_dur = 5)
+tubes_xg3_eval <-   tubes_xg3 %>%
+  eval_xg3_series(xg3_type = c("L"),
+                  max_gap = 2,
+                  min_dur = 5)
+
+# sessioninfo::session_info()
+
 DBI::dbDisconnect(watina)
 ```
+
+```{r join tubes with a xg3 on the raster_survey}
+
+sel_raster_xg3 <- sel_raster_meetnet %>% 
+  left_join(tubes_in_raster %>% 
+              distinct(loc_code, rasterid, groupnr), by = c("rasterid", "groupnr")) %>% 
+  left_join(tubes_xg3_eval, by = "loc_code") %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  summarise(aantal_meetpunten = n(),
+            aantal_series = sum(!is.na(series)),
+            max_aantalmeetjaren = max(ser_nryears, na.rm =  TRUE))
+
+  
+sel_raster_xg3 %>% st_drop_geometry()
+```
+# koppeling van xg3-meetpunten aan de geselecteerde rastercellen
 
 ```{r eval=FALSE, include=FALSE}
 write_vc(habmap_raster)
