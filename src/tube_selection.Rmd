@@ -453,26 +453,26 @@ tubes_in_raster
 # Zijn er sel-cellen zonder watina-meetpunt?
 
 ```{r tubeless selcells, warning== FALSE}
-sel_zonder_meetpunt <- sel_raster_meetnet %>% 
+sel_no_tube <- sel_raster_meetnet %>% 
   anti_join(tubes_in_raster, group_by = c("rasterid", "groupnr")) %>% 
   distinct(rasterid, groupnr) %>% 
   arrange(rasterid)
 
-plot(sel_zonder_meetpunt %>% select(groupnr) %>% filter(groupnr == 2))
+plot(sel_no_tube %>% select(groupnr) %>% filter(groupnr == 2))
 
-sel_zonder_meetpunt_tabel <- sel_raster_meetnet %>% 
+sel_no_tube_table <- sel_raster_meetnet %>% 
   anti_join(tubes_in_raster, group_by = c("rasterid", "groupnr")) %>% 
   st_drop_geometry() %>% 
   distinct(rasterid, groupnr) %>% 
   arrange(rasterid)
 
-sel_zonder_meetpunt_tabel %>%
+sel_no_tube_table %>%
   group_by(groupnr ) %>% 
-  summarise('aantal cellen zonder meetpunt' = n())
+  summarise('aantal cellen zonder peilbuis' = n())
 
 
 ```
-Ja, een 'r as.integer(sel_zonder_meetpunt_tabel %>% count %>% magrittr::extract(1,1))'-tal
+Ja, een 'r as.integer(sel_no_tube_table %>% count %>% magrittr::extract(1,1))'-tal
 
 # Selectie van meetpunten met een goede tijdreeks binnen de geselecteerde cellen
 
@@ -483,10 +483,10 @@ watina <- connect_watina()
 tubes_xg3 <- tubes_in_raster %>% 
     get_xg3(watina, startyear = year(now()) - 15, vert_crs = "local", truncated =  TRUE, collect = TRUE)
 
-tubes_xg3_avail <- tubes_xg3 %>% 
+tubes_lg3_avail <- tubes_xg3 %>% 
     eval_xg3_avail( xg3_type = "L")
 # debugonce(eval_xg3_series)
-tubes_xg3_eval <-   tubes_xg3 %>%
+tubes_lg3_eval <-   tubes_xg3 %>%
   eval_xg3_series(xg3_type = c("L"),
                   max_gap = 2,
                   min_dur = 5)
@@ -495,22 +495,74 @@ tubes_xg3_eval <-   tubes_xg3 %>%
 
 DBI::dbDisconnect(watina)
 ```
+# Koppeling van lg3-meetpunten aan de geselecteerde rastercellen
 
 ```{r join tubes with a xg3 on the raster_survey}
 
-sel_raster_xg3 <- sel_raster_meetnet %>% 
+sel_raster_lg3 <- sel_raster_meetnet %>% 
   left_join(tubes_in_raster %>% 
               distinct(loc_code, rasterid, groupnr), by = c("rasterid", "groupnr")) %>% 
-  left_join(tubes_xg3_eval, by = "loc_code") %>% 
+  left_join(tubes_lg3_eval, by = "loc_code") %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
-  summarise(aantal_meetpunten = n(),
-            aantal_series = sum(!is.na(series)),
-            max_aantalmeetjaren = max(ser_nryears, na.rm =  TRUE))
+  summarise(n_tubes = n(),
+            n_tubes_lgl = sum(!is.na(series) & str_ends(series, "1")),
+            max_nryears = max(ser_nryears, na.rm =  TRUE)) %>% 
+  mutate(max_nryears = ifelse(max_nryears > 0, max_nryears, NA)) %>% 
+  ungroup %>% 
+  select(-max_nryears) %>% 
+  select(-geom, geom)
+
+sel_raster_lg3 %>% st_drop_geometry()
+
+```
+
+Hieruit blijkt dat er behoorlijk veel rastercellen zijn met een meetpunt, maar waarvoor de bestaande metingen niet toelaten een LGL te berekenen. Onderstaande tabel geeft hiervan een overzicht.
+```{r raster cells with one or more tubes but without lgl}
+sel_raster_no_lgl <- sel_raster_lg3 %>% 
+  filter(n_tubes_lgl == 0) %>% 
+  st_drop_geometry() %>% 
+  summarise('# cellen met pb zonder xg3' = n())
+sel_raster_no_lgl
+sel_raster_lg3 %>% count(n_tubes_lgl == 0) %>% st_drop_geometry()
+
+
+```
+```{r count points with tubes but without lgl }
+sel_points_no_lgl <- sel_raster_lg3 %>% 
+  filter(n_tubes_lgl < gew_aantal_meetptn)
+
+sel_points_no_lgl %>% 
+  st_drop_geometry() %>% 
+  summarise('# meetptn met pb zonder xg3' = sum(gew_aantal_meetptn)-sum(n_tubes_lgl))
+
+```
+
+# Opzoeken van peilbuizen met lg3 voor rastercellen zonder of met een onvoldoende aantal peilbuizen met een LGL
+```{r tubes with lg3 but no lgl}
+tubes_to_inspect <- tubes_lg3_avail %>% 
+  inner_join(tubes_in_raster %>% 
+               select(starts_with("loc"), rasterid, groupnr) %>% 
+               distinct, by = "loc_code") %>% 
+  inner_join(sel_points_no_lgl %>% 
+               st_drop_geometry(), by = c("rasterid", "groupnr")) %>%
+  filter(nryears >= 0) %>% 
+  arrange(rasterid, groupnr, desc(nryears), desc(firstyear)) %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(), -xg3_variable, -starts_with("loc_t"), -starts_with("loc_v"))
+head(tubes_to_inspect, 10)
+write_csv(tubes_to_inspect, paste0("../data/", "tubes_to_inspect.csv"))
+
+sel_zonder_lg3 <- sel_points_no_lgl %>% 
+  anti_join(tubes_to_inspect, by = c("rasterid", "groupnr"))
+
+cat("Aantal meetpunten zonder lg3")
+sel_zonder_lg3 %>% 
+  st_drop_geometry() %>% 
+  summarise(n_points_without_lg3 = sum(gew_aantal_meetptn))
+# tubes_in_raster %>% filter(rasterid == 46)
+
 
   
-sel_raster_xg3 %>% st_drop_geometry()
 ```
-# koppeling van xg3-meetpunten aan de geselecteerde rastercellen
 
 ```{r eval=FALSE, include=FALSE}
 write_vc(habmap_raster)
