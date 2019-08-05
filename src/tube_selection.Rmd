@@ -56,7 +56,7 @@ library(n2khab)
 # Inlezen habitatkaart
 
 ```{r loading habitatmap, include=FALSE}
-habpath <- "./data/local/n2khab-binaire-databronnen"
+habpath <- "../data/local/n2khab-binaire-databronnen"
 habfile <- "20_processed/habitatmap_stdized/habitatmap_stdized.gpkg"
 
 
@@ -121,14 +121,30 @@ watina <- connect_watina()
 ?get_locs
 # debugonce(get_locs)
 tubes_hab <- get_locs(watina, mask = habmap_polygons_gw, join_mask = TRUE, buffer = 10, loc_type = "P", loc_validity = c("VLD", "ENT"), collect = TRUE)
+#save it as a git2rdata-object
+tubes_hab <- tubes_hab %>% 
+  arrange(loc_code, polygon_id, type)
+write_vc(tubes_hab, file.path("..","data","tubes_hab"), sorting = c("loc_code", "polygon_id", "patch_id", "type" ), strict =  FALSE)
+
+test <- tubes_hab %>% 
+  count(loc_code, polygon_id, type)
+
 str(tubes_hab)
 
 # een peilbuis kan meerdere keren voorkomen, wanneer de pb in een bwk-complex ligt. We kunnen ze groeperen als de verschillende eenheden tot eenzelfde gw-groep behoren.
-test <- tubes_hab %>% 
-  group_by(loc_code, polygon_id, groupnr) %>% 
+# Alleen de gw-groep met een opp-aandeel van minstens 50% wordt weerhouden. Dit om te vermijden dat indien een rastercel gekozen werd voor een bep. gw-groep, een pb geselecteerd wordt waarvan de kans klein is dat ze die gw-groep representeert.
+
+tubes_hab_groep <- tubes_hab %>%
+  group_by(loc_code, polygon_id, groupnr) %>%
   summarise(phab_gw = sum(phab),
-            aantal =  n()) %>% 
-  ungroup()
+            aantal =  n()) %>%
+  ungroup() %>% 
+  filter(phab_gw >= 50)
+
+tubes_hab <- tubes_hab %>% 
+  semi_join(tubes_hab_groep, by = c("loc_code", "polygon_id", "groupnr" ))
+
+
 DBI::dbDisconnect(watina)
 
 ```
@@ -293,10 +309,9 @@ tot_n_tub <- 100
 aantal_strat <- 5
 
 #importeren van GRTS-lagen, voor het meetnet kiezen we level 8: cellen van 8192 m
-datapath <- "./data/local/n2khab-binaire-databronnen"
+datapath <- "../data/local/n2khab-binaire-databronnen"
 
 
-read_GRTSmh(datapath, brick = TRUE)
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 # test header 1 ----
 # read_GRTSmh_diffres(datapath, level = 7)
@@ -316,12 +331,11 @@ read_GRTSmh(datapath, brick = TRUE)
 # writeRaster(habmap_raster_group2, "./data/local/processed/habmap_raster_group2.grd", format = "raster")
 
 raster_meetnet_poly <- read_GRTSmh_diffres(datapath, level = 8, polygon = TRUE)
+# plot(raster_meetnet_poly)
 #welke crs?
 st_crs(habmap_polygons_gw)
 st_crs(raster_meetnet_poly)
 
-
-plot(raster_meetnet_poly)
 
 #check op unieke celwaarden
 check <- raster_meetnet_poly %>% st_drop_geometry() %>% distinct(value)
@@ -475,13 +489,18 @@ sel_no_tube_table %>%
 Ja, een 'r as.integer(sel_no_tube_table %>% count %>% magrittr::extract(1,1))'-tal
 
 # Selectie van meetpunten met een goede tijdreeks binnen de geselecteerde cellen
+Als selectiecriteria gelden:
+startjaar : 2001 of later
+eindjaar : 2016. De extreem droge zomers van 2017 en 2018 worden niet meegenomen in de berekening. Het is nu nog onduidelijk of de actuele vegetatie geen nadelige effecten van deze twee zomers heeft gekend (door naijling).
+minimale lengte van de tijdreeks : 5 jaar
+maximale duur van een onderbreking van de tijdreeks :  2 jaar
 
 ```{r selection tubes with good time-series in selected cells}
 watina <- connect_watina()
 
 
 tubes_xg3 <- tubes_in_raster %>% 
-    get_xg3(watina, startyear = year(now()) - 15, vert_crs = "local", truncated =  TRUE, collect = TRUE)
+    get_xg3(watina, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local", truncated =  TRUE, collect = TRUE)
 
 tubes_lg3_avail <- tubes_xg3 %>% 
     eval_xg3_avail( xg3_type = "L")
@@ -541,13 +560,13 @@ sel_points_no_lgl %>%
 ```{r tubes with lg3 but no lgl}
 tubes_to_inspect <- tubes_lg3_avail %>% 
   inner_join(tubes_in_raster %>% 
-               select(starts_with("loc"), rasterid, groupnr) %>% 
+               select(loc_code, rasterid, groupnr) %>% 
                distinct, by = "loc_code") %>% 
   inner_join(sel_points_no_lgl %>% 
                st_drop_geometry(), by = c("rasterid", "groupnr")) %>%
   filter(nryears >= 0) %>% 
   arrange(rasterid, groupnr, desc(nryears), desc(firstyear)) %>% 
-  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(), -xg3_variable, -starts_with("loc_t"), -starts_with("loc_v"))
+  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(), -xg3_variable)
 head(tubes_to_inspect, 10)
 write_csv(tubes_to_inspect, paste0("../data/", "tubes_to_inspect.csv"))
 
@@ -559,9 +578,83 @@ sel_zonder_lg3 %>%
   st_drop_geometry() %>% 
   summarise(n_points_without_lg3 = sum(gew_aantal_meetptn))
 # tubes_in_raster %>% filter(rasterid == 46)
+```
+
+# Verfijnen selectie bij overaanbod van meetpunten (deel 1)
+Hiervoor hanteren we twee bijkomende criteria:
+* meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks
+* indien er dan nog het aantal beschikbare meetpunten groter is dan het aantal gewenste, wordt een keuze gemaakt dmv het 32m GRTS-raster. Het/de meetpunt(en) met de laagste rasternr(s) wordt/worden dan gekozen, in overeenstemming met het gewenst aantal meetpunten.
+```{r using GRTS for refining tubeselection}
+sel_toomuch_lgl_vb <- tubes_in_raster %>% 
+  inner_join(sel_raster_meetnet %>% 
+               select(rasterid, groupnr, gew_aantal_meetptn), by =  c("rasterid", "groupnr")) %>% 
+  distinct(rasterid, groupnr, gew_aantal_meetptn, loc_code) %>% 
+  inner_join(tubes_lg3_eval, by = "loc_code") %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  count(ser_lastyear) %>% 
+  arrange(rasterid, groupnr, gew_aantal_meetptn, desc(ser_lastyear)) %>% 
+  mutate(minrank = min_rank(desc(ser_lastyear))) %>% 
+  ungroup()
+
+# check <- sel_toomuch_lgl_vb %>% 
+#   filter(rasterid == 134, groupnr == 4)
+
+# sel_toomuch_lgl_vb <- sel_toomuch_lgl_vb %>%  
+#   mutate(gew_aantal_meetptn = case_when(
+#     rasterid == 134 & groupnr == 4 ~ 6,
+#     TRUE ~ gew_aantal_meetptn
+#   ))
+
+max_rank <-  function(x) {
+aantal_jaren <- nrow(x)
+gewenst_aantal <- x %>% 
+  select(gew_aantal_meetptn) %>% 
+  distinct() %>% 
+  as.integer()
+beschikbaar_aantal <- 0
+einde <- 0
+  for (i in seq(1:aantal_jaren)) {
+    # i <- 2
+    check_rank <- x %>% 
+      filter(minrank == i)
+    beschikbaar_aantal_rank <- x[x$minrank == i, "n"] %>% as.integer()
+    if (gewenst_aantal <= (beschikbaar_aantal_rank + beschikbaar_aantal) & einde == 0) {
+      maxrank <- i
+      einde <- 1
+    } else {
+      beschikbaar_aantal <- beschikbaar_aantal_rank + beschikbaar_aantal 
+    }
+  }
+return(maxrank)
+}
+
+sel_toomuch_lgl_maxrank <- plyr::ddply(sel_toomuch_lgl_vb, ~rasterid+groupnr, max_rank) %>%
+  rename(maxrank = V1)
+
+sel_toomuch_lgl <- sel_toomuch_lgl_vb %>% 
+  left_join(sel_toomuch_lgl_maxrank, by = c("rasterid", "groupnr")) %>% 
+  filter(minrank <= maxrank) %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn, maxrank) %>% 
+  summarise(beschikbaar_aantal = sum(n)) %>% 
+  ungroup %>% 
+  inner_join(sel_toomuch_lgl_vb %>%
+              select(rasterid, groupnr, minrank, ser_lastyear) ) %>% 
+  filter(beschikbaar_aantal > gew_aantal_meetptn, minrank <= maxrank) %>% 
+  select(-ends_with("rank"))
+
+#bijhorende meetpunten ervan opzoeken
+tubes_excess <- tubes_in_raster %>% 
+  distinct(loc_code, x, y, rasterid, groupnr) %>% 
+  inner_join(tubes_lg3_eval, by =  "loc_code") %>% 
+  inner_join(sel_toomuch_lgl, by =  c("rasterid", "groupnr", "ser_lastyear"))
+
+tubes_excess <- tubes_excess %>% 
+  rownames_to_column("unieknr") %>% 
+  mutate(unieknr = as.integer(unieknr))
+# sel_toomuch_lgl_vb %>% 
+#   count(rasterid, groupnr )
 
 
-  
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -623,6 +716,134 @@ m <- c(0, 60000, 0,  60000, 70000, 1)
 rclmat <- matrix(m, ncol = 3, byrow=TRUE)
 rc <- reclassify(test, rclmat)
 plot(rc)
+```
+
+# Verfijnen selectie bij overaanbod van meetpunten (deel 2)
+```{r using GRTS for refining tubeselection part2}
+tubes_excess_sf <- as_points(tubes_excess)
+tubes_excess_gw_raster_overlay <- tubes_excess_sf %>% 
+  distinct(loc_code, x, y) %>% 
+  st_intersection(raster_meetnet_poly)
+
+sel_excess <- tubes_excess_gw_raster_overlay %>%
+  st_drop_geometry() %>% 
+  distinct(rasterid) %>% 
+  arrange(rasterid)
+
+grts_level1 <- read_GRTSmh(datapath, brick = TRUE) %>% 
+  subset(1)
+grts_level9 <- read_GRTSmh(datapath, brick = TRUE) %>% 
+  subset(9)
+clip9 <- grts_level9[grts_level9 == 113, drop =  FALSE]
+# plot(clip9)
+clip1 <- grts_level1[clip9, drop =  FALSE]
+# plot(clip1)
+
+tubes_excess_raster1 <- rasterize(tubes_excess %>% select(x, y) %>% as.matrix(), clip1, mask = TRUE)
+# plot(tubes_excess_raster1)
+check <- tubes_excess_raster1 %>% 
+  getValues() %>% 
+  as.data.frame()
+names(check) <- "celwaarde" 
+check <- check %>% 
+  filter(!is.na(celwaarde)) %>%  
+  distinct() %>% 
+  mutate (minrank = min_rank(celwaarde)) %>% 
+  arrange(minrank)
+
+check
+clip1b <- clip1[clip1 == check[1,1], drop = FALSE]
+tubes_excess_unieknr <- rasterize(tubes_excess %>% select(x, y) %>% as.matrix(), clip1b, field = tubes_excess %>% select(unieknr), mask = FALSE)
+getValues(tubes_excess_unieknr)
+uniek <- tubes_excess_unieknr %>% 
+  getValues() %>% 
+  as.data.frame()
+names(uniek) <- "unieknr" 
+uniek <- uniek %>% 
+  filter(!is.na(unieknr)) %>%  
+  distinct() %>% 
+  mutate (minrank = min_rank(unieknr)) %>% 
+  arrange(minrank)
+uniek
+
+
+check <- tubes_excess_gw_raster_overlay %>% 
+  select(loc_code, rasterid, rasterid.1)
+check <- read_GRTSmh(datapath, brick = TRUE)
+test <- subset(check, 1)
+test
+
+test2
+plot(test2)
+elev <- spData::elev
+clip <-  raster(xmn = 0.9, xmx = 1.8, ymn = -0.45, ymx = 0.45,
+              res = 0.3, vals = rep(1, 9))
+t <- elev[clip, drop =  FALSE]
+
+clipj <- test2[test2==1014, drop =  FALSE]
+tubes_excess_raster0 <- rasterize(tubes_excess %>% select(x, y) %>% as.matrix(), test, mask = TRUE)
+tubes_excess_unieknr <- rasterize(tubes_excess %>% select(x, y) %>% as.matrix(), test, field = tubes_excess %>% select(unieknr), mask = FALSE)
+
+plot(tubes_excess_unieknr)
+
+test <- tubes_excess_raster0 %>% 
+  interse
+
+tubes_excess_pointsO <- rasterToPoints(tubes_excess_raster0)
+
+e1 <- extent(-10, 10, -20, 20)
+e2 <- extent(0, 20, -40, 5)
+intersect(e1, e2)
+
+t <- tubes_excess %>% select(rasterid) %>% as.character()
+plot(test_clip)
+r <- raster(ncols=36, nrows=18)
+n <- 1000
+set.seed(123)
+x <- runif(n) * 360 - 180
+y <- runif(n) * 180 - 90
+xy <- cbind(x, y)
+# get the (last) indices
+r0 <- rasterize(xy, r)
+plot(r2)
+# presence/absensce (NA) (is there a point or not?)
+r1 <- rasterize(xy, r, field=1)
+# how many points?
+r2 <- rasterize(xy, r, field = xy[,2])
+vals <- runif(n)
+# sum of the values associated with the points
+r3 <- rasterize(xy, r, vals, fun=sum)
+
+
+
+
+clipjb <- test2[rasterize(tubes_excess %>% select(x, y) %>% as.matrix(), test2, field = tubes_excess %>% pull(loc_code))]
+test3 <- test[clipj, drop = FALSE]
+test3b <- intersect(test, clipj)
+compareRaster(test3, test3b)
+ 
+
+test4 <- rasterToPolygons(test3)
+
+tubes_excess_sf <- tubes_excess %>% 
+  st_as_sf(coords = c("x", "y"), crs = 31370)
+
+test5 <- tubes_excess_sf %>% 
+  st_intersection(st_as_sf(test4, crs = 31370))
+
+plot(test3)
+plot(clipj)
+# plot(test4)
+test3 <- st_as_sf(test2) %>% 
+  st_join(st_as_sf(test))
+
+integer <- 1017
+  m <- c(0, integer - 1, NA, integer,  integer , 1, integer +1 , 2000, NA)
+  rclmat <- matrix(m, ncol = 3, byrow = TRUE)
+  rc <- reclassify(test2, rclmat) 
+  plot(rc)
+  
+
 ```
 
 
