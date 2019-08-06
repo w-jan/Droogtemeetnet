@@ -1,0 +1,19 @@
+..generic:
+  git2rdata: '0.1'
+  optimize: yes
+  NA string: NA
+  sorting:
+  - loc_code
+  - hydroyear
+  hash: 1bfabd4886fcd34b502ee971dd4fd7fd4632bf7c
+  data_hash: f9664bb1210d78924fe4828b80abeb82a5e49fe2
+loc_code:
+  class: character
+hydroyear:
+  class: integer
+lg3_lcl:
+  class: numeric
+hg3_lcl:
+  class: numeric
+vg3_lcl:
+  class: numeric

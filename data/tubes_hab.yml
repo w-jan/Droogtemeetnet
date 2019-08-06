@@ -5,10 +5,11 @@
   sorting:
   - loc_code
   - polygon_id
+  - rasterid
   - patch_id
   - type
-  hash: d940cedb7e50931392d9ac5e6ee221ac4b1eab93
-  data_hash: f8a117306fd89a6d35c91e8dc8900a2cec7243f8
+  hash: 7df75dc79f64b6bc3cd277e225005d54434a2284
+  data_hash: fee7b7d436bb9fd0dbcc57d922753b3f28e150cf
 loc_code:
   class: character
 area_code:
@@ -265,4 +266,8 @@ type:
   - 111
   ordered: no
 groupnr:
+  class: integer
+rasterid:
+  class: integer
+opp:
   class: integer
