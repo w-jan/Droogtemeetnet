@@ -133,7 +133,6 @@ ASSP112	ASS	Assebroekse meersen	72157	208326	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zo
 ATGP003	ATG	Antitankgracht Haacht	170190	185574	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	618992_v2014	70% gh; 30% 91E0_vn	2	30	1	105	3	902	8372
 AVEP006	AVE	Averbode	194185	191785	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	491955_v2018	80% gh; 20% 4010	2	20	1	38	3	54	3848
 AVEP007	AVE	Averbode	194071	191836	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	491953_v2018	100% 4010	1	100	1	38	3	54	5674
-AVEP007	AVE	Averbode	194071	191836	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	491953_v2018	100% 4010	1	100	1	38	3	310	2513
 AVEP009	AVE	Averbode	194396	193019	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	492006_v2018	100% 9190	1	100	1	99	5	54	9565
 AVEP015	AVE	Averbode	191187	191734	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	547059_v2018	90% gh; 10% 4010,4030	2	10	0	38	3	310	17287
 AVEP032	AVE	Averbode	192603	192680	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	532256_v2018	100% 4010,4030	1	100	0	38	3	310	28221
@@ -979,11 +978,8 @@ DYLP155	DYL	Dijlevallei	169638	166609	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	6
 DYLP155	DYL	Dijlevallei	169638	166609	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	620827_v2014	70% 6430,rbbhf; 30% rbbmr	2	30	1	88	2	582	9755
 DYLP155	DYL	Dijlevallei	169638	166609	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	647157_v2014	100% 6430,rbbhf,bos	1	100	0	69	3	582	5419
 DYLP156	DYL	Dijlevallei	169478	166091	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	416443_v2018	100% rbbhc	1	100	1	68	3	262	5998
-DYLP156	DYL	Dijlevallei	169478	166091	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	416443_v2018	100% rbbhc	1	100	1	68	3	582	2750
 DYLP156	DYL	Dijlevallei	169478	166091	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	570637_v2014	70% rbbsf; 30% 6430,rbbhf	1	70	1	109	3	262	1402
 DYLP156	DYL	Dijlevallei	169478	166091	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	570637_v2014	70% rbbsf; 30% 6430,rbbhf	2	30	0	69	3	262	1402
-DYLP156	DYL	Dijlevallei	169478	166091	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	570637_v2014	70% rbbsf; 30% 6430,rbbhf	1	70	1	109	3	582	366
-DYLP156	DYL	Dijlevallei	169478	166091	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	570637_v2014	70% rbbsf; 30% 6430,rbbhf	2	30	0	69	3	582	366
 DYLP157	DYL	Dijlevallei	169469	166259	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	313939_v2016	70% rbbmr; 30% rbbsf	1	70	1	88	2	262	14308
 DYLP157	DYL	Dijlevallei	169469	166259	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	313939_v2016	70% rbbmr; 30% rbbsf	2	30	1	109	3	262	14308
 DYLP159	DYL	Dijlevallei	169361	168086	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	110823_v2014	100% 6430,rbbhf	1	100	0	69	3	262	48558
@@ -1050,7 +1046,6 @@ FLOP004	FLO	Vijvers van Florival	169013	161968	VLD	Gevalideerd	P	Peilbuis/Pi<eb>
 FLOP004	FLO	Vijvers van Florival	169013	161968	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	313843_v2016	70% rbbmr; 20% gh; 10% 91E0_vm	3	10	1	104	1	262	24041
 FLOP004	FLO	Vijvers van Florival	169013	161968	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	327816_v2016	60% gh; 40% rbbmr	2	40	1	88	2	262	25494
 FLOP009	FLO	Vijvers van Florival	169482	161118	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	188791_v2016	70% rbbmr; 30% gh	1	70	1	88	2	6	15973
-FLOP009	FLO	Vijvers van Florival	169482	161118	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	188791_v2016	70% rbbmr; 30% gh	1	70	1	88	2	326	1681
 GBBP002	GBB	Groeneburgbos	49224	169169	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	582244_v2018	100% 9130_end	1	100	1	95	4	337	138801
 GGVP006	GGV	Grote Getevallei	197001	169083	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	617004_v2014	100% 6430,rbbhf	1	100	0	69	3	358	4791
 GGVP025	GGV	Grote Getevallei	198892	169850	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	613106_v2014	100% 6430,rbbhf,bos	1	100	0	69	3	678	11315
@@ -1709,8 +1704,6 @@ KAMP102	KAM	Kalkense meersen	119220	191853	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zome
 KAMP201	KAM	Kalkense meersen	118878	191520	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	572415_v2014	80% rbbhc; 10% rbbmr; 10% gh	1	80	1	68	3	905	26973
 KAMP201	KAM	Kalkense meersen	118878	191520	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	572415_v2014	80% rbbhc; 10% rbbmr; 10% gh	2	10	1	88	2	905	26973
 KAMP204	KAM	Kalkense meersen	120023	191530	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	671681_v2014	95% rbbhc; 5% 3150	1	95	1	68	3	905	24710
-KAMP205	KAM	Kalkense meersen	119898	190534	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	104807_v2014	70% gh; 30% rbbhc	2	30	1	68	3	905	16029
-KAMP205	KAM	Kalkense meersen	119898	190534	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	665951_v2014	100% rbbhc	1	100	1	68	3	905	11440
 KAMP206	KAM	Kalkense meersen	120041	190179	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	616079_v2014	100% rbbhc	1	100	1	68	3	905	13208
 KAMP207	KAM	Kalkense meersen	119823	189514	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	106806_v2014	90% rbbhc; 10% gh	1	90	1	68	3	905	8922
 KAMP211	KAM	Kalkense meersen	120662	188954	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	449254_v2018	100% rbbhc	1	100	1	68	3	681	42819
@@ -2019,7 +2012,6 @@ LAVP111	LAV	Laanvallei	164775	160525	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	54
 LAVP111	LAV	Laanvallei	164775	160525	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	545848_v2018	90% 91E0_va; 10% 91E0_vc	2	10	1	103	1	6	12067
 LAVP116	LAV	Laanvallei	166143	161471	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	451563_v2018	100% 91E0_va	1	100	1	102	4	262	6047
 LAVP117	LAV	Laanvallei	166187	161429	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	450274_v2018	90% gh; 10% 91E0_va	2	10	1	102	4	262	5924
-LAVP121	LAV	Laanvallei	165770	161242	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	316115_v2016	80% rbbmc; 20% gh	1	80	1	87	2	262	4228
 LAVP132	LAV	Laanvallei	164632	160612	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	318320_v2016	100% rbbmc	1	100	1	87	2	6	1403
 LAVP132	LAV	Laanvallei	164632	160612	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	475026_v2018	50% rbbmr; 30% rbbmc; 20% gh	1	50	1	88	2	6	8984
 LAVP132	LAV	Laanvallei	164632	160612	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	475026_v2018	50% rbbmr; 30% rbbmc; 20% gh	2	30	1	87	2	6	8984
@@ -2157,8 +2149,6 @@ LIEP005	LIE	De Liereman	194041	224914	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	5
 LIEP005	LIE	De Liereman	194041	224914	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	511107_v2018	100% 91E0_vo	1	100	1	106	1	46	1787
 LIEP006	LIE	De Liereman	194060	224920	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	509152_v2018	80% 91E0_vm; 20% 91E0_vo	1	80	1	104	1	46	13591
 LIEP006	LIE	De Liereman	194060	224920	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	509152_v2018	80% 91E0_vm; 20% 91E0_vo	2	20	1	106	1	46	13591
-LIEP006	LIE	De Liereman	194060	224920	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	509152_v2018	80% 91E0_vm; 20% 91E0_vo	1	80	1	104	1	558	27725
-LIEP006	LIE	De Liereman	194060	224920	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	509152_v2018	80% 91E0_vm; 20% 91E0_vo	2	20	1	106	1	558	27725
 LIEP007	LIE	De Liereman	194075	224935	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	509152_v2018	80% 91E0_vm; 20% 91E0_vo	1	80	1	104	1	558	27725
 LIEP007	LIE	De Liereman	194075	224935	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	509152_v2018	80% 91E0_vm; 20% 91E0_vo	2	20	1	106	1	558	27725
 LIEP007	LIE	De Liereman	194075	224935	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	582217_v2018	50% 91E0_vo; 40% rbbsm; 10% gh	1	50	1	106	1	558	2564
@@ -2487,8 +2477,6 @@ MEMP059	MEM	Meetkerkse moeren	64129	212245	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zome
 MEMP059	MEM	Meetkerkse moeren	64129	212245	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	108521_v2014	70% rbbhc; 30% 6430,rbbhf	2	30	0	69	3	513	10180
 MERP002	MER	vallei van 't Merkske	181470	235026	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	582356_v2018	60% rbbhc; 20% 6510_hu; 20% rbbmr	1	60	1	68	3	94	5311
 MERP002	MER	vallei van 't Merkske	181470	235026	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	582356_v2018	60% rbbhc; 20% 6510_hu; 20% rbbmr	3	20	1	88	2	94	5311
-MERP003	MER	vallei van 't Merkske	181458	234973	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	582356_v2018	60% rbbhc; 20% 6510_hu; 20% rbbmr	1	60	1	68	3	94	5311
-MERP003	MER	vallei van 't Merkske	181458	234973	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	582356_v2018	60% rbbhc; 20% 6510_hu; 20% rbbmr	3	20	1	88	2	94	5311
 MERP003	MER	vallei van 't Merkske	181458	234973	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	582356_v2018	60% rbbhc; 20% 6510_hu; 20% rbbmr	1	60	1	68	3	414	8565
 MERP003	MER	vallei van 't Merkske	181458	234973	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	582356_v2018	60% rbbhc; 20% 6510_hu; 20% rbbmr	3	20	1	88	2	414	8565
 MERP004	MER	vallei van 't Merkske	181443	234919	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	582356_v2018	60% rbbhc; 20% 6510_hu; 20% rbbmr	1	60	1	68	3	414	8565
@@ -3025,9 +3013,7 @@ PLAP001	PLA	't Plat	219780	210341	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	47560
 PLAP001	PLA	't Plat	219780	210341	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	551606_v2016	70% 4010; 30% gh	1	70	1	38	3	786	6381
 PLAP001	PLA	't Plat	219780	210341	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	592454_v2016	100% 4010	1	100	1	38	3	786	4655
 PLAP002	PLA	't Plat	219729	210369	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	592454_v2016	100% 4010	1	100	1	38	3	786	4655
-PLAP003	PLA	't Plat	219663	210397	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	541484_v2016	50% gh; 50% rbbsm	2	50	1	41	3	274	1902
 PLAP003	PLA	't Plat	219663	210397	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	541484_v2016	50% gh; 50% rbbsm	2	50	1	41	3	786	54
-PLAP003	PLA	't Plat	219663	210397	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	592454_v2016	100% 4010	1	100	1	38	3	274	4135
 PLAP003	PLA	't Plat	219663	210397	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	592454_v2016	100% 4010	1	100	1	38	3	786	4655
 PLAP004	PLA	't Plat	219618	210380	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	528502_v2016	60% rbbsm; 40% 4010	1	60	1	41	3	786	5630
 PLAP004	PLA	't Plat	219618	210380	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	528502_v2016	60% rbbsm; 40% 4010	2	40	1	38	3	786	5630
@@ -3146,8 +3132,6 @@ RODP012	ROD	Rodebos & Laanvallei	167225	161818	VLD	Gevalideerd	P	Peilbuis/Pi<eb>
 RODP012	ROD	Rodebos & Laanvallei	167225	161818	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	448438_v2018	80% 9120; 10% 9160; 10% 91E0_vc	3	10	1	103	1	262	156711
 RODP016	ROD	Rodebos & Laanvallei	167176	161244	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	622380_v2014	70% rbbhc; 30% rbbmc	1	70	1	68	3	6	4071
 RODP016	ROD	Rodebos & Laanvallei	167176	161244	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	622380_v2014	70% rbbhc; 30% rbbmc	2	30	1	87	2	6	4071
-RODP016	ROD	Rodebos & Laanvallei	167176	161244	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	622380_v2014	70% rbbhc; 30% rbbmc	1	70	1	68	3	262	1721
-RODP016	ROD	Rodebos & Laanvallei	167176	161244	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	622380_v2014	70% rbbhc; 30% rbbmc	2	30	1	87	2	262	1721
 RODP017	ROD	Rodebos & Laanvallei	167272	161168	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	657785_v2014	100% 91E0_va	1	100	1	102	4	6	8140
 RODP019	ROD	Rodebos & Laanvallei	167631	162099	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	325087_v2016	100% 9160	1	100	1	98	4	262	10973
 RODP020	ROD	Rodebos & Laanvallei	167683	162094	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	314701_v2016	60% 9160; 40% 91E0_vc	1	60	1	98	4	262	9995
@@ -3455,9 +3439,7 @@ SHHP003	SHH	Schietveld Houthalen Hechteren	230080	194279	VLD	Gevalideerd	P	Peilb
 SHHP005	SHH	Schietveld Houthalen Hechteren	230159	194154	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	559614_v2014	100% 7140_oli	1	100	1	82	1	978	3269
 SHHP005	SHH	Schietveld Houthalen Hechteren	230159	194154	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	562129_v2014	99% 4010; 1% 7150	1	99	1	38	3	978	7820
 SHHP005	SHH	Schietveld Houthalen Hechteren	230159	194154	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	562129_v2014	99% 4010; 1% 7150	2	1	1	83	3	978	7820
-SHHP006	SHH	Schietveld Houthalen Hechteren	230216	194021	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	559614_v2014	100% 7140_oli	1	100	1	82	1	466	74
 SHHP006	SHH	Schietveld Houthalen Hechteren	230216	194021	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	559614_v2014	100% 7140_oli	1	100	1	82	1	978	3269
-SHHP006	SHH	Schietveld Houthalen Hechteren	230216	194021	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	603164_v2014	100% 7150	1	100	1	83	3	466	181
 SHHP006	SHH	Schietveld Houthalen Hechteren	230216	194021	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	603164_v2014	100% 7150	1	100	1	83	3	978	134
 SHHP007	SHH	Schietveld Houthalen Hechteren	230069	194125	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	562129_v2014	99% 4010; 1% 7150	1	99	1	38	3	978	7820
 SHHP007	SHH	Schietveld Houthalen Hechteren	230069	194125	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	562129_v2014	99% 4010; 1% 7150	2	1	1	83	3	978	7820
@@ -3556,7 +3538,6 @@ SNOP023	SNO	Snoekengracht	183175	169506	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
 SNOP024	SNO	Snoekengracht	183203	169474	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	652159_v2014	70% 91E0_va; 30% 6430,rbbhf	1	70	1	102	4	390	10245
 SNOP024	SNO	Snoekengracht	183203	169474	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	652159_v2014	70% 91E0_va; 30% 6430,rbbhf	2	30	0	69	3	390	10245
 SNOP025	SNO	Snoekengracht	183238	169448	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	643340_v2014	100% 91E0_va	1	100	1	102	4	390	12611
-SNOP025	SNO	Snoekengracht	183238	169448	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	643340_v2014	100% 91E0_va	1	100	1	102	4	838	4396
 SNOP026	SNO	Snoekengracht	183260	169415	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	643340_v2014	100% 91E0_va	1	100	1	102	4	838	4396
 SNOP027	SNO	Snoekengracht	183301	169517	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	652159_v2014	70% 91E0_va; 30% 6430,rbbhf	1	70	1	102	4	390	10245
 SNOP027	SNO	Snoekengracht	183301	169517	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	652159_v2014	70% 91E0_va; 30% 6430,rbbhf	2	30	0	69	3	390	10245
@@ -3567,7 +3548,6 @@ SNOP030	SNO	Snoekengracht	183218	169537	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
 SNOP030	SNO	Snoekengracht	183218	169537	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	652159_v2014	70% 91E0_va; 30% 6430,rbbhf	1	70	1	102	4	390	10245
 SNOP030	SNO	Snoekengracht	183218	169537	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	652159_v2014	70% 91E0_va; 30% 6430,rbbhf	2	30	0	69	3	390	10245
 SNOP031	SNO	Snoekengracht	183313	169446	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	643340_v2014	100% 91E0_va	1	100	1	102	4	390	12611
-SNOP031	SNO	Snoekengracht	183313	169446	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	643340_v2014	100% 91E0_va	1	100	1	102	4	838	4396
 SNOP032	SNO	Snoekengracht	183056	169524	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	625505_v2014	100% 9160	1	100	1	98	4	390	7251
 SNOP033	SNO	Snoekengracht	183103	169551	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	625505_v2014	100% 9160	1	100	1	98	4	390	7251
 SNOP034	SNO	Snoekengracht	182954	169413	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	620859_v2014	60% 6430,rbbhf; 20% rbbmc; 20% gh	1	60	0	69	3	838	21423
@@ -4066,8 +4046,8 @@ UKPP041	UKP	Uitkerkse Polder	62079	221594	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zomet
 UKPP041	UKP	Uitkerkse Polder	62079	221594	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	560040_v2018	70% rbbkam; 30% rbbzil	1	70	1	71	5	437	54667
 UKPP041	UKP	Uitkerkse Polder	62079	221594	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	560040_v2018	70% rbbkam; 30% rbbzil	2	30	1	75	3	437	54667
 VAGP001	VAG	Vagevuurbossen	76051	199094	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	496303_v2018	60% gh; 40% rbbmr	2	40	1	88	2	65	763
-VARP011	VAR	Varenheuvel	169370	207511	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	608103_v2014	70% 6430,rbbhf; 30% rbbmc	1	70	0	69	3	150	15768
-VARP011	VAR	Varenheuvel	169370	207511	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	608103_v2014	70% 6430,rbbhf; 30% rbbmc	2	30	1	87	2	150	15768
+VARP011	VAR	Varenheuvel	169370	207509	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	608103_v2014	70% 6430,rbbhf; 30% rbbmc	1	70	0	69	3	150	15768
+VARP011	VAR	Varenheuvel	169370	207509	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	608103_v2014	70% 6430,rbbhf; 30% rbbmc	2	30	1	87	2	150	15768
 VARP023	VAR	Varenheuvel	170375	207735	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	609241_v2014	100% 6430,rbbhf	1	100	0	69	3	726	9162
 VBEP001	VBE	Vallei van de Bergbeek	75560	208941	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	623866_v2014	70% rbbhc; 30% rbbmc	1	70	1	68	3	961	17462
 VBEP001	VBE	Vallei van de Bergbeek	75560	208941	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	623866_v2014	70% rbbhc; 30% rbbmc	2	30	1	87	2	961	17462
@@ -4298,24 +4278,23 @@ VIEP175	VIE	Vierkensbroek-Demervallei	192932	188775	ENT	Ingegeven	P	Peilbuis/Pi<
 VIEP177	VIE	Vierkensbroek-Demervallei	192624	189818	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	420832_v2018	70% gh; 30% rbbsf	2	30	1	109	3	310	11586
 VIEP177	VIE	Vierkensbroek-Demervallei	192624	189818	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	495867_v2018	100% rbbsf	1	100	1	109	3	310	2096
 VIEP178	VIE	Vierkensbroek-Demervallei	192562	189615	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	560062_v2018	70% gh; 30% rbbhf	2	30	1	69	3	310	4863
-VIEP183	VIE	Vierkensbroek-Demervallei	192105	188193	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	387875_v2018	70% gh; 30% rbbhc	2	30	1	68	3	310	4654
-VIEP184	VIE	Vierkensbroek-Demervallei	192104	188107	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	488798_v2018	70% gh; 30% rbbhc	2	30	1	68	3	310	3219
-VIEP186	VIE	Vierkensbroek-Demervallei	193211	189829	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	1	80	1	69	3	310	5903
-VIEP186	VIE	Vierkensbroek-Demervallei	193211	189829	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	2	10	1	88	2	310	5903
-VIEP186	VIE	Vierkensbroek-Demervallei	193211	189829	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	3	10	1	68	3	310	5903
-VIEP187	VIE	Vierkensbroek-Demervallei	193188	189610	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	495675_v2018	70% rbbhf; 30% rbbmr	1	70	1	69	3	310	2497
-VIEP187	VIE	Vierkensbroek-Demervallei	193188	189610	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	495675_v2018	70% rbbhf; 30% rbbmr	2	30	1	88	2	310	2497
-VIEP190	VIE	Vierkensbroek-Demervallei	193210	188713	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	592919_v2018	95% gh; 5% rbbhc	2	5	1	68	3	310	12927
-VIEP191	VIE	Vierkensbroek-Demervallei	193130	188605	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	592919_v2018	95% gh; 5% rbbhc	2	5	1	68	3	310	12927
-VIEP193	VIE	Vierkensbroek-Demervallei	193200	189728	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	1	80	1	69	3	310	5903
-VIEP193	VIE	Vierkensbroek-Demervallei	193200	189728	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	2	10	1	88	2	310	5903
-VIEP193	VIE	Vierkensbroek-Demervallei	193200	189728	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	3	10	1	68	3	310	5903
-VIEP194	VIE	Vierkensbroek-Demervallei	193198	188977	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	495876_v2018	80% gh; 20% rbbzil	2	20	1	75	3	310	20882
+VIEP183	VIE	Vierkensbroek-Demervallei	192105	188193	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	387875_v2018	70% gh; 30% rbbhc	2	30	1	68	3	310	4654
+VIEP184	VIE	Vierkensbroek-Demervallei	192104	188107	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	488798_v2018	70% gh; 30% rbbhc	2	30	1	68	3	310	3219
+VIEP186	VIE	Vierkensbroek-Demervallei	193211	189829	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	1	80	1	69	3	310	5903
+VIEP186	VIE	Vierkensbroek-Demervallei	193211	189829	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	2	10	1	88	2	310	5903
+VIEP186	VIE	Vierkensbroek-Demervallei	193211	189829	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	3	10	1	68	3	310	5903
+VIEP187	VIE	Vierkensbroek-Demervallei	193188	189610	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	495675_v2018	70% rbbhf; 30% rbbmr	1	70	1	69	3	310	2497
+VIEP187	VIE	Vierkensbroek-Demervallei	193188	189610	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	495675_v2018	70% rbbhf; 30% rbbmr	2	30	1	88	2	310	2497
+VIEP190	VIE	Vierkensbroek-Demervallei	193210	188713	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	592919_v2018	95% gh; 5% rbbhc	2	5	1	68	3	310	12927
+VIEP191	VIE	Vierkensbroek-Demervallei	193130	188605	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	592919_v2018	95% gh; 5% rbbhc	2	5	1	68	3	310	12927
+VIEP193	VIE	Vierkensbroek-Demervallei	193200	189728	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	1	80	1	69	3	310	5903
+VIEP193	VIE	Vierkensbroek-Demervallei	193200	189728	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	2	10	1	88	2	310	5903
+VIEP193	VIE	Vierkensbroek-Demervallei	193200	189728	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	437537_v2018	80% rbbhf; 10% rbbmr; 10% rbbhc	3	10	1	68	3	310	5903
+VIEP194	VIE	Vierkensbroek-Demervallei	193198	188977	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	495876_v2018	80% gh; 20% rbbzil	2	20	1	75	3	310	20882
 VIJP002	VIJ	Vijverbroek	252067	207019	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	455935_v2018	100% rbbmr	1	100	1	88	2	482	2377
 VIJP002	VIJ	Vijverbroek	252067	207019	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	641181_v2014	100% rbbsf	1	100	1	109	3	482	8748
 VIJP003	VIJ	Vijverbroek	252019	207209	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	462340_v2018	100% 91E0_vn	1	100	1	105	3	482	18862
 VIJP006	VIJ	Vijverbroek	251721	207299	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	461887_v2018	70% 91E0_vm; 30% 7140	1	70	1	104	1	482	35509
-VIJP007	VIJ	Vijverbroek	251616	207201	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	461887_v2018	70% 91E0_vm; 30% 7140	1	70	1	104	1	482	35509
 VIJP008	VIJ	Vijverbroek	251729	206879	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	460543_v2018	100% rbbsf	1	100	1	109	3	482	43100
 VIJP009	VIJ	Vijverbroek	251822	206936	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	460543_v2018	100% rbbsf	1	100	1	109	3	482	43100
 VIJP010	VIJ	Vijverbroek	251631	206054	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	644951_v2014	100% 91E0_vn	1	100	1	105	3	482	8723
@@ -4689,12 +4668,12 @@ VOTP061	VOT	Vorsdonkbos-Turfputten	179671	184860	VLD	Gevalideerd	P	Peilbuis/Pi<e
 VOTP061	VOT	Vorsdonkbos-Turfputten	179671	184860	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	620769_v2014	100% rbbhf	1	100	1	69	3	134	6479
 VOTP062	VOT	Vorsdonkbos-Turfputten	179767	185086	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	620684_v2014	70% 6430,rbbhf; 30% 91E0_vn	1	70	0	69	3	134	35607
 VOTP062	VOT	Vorsdonkbos-Turfputten	179767	185086	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	620684_v2014	70% 6430,rbbhf; 30% 91E0_vn	2	30	1	105	3	134	35607
-VOTP075	VOT	Vorsdonkbos-Turfputten	179599	186121	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	641198_v2014	100% 6430,rbbhf,bos	1	100	0	69	3	342	13044
-VOTP084	VOT	Vorsdonkbos-Turfputten	179183	184925	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	603031_v2014	100% 6430,rbbhf	1	100	0	69	3	134	9091
-VOTP084	VOT	Vorsdonkbos-Turfputten	179183	184925	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	636723_v2014	70% 9120; 30% 9160	2	30	1	98	4	134	16250
-VOTP085	VOT	Vorsdonkbos-Turfputten	179071	184760	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	599444_v2014	70% 6230,6410; 30% 7140,rbbms	2	30	0	89	2	134	5601
-VOTP085	VOT	Vorsdonkbos-Turfputten	179071	184760	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	611703_v2014	70% rbbhc; 30% 6410	1	70	1	68	3	134	24629
-VOTP085	VOT	Vorsdonkbos-Turfputten	179071	184760	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	612601_v2014	100% 91E0_vn	1	100	1	105	3	134	9915
+VOTP075	VOT	Vorsdonkbos-Turfputten	179599	186121	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	641198_v2014	100% 6430,rbbhf,bos	1	100	0	69	3	342	13044
+VOTP084	VOT	Vorsdonkbos-Turfputten	179183	184925	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	603031_v2014	100% 6430,rbbhf	1	100	0	69	3	134	9091
+VOTP084	VOT	Vorsdonkbos-Turfputten	179183	184925	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	636723_v2014	70% 9120; 30% 9160	2	30	1	98	4	134	16250
+VOTP085	VOT	Vorsdonkbos-Turfputten	179071	184760	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	599444_v2014	70% 6230,6410; 30% 7140,rbbms	2	30	0	89	2	134	5601
+VOTP085	VOT	Vorsdonkbos-Turfputten	179071	184760	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	611703_v2014	70% rbbhc; 30% 6410	1	70	1	68	3	134	24629
+VOTP085	VOT	Vorsdonkbos-Turfputten	179071	184760	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	612601_v2014	100% 91E0_vn	1	100	1	105	3	134	9915
 VOTP112	VOT	Vorsdonkbos-Turfputten	179014	184678	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	599444_v2014	70% 6230,6410; 30% 7140,rbbms	2	30	0	89	2	134	5601
 VRIP004	VRI	Vrieselhof	166402	212699	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538810_v2018	80% gh; 20% 91E0_va	2	20	1	102	4	918	9892
 VRIP005	VRI	Vrieselhof	166264	212744	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538941_v2018	90% gh; 10% 91E0_va	2	10	1	102	4	918	16575
@@ -4730,8 +4709,6 @@ VRIP050	VRI	Vrieselhof	166850	212917	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	5387
 VRIP050	VRI	Vrieselhof	166850	212917	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	538823_v2018	100% 91E0_vm	1	100	1	104	1	918	13377
 VRLP010	VRL	Viersel	169399	208250	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	481197_v2018	90% rbbhc; 10% 6430_hf	1	90	1	68	3	150	21613
 VRLP010	VRL	Viersel	169399	208250	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	481197_v2018	90% rbbhc; 10% 6430_hf	2	10	1	59	3	150	21613
-VRLP011	VRL	Viersel	169486	208178	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	481197_v2018	90% rbbhc; 10% 6430_hf	1	90	1	68	3	150	21613
-VRLP011	VRL	Viersel	169486	208178	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	481197_v2018	90% rbbhc; 10% 6430_hf	2	10	1	59	3	150	21613
 VRLP011	VRL	Viersel	169486	208178	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	481197_v2018	90% rbbhc; 10% 6430_hf	1	90	1	68	3	726	4113
 VRLP011	VRL	Viersel	169486	208178	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	481197_v2018	90% rbbhc; 10% 6430_hf	2	10	1	59	3	726	4113
 VRLP011	VRL	Viersel	169486	208178	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	481364_v2018	100% rbbmr	1	100	1	88	2	726	1396
@@ -5094,7 +5071,6 @@ WELP002	WEL	Wellemeersen	128313	177464	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	
 WELP002	WEL	Wellemeersen	128313	177464	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	537951_v2018	90% rbbmc; 10% rbbsf	2	10	1	109	3	1017	6691
 WELP002	WEL	Wellemeersen	128313	177464	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	556953_v2018	80% gh; 20% 91E0_vn	2	20	1	105	3	1017	11098
 WELP003	WEL	Wellemeersen	128295	177535	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538011_v2018	100% rbbmc	1	100	1	87	2	1017	13683
-WELP004	WEL	Wellemeersen	128415	177621	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538011_v2018	100% rbbmc	1	100	1	87	2	761	4807
 WELP004	WEL	Wellemeersen	128415	177621	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538011_v2018	100% rbbmc	1	100	1	87	2	1017	13683
 WELP005	WEL	Wellemeersen	128351	177405	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538002_v2018	70% rbbmr; 30% rbbhf	1	70	1	88	2	1017	6843
 WELP005	WEL	Wellemeersen	128351	177405	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538002_v2018	70% rbbmr; 30% rbbhf	2	30	1	69	3	1017	6843
@@ -5120,8 +5096,6 @@ WELP019	WEL	Wellemeersen	128290	177145	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	
 WELP019	WEL	Wellemeersen	128290	177145	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538006_v2018	100% rbbmc	1	100	1	87	2	1017	5799
 WELP020	WEL	Wellemeersen	128401	177063	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	537953_v2018	50% rbbsf; 25% 91E0_vm; 25% 3150	1	50	1	109	3	1017	69091
 WELP020	WEL	Wellemeersen	128401	177063	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	537953_v2018	50% rbbsf; 25% 91E0_vm; 25% 3150	2	25	1	104	1	1017	69091
-WELP022	WEL	Wellemeersen	128519	176887	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	537953_v2018	50% rbbsf; 25% 91E0_vm; 25% 3150	1	50	1	109	3	505	67958
-WELP022	WEL	Wellemeersen	128519	176887	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	537953_v2018	50% rbbsf; 25% 91E0_vm; 25% 3150	2	25	1	104	1	505	67958
 WELP022	WEL	Wellemeersen	128519	176887	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	537953_v2018	50% rbbsf; 25% 91E0_vm; 25% 3150	1	50	1	109	3	1017	69091
 WELP022	WEL	Wellemeersen	128519	176887	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	537953_v2018	50% rbbsf; 25% 91E0_vm; 25% 3150	2	25	1	104	1	1017	69091
 WELP032	WEL	Wellemeersen	128778	176994	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	538021_v2018	100% rbbmc	1	100	1	87	2	505	2547
@@ -5990,7 +5964,6 @@ ZWIP018	ZWI	Zwinduinen en -polders	77034	227933	VLD	Gevalideerd	P	Peilbuis/Pi<eb
 ZWIP018	ZWI	Zwinduinen en -polders	77034	227933	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	645626_v2014	55% 2130_hd; 25% 2190_mp; 20% 2190	2	25	1	22	2	309	6338
 ZWIP024	ZWI	Zwinduinen en -polders	77342	227545	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	639704_v2014	100% 2160	1	100	1	17	4	309	2861
 ZWIP024	ZWI	Zwinduinen en -polders	77342	227545	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	641416_v2014	100% 2160	1	100	1	17	4	309	3300
-ZWIP030	ZWI	Zwinduinen en -polders	79383	227778	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	600999_v2014	100% 2130_hd	1	100	1	15	5	309	53724
 ZWIP030	ZWI	Zwinduinen en -polders	79383	227778	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	600999_v2014	100% 2130_hd	1	100	1	15	5	565	4358
 ZWIP031	ZWI	Zwinduinen en -polders	76684	227984	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	641950_v2014	100% 2160	1	100	1	17	4	309	6845
 ZWIP032	ZWI	Zwinduinen en -polders	77484	227998	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	624715_v2014	60% 2190_mp; 40% 2190	1	60	1	22	2	309	2190
