@@ -8,8 +8,8 @@
   - rasterid
   - patch_id
   - type
-  hash: 7f9a72131acf0a5d449c747b5e9c175c17c26084
-  data_hash: 1e497e58f00336015993f26433ba09154ae9fa63
+  hash: 6ff44d1c5c270b54d5691629fc40b94080236070
+  data_hash: 418d6bbd6fa320de6684a7b976549f2a8f77f77c
 loc_code:
   class: character
 area_code:
@@ -28,9 +28,17 @@ loc_typecode:
   class: character
 loc_typename:
   class: character
+filterdepth:
+  class: numeric
+soilsurf_ost:
+  class: numeric
 polygon_id:
   class: character
 description_orig:
+  class: character
+description:
+  class: character
+source.x:
   class: character
 patch_id:
   class: numeric
@@ -265,22 +273,10 @@ type:
   - 110
   - 111
   ordered: no
-groupnr:
-  class: integer
-rasterid:
-  class: integer
-opp:
-  class: integer
-filterdepth:
-  class: numeric
-soilsurf_ost:
-  class: numeric
-description:
-  class: character
-source.x:
-  class: character
 source.y:
   class: character
+groupnr:
+  class: integer
 typegroup_name:
   class: factor
   labels:
@@ -316,3 +312,7 @@ typegroup_name:
   - 14
   - 15
   ordered: no
+rasterid:
+  class: integer
+opp:
+  class: integer
