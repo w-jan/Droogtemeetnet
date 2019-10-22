@@ -1,0 +1,36 @@
+<!-- #setup -->
+```{r include=FALSE}
+knitr::opts_chunk$set(
+	eval = FALSE,
+	dpi = 300,
+	include = FALSE,
+  cache = TRUE,
+  cache.path = "cache/"	
+)
+# opts_chunk$set(
+#   echo = FALSE,
+#   dpi = 300
+# )
+options(stringsAsFactors = FALSE)
+# library(plyr)
+
+library(stringr)
+library(knitr)
+library(sf)
+library(git2rdata)
+library(lubridate)
+
+# install watina-package branch develop_fv
+# remotes::install_github("inbo/watina",
+#                         ref = "develop_fv")
+library(watina)
+# install n2khab-package
+# remotes::install_github("inbo/n2khab",
+#                         build_opts = c("--no-resave-data", "--no-manual"))
+library(n2khab)
+library(raster)
+library(tmap)
+library(tidyverse)
+library(kableExtra)
+library(knitr)
+```
