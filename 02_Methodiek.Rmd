@@ -58,9 +58,10 @@ Het kan dan zijn dat het bekomen aantal lichtjes hoger uitvalt.
 In dit deel bespreken we hoe we aan de gekozen rastercellen effectief meetpunten kunnen koppelen. 
 Een meetpunt is een locatie waar het waterpeil periodiek gemeten wordt (of zal worden).
 
-#### Indeling van rastercellen in groepen {#indeling-cat}
+We willen de toewijzing van een meetpunt aan een rastercel afhankelijk stellen van de verhouding tussen het aantal meetpunten dat voor een rastercel gezocht wordt (zie hoger) en het aantal effectief beschikbare meetpunten. 
+Afhankelijk van die verhouding worden de _rastercellen_ **per GT-groep** eerst in _categorieën_ ingedeeld.
 
-Afhankelijk van de verhouding tussen het aantal meetpunten dat voor een rastercel gezocht wordt (zie hoger) en het aantal effectief beschikbare meetpunten kunnen de _rastercellen_ **per GT-groep** in _categorieën_ ingedeeld worden.
+#### Indeling van rastercellen in categorieën {#indeling-cat}
 
 _A. Alle meetpunten zijn kwalitatief gelijkwaardig_
 
@@ -71,7 +72,7 @@ Vergelijken we dan vraag (het gewenst aantal meetpunten per rastercel) met het a
 - Cat. 2: de vraag is gelijk aan het aanbod: elk meetpunt wordt geselecteerd
 - Cat. 3: de vraag is kleiner dan het aanbod: er is een overschot aan meetpunten
 
-**Cat. 1**
+**Categorie 1**
 Als er voor een rastercel een gebrek is aan geschikte meetpunten, stellen we voor om die cel te voorzien van een (nieuw) meetpunt gelegen op een plaats met die GT-groep. 
 Het gaat hier vooral over een tijdsinvestering: dergelijke meetpunten kunnen pas na enkele jaren effectief meedraaien in het meetnet. 
 In afwachting daarvan zal het meetnet dus met een kleiner aantal meetpunten moeten functioneren.
@@ -79,7 +80,7 @@ Voor de uitwerking van deze selectie van potentiële geschikte habitatvlekken: z
 
 **_vraag: wat te doen met bestaande meetlocaties, maar die actueel niet voldoen aan de basiscriteria (zie verder bij B)? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**
 
-**Cat. 3**
+**Categorie 3**
 Is er voor een bepaalde rastercel een overschot aan beschikbare meetpunten, dan dienen hieruit één (of meer) meetpunten gekozen te worden. 
 Hiervoor verwijzen we naar \@ref(sel-habvlek)
 
@@ -105,20 +106,20 @@ Voor een meetpunt dat voldoet aan deze criteria kan een gemiddeld lage grondwate
 
 Op basis van de kwaliteit van de tijdreeksen kunnen per GT-groep de rastercellen dan in vier categorieën verdeeld worden.
 
-- Cat. 1A: de vraag is groter dan het aanbod: er is een gebrek aan meetpunten
-- Cat. 1B: de vraag is groter aan het aanbod: er zijn voldoende meetpunten, maar er is een gebrek aan geschikte meetpunten
-- Cat. 2: de vraag is gelijk aan het aanbod: er zijn juist voldoende geschikte meetpunten: elk meetpunt wordt geselecteerd
-- Cat. 3: de vraag is kleiner dan het aanbod: er is een overschot aan geschikte meetpunten
+- **Cat. 1A**: de vraag is groter dan het aanbod: er is een gebrek aan meetpunten
+- **Cat. 1B**: de vraag is groter aan het aanbod: er zijn voldoende meetpunten, maar er is een gebrek aan geschikte meetpunten
+- **Cat. 2**: de vraag is gelijk aan het aanbod: er zijn juist voldoende geschikte meetpunten: elk meetpunt wordt geselecteerd
+- **Cat. 3**: de vraag is kleiner dan het aanbod: er is een overschot aan geschikte meetpunten
 
 Het is belangrijk om weten dat deze categorie-indeling gebeurde op basis van actueel beschikbare feitelijke grondwatermetingen. 
-In het verder verloop gaan we op de peilgegevens van de meetpunten nog een tijdreeksanalyse uitvoeren, waardoor het aantal beschikbare metingen gevoelig kan doen toenemen. 
+In het verder verloop gaan we op de peilgegevens van een aantal meetpunten nog een tijdreeksanalyse uitvoeren, waardoor het aantal beschikbare metingen gevoelig kan doen toenemen. 
 Een meetpunt dat met alleen de feitelijke data ongeschikt is, kan modelmatig zo opgewaardeerd worden en toch geschikt bevonden worden.
 
 Bij rastercellen van cat. 1A is er sowieso een nood aan extra meetpunten. Hoe potentiële geschikte habitatvlekken kunnen geselecteerd worden, wordt in \@ref(sel-pot-habvlek) nader toegelicht.
 
 Bij cat. 1B kunnen rastercellen na de tijdreeksanalyse (zie \@ref(tijdreeksanalyse)) wel over een voldoend aantal geschikte meetpunten gaan beschikken. Zoniet wordt de werkwijze cfr. cat 1A gevolgd.
 
-Bij cat. 2 wordt rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatief onderscheiden te maken zijn (zie \@ref(suppl-criteria)). 
+Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatief onderscheiden te maken zijn (zie \@ref(suppl-criteria)). 
 Met een juist voldoende aantal wordt hier een juist voldoende aantal kwalitatief vergelijkbare meetpunten bedoeld.
 
 Cat. 3 omvat de rastercellen waarbij er meer meetpunten met gelijkwaardige kwaliteit bestaan dan het gewenst aantal meetpunten. 
@@ -153,12 +154,12 @@ Ook hier is het zoeken naar een goed evenwicht tussen het selecteren van goed ge
 
 We stellen volgende drie extra kwaliteitscriteria voor:
 
-* Meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks: 
+1. Meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks: 
 De meetpunten worden hierbij gerangschikt volgens aflopend jaartal van de laatst beschikbare kwalitatief goede tijdreeks. 
 Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren <- 5 ; toelaatbare_spreiding_jaren`** jaar is.
-* Meetpunten met een lange tijdreeks krijgen ook een hogere prioriteit: 
+1. Meetpunten met een lange tijdreeks krijgen ook een hogere prioriteit: 
 Meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks <- 5 ; toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
-* Een meetpunt met een lange tijdreeks, maar niet recent, krijgt een hogere prioriteit dan een meetpunt met een recentere maar kortere tijdreeks.
+1. Een meetpunt met een lange tijdreeks, maar niet recent, krijgt een hogere prioriteit dan een meetpunt met een recentere maar kortere tijdreeks.
 
 Op basis van deze extra criteria kunnen de meetpunten in kwaliteitsklassen worden ingedeeld. 
 
@@ -187,18 +188,22 @@ Voor de tijdreeksanalyse doen we beroep op het computerprogramma Menyanthes [@RN
 Voor het samenstellen van de verklarende reeksen (neerslag en evapotranspiratie) werd beroep gedaan op de data van de meetstations beheerd door KMI, VMM, HIC en KNMI. 
 Voor de waterstandgegevens werd de Watina-databank geraadpleegd. 
 
-De waterreeksen van alle meetpunten die behoren tot cat. 1, 2 en 3 werden geanalyseerd. 
-Van cat. 4 was dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
+De meetreeksen van alle meetpunten die behoren tot cat. 1B en 2 werden geanalyseerd. 
+Van cat. 3 was dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
+Dit was in de veronderstelling dat er steeds minstens één meetreeks weerhouden (zie onder) zou worden.
 
 Een meetreeks werd weerhouden als er een tijdsmodel kon voor samengesteld worden dat minstens 70% van de waargenomen peilen kon verklaren en ook geen significante lineaire trend vertoont. 
 Een tijdsmodel bevat standaard neerslag- en evapotranspiratiedata als verklarende reeksen, maar kan ook aangevuld worden met andere reeksen, bijv. oppervlaktewaterpeilen van een nabijgelegen waterloop. 
-Een lineaire trend werd als **niet-**significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `sd`), voldoet aan de volgende twee regels:
+Een [lineaire trend]{#lintrend} werd als **niet-**significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `sd`), voldoet aan de volgende twee regels:
 
 $$trend - 2* sd \leq 1(cm/jaar)$$ 
 en 
 $$trend + 2* sd \geq -1(cm/jaar)$$
 
-
+Het al dan niet weerhouden van een tijdreeks kan gevolgen hebben voor de categorie-indeling van een rastercel. 
+Voor een rastercel kunnen immers na een tijdreeksanalyse meer of ook minder peilbuizen geschikt zijn. 
+Daarom voeren we na de tijdreeksanalyse de categorisering nog een tweede keer uit, waarbij met de uitkomst van de tijdreeksanalyse rekening wordt gehouden. **_of kiezen we de peilbuis met het beste model ?_** 
+De categorie 1B komt bij deze analyse dan te vervallen.
 
 
 <!-- [^3]: KWR & Waterware (2018). Menyanthes, versie 3.x.b.w.  -->

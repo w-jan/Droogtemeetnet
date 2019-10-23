@@ -559,7 +559,7 @@ sel_cat1A_table <- sel_cat1A_raster %>%
 sel_cat1B_raster <- sel_raster_pb %>%
   left_join(sel_cat1A_table %>%
               select(-gewenst_aantal_meetpunten, -totaal_peilbuizen,
-                     -n_tubes_lgl),
+                     -n_tubes_lgl, -opp_gw_cel),
             by = c("rasterid", "groupnr")) %>%
   mutate(aantal_cat1A = replace_na(aantal_cat1A,0),
          rest = gew_aantal_meetptn - aantal_cat1A) %>%
@@ -573,7 +573,7 @@ sel_cat1B_table <- sel_cat1B_raster %>%
   st_drop_geometry() %>% 
   arrange(rasterid)
 
-tubes_group1B <- 
+tubes_cat1B <- 
   sel_cat1B_raster %>% 
   inner_join(tubes_in_raster, 
              by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
@@ -582,12 +582,12 @@ tubes_group1B <-
   st_drop_geometry() %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(), -xg3_variable,
-         -starts_with("loc_v"), -starts_with("loc_t"), -opp_gw_cel) %>% 
+         -starts_with("loc_v"), -starts_with("loc_t")) %>% 
   arrange(rasterid, groupnr, desc(nryears))
 
-tubes_group1B %>% distinct(rasterid, groupnr)
+tubes_cat1B %>% distinct(rasterid, groupnr)
 
-head(tubes_group1B, 10)
+head(tubes_cat1B, 10)
 
 
 toelaatbare_spreiding_jaren <- 5
@@ -633,7 +633,7 @@ sel_qual <-
   arrange(rasterid, groupnr,rankclus_temp) %>% 
   ungroup() %>% 
   group_by(rasterid, groupnr) %>% 
-  mutate(rankclus = min_rank(rankclus_temp)) %>% 
+  mutate(rankclus = dense_rank(rankclus_temp)) %>% 
   group_by(rasterid, groupnr, rest_aantal_meetptn, rankclus, rankclus_lastyear, rankclus_nryears) %>% 
   summarise(beschikbaar_aantal_cluster = sum(n)) %>% 
   ungroup 
@@ -703,17 +703,65 @@ sel_raster_cat2 <- sel_raster_pb %>%
   arrange(rasterid, groupnr)
 
 # de bijhorende geselecteerde Watina-meetpunten zijn dan
-tubes_group3 <- 
+tubes_group2 <- 
   tubes_in_raster %>% 
   inner_join(tubes_lg3_eval %>% 
                select(loc_code, ser_lastyear, ser_nryears), 
              by = "loc_code") %>% 
   inner_join(sel_sufficient_lgl  %>% 
                inner_join(sel_qual_basis %>% 
-                            select(-gew_aantal_meetptn), 
+                            select(-rest_aantal_meetptn), 
                           by =  c("rasterid","groupnr","rankclus_lastyear", "rankclus_nryears" )), 
              by = c("rasterid", "groupnr", "ser_lastyear", "ser_nryears"))
 
 
-write_vc(tubes_group3, file.path(".","data","tubes_group3"), sorting = c("loc_code"),
+write_vc(tubes_group2, file.path(".","data","tubes_group2"), sorting = c("loc_code"),
          strict =  FALSE, root = ".")
+
+sel_cat2_table <- 
+  sel_qual %>% 
+  filter(rankclus <= maxrank ) %>% 
+  group_by(rasterid, groupnr, rest_aantal_meetptn) %>% 
+  summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
+  ungroup %>% 
+  inner_join(sel_qual) %>% 
+  filter(beschikbaar_aantal == rest_aantal_meetptn, rankclus <= maxrank) %>% 
+  select(-beschikbaar_aantal, -maxrank)
+
+sel_cat2_raster <- sel_raster_pb %>% 
+  semi_join(sel_cat2_table) %>% 
+  arrange(rasterid, groupnr)
+
+tubes_cat2 <- 
+  tubes_in_raster %>% 
+  inner_join(tubes_lgl_eval %>% 
+               select(loc_code, ser_firstyear, ser_lastyear, ser_nryears, ser_length), 
+             by = "loc_code") %>% 
+  inner_join(sel_cat2_table  %>% 
+               inner_join(sel_qual_basis %>% 
+                            select(-rest_aantal_meetptn), 
+                          by =  c("rasterid","groupnr","rankclus_lastyear", "rankclus_nryears" )), 
+             by = c("rasterid", "groupnr", "ser_lastyear", "ser_nryears"))
+
+sel_cat3_raster <- 
+  sel_raster_meetnetB %>% 
+  anti_join(sel_cat1A_raster %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr"))  %>% 
+  anti_join(sel_cat1B_raster %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr"))  %>% 
+  anti_join(sel_cat2_raster %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr")) %>% 
+  arrange(rasterid, groupnr)
+
+sel_excess_lgl <- 
+  sel_qual %>% 
+  filter(rankclus <= maxrank ) %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
+  ungroup %>% 
+  inner_join(sel_qual ) %>% 
+  filter(beschikbaar_aantal > gew_aantal_meetptn, rankclus <= maxrank) %>% 
+  select(-beschikbaar_aantal, -maxrank) 

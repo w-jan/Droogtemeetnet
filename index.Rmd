@@ -27,6 +27,7 @@ output:
     toc_float:
       collapsed: FALSE
       smooth_scroll: FALSE
+    toc_depth: 4
     includes:
         in_header: header.html
   # bookdown::pdf_document2:
