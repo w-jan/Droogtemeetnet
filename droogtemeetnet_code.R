@@ -229,6 +229,29 @@ sel_raster_meetnet <-
              by =  c("rasterid", "groupnr")) %>% 
   rename(gew_aantal_meetptn = gew_aantal_meetptn_afgerond)
 
+
+sel_raster_meetnetB <- 
+  sel_raster_meetnet  %>% 
+  group_by(rasterid, groupnr, opp_gw_cel, gew_aantal_meetptn) %>% 
+  summarise (temp = n()) %>% 
+  ungroup %>% 
+  select (-temp)
+  
+sel_raster_meetnetB <- lwgeom::st_make_valid(sel_raster_meetnetB)
+
+sel_raster_pb <- 
+  sel_raster_meetnetB %>% 
+  inner_join(tubes_in_raster, 
+             by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
+  left_join(tubes_lgl_eval, 
+            by = "loc_code") %>% # aanduiding van pb met een lgl
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  summarise(n_tubes = n(),
+            n_tubes_lgl = sum(!is.na(series) & str_ends(series, "1"))) %>% 
+  ungroup %>% 
+  select(-geom, geom)
+
+
 sel_raster_meetnet <- lwgeom::st_make_valid(sel_raster_meetnet)
 #st_is_valid(raster_meetnet_poly)
 
@@ -353,28 +376,28 @@ sel_no_tube <- sel_raster_meetnet %>%
 #eerste groep rastercellen: rastercellen zonder peilbuis
 sel_cat1A_raster <- sel_no_tube
 
-sel_cat1_table <- sel_cat1A_raster %>% 
+sel_cat1A_table <- sel_cat1A_raster %>% 
   st_drop_geometry() %>% 
   group_by(rasterid, groupnr) %>% 
   summarise(gewenst_aantal_meetpunten = sum(gew_aantal_meetptn)) %>% 
   arrange(rasterid)
 
-sel_cat1_table %>%
+sel_cat1A_table %>%
   group_by(groupnr ) %>% 
   summarise('aantal cellen zonder peilbuis' = n(),
             'aantal locaties zonder pb' =  sum(gewenst_aantal_meetpunten ))
 
-sel_cat1_table %>%
+sel_cat1A_table %>%
   group_by(groupnr ) %>% 
   summarise('aantal cellen zonder peilbuis' = n())
 
-sel_cat1_tm <- raster_meetnet_poly_tm + 
+sel_cat1A_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat1A_raster) + 
   tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE) + tm_layout(title = "cat.1: cel zonder peilbuis" )
 
-sel_cat1_tm
+sel_cat1A_tm
 
-sum(sel_cat1_table $gewenst_aantal_meetpunten)
+sum(sel_cat1A_table $gewenst_aantal_meetpunten)
 
 watina <- DBI::dbConnect(odbc::odbc(),
                          driver = "SQL Server",
@@ -449,7 +472,7 @@ sel_cat1A_raster <- sel_no_tube
 
 
 sel_raster_pb <- 
-  sel_raster_meetnet %>% 
+  sel_raster_meetnetB %>% 
   inner_join(tubes_in_raster, 
              by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
   left_join(tubes_lgl_eval, 
@@ -474,3 +497,223 @@ sel_raster_toolittle_lgl <- sel_raster_pb %>%
 sel_cat1B <- sel_raster_pb %>% 
   filter(n_tubes_lgl < gew_aantal_meetptn)
   
+
+sel_cat1B_rasterA <- sel_raster_pb %>% 
+  filter(n_tubes_lgl < gew_aantal_meetptn)
+
+sel_cat1B_rasterB <- sel_raster_meetnet %>% 
+  semi_join(sel_raster_toolittle_lgl %>% 
+              st_drop_geometry()) %>% 
+  arrange(rasterid, groupnr)
+
+test <- sel_cat1B_rasterB %>% st_drop_geometry() %>% anti_join(sel_cat1B_rasterA %>% st_drop_geometry(), by = c("rasterid", "groupnr"))
+
+sel_cat1B_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat1B_rasterA) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE) + tm_layout(title = "cat.1B: cel zonder peilbuis" )
+
+
+test <- sel_raster_meetnet %>% st_drop_geometry() %>% anti_join(sel_raster_pb%>% st_drop_geometry(), by = c("rasterid", "groupnr"))
+
+test2 <- test %>% anti_join(sel_no_tube%>% st_drop_geometry(), by = c("rasterid", "groupnr"))
+
+sel_cat1B_tm
+
+sel_cat1B_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat1B_rasterB) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE) + tm_layout(title = "cat.1B: cel zonder peilbuis" )
+
+sel_cat1B_tm
+
+sel_cat1A_rasterB <- sel_raster_meetnet %>% 
+  left_join(sel_raster_pb %>% 
+              st_drop_geometry()%>% 
+              select(-gew_aantal_meetptn),
+            by = c("rasterid", "groupnr")) %>% 
+  filter(is.na(n_tubes) | gew_aantal_meetptn > n_tubes)
+
+sel_cat1A_rasterC <- sel_raster_meetnetB %>% 
+  left_join(sel_raster_pb %>% 
+              st_drop_geometry() %>% 
+              select(-gew_aantal_meetptn),
+            by = c("rasterid", "groupnr")) %>% 
+  filter(is.na(n_tubes) | gew_aantal_meetptn > n_tubes)%>% 
+  arrange(rasterid, groupnr)
+
+sel_cat1A_raster <- sel_raster_meetnetB %>% 
+  left_join(sel_raster_pb %>% 
+              st_drop_geometry() %>% 
+              select(-gew_aantal_meetptn),
+            by = c("rasterid", "groupnr")) %>% 
+  filter(is.na(n_tubes) | gew_aantal_meetptn > n_tubes)%>% 
+  arrange(rasterid, groupnr)
+
+sel_cat1A_table <- sel_cat1A_raster %>% 
+  st_drop_geometry() %>% 
+  rename(gewenst_aantal_meetpunten = gew_aantal_meetptn) %>% 
+  mutate(totaal_peilbuizen =  replace_na(n_tubes,0),
+         aantal_cat1A = gewenst_aantal_meetpunten - totaal_peilbuizen) %>% 
+  select (- n_tubes) %>% 
+  arrange(rasterid)
+
+sel_cat1B_raster <- sel_raster_pb %>%
+  left_join(sel_cat1A_table %>%
+              select(-gewenst_aantal_meetpunten, -totaal_peilbuizen,
+                     -n_tubes_lgl),
+            by = c("rasterid", "groupnr")) %>%
+  mutate(aantal_cat1A = replace_na(aantal_cat1A,0),
+         rest = gew_aantal_meetptn - aantal_cat1A) %>%
+  filter(rest - n_tubes_lgl > 0 ) %>%
+  mutate(aantal_cat1B = rest - n_tubes_lgl) %>%
+  select(-geom, -rest, geom)
+
+
+
+sel_cat1B_table <- sel_cat1B_raster %>% 
+  st_drop_geometry() %>% 
+  arrange(rasterid)
+
+tubes_group1B <- 
+  sel_cat1B_raster %>% 
+  inner_join(tubes_in_raster, 
+             by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
+  inner_join(tubes_lg3_avail, 
+             by = "loc_code") %>% # aanduiding van pb lg3, geen lgl
+  st_drop_geometry() %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(), -xg3_variable,
+         -starts_with("loc_v"), -starts_with("loc_t"), -opp_gw_cel) %>% 
+  arrange(rasterid, groupnr, desc(nryears))
+
+tubes_group1B %>% distinct(rasterid, groupnr)
+
+head(tubes_group1B, 10)
+
+
+toelaatbare_spreiding_jaren <- 5
+toelaatbaar_verschil_lengte_tijdreeks <- 5
+#clusteren meetpunten binnen een rastercel obv lengte tijdreeks en obv laatste meetjaar
+sel_qual_basis <- 
+  sel_raster_pb %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  st_drop_geometry() %>% 
+  left_join(sel_cat1A_table %>% 
+              select(rasterid, groupnr, aantal_cat1A), 
+            by = c("rasterid", "groupnr")) %>%
+  left_join(sel_cat1B_table %>% 
+              select(rasterid, groupnr, aantal_cat1B), 
+            by = c("rasterid", "groupnr")) %>%
+  inner_join(tubes_in_raster, 
+             by =  c("rasterid", "groupnr")) %>% 
+  distinct(rasterid, groupnr, gew_aantal_meetptn, loc_code, aantal_cat1A, aantal_cat1B) %>% 
+  inner_join(tubes_lgl_eval, 
+             by = "loc_code") %>% 
+  mutate(aantal_cat1A = replace_na(aantal_cat1A,0),
+         aantal_cat1B = replace_na(aantal_cat1B,0)) %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn, aantal_cat1A, aantal_cat1B) %>% 
+  count(ser_lastyear, ser_nryears)  %>% 
+  ungroup() %>% 
+  mutate(rest_aantal_meetptn = gew_aantal_meetptn - aantal_cat1A - aantal_cat1B)
+
+sel_qual_basis <- 
+  sel_qual_basis %>% 
+  group_by(rasterid, groupnr) %>% 
+  arrange(rasterid, groupnr, rest_aantal_meetptn, desc(ser_lastyear)) %>% 
+  mutate(rankclus_lastyear = 
+           floor((cummax(ser_lastyear) - ser_lastyear)/toelaatbare_spreiding_jaren) + 1) %>% 
+  arrange(rasterid, groupnr, rest_aantal_meetptn, desc(ser_nryears)) %>% 
+  mutate(rankclus_nryears = 
+           floor((cummax(ser_nryears) - ser_nryears)/toelaatbaar_verschil_lengte_tijdreeks) + 1) %>% 
+  ungroup()
+
+sel_qual <- 
+  sel_qual_basis %>% 
+  group_by(rasterid, groupnr, rest_aantal_meetptn, rankclus_lastyear, rankclus_nryears) %>% 
+  mutate(rankclus_temp = as.integer(paste0(rankclus_lastyear,rankclus_nryears))) %>% 
+  arrange(rasterid, groupnr,rankclus_temp) %>% 
+  ungroup() %>% 
+  group_by(rasterid, groupnr) %>% 
+  mutate(rankclus = min_rank(rankclus_temp)) %>% 
+  group_by(rasterid, groupnr, rest_aantal_meetptn, rankclus, rankclus_lastyear, rankclus_nryears) %>% 
+  summarise(beschikbaar_aantal_cluster = sum(n)) %>% 
+  ungroup 
+
+# functie om de rang te bepalen die nodig is om tot het gewenst aantal meetpunten te komen
+
+max_rank <-  function(x) {
+  # x <- sel_qual_test %>% filter (rasterid == 134, groupnr == 4)
+  clusters <- unique(x$rankclus) 
+  gewenst_aantal <- x[1,"rest_aantal_meetptn"] %>%
+    as.integer()
+  beschikbaar_aantal <- 0
+  einde <- 0
+  
+  
+  for (i in clusters) {
+    # i <- 1
+    rank <- as.integer(i)
+    beschikbaar_aantal_rank <-  x[1,"beschikbaar_aantal_cluster"] %>%
+      as.integer()
+    if (gewenst_aantal <= (beschikbaar_aantal_rank + beschikbaar_aantal) & einde == 0) {
+      maxrank <- rank
+      einde <- 1
+    } else {
+      beschikbaar_aantal <- beschikbaar_aantal_rank + beschikbaar_aantal
+    }  
+  }
+  return(maxrank)
+}
+
+# check <- sel_qual_lastyear_vb %>% 
+#   filter(rasterid == 134, groupnr == 4)
+
+#test
+# sel_qual_lastyear <- sel_qual_lastyear %>%
+#   mutate(gew_aantal_meetptn = case_when(
+#     rasterid == 198 & groupnr == 4 ~ 6,
+#     TRUE ~ gew_aantal_meetptn
+#   ))
+
+sel_qual_test <- sel_qual %>%
+  mutate(gew_aantal_meetptn = case_when(
+    rasterid == 134 & groupnr == 4  ~ 5,
+    TRUE ~ gew_aantal_meetptn
+  ))
+
+sel_qual_maxrank <- plyr::ddply(sel_qual, ~rasterid+groupnr, max_rank) %>%
+  rename(maxrank = V1)
+
+sel_qual <- sel_qual %>%
+  inner_join(sel_qual_maxrank, 
+             by = c("rasterid", "groupnr"))
+
+# rastercellen met een juist voldoende aantal evenwaardige meetpunten dat gewenst is voor het meetnet
+sel_sufficient_lgl <- 
+  sel_qual %>% 
+  filter(rankclus <= maxrank ) %>% 
+  group_by(rasterid, groupnr, rest_aantal_meetptn) %>% 
+  summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
+  ungroup %>% 
+  inner_join(sel_qual) %>% 
+  filter(beschikbaar_aantal == rest_aantal_meetptn, rankclus <= maxrank) %>% 
+  select(-beschikbaar_aantal, -maxrank)
+
+sel_raster_cat2 <- sel_raster_pb %>% 
+  semi_join(sel_sufficient_lgl) %>% 
+  arrange(rasterid, groupnr)
+
+# de bijhorende geselecteerde Watina-meetpunten zijn dan
+tubes_group3 <- 
+  tubes_in_raster %>% 
+  inner_join(tubes_lg3_eval %>% 
+               select(loc_code, ser_lastyear, ser_nryears), 
+             by = "loc_code") %>% 
+  inner_join(sel_sufficient_lgl  %>% 
+               inner_join(sel_qual_basis %>% 
+                            select(-gew_aantal_meetptn), 
+                          by =  c("rasterid","groupnr","rankclus_lastyear", "rankclus_nryears" )), 
+             by = c("rasterid", "groupnr", "ser_lastyear", "ser_nryears"))
+
+
+write_vc(tubes_group3, file.path(".","data","tubes_group3"), sorting = c("loc_code"),
+         strict =  FALSE, root = ".")

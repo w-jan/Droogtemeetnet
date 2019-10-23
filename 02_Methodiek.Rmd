@@ -77,7 +77,7 @@ Het gaat hier vooral over een tijdsinvestering: dergelijke meetpunten kunnen pas
 In afwachting daarvan zal het meetnet dus met een kleiner aantal meetpunten moeten functioneren.
 Voor de uitwerking van deze selectie van potentiële geschikte habitatvlekken: zie \@ref(sel-pot-habvlek)
 
-**_vraag: wat te doen met bestaande meetlocaties, maar die actueel niet voldoen aan de basiscriteria (zie verder bij B)? Worden deze weer geactiveerd of geven we voorrang aan de ruimtelijke balans ?_**
+**_vraag: wat te doen met bestaande meetlocaties, maar die actueel niet voldoen aan de basiscriteria (zie verder bij B)? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**
 
 **Cat. 3**
 Is er voor een bepaalde rastercel een overschot aan beschikbare meetpunten, dan dienen hieruit één (of meer) meetpunten gekozen te worden. 
@@ -144,7 +144,7 @@ Het/de meetpunt(en) gelegen in de deelrastercel(len) met het /de laagste rangnum
 
 #### Opstellen van bijkomende kwaliteitscriteria voor meetpunten {#suppl-criteria}
 
-Bij cat. 4 en vaak ook bij cat. 3 zijn er meer meetpunten die aan de basiskwaliteitscriteria ([zie](#basiskwaliteitscriteria)) voldoen dan dat er punten gezocht worden. 
+Bij cat. 3 en vaak ook bij cat. 2 zijn er meer meetpunten die aan de basiskwaliteitscriteria ([zie](#basiskwaliteitscriteria)) voldoen dan dat er punten gezocht worden. 
 Deze basiscriteria zijn nog behoorlijk ruim. 
 Bijvoorbeeld een droogte-indicator baseren op een tijdreeks van een meetpunt waar 'slechts' 5 jaar tussen 2001 en 2006 gemeten werd, is vermoedelijk minder betrouwbaar een punt met een tijdreeks van 10 jaar of langer en dat actueel nog bemeten is. 
 
@@ -154,15 +154,16 @@ Ook hier is het zoeken naar een goed evenwicht tussen het selecteren van goed ge
 We stellen volgende drie extra kwaliteitscriteria voor:
 
 * Meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks: 
-Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan 5 jaar is. 
+De meetpunten worden hierbij gerangschikt volgens aflopend jaartal van de laatst beschikbare kwalitatief goede tijdreeks. 
+Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren <- 5 ; toelaatbare_spreiding_jaren`** jaar is.
 * Meetpunten met een lange tijdreeks krijgen ook een hogere prioriteit: 
-Meetpunten waarvan de lengte van de tijdreeks niet meer dan 5 jaar van elkaar verschillen, worden als evenwaardig beschouwd.
+Meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks <- 5 ; toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
 * Een meetpunt met een lange tijdreeks, maar niet recent, krijgt een hogere prioriteit dan een meetpunt met een recentere maar kortere tijdreeks.
 
 Op basis van deze extra criteria kunnen de meetpunten in kwaliteitsklassen worden ingedeeld. 
 
 Onder 'juist voldoende' wordt hier dan verstaan dat het gewenst aantal overeenstemt met de som van één _of meer_ van de aantallen van een kwaliteitsklasse. 
-Stemt dit niet overeen dan wordt de rastercel tot groep 4 gerekend: er wordt dan enkel op de meetpunten die behoren tot de klasse met een overschot aan punten een ruimtelijke selectie zoals beschreven onder A toegepast. 
+Stemt dit niet overeen dan wordt de rastercel tot cat. 3 gerekend: er wordt dan enkel op de meetpunten die behoren tot de klasse met een overschot aan punten een ruimtelijke selectie zoals beschreven onder A toegepast. 
 
 
 ### Tijdreeksanalyse {#tijdreeksanalyse}
