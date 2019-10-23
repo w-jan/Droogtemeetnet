@@ -1,0 +1,90 @@
+..generic:
+  git2rdata: '0.1'
+  optimize: yes
+  NA string: NA
+  sorting: loc_code
+  hash: 6add0a65b6497cd0910e36146412800083e5d4f2
+  data_hash: a2bc74fd6d2a815efec01fc27d655e2dd122f0c0
+loc_code:
+  class: character
+area_code:
+  class: character
+area_name:
+  class: character
+x:
+  class: numeric
+'y':
+  class: numeric
+loc_validitycode:
+  class: character
+loc_validity:
+  class: character
+loc_typecode:
+  class: character
+loc_typename:
+  class: character
+groupnr:
+  class: integer
+typegroup_name:
+  class: factor
+  labels:
+  - zeer gevoelige niet-bostypes
+  - gevoelige niet-bostypes
+  - minder tot niet gevoelige niet-bostypes
+  - zeer gevoelige bostypes
+  - gevoelige bostypes
+  - minder tot niet gevoelige bostypes
+  - types van oligotroof milieu
+  - types van mesotroof milieu
+  - types van zwak eutroof milieu
+  - types van matig eutroof tot eutroof milieu
+  - types van zeer nat milieu
+  - types van nat milieu
+  - types van matig nat milieu
+  - types van vochtig milieu
+  - types van droog milieu
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  ordered: no
+rasterid:
+  class: integer
+ser_firstyear:
+  class: numeric
+ser_lastyear:
+  class: numeric
+ser_nryears:
+  class: integer
+ser_length:
+  class: numeric
+rest_aantal_meetptn:
+  class: numeric
+rankclus:
+  class: integer
+rankclus_lastyear:
+  class: numeric
+rankclus_nryears:
+  class: numeric
+beschikbaar_aantal_cluster:
+  class: integer
+gew_aantal_meetptn:
+  class: numeric
+aantal_cat1A:
+  class: numeric
+aantal_cat1B:
+  class: numeric
+'n':
+  class: integer
