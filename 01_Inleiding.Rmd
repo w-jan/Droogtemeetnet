@@ -40,7 +40,8 @@ kable(gw_types %>%
 ```
   
 
-Een ruimtelijk gebalanceerde set maakt het mogelijk om op basis van een beperkt aantal punten conclusies te trekken die representatief zijn voor heel het studiegebied.
+Een min of meer ruimtelijk gebalanceerde set van bestaande meetlocaties maakt het mogelijk om conclusies te trekken die benaderend representatief zijn voor heel het studiegebied.
+Via deze benadering wordt ook een goede synergie bekomen met de implementatie van de zg. 'overgangsfase' van het grondwatermeetnet in MNM [@vanderhaeghe_meetnetten_2018: hoofdstuk 6].
 
 Er wordt met dit meetnet niet beoogd om specifiek voor elke gaHT te bepalen of het aan droogte onderhevig is. Het meetnet wil een globale uitspraak faciliteren.
 Hierbij achten we het belangrijk om rekening te houden met de mogelijke verschillen in responstijd ('hoe snel laat een neerslagtekort zich voelen in een wijziging van het grondwaterpeil') op droogte. De responstijd is onder meer afhankelijk van de landschappelijke positie. Vegetaties die voorkomen in lokaal met grondwatergevoede systemen zullen sneller een droogte gewaar worden, dan vegetaties die gebonden zijn aan (regionale) systemen met een permanente aanvoer van grondwater.
