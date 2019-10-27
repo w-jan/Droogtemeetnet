@@ -25,6 +25,8 @@ Deze wordt bepaald door de ingeschatte grootte van het meetnet en door de trefka
 Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans kan zijn, omdat men minder vrij is om een locatie te kiezen, maar ook hoe kleiner de kans is om daar een geschikt meetpunt aan te treffen. 
 Hier is het dus wat zoeken naar een goede maat. 
 Concreet:  
+    - We maken gebruik van een set gekoppelde GRTS-rasters op verschillende resolutie ([GRTSmh_diffres](https://doi.org/10.5281/zenodo.3354405)) die zijn afgeleid van het basisraster 'GRTSmaster_habitats' ([link](https://doi.org/10.5281/zenodo.2682323)).
+Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetnet biotische habitatkwaliteit.
     - Voor het meetnet kiezen we voor 8km-hokken (8192 m, level 8). In totaal zijn er 262 hokken in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
     - Het gewenst totaal aantal meetpunten **_(nog te beslissen)_** = `r tot_n_tub <- 100; tot_n_tub `  
 
@@ -129,7 +131,8 @@ Voor deze laatste groep zal nog een ruimtelijke selectie (zie \@ref(sel-habvlek)
 #### Selecteren van potentiële geschikte habitatvlekken voor rastercellen waarvoor nu geen pb’en bestaan (cat. 1) {#sel-pot-habvlek}
 
 Voor rastercellen van cat. 1 is er een nood aan één of meer extra meetpunten.
-Om hierbinnen (8192 * 8192 m) de plaatskeuze zo aselect mogelijk te doen, doen we beroep op het fijnste GRTS-raster (celgrootte = 32 m). 
+Om hierbinnen (8192 * 8192 m) de plaatskeuze zo aselect mogelijk te doen, doen we beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m). 
+Opnieuw wordt op deze manier een synergie bekomen met de aselecte locatiekeuzes in MNM.
 Elk deelrastercel heeft binnen de rastercel een bepaalde rangnummer. 
 Alleen deelrastercellen _die voor het merendeel vegetaties bevat die tot de GT-groep behoren_ komen voor selectie in aanmerking. 
 De deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden. 
@@ -139,7 +142,7 @@ Blijkt bij inspectie op terrein dat de geselecteerde plaats toch niet aan de ver
 
 #### Selecteren van meetlocaties binnen rastercellen waarvoor meer kandidaat locaties zijn dan gezocht (cat. 3) {#sel-habvlek}
 
-Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen (zie \@ref(sel-pot-habvlek)). We doen hiervoor terug beroep op het fijnste GRTS-raster (celgrootte = 32 m).
+Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen (zie \@ref(sel-pot-habvlek)). We doen hiervoor terug beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m).
 Het/de meetpunt(en) gelegen in de deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden.
 
 
