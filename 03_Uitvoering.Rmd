@@ -68,9 +68,9 @@ habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm +
   tm_layout(title = "Voorkomen GT-groepen" )
 
 # interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
-tmap_mode("view")
+# tmap_mode("view")
 # statische modus, dus niet inzoombaar
-tmap_mode("plot")
+# tmap_mode("plot")
 
 habmap_gw_raster_overlay_tm
 ```
@@ -136,12 +136,13 @@ kable(raster_gw_opp %>%
 ```
 
 ###Berekening gemiddelde benodigde oppervlakte van een GT-groep per meetpunt
+
 We gaan hier uit van de keuze voor een gelijke verdeling van de meetpunten over de strata (= GT-groepen), namelijk we wensen `r minaantal_tub_group` meetpunten per GT-groep.
-We kennen de totale oppervlakte van een GT-groep, de oppervlakte van een GT-groep in elke rastercel en hoeveel meetpunten per GT-groep er gewenst zijn. 
+We kennen de totale oppervlakte van een GT-groep, de oppervlakte van een GT-groep in elke rastercel en hoeveel meetpunten er per GT-groep gewenst zijn. 
 Deze gegevens maken volgende berekeningen mogelijk : 
 
-- de minimaal nodige oppervlakte per GT-groep en per meetpunt (tabel \@ref(tab:gemiddelde-oppervlakte-per-GTgroep)); 
-- het gewenst aantal meetpunten per rastercel (tabel \@ref(tab:gewenst-aantal-meetpunten-per-raster))
+- de minimaal nodige oppervlakte per meetpunt in een GT-groep (tabel \@ref(tab:gemiddelde-oppervlakte-per-GTgroep)); 
+- het gewenste aantal meetpunten per rastercel (tabel \@ref(tab:gewenst-aantal-meetpunten-per-raster))
 
 Voor dit laatste wordt een iteratie uitgevoerd, zoals beschreven in \@ref(ruimte-sel-raster).
 
@@ -257,7 +258,7 @@ aantal_meetpunten_cel <- aantal_meetpunten_cel %>%
 # df
 kable(aantal_meetpunten_cel %>% 
         select(-gew_aantal_meetptn) %>% 
-        rename(rasternr = rasterid,
+        rename(rastercelnr = rasterid,
                GTgroep = groupnr,
                "GToppervl. in cel" = opp_gw_cel,
                "GToppervl. totaal" = opp_gw,
@@ -283,9 +284,9 @@ kable(aantal_meetpunten_cel %>%
 
 Tabel (\@ref(tab:overzicht-perGT-gewenst-aantal-meetpunten)) geeft een overzicht van het totaal aantal gewenste meetpunten. 
 Door de uitgevoerde iteratie en afronding kan dit aantal hoger zijn dan het vooropgestelde aantal.
-Enkel bij GT-groep 1 is het opp-gerelateerd aantal meetpunten hoger dan het vereiste aantal. 
+Enkel bij GT-groep 1 is het oppervlaktegerelateerd aantal meetpunten hoger dan het vereiste aantal. 
 Dit kan nog in een latere fase worden bijgesteld.
-Voor de overige GT-groepen stemmen de aantallen overeen met het vooropgesteld aantal.
+Voor de overige GT-groepen stemmen de aantallen overeen met het vooropgestelde aantal.
 
 ```{r overzicht-perGT-gewenst-aantal-meetpunten, eval= TRUE, include= TRUE, echo= FALSE}
 
@@ -431,7 +432,7 @@ De meetpunten van dit meetnet zullen ook in de Watina-databank worden opgenomen.
 
 De selectie gebeurde in enkele stappen :
 
-1. Aanduiden van de meetpunten die gelegen zijn in een ga-HT.
+1. Aanduiden van de meetpunten die gelegen zijn in een gaHT.
 1. Selecteren van de meetpunten die binnen een geselecteerde rastercel vallen.
 
 
