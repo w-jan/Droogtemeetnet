@@ -71,14 +71,11 @@ Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog
 
 
 ```{r loading habitatmap, include=FALSE, eval= TRUE}
-#datapath <- fileman_up("n2khab_data")
-habfile <- "20_processed/habitatmap_terr/habitatmap_terr.gpkg"
+habmap_terr <- read_habitatmap_terr()
 
-habmap_stdized <- read_habitatmap_stdized(file = habfile)
+habmap_polygons <- habmap_terr$habitatmap_terr_polygons
 
-habmap_polygons <- habmap_stdized$habitatmap_polygons
-
-habmap_patches <- habmap_stdized$habitatmap_patches
+habmap_patches <- habmap_terr$habitatmap_terr_patches
 
 types <- read_types(lang = "nl")
 
