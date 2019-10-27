@@ -504,8 +504,6 @@ tubes_hab_aggr <- tubes_hab %>%
   distinct %>% 
   semi_join(tubes_hab_multipolyg, by = c("loc_code", "polygon_id", "rasterid", "groupnr" ))
 
-DBI::dbDisconnect(watina)
-
 ```
 Tabel \@ref(tab:tabel-Watina-in-gaHT) geeft een overzicht van deze `r nrow(tubes_hab_aggr)` peilbuizen.
 
@@ -584,13 +582,6 @@ Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecte
 
 ```{r selection-tubes-with-good-time-series-in-selected-cells, eval=TRUE, echo= FALSE, message=FALSE, include=TRUE}
 # watina <- connect_watina()
-watina <- DBI::dbConnect(odbc::odbc(),
-                         driver = "SQL Server",
-                         server = "inbo-sql08-prd.inbo.be",
-                         port = 1433,
-                         database = "W0002_00_Watina",
-                         trusted_connection = "YES",
-                         encoding = "UTF-8")
 # minlength <- 5 #jaar
 # maxgap <- 2 #jaar
 # minnryears <- 5 #jaar
