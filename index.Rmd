@@ -4,6 +4,7 @@ author: "Jan Wouters, Floris Vanderhaeghe"
 date: '`r paste("Versie",lubridate::now())`'
 link-citations: true
 bibliography: lit_droogtemeetnet.bib
+csl: research-institute-for-nature-and-forest.csl
 linkcolor: link.colour
 citecolor: link.colour
 urlcolor: link.colour
@@ -41,5 +42,4 @@ output:
   #       in_header: header.tex    
 editor_options: 
   chunk_output_type: console
-
 ---
