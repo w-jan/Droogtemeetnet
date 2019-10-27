@@ -155,16 +155,18 @@ Ook hier is het zoeken naar een goed evenwicht tussen het selecteren van goed ge
 We stellen volgende drie extra kwaliteitscriteria voor:
 
 1. Meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks: 
-De meetpunten worden hierbij gerangschikt volgens aflopend jaartal van de laatst beschikbare kwalitatief goede tijdreeks. 
+de meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
+<!-- @jan: checken of het inderdaad 'eindjaar' is -->
 Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren <- 5 ; toelaatbare_spreiding_jaren`** jaar is.
-1. Meetpunten met een lange tijdreeks krijgen ook een hogere prioriteit: 
-Meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks <- 5 ; toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
+1. Meetpunten met een langere tijdreeks krijgen ook een hogere prioriteit: 
+meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks <- 5 ; toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
 1. Een meetpunt met een lange tijdreeks, maar niet recent, krijgt een hogere prioriteit dan een meetpunt met een recentere maar kortere tijdreeks.
 
 Op basis van deze extra criteria kunnen de meetpunten in kwaliteitsklassen worden ingedeeld. 
 
-Onder 'juist voldoende' wordt hier dan verstaan dat het gewenst aantal overeenstemt met de som van één _of meer_ van de aantallen van een kwaliteitsklasse. 
-Stemt dit niet overeen dan wordt de rastercel tot cat. 3 gerekend: er wordt dan enkel op de meetpunten die behoren tot de klasse met een overschot aan punten een ruimtelijke selectie zoals beschreven onder A toegepast. 
+<!-- onderstaande alinea is moeilijk te snappen, bv. 'één _of meer_ van de aantallen van een kwaliteitsklasse'. Hoe en waar de term 'juist voldoende' wordt ingezet (functie ervan) is niet zo duidelijk, dit komt wat vreemd over. -->
+Onder 'juist voldoende' wordt hier dan verstaan dat het gewenste aantal overeenstemt met de som van één _of meer_ van de aantallen van een kwaliteitsklasse. 
+Stemt dit niet overeen, dan wordt de rastercel tot cat. 3 gerekend: er wordt dan enkel op de meetpunten die behoren tot de klasse met een overschot aan punten een ruimtelijke selectie zoals beschreven onder A toegepast. 
 
 
 ### Tijdreeksanalyse {#tijdreeksanalyse}
