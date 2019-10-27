@@ -83,7 +83,7 @@ Tabel \@ref(tab:totopp-gw-groep) geeft weer hoeveel de totale oppervlakte van ee
 raster_gw_opp <- habmap_gw_raster_overlay %>% 
   st_drop_geometry() %>% 
   group_by(rasterid,groupnr) %>% 
-  summarise(opp_gw_cel = sum(opp*phab/100)) %>% 
+  summarise(opp_gw_cel = sum(opp*phab/100) %>% set_units("m^2") %>% set_units("ha")) %>% 
   ungroup()
 # view(raster_gw_opp)
 
