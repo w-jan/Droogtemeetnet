@@ -224,6 +224,7 @@ Zo kunnen ook relatief lage grondwaterstanden in het voorjaar als droogte aanged
 
 De indicator kleurt respectievelijk rood, oranje of geel op een bepaalde plaats en dag zodra de grondwaterstand er minstens 14 dagen onder de p10, p20 of p30 (situatie met overschrijdingskans van 10, 20 of 30%) is gebleven. 
 _**De indicator kleurt respectievelijk rood, oranje of geel voor een bekken als minstens de helft van de putten in dat bekken kleurcode rood, oranje of geel heeft. (vraag: is dit ook aangewezen voor dit meetnet ?)**_
+<!-- in vergadering hadden we dacht ik besloten om niet per bekken te werken (maar Vlaams) -->
 
 ### Berekeningswijze voor de geselecteerde punten 
 Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van minimaal 20 jaar, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden.
