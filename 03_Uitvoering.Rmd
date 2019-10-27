@@ -447,13 +447,7 @@ Om dat te vermijden, voegen we de verschillende habitattypen samen die tot eenze
 Alleen de GT-groep met een opp-aandeel van minstens 50% wordt dan weerhouden. 
 
 ```{r loading-selecting-tubes-watina, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE}
-watina <- DBI::dbConnect(odbc::odbc(),
-                         driver = "SQL Server",
-                         server = "inbo-sql08-prd.inbo.be",
-                         port = 1433,
-                         database = "W0002_00_Watina",
-                         trusted_connection = "YES",
-                         encoding = "UTF-8")
+watina <- connect_watina()
 
 # ?watina
 # ?selectlocs_xg3
