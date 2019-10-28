@@ -1,18 +1,17 @@
 # Inleiding
 
-> Het basisidee van het early-warning meetnet droogte is om in natuurgebieden een vooraf gekozen aantal meetpunten zo goed mogelijk ruimtelijk gebalanceerd te selecteren, rekening houdende met mogelijke verschillen in het gedrag van het grond/oppervlaktewaterpeil t.a.v. een neerslagtekort. Voor deze meetpunten kan op basis van actuele informatie een indicator (cfr.droogte-indicator) worden berekend.
+> Het basisidee van het early-warning meetnet droogte is om in natuurgebieden een vooraf gekozen aantal meetpunten zo goed mogelijk ruimtelijk gebalanceerd te selecteren, rekening houdende met mogelijke verschillen in het gedrag van het grond/oppervlaktewaterpeil t.a.v. een neerslagtekort. Voor deze meetpunten kan op basis van actuele informatie een indicator (cfr. droogte-indicator) worden berekend.
 
 Het project omhelst : 
 
 * uitwerking van een methodiek die een ruimtelijk gebalanceerde selectie van actuele en potentiële meetlocaties mogelijk maakt 
 * bepalen van referentiewaarden voor de actuele meetlocaties
-* 
 
-Met natuurgebieden worden hier alle locaties met grondwaterafhankelijke habitat- en rbb's bedoeld, gelegen binnen of buiten Natura2000. In overeenstemming met het meetnet natuurlijk milieu (MNM) voor de milieudruk 'verdroging via grondwater' worden volgende habitattypen en rbb's als grondwaterafhankelijk beschouwd (tabel \@ref(tab:gw-typen)). Hierna worden deze typen afgekort tot gaHT. 
+Met natuurgebieden worden hier alle locaties met grondwaterafhankelijke habitattypes en rbb's bedoeld, gelegen binnen of buiten het Natura 2000 netwerk. In overeenstemming met het meetnet natuurlijk milieu (MNM) voor de milieudruk 'verdroging via grondwater' worden volgende habitattypen en rbb's als grondwaterafhankelijk beschouwd (tabel \@ref(tab:gw-typen)). Hierna worden deze typen afgekort tot gaHT. 
 
 ```{r gw-typen, eval=TRUE, include = TRUE, echo=FALSE, warning=FALSE}
 # read_schemes_local(path = "../../n2khab/inst/textdata")
-gw_types <- read_scheme_types(lan = "nl") %>%
+gw_types <- read_scheme_types(lang = "nl") %>%
     filter(scheme == "GW_05.1_terr") %>%
     arrange(typegroup) %>%
     mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
@@ -40,11 +39,12 @@ kable(gw_types %>%
 ```
   
 
-Een ruimtelijk gebalanceerde set maakt het mogelijk om op basis van een beperkt aantal punten conclusies te trekken die representatief zijn voor heel het studiegebied.
+Een min of meer ruimtelijk gebalanceerde set van bestaande meetlocaties maakt het mogelijk om conclusies te trekken die benaderend representatief zijn voor heel het studiegebied.
+Via deze benadering wordt ook een goede synergie bekomen met de implementatie van de zg. 'overgangsfase' van het grondwatermeetnet in MNM [@vanderhaeghe_meetnetten_2018: hoofdstuk 6].
 
-Er wordt met dit meetnet niet beoogd om specifiek voor elke gaHT te bepalen of het aan droogte onderhevig is. Het meetnet wil een globale uitspraak faciliteren.
-Hierbij achten we het belangrijk om rekening te houden met de mogelijke verschillen in responstijd ('hoe snel laat een neerslagtekort zich voelen in een wijziging van het grondwaterpeil') op droogte. De responstijd is onder meer afhankelijk van de landschappelijke positie. Vegetaties die voorkomen in lokaal met grondwatergevoede systemen zullen sneller een droogte gewaar worden, dan vegetaties die gebonden zijn aan (regionale) systemen met een permanente aanvoer van grondwater.
-We veronderstellen hierbij dat er een relatie bestaat tussen het hydrologisch regime en de responstijd: permanent grondwatergevoede systemen reageren trager dan systemen met een tijdelijke of zwak grondwatervoeding. 
+Er wordt met dit meetnet niet beoogd om specifiek voor elk gaHT te bepalen of het aan droogte onderhevig is. Het meetnet wil een globale uitspraak faciliteren.
+Hierbij achten we het belangrijk om rekening te houden met de mogelijke verschillen in responstijd ('hoe snel laat een neerslagtekort zich voelen in een wijziging van het grondwaterpeil') op droogte. De responstijd is onder meer afhankelijk van de landschappelijke positie. Vegetaties die voorkomen in lokaal-grondwatergevoede systemen zullen sneller een droogte gewaar worden dan vegetaties die gebonden zijn aan (regionale) systemen met een permanente aanvoer van grondwater.
+We veronderstellen hierbij dat er een relatie bestaat tussen het hydrologisch regime en de responstijd: permanent grondwatergevoede systemen reageren trager dan systemen met een tijdelijke of zwakke grondwatervoeding. 
 
 We vertrekken hiervoor van de 5-delige indeling in grondwatertypegroepen (GT-groep) die toegepast wordt in het MNM (tabel \@ref(tab:GTgroepen)). In de vorige tabel \@ref(tab:gw-typen)) is weergegeven tot welke GT-groep een gaHT gerekend wordt.
 ```{r GTgroepen, eval = TRUE, include = TRUE, echo=FALSE}
@@ -71,14 +71,11 @@ Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog
 
 
 ```{r loading habitatmap, include=FALSE, eval= TRUE}
-#datapath <- fileman_up("n2khab_data")
-habfile <- "20_processed/habitatmap_terr/habitatmap_terr.gpkg"
+habmap_terr <- read_habitatmap_terr()
 
-habmap_stdized <- read_habitatmap_stdized(file = habfile)
+habmap_polygons <- habmap_terr$habitatmap_terr_polygons
 
-habmap_polygons <- habmap_stdized$habitatmap_polygons
-
-habmap_patches <- habmap_stdized$habitatmap_patches
+habmap_patches <- habmap_terr$habitatmap_terr_patches
 
 types <- read_types(lang = "nl")
 

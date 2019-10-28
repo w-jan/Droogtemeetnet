@@ -38,3 +38,7 @@ rsconnect/
 # local, large binary data
 /data/local/*
 .Rproj.user
+
+# Other
+_bookdown_files/
+*.html
