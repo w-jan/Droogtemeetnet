@@ -203,7 +203,6 @@ $$trend + 2* sd \geq -1(cm/jaar)$$
 Het al dan niet weerhouden van een tijdreeks kan gevolgen hebben voor de categorie-indeling van een rastercel. 
 Voor een rastercel kunnen immers na een tijdreeksanalyse meer of ook minder peilbuizen geschikt zijn. 
 Daarom voeren we na de tijdreeksanalyse de categorisering nog een tweede keer uit, waarbij met de uitkomst van de tijdreeksanalyse rekening wordt gehouden. **_of kiezen we de peilbuis met het beste model ?_** 
-De categorie 1B komt bij deze analyse dan te vervallen.
 
 
 <!-- [^3]: KWR & Waterware (2018). Menyanthes, versie 3.x.b.w.  -->
@@ -224,7 +223,7 @@ De indicator kleurt respectievelijk rood, oranje of geel op een bepaalde plaats 
 _**De indicator kleurt respectievelijk rood, oranje of geel voor een bekken als minstens de helft van de putten in dat bekken kleurcode rood, oranje of geel heeft. (vraag: is dit ook aangewezen voor dit meetnet ?)**_
 
 ### Berekeningswijze voor de geselecteerde punten 
-Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van minimaal 20 jaar, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden.
+Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 20 (of meer?), maximaal 1 jaar onderbroken, _** jaar, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden.
 Voor elke bestaande geselecteerde meetlocatie wordt dan voor elke dag van het jaar (**_vraag: of alleen voor het groeiseizoen: 1 april - 1 oktober? _**) de p10, p20 en p30 percentielwaarde berekend.
 
 
