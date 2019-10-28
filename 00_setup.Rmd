@@ -17,6 +17,7 @@ options(stringsAsFactors = FALSE)
 library(stringr)
 library(knitr)
 library(sf)
+library(units)
 library(git2rdata)
 library(lubridate)
 

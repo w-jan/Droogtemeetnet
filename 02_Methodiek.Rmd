@@ -14,7 +14,7 @@ Kees denkt dan wel dat hij klaar is, het is jammergenoeg niet zo eenvoudig.
 Het karakteriseren van een nieuwe locatie, zodat het kan ingezet worden in het meetnet, vergt verschillende jaren grondwatermetingen.
 1. We hebben ook geen controle over de verdeling van de punten over de verschillende grondwatertypegroepen.   
 
-We kunnen om deze redenen geen zuiver ruimtelijk gebalanceerde set opbouwen. 
+We kunnen om deze redenen op korte termijn geen zuiver ruimtelijk gebalanceerde set opbouwen. 
 Ook al is dit niet perfect mogelijk, het blijft een belangrijk streefdoel.
 
 De drie hoofdfactoren waar we bij het ontwerp mee rekening houden, zijn:
@@ -25,6 +25,8 @@ Deze wordt bepaald door de ingeschatte grootte van het meetnet en door de trefka
 Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans kan zijn, omdat men minder vrij is om een locatie te kiezen, maar ook hoe kleiner de kans is om daar een geschikt meetpunt aan te treffen. 
 Hier is het dus wat zoeken naar een goede maat. 
 Concreet:  
+    - We maken gebruik van een set gekoppelde GRTS-rasters op verschillende resolutie ([GRTSmh_diffres](https://doi.org/10.5281/zenodo.3354405)) die zijn afgeleid van het basisraster 'GRTSmaster_habitats' ([link](https://doi.org/10.5281/zenodo.2682323)).
+Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetnet biotische habitatkwaliteit.
     - Voor het meetnet kiezen we voor 8km-hokken (8192 m, level 8). In totaal zijn er 262 hokken in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
     - Het gewenst totaal aantal meetpunten **_(nog te beslissen)_** = `r tot_n_tub <- 100; tot_n_tub `  
 
@@ -66,7 +68,7 @@ Afhankelijk van die verhouding worden de _rastercellen_ **per GT-groep** eerst i
 _A. Alle meetpunten zijn kwalitatief gelijkwaardig_
 
 We stellen eerst voor de eenvoud dat alle beschikbare meetpunten even geschikt zijn: er wordt bvb. geen onderscheid gemaakt tussen een lang en kort bemeten meetpunt. 
-Vergelijken we dan vraag (het gewenst aantal meetpunten per rastercel) met het aanbod van meetpunten dan kunnen de rastercellen in drie categorieën verdeeld worden:
+Vergelijken we dan de vraag (het gewenst aantal meetpunten per rastercel) met het aanbod van meetpunten dan kunnen de rastercellen in drie categorieën verdeeld worden:
 
 - Cat. 1: de vraag is groter dan het aanbod: er is een gebrek aan meetpunten
 - Cat. 2: de vraag is gelijk aan het aanbod: elk meetpunt wordt geselecteerd
@@ -76,13 +78,13 @@ Vergelijken we dan vraag (het gewenst aantal meetpunten per rastercel) met het a
 Als er voor een rastercel een gebrek is aan geschikte meetpunten, stellen we voor om die cel te voorzien van een (nieuw) meetpunt gelegen op een plaats met die GT-groep. 
 Het gaat hier vooral over een tijdsinvestering: dergelijke meetpunten kunnen pas na enkele jaren effectief meedraaien in het meetnet. 
 In afwachting daarvan zal het meetnet dus met een kleiner aantal meetpunten moeten functioneren.
-Voor de uitwerking van deze selectie van potentiële geschikte habitatvlekken: zie \@ref(sel-pot-habvlek)
+Voor de uitwerking van deze selectie van potentiële geschikte habitatvlekken: zie paragraaf \@ref(sel-pot-habvlek).
 
-**_vraag: wat te doen met bestaande meetlocaties, maar die actueel niet voldoen aan de basiscriteria (zie verder bij B)? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**
+**_vraag: wat te doen met bestaande meetlocaties die actueel niet voldoen aan de basiscriteria (zie verder bij B)? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**
 
 **Categorie 3**
 Is er voor een bepaalde rastercel een overschot aan beschikbare meetpunten, dan dienen hieruit één (of meer) meetpunten gekozen te worden. 
-Hiervoor verwijzen we naar \@ref(sel-habvlek)
+Hiervoor verwijzen we naar paragraaf \@ref(sel-habvlek).
 
 
 _B. Alle meetpunten zijn kwalitatief niet gelijkwaardig_
@@ -102,9 +104,9 @@ We beschouwen een meetpunt als geschikt indien het voldoet aan volgende **[basis
 
 De extreem droge zomers van 2017 en 2018 worden niet meegenomen in de berekening. Het is namelijk nu nog onduidelijk (door mogelijke naijling) of de actuele vegetatie geen nadelige effecten van deze twee zomers heeft ondervonden.
 
-Voor een meetpunt dat voldoet aan deze criteria kan een gemiddeld lage grondwaterstand (lgl) berekend worden. 
+Voor een meetpunt dat voldoet aan deze criteria kan een gemiddeld laagste grondwaterstand (GLG) berekend worden. 
 
-Op basis van de kwaliteit van de tijdreeksen kunnen per GT-groep de rastercellen dan in vier categorieën verdeeld worden.
+Op basis van de kwaliteit van de tijdreeksen kunnen dan per GT-groep de rastercellen in vier categorieën verdeeld worden:
 
 - **Cat. 1A**: de vraag is groter dan het aanbod: er is een gebrek aan meetpunten
 - **Cat. 1B**: de vraag is groter aan het aanbod: er zijn voldoende meetpunten, maar er is een gebrek aan geschikte meetpunten
@@ -112,26 +114,27 @@ Op basis van de kwaliteit van de tijdreeksen kunnen per GT-groep de rastercellen
 - **Cat. 3**: de vraag is kleiner dan het aanbod: er is een overschot aan geschikte meetpunten
 
 Het is belangrijk om weten dat deze categorie-indeling gebeurde op basis van actueel beschikbare feitelijke grondwatermetingen. 
-In het verder verloop gaan we op de peilgegevens van een aantal meetpunten nog een tijdreeksanalyse uitvoeren, waardoor het aantal beschikbare metingen gevoelig kan doen toenemen. 
+In het verder verloop gaan we op de peilgegevens van een aantal meetpunten nog een tijdreeksanalyse uitvoeren, waardoor het aantal beschikbare metingen gevoelig kan toenemen. 
 Een meetpunt dat met alleen de feitelijke data ongeschikt is, kan modelmatig zo opgewaardeerd worden en toch geschikt bevonden worden.
 
-Bij rastercellen van cat. 1A is er sowieso een nood aan extra meetpunten. Hoe potentiële geschikte habitatvlekken kunnen geselecteerd worden, wordt in \@ref(sel-pot-habvlek) nader toegelicht.
+Bij rastercellen van cat. 1A is er sowieso een nood aan extra meetpunten. Hoe potentieel geschikte habitatvlekken geselecteerd kunnen worden, wordt in \@ref(sel-pot-habvlek) nader toegelicht.
 
-Bij cat. 1B kunnen rastercellen na de tijdreeksanalyse (zie \@ref(tijdreeksanalyse)) wel over een voldoend aantal geschikte meetpunten gaan beschikken. Zoniet wordt de werkwijze cfr. cat 1A gevolgd.
+Bij cat. 1B kunnen rastercellen na de tijdreeksanalyse (zie \@ref(tijdreeksanalyse)) wel over een voldoende aantal geschikte meetpunten gaan beschikken. Zoniet wordt de werkwijze cfr. cat. 1A gevolgd.
 
-Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatief onderscheiden te maken zijn (zie \@ref(suppl-criteria)). 
+Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie \@ref(suppl-criteria)). 
 Met een juist voldoende aantal wordt hier een juist voldoende aantal kwalitatief vergelijkbare meetpunten bedoeld.
 
 Cat. 3 omvat de rastercellen waarbij er meer meetpunten met gelijkwaardige kwaliteit bestaan dan het gewenst aantal meetpunten. 
 Voor deze laatste groep zal nog een ruimtelijke selectie (zie \@ref(sel-habvlek)) van peilbuizen dienen te gebeuren.
 
 
-#### Selecteren van potentiële geschikte habitatvlekken voor rastercellen waarvoor nu geen pb’en bestaan (cat. 1) {#sel-pot-habvlek}
+#### Selecteren van potentiële geschikte habitatvlekken voor rastercellen waarvoor nu geen (of te weinig) pb’en bestaan (cat. 1) {#sel-pot-habvlek}
 
 Voor rastercellen van cat. 1 is er een nood aan één of meer extra meetpunten.
-Om hierbinnen (8192 * 8192 m) de plaatskeuze zo aselect mogelijk te doen, doen we beroep op het fijnste GRTS-raster (celgrootte = 32 m). 
+Om hierbinnen (8192 * 8192 m) de plaatskeuze zo aselect mogelijk te doen, doen we beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m). 
+Opnieuw wordt op deze manier een synergie bekomen met de aselecte locatiekeuzes in MNM.
 Elk deelrastercel heeft binnen de rastercel een bepaalde rangnummer. 
-Alleen deelrastercellen _die voor het merendeel vegetaties bevat die tot de GT-groep behoren_ komen voor selectie in aanmerking. 
+Alleen deelrastercellen _die voor het merendeel vegetaties bevatten die tot de GT-groep behoren_ komen voor selectie in aanmerking. 
 De deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden. 
 Aan de selectie van deelrastercellen kunnen, naast de aanwezigheid van de juiste GT-groep, nog bijkomende voorwaarden gekoppeld worden (beheerder, ...).
 Blijkt bij inspectie op terrein dat de geselecteerde plaats toch niet aan de verwachtingen/criteria voldoet, dan wordt binnen dezelfde rastercel de rastercel die het eerst in rang volgt bezocht.  
@@ -139,15 +142,15 @@ Blijkt bij inspectie op terrein dat de geselecteerde plaats toch niet aan de ver
 
 #### Selecteren van meetlocaties binnen rastercellen waarvoor meer kandidaat locaties zijn dan gezocht (cat. 3) {#sel-habvlek}
 
-Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen (zie \@ref(sel-pot-habvlek)). We doen hiervoor terug beroep op het fijnste GRTS-raster (celgrootte = 32 m).
+Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen (zie \@ref(sel-pot-habvlek)). We doen hiervoor terug beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m).
 Het/de meetpunt(en) gelegen in de deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden.
 
 
 #### Opstellen van bijkomende kwaliteitscriteria voor meetpunten {#suppl-criteria}
 
-Bij cat. 3 en vaak ook bij cat. 2 zijn er meer meetpunten die aan de basiskwaliteitscriteria ([zie](#basiskwaliteitscriteria)) voldoen dan dat er punten gezocht worden. 
+Bij cat. 3 en vaak ook bij cat. 2 zijn er meer meetpunten die aan de basiskwaliteitscriteria ([zie eerder](#basiskwaliteitscriteria)) voldoen dan dat er punten gezocht worden. 
 Deze basiscriteria zijn nog behoorlijk ruim. 
-Bijvoorbeeld een droogte-indicator baseren op een tijdreeks van een meetpunt waar 'slechts' 5 jaar tussen 2001 en 2006 gemeten werd, is vermoedelijk minder betrouwbaar een punt met een tijdreeks van 10 jaar of langer en dat actueel nog bemeten is. 
+Bijvoorbeeld een droogte-indicator baseren op een tijdreeks van een meetpunt waar 'slechts' 5 jaar tussen 2001 en 2006 gemeten werd, is vermoedelijk minder betrouwbaar dan een punt met een tijdreeks van 10 jaar of langer en dat actueel nog bemeten is. 
 
 Door het toevoegen van extra voorwaarden, verkleint echter de kans op een goede ruimtelijke spreiding (representativiteit). 
 Ook hier is het zoeken naar een goed evenwicht tussen het selecteren van goed gedocumenteerde meetpunten en een gebalanceerde ruimtelijke spreiding.
@@ -155,32 +158,34 @@ Ook hier is het zoeken naar een goed evenwicht tussen het selecteren van goed ge
 We stellen volgende drie extra kwaliteitscriteria voor:
 
 1. Meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks: 
-De meetpunten worden hierbij gerangschikt volgens aflopend jaartal van de laatst beschikbare kwalitatief goede tijdreeks. 
+de meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
+<!-- @jan: checken of het inderdaad 'eindjaar' is -->
 Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren <- 5 ; toelaatbare_spreiding_jaren`** jaar is.
-1. Meetpunten met een lange tijdreeks krijgen ook een hogere prioriteit: 
-Meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks <- 5 ; toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
+1. Meetpunten met een langere tijdreeks krijgen ook een hogere prioriteit: 
+meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks <- 5 ; toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
 1. Een meetpunt met een lange tijdreeks, maar niet recent, krijgt een hogere prioriteit dan een meetpunt met een recentere maar kortere tijdreeks.
 
 Op basis van deze extra criteria kunnen de meetpunten in kwaliteitsklassen worden ingedeeld. 
 
-Onder 'juist voldoende' wordt hier dan verstaan dat het gewenst aantal overeenstemt met de som van één _of meer_ van de aantallen van een kwaliteitsklasse. 
-Stemt dit niet overeen dan wordt de rastercel tot cat. 3 gerekend: er wordt dan enkel op de meetpunten die behoren tot de klasse met een overschot aan punten een ruimtelijke selectie zoals beschreven onder A toegepast. 
+<!-- onderstaande alinea is moeilijk te snappen, bv. 'één _of meer_ van de aantallen van een kwaliteitsklasse'. Hoe en waar de term 'juist voldoende' wordt ingezet (functie ervan) is niet zo duidelijk, dit komt wat vreemd over. -->
+Onder 'juist voldoende' wordt hier dan verstaan dat het gewenste aantal overeenstemt met de som van één _of meer_ van de aantallen van een kwaliteitsklasse. 
+Stemt dit niet overeen, dan wordt de rastercel tot cat. 3 gerekend: er wordt dan enkel op de meetpunten die behoren tot de klasse met een overschot aan punten een ruimtelijke selectie zoals beschreven onder A toegepast. 
 
 
 ### Tijdreeksanalyse {#tijdreeksanalyse}
 
-Tijdreeksanalyse is een middel om grondwaterstandsmetingen te analyseren (zie bijv. @RN877). 
-In feite zouden ook meetreeksen van oppervlaktewaterpeilen kunnen geanalyseerd worden, maar dit is weinig gebruikelijk, waarschijnlijk omdat er moeilijker een verband te leggen is met het weer (neerslag en verdamping). 
+Tijdreeksanalyse is een middel om grondwaterstandsmetingen te analyseren [zie bijv. @RN877]. 
+In feite zouden ook meetreeksen van oppervlaktewaterpeilen geanalyseerd kunnen worden, maar dit is weinig gebruikelijk, waarschijnlijk omdat er moeilijker een verband te leggen is met het weer (neerslag en verdamping). 
 In dit project willen we deze analysetechniek toepassen op grondwatermeetreeksen met twee doeleinden:
 
 * het verlengen of invullen van te korte of onregelmatige grondwaterstandsreeksen
 * het opsporen van (lineaire) trends
 
 Het eerste doel is ook al hoger ter sprake gekomen. 
-Slagen we er in om op een betrouwbare wijze de waterstandsreeksen te verlengen/vervolledigen, kan een meetpunt geschikt worden om in het droogte-meetnet opgenomen te worden. 
+Slagen we er in om op een betrouwbare wijze de waterstandsreeksen te verlengen/vervolledigen, dan kan een meetpunt geschikt worden om in het droogtemeetnet opgenomen te worden. 
 De tijdreeksen krijgen ook een meer uniforme lengte, waardoor het afleiden van een droogte-indicator meer gestandaardiseerd wordt.
 
-Het tweede doel is in feite een bijkomende selectiecriterium. Indien uit een tijdreeksanalyse blijkt dat de waterstanden van een meetpunt systematisch dalen of stijgen, leent dat meetpunt zich niet goed om voor het berekenen van een droogte-indicator . 
+Het tweede doel is in feite een bijkomende selectiecriterium. Indien uit een tijdreeksanalyse blijkt dat de waterstanden van een meetpunt systematisch dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
 Met een systematische daling of stijging bedoelen we een lineaire trend die niet door externe factoren (opstuwen of graven greppels, waterwinning) kan verklaard worden. 
 Indien een tijdreeks een lineaire trend vertoont, werd het meetpunt geweerd uit de selectie en werd het selectieproces overgedaan zonder dat meetpunt.
 
@@ -221,6 +226,7 @@ Zo kunnen ook relatief lage grondwaterstanden in het voorjaar als droogte aanged
 
 De indicator kleurt respectievelijk rood, oranje of geel op een bepaalde plaats en dag zodra de grondwaterstand er minstens 14 dagen onder de p10, p20 of p30 (situatie met overschrijdingskans van 10, 20 of 30%) is gebleven. 
 _**De indicator kleurt respectievelijk rood, oranje of geel voor een bekken als minstens de helft van de putten in dat bekken kleurcode rood, oranje of geel heeft. (vraag: is dit ook aangewezen voor dit meetnet ?)**_
+<!-- in vergadering hadden we dacht ik besloten om niet per bekken te werken (maar Vlaams) -->
 
 ### Berekeningswijze voor de geselecteerde punten 
 Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 20 (of meer?), maximaal 1 jaar onderbroken, _** jaar, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden.
