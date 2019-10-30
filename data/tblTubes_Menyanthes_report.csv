@@ -273,7 +273,9 @@
 278,"ZWAP300","1B",1,0,81,1.40,7.00,0.80,,,1,1
 279,"ZWAP301","1B",1,0,80,-1.60,7.00,0.10,,,1,1
 280,"ZWAP302","1B",0,0,49,8.00,7.00,37.00,,,0,1
+284,"ZWAP303","1B",1,0,78,3.50,7.00,0.90,,,0,1
 281,"ZWAP305","1B",1,0,85,5.00,7.00,0.50,,"er kan een beter model gefit worden (EVP 91%), maar simulatie geeft een onrealistische verdroging",0,1
+285,"ZWAP306","1B",1,0,84,,,,,"step: 8cm, interfereert met lineaire trendberekening (geen stabiel model meer te krijgen)",0,1
 131,"ZWIP007","3",1,0,74,29.80,13.30,4.00,,,0,1
 132,"ZWIP014","3",1,0,77,16.00,17.80,2.40,,,0,1
 283,"ZWIP032","3",1,0,86,8.50,15.30,2.20,,,0,1
