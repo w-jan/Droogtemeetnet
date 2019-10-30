@@ -35,3 +35,32 @@ library(tidyverse)
 library(kableExtra)
 library(knitr)
 ```
+
+```{r constanten, eval= TRUE, include= TRUE, echo= FALSE}
+#gewenste grootte van het meetnet
+tot_n_tub <- 100
+
+#aantal stratificatielagen
+aantal_strat <- 5
+
+#verdeling meetpunten over de stratificatielagen
+minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
+
+#kwaliteitscriteria meetreeksen
+  #minimale lengte van de tijdreeks 
+  minlength <- 5
+  #maximale duur van een onderbreking van de tijdreeks 
+  maxgap <- 2
+  #binnen een tijdreeks minimaal aantal meetjaren waarvoor een lg3 kan berekend worden
+  minnryears <- 5
+  
+  #aanvullende criteria om meetreeksen te vergelijken
+  toelaatbare_spreiding_jaren <- 5
+  toelaatbaar_verschil_lengte_tijdreeks <- 5
+
+#zoekstraal rond peilbuizen (buffer)
+bufferpb <- 3 
+
+
+
+```

@@ -168,11 +168,13 @@ for (group in seq(1,aantal_strat)) {
     if (group == 1){
     gw_opp <- gw_opp %>% 
       mutate(minopp = 
-               ifelse(bewerkt == TRUE, round(opp_gw/minaantal_tub_group * corrafronding,0), minopp))
+               ifelse(bewerkt == TRUE, round(opp_gw/minaantal_tub_group * corrafronding,0), minopp) %>% set_units("ha")
+             )
     } else {
     gw_opp <- gw_opp %>% 
       mutate(minopp = 
-               if_else(bewerkt == TRUE, round(opp_gw/minaantal_tub_group * corrafronding,0), minopp, missing = minopp))
+               if_else(bewerkt == TRUE, round(opp_gw/minaantal_tub_group * corrafronding,0), minopp, missing = minopp) %>% set_units("ha")
+             )
     }    
 
     gw_opp
@@ -183,7 +185,7 @@ for (group in seq(1,aantal_strat)) {
       raster_gw_opp %>% 
       inner_join(gw_opp, 
                  by = "groupnr") %>% 
-      mutate(gew_aantal_meetptn = opp_gw_cel/minopp) %>% 
+      mutate(gew_aantal_meetptn = as.numeric(opp_gw_cel/minopp)) %>% 
       arrange(desc(gew_aantal_meetptn))
     
     aantal_meetpunten_cel_group
@@ -221,7 +223,9 @@ for (group in seq(1,aantal_strat)) {
   if (group == 1){
     aantal_meetpunten_cel <- aantal_meetpunten_cel_group
   } else {
-    aantal_meetpunten_cel <- bind_rows(aantal_meetpunten_cel, aantal_meetpunten_cel_group)
+    aantal_meetpunten_cel <- aantal_meetpunten_cel %>% 
+      full_join(aantal_meetpunten_cel_group %>% 
+                  select(-correctiefactor))
   }
 }
 # df <- aantal_meetpunten_cel %>% group_by(groupnr)  %>% 
@@ -244,38 +248,6 @@ kable(gw_opp %>%
   # column_spec(2, width = "30em", background = "yellow")
   #row_spec(0, angle = -45)  %>% #fixeer veldnamen
     scroll_box(height = "200px") 
-
-
-```
-
-```{r gewenst-aantal-meetpunten-per-raster, eval= TRUE, include= TRUE, echo= FALSE}
-
-aantal_meetpunten_cel <- aantal_meetpunten_cel %>% 
-  select (-bewerkt, -correctiefactor)
-# df <- aantal_meetpunten_cel %>% group_by(groupnr)  %>% 
-#    summarise(aantal  = sum(gew_aantal_meetptn_afgerond)) %>% 
-#    ungroup()
-# df
-kable(aantal_meetpunten_cel %>% 
-        select(-gew_aantal_meetptn) %>% 
-        rename(rastercelnr = rasterid,
-               GTgroep = groupnr,
-               "GToppervl. in cel" = opp_gw_cel,
-               "GToppervl. totaal" = opp_gw,
-               "min. oppervl. per meetpunt" = minopp,
-               "gewenst aantal meetptn" = gew_aantal_meetptn_afgerond
-               ) ,
-      caption =  "gewenst aantal meetpunten per GT-groep en per rastercel"
-      ) %>% 
-    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-                full_width = T, 
-                position = "left",
-                font_size = 8, 
-                fixed_thead = T) %>%
-   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
-  # column_spec(2, width = "30em", background = "yellow")
-    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
-    scroll_box(height = "350px") 
 
 
 ```
@@ -411,7 +383,7 @@ Figuur \@ref(fig:selectie-rastercel-met-meetpunt-fig6) geeft het totaalbeeld.
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_raster_meetnet) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE) + tm_layout(title = "alle groepen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "alle groepen" )
 
 sel_raster_meetnet_tm
 ```
@@ -438,7 +410,7 @@ De selectie gebeurde in enkele stappen :
 
 ### Opgave van de meetpunten (Watina-databank) die gelegen zijn in een verdrogingsgevoelig type.  
 
-Voor deze selectie werd met een zoekstraal van **`r bufferpb <- 3; bufferpb`** meter rond een meetpunt gewerkt. 
+Voor deze selectie werd met een zoekstraal van **`r bufferpb`** meter rond een meetpunt gewerkt. 
 We selecteren enkel de meetpunten die grondwaterpeilen meten (piëzometer of peilbuis). Voor de eenvoud benoemen we ze hier peilbuizen. 
 Binnen deze straal wordt aangenomen dat het grondwaterregime weinig zal variëren.
 
@@ -577,9 +549,9 @@ Als selectiecriteria voor een 'goede' tijdreeks gelden:
 - eindjaar : 2016. 
 De extreem droge zomers van 2017 en 2018 worden niet meegenomen in de berekening. 
 Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecten van deze twee zomers heeft gekend (door naijling).
-- minimale lengte van de tijdreeks : `r minlength <- 5; minlength` jaar
-- maximale duur van een onderbreking van de tijdreeks :  `r maxgap <- 2; maxgap` jaar
-- binnen een tijdreeks minimaal aantal meetjaren waarvoor een lg3 kan berekend worden : `r minnryears <- 5; minnryears` jaar
+- minimale lengte van de tijdreeks : `r minlength` jaar
+- maximale duur van een onderbreking van de tijdreeks :  `r maxgap` jaar
+- binnen een tijdreeks minimaal aantal meetjaren waarvoor een lg3 kan berekend worden : `r minnryears` jaar
 
 ```{r selection-tubes-with-good-time-series-in-selected-cells, eval=TRUE, echo= FALSE, message=FALSE, include=TRUE}
 # watina <- connect_watina()
@@ -599,7 +571,7 @@ tubes_xg3 <- tubes_in_raster %>%
 
 #oplossen van UTF-probleem: strings worden in inbo-SQL-databanken opgeslagen in UTF-16, terwijl hier gewerkt wordt met UTF-8. Dit geeft een probleem bij de kable-functie
 
-tubes_xg3 <- mutate_if(tubes_xg3, is.character, iconv, to = "UTF-8")
+#tubes_xg3 <- mutate_if(tubes_xg3, is.character, iconv, to = "UTF-8")
 
 tubes_xg3 <- tubes_xg3 %>% 
   arrange(loc_code, hydroyear)
@@ -746,7 +718,7 @@ sel_cat1A_raster <- sel_raster_meetnet %>%
               st_drop_geometry() %>% 
               select(-gew_aantal_meetptn),
             by = c("rasterid", "groupnr")) %>% 
-  filter(is.na(n_tubes) | gew_aantal_meetptn > n_tubes)%>% 
+  filter(is.na(n_tubes) | gew_aantal_meetptn > n_tubes) %>% 
   arrange(rasterid, groupnr)
 ```
 
@@ -783,7 +755,7 @@ kable(sel_cat1A_table %>%
 
 sel_cat1A_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat1A_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE) + tm_layout(title = "cat.1A: cel met een onvoldoend aantal peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1A: cel met een onvoldoend aantal peilbuizen" )
 
 sel_cat1A_tm
 ```
@@ -849,7 +821,7 @@ kable(sel_cat1B_table %>%
 
 sel_cat1B_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat1B_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE) + tm_layout(title = "cat.1B: cel met een onvoldoend aantal peilbuizen met goede meetreeks" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1B: cel met een onvoldoend aantal peilbuizen met goede meetreeks" )
 
 sel_cat1B_tm
 ```
@@ -1143,7 +1115,7 @@ sel_cat2_raster <- sel_raster_pb %>%
 
 sel_cat2_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat2_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE) + tm_layout(title = "cat.2: rastercellen met een juist voldoende aantal peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.2: rastercellen met een juist voldoende aantal peilbuizen" )
 
 sel_cat2_tm
 ```
@@ -1265,7 +1237,7 @@ Ze zijn ruimtelijk goed verspreid over `r nrow(sel_cat3_table)` rastercellen (fi
 
 sel_cat3_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat3_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE) + tm_layout(title = "cat.3: rastercellen met een overschot aan geschikte peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.3: rastercellen met een overschot aan geschikte peilbuizen" )
 
 sel_cat3_tm
 ```

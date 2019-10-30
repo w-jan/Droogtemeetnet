@@ -28,12 +28,12 @@ Concreet:
     - We maken gebruik van een set gekoppelde GRTS-rasters op verschillende resolutie ([GRTSmh_diffres](https://doi.org/10.5281/zenodo.3354405)) die zijn afgeleid van het basisraster 'GRTSmaster_habitats' ([link](https://doi.org/10.5281/zenodo.2682323)).
 Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetnet biotische habitatkwaliteit.
     - Voor het meetnet kiezen we voor 8km-hokken (8192 m, level 8). In totaal zijn er 262 hokken in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
-    - Het gewenst totaal aantal meetpunten **_(nog te beslissen)_** = `r tot_n_tub <- 100; tot_n_tub `  
+    - Het gewenst totaal aantal meetpunten **_(nog te beslissen)_** = `r tot_n_tub `  
 
 - We willen daarenboven ook gestratificeerd werken volgens de 5-delige GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden. 
 Concreet: 
-    - Het aantal stratificatielagen ***(nog te beslissen)*** = `r aantal_strat <- 5; aantal_strat `
-    - Het aantal meetpunten is gelijk per laag  **_(nog te beslissen)_** = `r minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat); minaantal_tub_group`
+    - Het aantal stratificatielagen ***(nog te beslissen)*** = `r aantal_strat `
+    - Het aantal meetpunten is gelijk per laag  **_(nog te beslissen)_** = `r minaantal_tub_group`
 
 - De keuze van een cel wordt mee bepaald door de aanwezigheid van een GT-groep. 
 Niet elke cel is even belangrijk voor de monitoring van een GT-groep, want de oppervlakte van gaHT verschilt van cel tot cel. 
@@ -160,9 +160,9 @@ We stellen volgende drie extra kwaliteitscriteria voor:
 1. Meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks: 
 de meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
 <!-- @jan: checken of het inderdaad 'eindjaar' is -->
-Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren <- 5 ; toelaatbare_spreiding_jaren`** jaar is.
+Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren`** jaar is.
 1. Meetpunten met een langere tijdreeks krijgen ook een hogere prioriteit: 
-meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks <- 5 ; toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
+meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
 1. Een meetpunt met een lange tijdreeks, maar niet recent, krijgt een hogere prioriteit dan een meetpunt met een recentere maar kortere tijdreeks.
 
 Op basis van deze extra criteria kunnen de meetpunten in kwaliteitsklassen worden ingedeeld. 
