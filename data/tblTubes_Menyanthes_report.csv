@@ -1,22 +1,22 @@
 "Id","Watinacode","Cat","LineairModel","Modelbaar","EVP","Trend_verschil","Trend_jaren","Trend_sd","Evaporatiefactor","Opm","AlEensBehandeld","Klaar"
-1,"ALMP002","3",0,1,76,,,,,,0,1
-2,"ALMP003","3",0,1,90,,,,,,1,1
+1,"ALMP002","3",0,0,76,,,,,,0,1
+2,"ALMP003","3",0,0,90,,,,,,1,1
 3,"ASBP001","3",0,0,2,,,,,,0,1
-4,"BELP004","3",1,1,86,16.00,17.00,4.00,,,0,1
+4,"BELP004","3",1,0,86,16.00,17.00,4.00,,,0,1
 5,"BELP005","3",0,0,59,,,,,,0,1
 6,"BELP006","3",1,0,32,,,,,,0,1
-7,"BELP008","3",1,1,73,25.00,14.00,3.00,,,0,1
+7,"BELP008","3",1,0,73,25.00,14.00,3.00,,,0,1
 8,"BELP009","3",1,0,43,,,,,,0,1
-9,"BELP010","3",0,1,75,15.00,11.00,3.00,,"niet lineair model gekozen owv betere schattingen voor lage waterstanden",0,1
+9,"BELP010","3",0,0,75,15.00,11.00,3.00,,"niet lineair model gekozen owv betere schattingen voor lage waterstanden",0,1
 146,"BOBP018","1B",1,0,63,,,,,,1,1
-147,"BREP201","1B",1,0,98,,,,0.21,"te lage evaporatiefactor",1,1
-148,"BREP202","1B",1,0,98,,,,0.23,"te lage evaporatiefactor",1,1
-149,"BREP203","1B",1,0,97,,,,0.12,"te lage evaporatiefactor",1,1
-150,"BREP204","1B",1,0,93,,,,0.09,"te lage evaporatiefactor",1,1
-151,"BREP205","1B",1,0,94,,,,0.04,"te lage evaporatiefactor",1,1
-152,"BREP206","1B",1,0,82,,,,0.40,"te lage evaporatiefactor",1,1
-153,"BREP207","1B",1,0,89,,,,0.10,"te lage evaporatiefactor",1,1
-154,"BREP210","1B",1,1,99,,,,,,1,1
+147,"BREP201","1B",1,0,98,,,,0.21,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
+148,"BREP202","1B",1,0,98,,,,0.23,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
+149,"BREP203","1B",1,0,97,,,,0.12,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
+150,"BREP204","1B",1,0,93,,,,0.09,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
+151,"BREP205","1B",1,0,94,,,,0.04,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
+152,"BREP206","1B",1,0,82,,,,0.40,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
+153,"BREP207","1B",1,0,89,,,,0.10,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
+154,"BREP210","1B",1,0,99,,,,0.50,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
 155,"BTRP001","1B",0,0,96,,,,,,1,1
 10,"BUIP011","3",1,0,80,0.00,10.00,5.00,,"met step 12 cm",0,1
 11,"BUIP012","3",0,0,51,,,,,,0,1
@@ -70,59 +70,59 @@
 140,"HAGP019","2",0,0,78,28.00,25.00,2.00,,,0,1
 26,"HALP002","3",1,0,76,,,,0.00,"sterke vernatting van sept 2013",0,1
 27,"HALP005","3",1,0,63,2.00,14.00,0.80,,"2 neerslagreeksen. Simulatie vertoont een vrij sterke dalende trend, die weinig waarschijnlijk is.",1,1
-186,"HBTP007","1B",1,1,79,5.00,19.00,2.00,,,1,1
-187,"HBTP008","1B",1,1,74,4.00,13.00,2.00,,,1,1
+186,"HBTP007","1B",1,0,79,5.00,19.00,2.00,,,1,1
+187,"HBTP008","1B",1,0,74,4.00,13.00,2.00,,,1,1
 188,"IJSP003","1B",1,0,83,13.00,1.00,13.00,,,0,1
 189,"IJSP011","1B",1,0,47,,,,,,0,1
 190,"IJSP017","1B",1,0,29,,,,,,0,1
 191,"IJSP018","1B",1,0,27,,,,,,0,1
-28,"ITTP212","3",1,1,94,0.70,7.00,0.70,,,1,1
-29,"KALP136","3",0,1,80,,,,,,1,1
+28,"ITTP212","3",1,0,94,0.70,7.00,0.70,,,1,1
+29,"KALP136","3",0,0,80,,,,,,1,1
 30,"KALP137","3",1,0,68,-23.00,6.00,2.00,,,0,1
-141,"KBRP060","2",1,1,84,4.00,19.00,2.00,,"2 neerslagreeksen",1,1
+141,"KBRP060","2",1,0,84,4.00,19.00,2.00,,"2 neerslagreeksen",1,1
 192,"KLUP003","1B",0,0,65,,,,,,1,1
 193,"LAVP056","1B",0,0,82,11.00,2.00,3.00,,,0,1
 194,"LAVP059","1B",0,0,94,6.00,2.00,5.00,,,0,1
 195,"LAVP060","1B",0,0,89,,,,,,0,1
 196,"LAVP080","1B",0,0,83,,,,,,0,1
 31,"LDOP019","3",0,0,92,4.00,10.00,1.00,,,0,1
-32,"LDOP035","3",0,1,88,19.00,14.00,3.00,,,1,1
+32,"LDOP035","3",0,0,88,19.00,14.00,3.00,,,1,1
 33,"LDOP036","3",1,0,79,-42.00,10.00,3.00,1.99,"hoge evaporatiefactor: 1.99",0,1
-142,"LDOP041","2",1,1,75,2.00,6.00,4.00,,"step effect van -12cm (afbreken buis in 2012)",1,1
+142,"LDOP041","2",1,0,75,2.00,6.00,4.00,,"step effect van -12cm (afbreken buis in 2012)",1,1
 34,"LDOP042","3",0,0,84,24.00,13.00,3.00,,,0,1
 35,"MATP003","3",0,0,87,0.00,8.00,0.00,,,0,1
-36,"MATP010","3",0,1,92,,,,,,1,1
+36,"MATP010","3",0,0,92,,,,,,1,1
 37,"MATP013","3",0,0,84,-12.60,8.00,0.56,,,0,1
 38,"MATP015","3",0,0,78,1.00,8.00,0.50,,,0,1
 197,"MAYP029","1B",1,0,47,,,,,,1,1
 198,"MAYP030","1B",0,0,57,,,,,,1,1
 39,"MECP050","3",0,0,66,21.50,12.00,0.49,,,0,1
-199,"MOEP030","1B",0,1,90,,,,,,1,1
+199,"MOEP030","1B",0,0,90,,,,,,1,1
 40,"MOLP018","3",0,0,80,3.00,18.00,1.00,,"obv metingen na 2002 (herstelproject)",0,1
 41,"MOLP022","3",0,0,62,,,,,,0,1
-42,"MOLP023","3",0,1,84,9.00,17.00,1.40,,"obv metingen na 2002 (herstelproject)",1,1
+42,"MOLP023","3",0,0,84,9.00,17.00,1.40,,"obv metingen na 2002 (herstelproject)",1,1
 43,"MOLP024","3",0,0,90,7.00,14.00,1.00,,"obv metingen na 2002 (herstelproject)",0,1
 44,"MOLP025","3",0,0,78,3.00,16.00,1.00,,"obv metingen na 2002 (herstelproject)",0,1
 45,"MOSP001","3",1,0,49,14.00,9.00,0.70,,"enkel bij gebruik van een lineaire functie verkrijgt men een goed model. Het terrein is effectief vernat, vermoedelijk door werken aan een gracht.",1,1
 46,"MOSP003","3",0,0,54,14.00,5.00,1.50,,"enkel bij gebruik van een lineaire functie verkrijgt men een matig model. Het terrein is effectief vernat, vermoedelijk door werken aan een gracht.",0,1
 47,"MOSP004","3",0,0,86,,,,0.73,"enkel obv metingen van 2019 ! Teveel onzekerheid over de evaporatiefactor",0,1
-200,"NEIP001","1B",1,1,76,2.00,4.00,1.00,7.80,"twee steps in 2009: 5 en 7 cm",1,1
+200,"NEIP001","1B",1,0,76,2.00,4.00,1.00,7.80,"twee steps in 2009: 5 en 7 cm",1,1
 201,"NEIP002","1B",1,0,38,,,,,"een heel vlakke meetreeks, wel potentieel opneembaar in het meetnet",1,1
 48,"NODP004","3",1,0,79,2.00,8.00,12.00,2.01,"te hoge evaporatiefactor",0,1
 49,"NODP006","3",1,0,90,22.00,6.00,9.00,,"vrij hoge evaporatiefactor: 1.59",0,1
 202,"NUCP004","1B",1,0,62,,,,,,1,1
 203,"NUCP005","1B",1,0,60,,,,,,1,1
-204,"ORCP002","1B",0,1,83,11.00,11.00,2.00,,,1,1
-205,"ORCP003","1B",0,1,83,9.00,11.00,2.00,,,1,1
+204,"ORCP002","1B",0,0,83,11.00,11.00,2.00,,,1,1
+205,"ORCP003","1B",0,0,83,9.00,11.00,2.00,,,1,1
 50,"OSKP026","3",1,0,63,-71.00,3.00,6.00,,"enkel een goed model met toevoeging van een lineair effect; een niet-lineair model geeft wel een goede EVP, maar onzekerheid over het lineair effect wordt hiermee niet verholpen",1,1
 51,"OSKP038","3",0,0,78,10.00,10.00,2.00,,,0,1
-206,"PARP002","1B",0,1,85,133.00,12.00,6.60,,,1,1
-207,"PARP003","1B",1,1,78,-3.00,5.00,0.50,,"obv data vanaf 2008",1,1
+206,"PARP002","1B",0,1,85,133.00,12.00,6.60,,"berekening lineaire trend (voor een niet-lineair model) is hier twijfelachtig",1,1
+207,"PARP003","1B",1,0,78,-3.00,5.00,0.50,,"obv data vanaf 2008",1,1
 208,"RASP001","1B",1,0,56,,,,,,1,1
 209,"RASP002","1B",1,0,65,18.00,6.00,6.00,,"obv data vanaf 2008",1,1
 210,"RASP003","1B",1,0,30,,,,,"ook obv data vanaf 208 bleef de EVP heel laag (39%)",1,1
-211,"ROTP003","1B",1,1,80,-12.00,6.00,0.70,,,1,1
-212,"SBBP002","1B",1,1,78,,,,6.60,"te hoge evaporatiefactor, mogelijk door de te korte tijdreeks",1,1
+211,"ROTP003","1B",1,1,80,-12.00,6.00,0.70,,"rel kleine trend tav amplitude",1,1
+212,"SBBP002","1B",1,0,78,,,,6.60,"te hoge evaporatiefactor, mogelijk door de te korte tijdreeks",1,1
 52,"SBEP001","3",1,0,89,-20.00,16.00,2.00,,,0,1
 53,"SCPP021","3",0,0,24,,,,,,0,1
 54,"SCPP024","3",0,0,14,,,,,,0,1
@@ -134,14 +134,14 @@
 60,"SCPP036","3",1,0,73,17.00,15.20,2.00,,,0,1
 61,"SCPP039","3",0,0,66,1.00,8.00,1.00,,"obv waarden vanaf sept 2010",0,1
 62,"SCPP040","3",1,0,72,23.00,15.20,3.10,,,0,1
-63,"SCPP042","3",0,1,88,-6.00,15.20,4.00,,,1,1
+63,"SCPP042","3",0,0,88,-6.00,15.20,4.00,,,1,1
 64,"SCPP043","3",1,0,73,3.00,4.50,2.00,1.82,"met step van 15 cm; tamelijk hoge evaporatiefactor",0,1
 65,"SCPP045","3",1,0,73,2.00,4.50,2.00,,"met step van 15 cm",0,1
 66,"SCPP047","3",1,0,71,6.00,4.50,3.00,1.84,"met step van 13 cm; tamelijk hoge evaporatiefactor",0,1
 67,"SCPP050","3",1,0,66,4.60,4.50,2.60,,"met step van 9 cm",0,1
 68,"SHHP032","3",0,0,0,,,,,"droogval",0,1
 69,"STAP050","3",1,0,51,22.50,11.00,0.50,,,0,1
-213,"SWPP032","1B",1,1,86,-44.00,16.00,5.40,,,1,1
+213,"SWPP032","1B",1,1,86,-18.00,16.00,1.30,,,1,1
 70,"TEUP019","3",1,0,82,29.00,12.00,1.00,,,0,1
 71,"TEUP026","3",1,0,29,,,,,,0,1
 72,"TEUP043","3",0,1,66,4.00,9.00,3.00,,"metingen vanaf 2008, lage peilen worden goed geschat",0,1
@@ -150,11 +150,11 @@
 75,"TEUP046","3",1,0,28,8.00,4.00,0.10,,"tijdreeks is niet goed te modelleren",1,1
 76,"TEUP047","3",1,0,51,-10.00,11.00,0.20,,"ondanks de kleine trend in absolute zin, is dit hier wel in relatieve zin een groot verschil: met lineaire trend stijgt de EVP naar 68% en meer",0,1
 214,"TIEP013","1B",1,0,93,35.00,13.00,1.30,,,1,1
-143,"TORP018","2",1,1,79,9.00,13.00,3.00,,"dubbele sprong in de tijdreeks ",1,1
+143,"TORP018","2",1,0,79,9.00,13.00,3.00,,"dubbele sprong in de tijdreeks ",1,1
 77,"TYDP004","3",1,0,84,3.00,14.50,3.00,,,0,1
 78,"TYDP012","3",1,0,84,7.00,14.50,3.00,,,0,1
 79,"TYDP031","3",1,0,84,1.00,14.50,3.00,,,0,1
-80,"TYDP050","3",1,1,82,11.00,17.00,2.00,,,1,1
+80,"TYDP050","3",1,0,82,11.00,17.00,2.00,,,1,1
 81,"TYDP055","3",1,0,87,-2.00,17.00,3.00,,,0,1
 82,"TYDP057","3",1,0,65,1.00,16.00,3.00,,,1,1
 83,"TYDP058","3",1,0,88,-1.00,16.00,3.00,,,0,1
@@ -167,22 +167,22 @@
 90,"TYDP207","3",1,0,62,,,,,,0,1
 91,"TYDP211","3",1,0,82,23.60,9.50,3.00,,,0,1
 215,"VDBP018","1B",0,0,81,0.00,13.00,2.00,,,1,1
-216,"VDBP019","1B",1,0,90,1.00,2.00,4.00,0.00,,1,1
-217,"VDBP023","1B",0,0,87,-8.00,2.00,6.00,0.00,,0,1
+216,"VDBP019","1B",1,0,90,1.00,2.00,4.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
+217,"VDBP023","1B",0,0,87,-8.00,2.00,6.00,0.00,"te weinig data  om een simulatie op te baseren",0,1
 218,"VDBP024","1B",0,0,74,-30.00,5.50,8.90,,"obv data vanaf 2013",0,1
 219,"VDBP025","1B",0,0,61,,,,,,0,1
-220,"VDBP026","1B",1,0,73,-3.50,2.00,5.00,0.00,,0,1
-221,"VDBP027","1B",1,0,72,-3.00,2.00,5.00,0.00,,0,1
-222,"VDBP028","1B",1,0,90,-1.00,5.00,6.00,0.00,,1,1
-223,"VDBP029","1B",1,0,84,2.00,2.00,4.00,0.00,,1,1
+220,"VDBP026","1B",1,0,73,-3.50,2.00,5.00,0.00,"te weinig data  om een simulatie op te baseren",0,1
+221,"VDBP027","1B",1,0,72,-3.00,2.00,5.00,0.00,"te weinig data  om een simulatie op te baseren",0,1
+222,"VDBP028","1B",1,0,90,-1.00,5.00,6.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
+223,"VDBP029","1B",1,0,84,2.00,2.00,4.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
 224,"VDBP034","1B",0,0,85,-15.00,6.00,0.70,,,1,1
-225,"VDBP060","1B",1,0,85,-4.00,2.00,3.00,0.00,,1,1
-226,"VDBP061","1B",1,0,86,-2.00,2.00,3.00,0.00,,1,1
+225,"VDBP060","1B",1,0,85,-4.00,2.00,3.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
+226,"VDBP061","1B",1,0,86,-2.00,2.00,3.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
 227,"VDBP062","1B",1,0,35,,,,,,1,1
-228,"VDBP063","1B",1,0,91,3.00,2.00,4.00,0.00,,1,1
-229,"VDBP064","1B",1,0,90,-1.00,2.00,3.00,0.00,,1,1
-230,"VDBP065","1B",1,0,86,2.00,2.00,4.00,0.00,,1,1
-231,"VDBP066","1B",1,0,87,-5.00,2.00,4.00,0.00,,1,1
+228,"VDBP063","1B",1,0,91,3.00,2.00,4.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
+229,"VDBP064","1B",1,0,90,-1.00,2.00,3.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
+230,"VDBP065","1B",1,0,86,2.00,2.00,4.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
+231,"VDBP066","1B",1,0,87,-5.00,2.00,4.00,0.00,"te weinig data  om een simulatie op te baseren",1,1
 232,"VDBP503","1B",0,0,64,,,,,,0,1
 233,"VDBP505","1B",1,0,82,15.00,7.50,2.50,,,1,1
 234,"VDBP514","1B",0,0,89,-7.00,18.00,1.00,,,0,1
@@ -256,9 +256,9 @@
 274,"ZEBP019","1B",1,0,56,,,,,,1,1
 275,"ZEBP025","1B",1,0,42,,,,,,1,1
 276,"ZEBP045","1B",1,0,34,,,,,,1,1
-277,"ZEBP046","1B",0,1,86,6.50,2.00,1.10,,,1,1
+277,"ZEBP046","1B",0,1,86,6.50,2.00,1.10,,"berekening lineaire trend (voor een niet-lineair model) is hier twijfelachtig",1,1
 144,"ZEMP005","2",1,0,72,-12.80,13.30,9.60,,,1,1
-120,"ZIEP003","3",0,1,65,-2.00,9.70,0.10,,,0,1
+120,"ZIEP003","3",0,1,65,-2.00,9.70,0.10,,"te kleine EVP is vermoedelijk te wijten aan meetfouten",0,1
 121,"ZWAP141","3",1,0,71,1.00,20.50,0.50,,,0,1
 122,"ZWAP165","3",0,0,49,,,,,,0,1
 123,"ZWAP196","3",0,0,56,8.80,12.90,0.20,,,0,1
