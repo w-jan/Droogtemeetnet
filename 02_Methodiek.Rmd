@@ -197,13 +197,19 @@ De meetreeksen van alle meetpunten die behoren tot cat. 1B en 2 werden geanalyse
 Van cat. 3 was dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
 Dit was in de veronderstelling dat er steeds minstens één meetreeks weerhouden (zie onder) zou worden.
 
-Een meetreeks werd weerhouden als er een tijdsmodel kon voor samengesteld worden dat minstens 70% van de waargenomen peilen kon verklaren en ook geen significante lineaire trend vertoont. 
+Een meetreeks werd weerhouden als er een tijdsmodel kon voor samengesteld worden dat minstens 70% van de variatie in de waargenomen peilen kon verklaren en ook geen significante lineaire trend vertoont. 
 Een tijdsmodel bevat standaard neerslag- en evapotranspiratiedata als verklarende reeksen, maar kan ook aangevuld worden met andere reeksen, bijv. oppervlaktewaterpeilen van een nabijgelegen waterloop. 
 Een [lineaire trend]{#lintrend} werd als **niet-**significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `sd`), voldoet aan de volgende twee regels:
 
 $$trend - 2* sd \leq 1(cm/jaar)$$ 
 en 
 $$trend + 2* sd \geq -1(cm/jaar)$$
+
+Bij de modelselectie kwam toch ook nog expertoordeel bij kijken. 
+Sommige tijdreeksen werden bijna perfect gefit, maar omdat het aantal beschikbare metingen maar op één meetjaar sloeg, was het toch onbetrouwbaar om het model te extrapoleren over een relatief lange tijdsperiode. 
+Anderzijds werd een model met een verklarende variantie < 70% toch soms nog weerhouden, als het model goed de lage grondwaterstanden kon modelleren.
+Zo kon ook een model met een niet significante trend, maar met een heel geringe fluctuaties toch afgekeurd worden en vice versa.
+
 
 Het al dan niet weerhouden van een tijdreeks kan gevolgen hebben voor de categorie-indeling van een rastercel. 
 Voor een rastercel kunnen immers na een tijdreeksanalyse meer of ook minder peilbuizen geschikt zijn. 
