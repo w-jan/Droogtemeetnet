@@ -8,7 +8,7 @@
 7,"BELP008","3",1,0,73,25.00,14.00,3.00,,,0,1
 8,"BELP009","3",1,0,43,,,,,,0,1
 9,"BELP010","3",0,0,75,15.00,11.00,3.00,,"niet lineair model gekozen owv betere schattingen voor lage waterstanden",0,1
-146,"BOBP018","1B",1,0,63,,,,,,1,1
+146,"BOBP018","1B",1,0,66,3.00,7.00,0.40,,,1,1
 147,"BREP201","1B",1,0,98,,,,0.21,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
 148,"BREP202","1B",1,0,98,,,,0.23,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
 149,"BREP203","1B",1,0,97,,,,0.12,"te weinig data (1 meetjaar) om een simulatie op te baseren",1,1
@@ -36,9 +36,9 @@
 156,"DEMP007","1B",0,0,89,,,,,,1,1
 24,"DUNP010","3",1,0,91,-3.00,15.00,3.00,,,0,1
 25,"DUNP012","3",1,0,86,0.09,15.00,1.80,,"vrij hoge evaporatiefactor: 2.00",1,1
-157,"DYLP020","1B",0,0,81,33.00,26.00,3.00,,,0,1
+157,"DYLP020","1B",0,1,81,32.50,25.70,3.00,,"tijdreeks heeft een grote amplitude",0,1
 158,"DYLP021","1B",0,0,75,24.00,25.00,4.00,,"vrij hoge evaporatiefactor: 1.58",0,1
-159,"DYLP029","1B",0,0,59,,,,,,0,1
+159,"DYLP029","1B",0,0,67,2.00,20.00,2.00,,,0,1
 138,"DYLP037","2",0,0,81,,,,,,1,1
 160,"DYLP064","1B",1,0,58,,,,,,0,1
 161,"DYLP066","1B",0,0,89,6.00,17.00,3.00,,,0,1
@@ -120,7 +120,7 @@
 207,"PARP003","1B",1,0,78,-3.00,5.00,0.50,,"obv data vanaf 2008",1,1
 208,"RASP001","1B",1,0,56,,,,,,1,1
 209,"RASP002","1B",1,0,65,18.00,6.00,6.00,,"obv data vanaf 2008",1,1
-210,"RASP003","1B",1,0,30,,,,,"ook obv data vanaf 208 bleef de EVP heel laag (39%)",1,1
+210,"RASP003","1B",1,0,30,,,,,"ook obv data vanaf 2008 bleef de EVP heel laag (39%)",1,1
 211,"ROTP003","1B",1,1,80,-12.00,6.00,0.70,,"rel kleine trend tav amplitude",1,1
 212,"SBBP002","1B",1,0,78,,,,6.60,"te hoge evaporatiefactor, mogelijk door de te korte tijdreeks",1,1
 52,"SBEP001","3",1,0,89,-20.00,16.00,2.00,,,0,1
@@ -146,7 +146,7 @@
 71,"TEUP026","3",1,0,29,,,,,,0,1
 72,"TEUP043","3",0,1,66,4.00,9.00,3.00,,"metingen vanaf 2008, lage peilen worden goed geschat",0,1
 73,"TEUP044","3",0,0,54,,,,,,0,1
-74,"TEUP045","3",1,0,30,8.00,11.00,0.20,,"tijdreeks is niet goed te modelleren",1,1
+74,"TEUP045","3",1,0,71,-2.00,8.00,2.00,,"step van 7cm",1,1
 75,"TEUP046","3",1,0,28,8.00,4.00,0.10,,"tijdreeks is niet goed te modelleren",1,1
 76,"TEUP047","3",1,0,51,-10.00,11.00,0.20,,"ondanks de kleine trend in absolute zin, is dit hier wel in relatieve zin een groot verschil: met lineaire trend stijgt de EVP naar 68% en meer",0,1
 214,"TIEP013","1B",1,0,93,35.00,13.00,1.30,,,1,1
