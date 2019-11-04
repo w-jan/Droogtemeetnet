@@ -468,9 +468,6 @@ watina <- connect_watina()
 tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                       buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), collect = TRUE)
 
-#oplossen van UTF-probleem: strings worden in inbo-SQL-databanken opgeslagen in UTF-16, terwijl hier gewerkt wordt met UTF-8. Dit geeft een probleem bij de kable-functie
-
-tubes_hab <- mutate_if(tubes_hab, is.character, iconv, to = "UTF-8")
 
 #beperken van peilbuizen tot de rastercel waar ze effectief in liggen. Door het gebruik van een buffer is het immers mogelijk dat een peilbuis in twee of meer cellen komt te liggen.
 tubes_hab_sf <- as_points(tubes_hab)
@@ -744,6 +741,13 @@ Tabel \@ref(tab:cat1A-table) geeft een overzicht per GT-groep van het aantal ges
 
 Figuur \@ref(fig:cat1A-plot) toont ze op een kaart.
 
+Indien een geselecteerde rastercel geen enkele peilbuis bevat, is deze rastercel uniek aan deze categorie verbonden.
+
+Indien een rastercel wel enkele peilbuizen heeft, weliswaar onvoldoende, dan zal deze rastercel tot meerdere categorieën behoren, afhankelijk van de kwaliteit van de meetreeksen. 
+Als de kwaliteit van de tijdreeks van een aantal peilbuizen voldoende is om al onmiddellijk in een meetnet te kunnen worden opgenomen, wordt de cel ook tot categorie 2 gerekend. 
+Als er onvoldoende kwalitatieve meetreeksen zijn, dan wordt de cel (ook) tot categorie 1B gerekend. 
+
+
 ```{r cat1A-raster, eval= TRUE, echo=FALSE, message=FALSE, warning= FALSE, include=TRUE}
 #eerste groep rastercellen: rastercellen zonder peilbuis
 # sel_cat1A_raster  <- sel_raster_meetnet %>% 
@@ -800,6 +804,7 @@ sel_cat1A_tm
 ```
 Er zijn `r sum(sel_cat1A_table$aantal_cat1A)` gewenste meetlocaties zonder peilbuis, verspreid over `r nrow(sel_cat1A_table)` rastercellen (figuur \@ref(fig:cat1A-plot)). 
 De hiaten zijn bijgevolg ruimtelijk goed verdeeld.
+
 
 ### Categorie 1B: Rastercellen met peilbuizen, maar onvoldoende **geschikte** {#cat1b}
 
@@ -1406,7 +1411,7 @@ rc <- reclassify(test, rclmat)
 plot(rc)
 ```
 <br/><br/>
-##Tijdreeksanalyse
+##Tijdreeksanalyse {#tijdreeksanalyse-uitvoering}
 
 De meetreeksen van peilbuizen die behoren tot de geselecteerde rastercellen van cat. 1B en 2 werden alle geïmporteerd in Menyanthes. 
 Van cat. 3 werden alleen de meetreeksen geïmporteerd van de beste clusters, die toch ook al aanleiding gaven tot een overaanbod.
@@ -2154,7 +2159,7 @@ tubes_excess <- tubes_in_raster %>%
 tubes_excess_sf <- as_points(tubes_excess)
 ```
 
-```{r plot-tubes-excess, eval=TRUE, echo=FALSE, message=TRUE, include=TRUE}
+```{r excess-plot, eval=TRUE, echo=FALSE, message=TRUE, include=TRUE}
 
 tubes_excess_tm <- raster_meetnet_poly_tm + 
   tm_shape(tubes_excess_sf %>% mutate (cat = as.factor(cat))) + 
@@ -2162,6 +2167,15 @@ tubes_excess_tm <- raster_meetnet_poly_tm +
 
 tubes_excess_tm
 ```
+
+```{r excess-raster, eval=TRUE, echo=FALSE, message=TRUE, include=TRUE}
+# sel_excess <- 
+#   tubes_excess_gw_raster_overlay %>%
+#   st_drop_geometry() %>% 
+#   distinct(rasterid) %>% 
+#   arrange(rasterid)
+```
+
 
 ```{r assigning-tubes-cat3}
 #gislaag maken van de peilbuizen waaruit kan gekozen worden, inclusief de gw-groep tot dewelke ze gerekend kunnen worden (een pb kan tot meerdere gw-groepen behoren)
