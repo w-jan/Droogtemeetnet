@@ -52,7 +52,7 @@
 169,"DYLP098","1B",1,0,20,,,,,,0,1
 170,"DYLP099","1B",0,0,59,,,,,,0,1
 171,"DYLP104","1B",0,0,52,,,,,,0,1
-139,"DYLP109","2",1,1,90,55.00,15.00,3.00,,"incl. effect oppervlaktepeilen; hoge evaporatiefactor: 2.24, maar laagste waterstanden worden goed geschat",1,1
+139,"DYLP109","2",1,0,90,55.00,15.00,3.00,,"incl. effect oppervlaktepeilen; hoge evaporatiefactor: 2.24, maar laagste waterstanden worden goed geschat",1,1
 172,"DYLP156","1B",1,0,91,,,,,"step van 21 cm; geen lineaire trend kunnen berekenen want interfereert met de step",0,1
 173,"GOBP004","1B",0,0,91,,,,,,1,1
 174,"GSCP001","1B",1,0,74,21.00,3.00,8.00,,,1,1
@@ -76,6 +76,7 @@
 189,"IJSP011","1B",1,0,47,,,,,,0,1
 190,"IJSP017","1B",1,0,29,,,,,,0,1
 191,"IJSP018","1B",1,0,27,,,,,,0,1
+286,"IJSP023","3",0,1,82,14.80,11.00,1.50,,,0,1
 28,"ITTP212","3",1,0,94,0.70,7.00,0.70,,,1,1
 29,"KALP136","3",0,0,80,,,,,,1,1
 30,"KALP137","3",1,0,68,-23.00,6.00,2.00,,,0,1
@@ -121,6 +122,7 @@
 208,"RASP001","1B",1,0,56,,,,,,1,1
 209,"RASP002","1B",1,0,65,18.00,6.00,6.00,,"obv data vanaf 2008",1,1
 210,"RASP003","1B",1,0,30,,,,,"ook obv data vanaf 2008 bleef de EVP heel laag (39%)",1,1
+287,"RODP019","3",1,0,75,4.90,3.80,0.45,,"zeer onregelmatige reeks; twee rel. grote sprongen (11cm en 14 cm); vrij hoge evaporatiefactor",0,1
 211,"ROTP003","1B",1,1,80,-12.00,6.00,0.70,,"rel kleine trend tav amplitude",1,1
 212,"SBBP002","1B",1,0,78,,,,6.60,"te hoge evaporatiefactor, mogelijk door de te korte tijdreeks",1,1
 52,"SBEP001","3",1,0,89,-20.00,16.00,2.00,,,0,1
