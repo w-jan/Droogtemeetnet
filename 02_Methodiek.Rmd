@@ -133,21 +133,20 @@ Voor een meetpunt dat voldoet aan deze criteria kan een gemiddeld laagste grondw
 
 Op basis van de kwaliteit van de tijdreeksen kunnen dan per GT-groep de rastercellen in (één of meer van de volgende) vier categorieën opgedeeld worden:
 
-- **Cat. 1A**: de vraag is groter dan het aanbod: er is een gebrek aan meetpunten
-- **Cat. 1B**: de vraag is groter aan het aanbod: er zijn voldoende meetpunten, maar er is een gebrek aan geschikte meetpunten
-- **Cat. 2**: de vraag is gelijk aan het aanbod: er zijn juist voldoende geschikte meetpunten: elk meetpunt wordt geselecteerd
+- **Cat. 1A**: de vraag is groter dan het aanbod: er is een gebrek aan meetpunten, aan de vraag kan enkel voldaan worden door nieuwe meetpunten te introduceren.
+- **Cat. 1B**: de vraag is groter aan het aanbod: er is een gebrek aan geschikte meetpunten, de vraag kan vervolledigd worden met actueel ongeschikte meetpunten
+- **Cat. 2**: de vraag is groter of gelijk aan het aanbod: er zijn geschikte meetpunten, juist voldoende of te weinig: elk meetpunt wordt geselecteerd en kan onmiddellijk ingezet worden.
 - **Cat. 3**: de vraag is kleiner dan het aanbod: er is een overschot aan geschikte meetpunten
 
 
 **_vraag: wat te doen met bestaande meetlocaties die actueel niet voldoen aan de basiscriteria (zie verder bij B)? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**
 
 In categorie 1A wordt elk eventueel beschikbaar meetpunt, al dan niet geschikt, geselecteerd.
+Bij rastercellen van cat. 1A is er een nood aan extra meetpunten. Hoe potentieel geschikte habitatvlekken geselecteerd kunnen worden, wordt in \@ref(sel-pot-habvlek) nader toegelicht.
 
-In categorie 1B wordt elk eventueel geschikt meetpunt geselecteerd. Zijn er meer beschikbare meetpunten dan er gewenst zijn, wordt hierbinnen het gewenste aantal via een nog verder besproken procedure geselecteerd.
-
-Bij rastercellen van cat. 1A is er sowieso een nood aan extra meetpunten. Hoe potentieel geschikte habitatvlekken geselecteerd kunnen worden, wordt in \@ref(sel-pot-habvlek) nader toegelicht.
-
-Bij cat. 1B kunnen rastercellen na de tijdreeksanalyse (zie \@ref(tijdreeksanalyse)) wel over een voldoende aantal geschikte meetpunten gaan beschikken. Zoniet wordt de werkwijze cfr. cat. 1A gevolgd.
+In categorie 1B onderscheidt zich van de andere categorieën, doordat alleen in deze categorie beroep gedaan wordt op actueel ongeschikte meetpunten. 
+Zijn er meer beschikbare meetpunten dan dat er gewenst zijn, wordt hierbinnen het gewenste aantal geselecteerd via een nog verder besproken procedure. 
+Elk eventueel actueel reeds geschikt meetpunt wordt hoedanook geselecteerd.
 
 Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie \@ref(suppl-criteria)). 
 Met een juist voldoende aantal wordt hier een juist voldoende aantal kwalitatief vergelijkbare meetpunten bedoeld.
