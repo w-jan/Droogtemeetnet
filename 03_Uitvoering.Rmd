@@ -1474,7 +1474,7 @@ De resultaten van de tijdreeksanalysen dienen om de peilbuizen te herevalueren. 
 
 ```{r join-tubes-on-raster-bis, eval= TRUE, include= TRUE, echo= FALSE}
 #peilbuizen miv evaluatie Menyanthes
-tubes_eval_menyanthes <- tubes_in_raster %>% 
+tubes_eval_namenyanthes <- tubes_in_raster %>% 
   left_join(tubes_menyanthes %>% 
               select(watinacode, selectie), by = c("loc_code" = "watinacode")) %>% 
   left_join(tubes_lgl_eval, 
@@ -1489,13 +1489,13 @@ tubes_eval_menyanthes <- tubes_in_raster %>%
 #rastercellen met een pb
 sel_raster_pb_bis <- 
   sel_raster_meetnet %>% 
-  inner_join(tubes_eval_menyanthes, 
+  inner_join(tubes_eval_namenyanthes, 
              by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   summarise(n_tubes = n(),
             n_tubes_lgl = 
-              sum(!is.na(series) & str_ends(series, "1")) + sum(selectie)) %>% 
-  mutate(n_tubes_lgl = if_else(n_tubes_lgl < 0,0,n_tubes_lgl)) %>%   
+              sum(!is.na(series) & str_ends(series, "1") & selectie >= 0) + 
+              sum(selectie > 0)) %>% 
   ungroup %>% 
   select(-geom, geom)
 
@@ -1599,14 +1599,11 @@ _**Ze kunnen nog niet onmiddellijk ingeschakeld worden in het meetnet, maar de v
 ```{r tubes-cat1Ba-bis-vb, eval=TRUE, echo=FALSE, message=FALSE, include=TRUE}
 tubes_cat1B_bis <- 
   sel_cat1B_raster_bis %>% 
-  inner_join(tubes_in_raster, 
-             by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
-  inner_join(tubes_menyanthes %>% 
-               select(watinacode, selectie) %>% 
-               filter (selectie == 0), by = c("loc_code" = "watinacode")) %>% 
+  inner_join(tubes_eval_namenyanthes %>% 
+               filter(selectie <= 0), by = c("rasterid", "groupnr")) %>% 
   st_drop_geometry() %>% 
   select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(),
-         -starts_with("loc_v"), -starts_with("loc_t")) %>% 
+         -starts_with("loc_v"), -starts_with("loc_t"), -starts_with("ser"), -starts_with("xg3")) %>% 
   arrange(rasterid, groupnr)
 
 
@@ -1721,12 +1718,12 @@ tubes_qual_basis_bis <-
   left_join(sel_cat1B_table_bis %>% 
               select(rasterid, groupnr, aantal_cat1B), 
             by = c("rasterid", "groupnr")) %>%
-  inner_join(tubes_eval_menyanthes, 
+  inner_join(tubes_eval_namenyanthes, 
              by =  c("rasterid", "groupnr")) %>% 
   distinct(rasterid, groupnr, gew_aantal_meetptn, loc_code, 
            aantal_cat1A, aantal_cat1B, ser_lastyear, ser_nryears, 
            ser_length, ser_firstyear, selectie) %>%
-  filter(selectie == 1 | ser_nryears > 0) %>% 
+  filter(selectie == 1 | (ser_nryears > 0 & selectie >= 0)) %>% 
   mutate(aantal_cat1A = replace_na(aantal_cat1A,0),
          aantal_cat1B = replace_na(aantal_cat1B,0),
          ser_lastyear = replace_na(ser_lastyear,2019),
@@ -1885,7 +1882,7 @@ sel_cat2_table_bis <-
 
 Tabel \@ref(tab:tubes-cat2-bis) toont de `r sum(sel_cat2_table_bis$rest_aantal_meetptn)` peilbuizen die, na de tijdreeksanalyse, nog tot de `r nrow(sel_cat2_table_bis)` rastercellen van deze categorie horen.
 
-Figuur \@ref(fig:cat2-plot-bis) toont ligging ervan.
+Figuur \@ref(fig:cat2-plot-bis) toont de ligging ervan.
 
 ```{r cat2-raster-bis, eval= TRUE, include= TRUE, echo= FALSE}
 sel_cat2_raster_bis <- sel_raster_pb_bis %>% 
@@ -1910,8 +1907,7 @@ sel_cat2_tm_bis
 tubes_cat2_bis <- 
   tubes_qual_basis_bis %>% 
     filter(selectie >= 0) %>% 
-    inner_join(sel_qual_basis_bis) %>% 
-    inner_join(sel_qual_bis) %>% 
+    inner_join(sel_qual_basis_bis) %>% #toevoeging is nodig om onderscheid te maken/behouden tussen de clusters
     inner_join(sel_cat2_table_bis)
 
 kable(tubes_cat2_bis %>% 
@@ -2003,7 +1999,9 @@ Figuur \@ref(fig:cat3-plot-bis) toont de spreiding ervan.
 De rastercellen liggen goed gespreid over Vlaanderen.
 Het is echter opvallend dat de verschillende GT-groepen waartoe ze behoren daarentegen vrij geclusterd voorkomen.
 Groepen 1 en 3 komen vooral in de Kempen voor.
-Groepen 2 en 4 zijn vooral in de leemstreek terug te vinden en rastercellen van groep 5 liggen uitsluitend in de duinstreek. 
+Rastercellen van groep 4 ligt alle in de (zand)leemstreek [^2] en deze van groep 5 liggen uitsluitend in de duinstreek. 
+
+[^2]: Dit is normaal, omdat alle cellen van deze groep in de (zand)leemstreek liggen.
 
 ```{r cat3-plot-bis, eval= TRUE, fig.cap = "rastercellen met een overschot aan geschikte peilbuizen", include= TRUE, echo= FALSE, warning= FALSE}
 
@@ -2026,7 +2024,6 @@ tubes_cat3_bis <-
   tubes_qual_basis_bis %>% 
   filter(selectie >= 0) %>% 
   inner_join(sel_qual_basis_bis) %>% 
-  inner_join(sel_qual_bis) %>% 
   inner_join(sel_cat3_table_bis)
 
 tubes_cat3_bis <- tubes_cat3_bis %>% 
@@ -2079,8 +2076,42 @@ Doordat niet op alle meetreeksen een tijdreeksanalyse werd uitgevoerd, kan het z
 De tijdreeks van deze meetreeksen worden dan best eerst geanalyseerd, waarna een nieuwe categorie-indeling volgt.
 
 ```{r check-volledigheid-analyse, eval=TRUE, echo=FALSE, message=TRUE, include=TRUE}
+if (nrow(tubes_cat3_bis %>% filter(selectie == 0)) > 0){
+  message("Er zijn nog enkele meetreeksen die best met Menyanthes onderzocht worden.")
+  nognietklaar <- TRUE
+} else{
+  message("Er hoeven geen bijkomende meetreeksen met Menyanthes onderzocht te worden.")
+  nognietklaar <- FALSE  
+}
 
-
+if (nognietklaar == TRUE) {
+kable(tubes_cat3_bis %>% 
+        filter (selectie == 0) %>% 
+        mutate(ser_nryears = ifelse(is.na(ser_length), NA, ser_nryears),
+               ser_firstyear = ifelse(is.na(ser_length), NA, ser_firstyear),
+               ser_lastyear = ifelse(is.na(ser_length), NA, ser_lastyear)
+               ) %>% 
+        select(loc_code, ser_length, ser_nryears, ser_firstyear,
+               ser_lastyear) %>% 
+        rename(watinacode = loc_code,
+               'lengte tijdreeks' = ser_length,
+               'aantal lg3' = ser_nryears,
+               beginjaar = ser_firstyear,
+               eindjaar = ser_lastyear
+               ) ,
+      caption =  "Watina-meetpunten die behoren tot rastercellen van cat. 3"
+      ) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "250px", box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
+}
+  
 ```
 
 

@@ -901,7 +901,7 @@ tubes_menyanthes_synthese <- tubes_menyanthes %>%
 #   ungroup %>% 
 #   select(-geom, geom)
 
-tubes_eval_menyanthes <- tubes_in_raster %>% 
+tubes_eval_namenyanthes <- tubes_in_raster %>% 
   left_join(tubes_menyanthes %>% 
               select(watinacode, selectie), by = c("loc_code" = "watinacode")) %>% 
   left_join(tubes_lgl_eval, 
@@ -913,15 +913,16 @@ tubes_eval_menyanthes <- tubes_in_raster %>%
   )
   ) 
 
+#test correctie voor DYLP109
+tubes_eval_namenyanthes[tubes_eval_namenyanthes$loc_code == "DYLP109",colnames(tubes_eval_namenyanthes) == "selectie"] <- -1
 sel_raster_pb_bis <- 
   sel_raster_meetnetB %>% 
-  inner_join(tubes_eval_menyanthes, 
+  inner_join(tubes_eval_namenyanthes, 
              by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   summarise(n_tubes = n(),
             n_tubes_lgl = 
-              sum(!is.na(series) & str_ends(series, "1")) + sum(selectie)) %>% 
-  mutate(n_tubes_lgl = if_else(n_tubes_lgl < 0,0,n_tubes_lgl)) %>%   
+              sum(!is.na(series) & str_ends(series, "1") & selectie >= 0) + sum(selectie > 0)) %>% 
   ungroup %>% 
   select(-geom, geom)
 
@@ -969,7 +970,7 @@ tubes_cat1B_bis <-
   sel_cat1B_raster_bis %>% 
   inner_join(tubes_in_raster, 
              by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
-  inner_join(tubes_menyanthes%>% 
+  inner_join(tubes_menyanthes %>% 
                select(watinacode, selectie) %>% 
                filter (selectie ==0), by = c("loc_code" = "watinacode")) %>% 
   st_drop_geometry() %>% 
@@ -977,8 +978,17 @@ tubes_cat1B_bis <-
          -starts_with("loc_v"), -starts_with("loc_t")) %>% 
   arrange(rasterid, groupnr)
 
+tubes_cat1B_bis <- 
+  sel_cat1B_raster_bis %>% 
+  inner_join(tubes_eval_namenyanthes %>% 
+               filter(selectie <= 0), by = c("rasterid", "groupnr")) %>% 
+  st_drop_geometry() %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(),
+         -starts_with("loc_v"), -starts_with("loc_t"), -starts_with("ser"), -starts_with("xg3")) %>% 
+  arrange(rasterid, groupnr)
 
-
+tubes_cat1B_tres %>% 
+  anti_join(tubes_cat1B_bis, by = "loc_code")
 
 tubes_cat1Ba <- tubes_cat1B_bis %>% 
   inner_join(tubes_cat1B_bis %>% 
@@ -1000,12 +1010,12 @@ tubes_qual_basis_bis <-
   left_join(sel_cat1B_table_bis %>% 
               select(rasterid, groupnr, aantal_cat1B), 
             by = c("rasterid", "groupnr")) %>%
-  inner_join(tubes_eval_menyanthes, 
+  inner_join(tubes_eval_namenyanthes, 
              by =  c("rasterid", "groupnr")) %>% 
   distinct(rasterid, groupnr, gew_aantal_meetptn, loc_code, 
            aantal_cat1A, aantal_cat1B, ser_lastyear, ser_nryears, 
            ser_length, ser_firstyear, selectie) %>%
-  filter(selectie == 1 | ser_nryears > 0) %>% 
+  filter(selectie == 1 | (ser_nryears > 0 & selectie >= 0)) %>% 
   mutate(aantal_cat1A = replace_na(aantal_cat1A,0),
          aantal_cat1B = replace_na(aantal_cat1B,0),
          ser_lastyear = replace_na(ser_lastyear,2019),
@@ -1068,17 +1078,20 @@ sel_cat2_table %>%
   anti_join(sel_cat2_table_bis)
 
 tubes_cat2_bis <- 
-  tubes_eval_menyanthes %>% 
-  filter(selectie == 1 | ser_nryears > 0) %>% 
+  tubes_eval_namenyanthes %>% 
+  filter(selectie == 1 | (ser_nryears > 0 & selectie >= 0 )) %>% 
     inner_join(sel_cat2_table_bis  , 
              by = c("rasterid", "groupnr"))
 
 tubes_cat2_bis <- 
   tubes_qual_basis_bis %>% 
     filter(selectie >= 0) %>% 
-    inner_join(sel_qual_basis_bis) %>% 
-    inner_join(sel_qual_bis) %>% 
+    inner_join(sel_qual_basis_bis) %>% #toevoeging is nodig om onderscheid te maken/behouden tussen de clusters
     inner_join(sel_cat2_table_bis)
+
+tubes_cat2_bis %>% 
+  anti_join(tubes_cat2_tris, by = "loc_code")
+
 tubes_cat2_bis
 sel_cat2_table_bis %>% 
   anti_join(tubes_cat2_bis)
@@ -1119,7 +1132,7 @@ sel_cat3_table_bis <-
   filter(beschikbaar_aantal > rest_aantal_meetptn, rankclus <= maxrank) %>% 
   select(-beschikbaar_aantal, -maxrank)  
 
-test <-sel_cat3_raster_bis %>% 
+test <- sel_cat3_raster_bis %>% 
   anti_join(sel_cat3_table_bis, by = c("rasterid", "groupnr"))
 
 tubes_cat3_bis <- 
@@ -1139,7 +1152,6 @@ tubes_cat3_bis <-
   tub_qual_basis_bis %>% 
   filter(selectie >= 0) %>% 
   inner_join(sel_qual_basis_bis) %>% 
-  inner_join(sel_qual_bis) %>% 
   inner_join(sel_cat3_table_bis)
 
 tubes_cat1Bb <- tubes_cat1B_bis %>% 
@@ -1182,7 +1194,6 @@ tubes_cat3_bis <-
   tubes_qual_basis_bis %>% 
   filter(selectie >= 0) %>% 
   inner_join(sel_qual_basis_bis) %>% 
-  inner_join(sel_qual_bis) %>% 
   inner_join(sel_cat3_table_bis)
 
 tubes_cat3_bis <- tubes_cat3_bis %>% 
@@ -1202,6 +1213,15 @@ tubes_cat3_bis %>%
          beginjaar = ser_firstyear,
          eindjaar = ser_lastyear
   )
+
+#zijn er nog meetreeksen die met Menyanthes moeten geanalyseerd worden?
+if (nrow(tubes_cat3_bis %>% filter(selectie == 0)) > 0){
+  message("Er zijn nog enkele meetreeksen die best met Menyanthes onderzocht worden.")
+  nognietklaar <- TRUE
+} else{
+  message("Er hoeven geen bijkomende meetreeksen met Menyanthes onderzocht te worden.")
+  nognietklaar <- FALSE  
+}
 
 
 #gislaag maken van de peilbuizen waaruit kan gekozen worden, inclusief de gw-groep tot dewelke ze gerekend kunnen worden (een pb kan tot meerdere gw-groepen behoren)
