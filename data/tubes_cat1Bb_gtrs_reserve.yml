@@ -5,9 +5,9 @@
   sorting:
   - rasterid
   - groupnr
-  - loc_code
-  hash: 467728faa4ff727c2f3f1461d019a9824ad7d5db
-  data_hash: 5cc8255b0e98dd0cb6d3fa3778bb9f5a2a34ca77
+  - reserve
+  hash: 98b7d51344852512eba2dbabd0043703611076b5
+  data_hash: 14f194ec26d403dee3e0523030e96ceb8b281e4a
 unieknr:
   class: integer
 loc_code:

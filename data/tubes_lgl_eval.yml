@@ -1,0 +1,35 @@
+..generic:
+  git2rdata: '0.1'
+  optimize: yes
+  NA string: NA
+  sorting: loc_code
+  hash: 0a7b6ce7da52d328f901be94ed5535af0ba5d169
+  data_hash: e9d4be9cff4a5791489cf172c5f1cb34acb60226
+loc_code:
+  class: character
+xg3_variable:
+  class: character
+series:
+  class: character
+ser_length:
+  class: numeric
+ser_nryears:
+  class: integer
+ser_rel_nryears:
+  class: numeric
+ser_firstyear:
+  class: numeric
+ser_lastyear:
+  class: numeric
+ser_pval_uniform:
+  class: numeric
+ser_mean:
+  class: numeric
+ser_sd:
+  class: numeric
+ser_se_6y:
+  class: numeric
+ser_rel_sd_lcl:
+  class: numeric
+ser_rel_se_6y_lcl:
+  class: numeric
