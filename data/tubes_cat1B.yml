@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 7096aee4eab0e1928787b4c5f15597e697166800
-  data_hash: 694a23bcb10e1eb3c69b6ddeb946af2045cb1e5a
+  hash: 32879dacd8a71c4eb5dfbc345ff4a950256170ce
+  data_hash: 0794c042c54a703b19b75ebb79ccaafa320d6931
 rasterid:
   class: integer
 groupnr:
@@ -64,9 +64,3 @@ typegroup_name:
   - 14
   - 15
   ordered: no
-nryears:
-  class: integer
-firstyear:
-  class: integer
-lastyear:
-  class: integer

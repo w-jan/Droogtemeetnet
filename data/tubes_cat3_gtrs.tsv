@@ -1,0 +1,30 @@
+unieknr	loc_code	area_code	area_name	x	y	loc_validitycode	loc_validity	loc_typecode	loc_typename	groupnr	typegroup_name	rasterid	cat	gew_aantal_meetptn	geselecteerd
+110	VDBP531	VDB	Vallei van de Drie Beken	197880	189431	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	54	3	1	1
+11	BUIP027	BUI	Buitengoor	206595	212155	VLD	Gevalideerd	P	Peilbuis/Piëzometer	1	11	118	3	1	1
+16	DUNP012	DUN	Dunbergbroek	178707	179625	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	134	3	1	1
+72	ROTP003	ROT	Rotbroek	200403	185618	VLD	Gevalideerd	P	Peilbuis/Piëzometer	2	12	166	3	1	1
+145	WESP008	WES	Westhoek	22617	198715	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	177	3	1	1
+66	NODP006	NOD	Noordduinen	27875	200717	VLD	Gevalideerd	P	Peilbuis/Piëzometer	5	15	177	3	1	1
+19	DYLP029	DYL	Dijlevallei	169238	167404	VLD	Gevalideerd	P	Peilbuis/Piëzometer	2	12	262	3	1	1
+41	LAVP059	LAV	Laanvallei	168181	164052	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	262	3	1	1
+47	MATP010	MAT	De Maten	225128	182769	VLD	Gevalideerd	P	Peilbuis/Piëzometer	1	11	306	3	1	1
+179	ZWIP041	ZWI	Zwinduinen en -polders	77028	227941	VLD	Gevalideerd	P	Peilbuis/Piëzometer	5	15	309	3	1	1
+44	LDOP019	LDO	Langdonken	184754	191421	VLD	Gevalideerd	P	Peilbuis/Piëzometer	1	11	342	3	1	1
+88	SNOP129	SNO	Snoekengracht	183331	169489	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	390	3	1	1
+50	MOLP023	MOL	Molenbeekvallei	166621	176753	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	454	3	1	1
+31	GSCP017	GSC	Groot Schietveld	167657	229201	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	478	3	1	1
+2	ALMP003	ALM	Aalmoezenijbos / Aelmoeseneiebos / Gontrodebos	110287	185136	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	601	3	1	1
+53	MOSP015	MOS	De Most	212551	207735	ENT	Ingegeven	P	Peilbuis/Piëzometer	1	11	630	3	1	1
+169	ZWAP303	ZWA	Zwarte Beek	213435	204022	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	630	3	1	1
+109	UKPP039	UKP	Uitkerkse Polder	63031	220174	VLD	Gevalideerd	P	Peilbuis/Piëzometer	5	15	693	3	1	1
+37	HBTP007	HBT	Helderbeekvallei Terril	212987	193133	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	694	3	1	1
+102	TYDP204	TYD	Ter Yde	33222	203448	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	817	3	1	1
+95	TYDP050	TYD	Ter Yde	32403	204128	VLD	Gevalideerd	P	Peilbuis/Piëzometer	5	15	817	3	1	1
+140	WERP012	WER	De Werft	192332	194448	VLD	Gevalideerd	P	Peilbuis/Piëzometer	1	11	822	3	1	1
+158	ZABP014	ZAB	Zammelsbroek	191421	198803	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	822	3	1	1
+111	VENP005	VEN	De Vennen	208256	206362	VLD	Gevalideerd	P	Peilbuis/Piëzometer	1	11	886	3	1	1
+79	SCPP042	SCP	Scheps	205315	204593	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	886	3	1	1
+161	ZWAP141	ZWA	Zwarte Beek	216785	198435	VLD	Gevalideerd	P	Peilbuis/Piëzometer	1	11	950	3	2	1
+164	ZWAP216	ZWA	Zwarte Beek	218514	198727	VLD	Gevalideerd	P	Peilbuis/Piëzometer	1	11	950	3	2	1
+165	ZWAP228	ZWA	Zwarte Beek	217381	197149	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	950	3	1	1
+68	PARP003	PAR	Parike-bos	109730	163542	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	985	3	1	1

@@ -2,25 +2,16 @@
   git2rdata: '0.1'
   optimize: yes
   NA string: NA
-  sorting: loc_code
-  hash: 7c2486ba00ac8b5d672b5c2f6ff553289d284398
-  data_hash: eee147d34774d5ab872ae3812f6c560e2c9aa072
-rasterid:
+  sorting:
+  - rasterid
+  - groupnr
+  - loc_code
+  hash: f7ceebf998ba653d1a2a71cca318e0e2184233c8
+  data_hash: 8ef6241326760563039363646c1e11a2b2a48cee
+unieknr:
   class: integer
-groupnr:
-  class: integer
-gew_aantal_meetptn:
-  class: numeric
 loc_code:
   class: character
-n_tubes:
-  class: integer
-n_tubes_lgl:
-  class: integer
-aantal_cat1A:
-  class: numeric
-aantal_cat1B:
-  class: numeric
 area_code:
   class: character
 area_name:
@@ -29,6 +20,16 @@ x:
   class: numeric
 'y':
   class: numeric
+loc_validitycode:
+  class: character
+loc_validity:
+  class: character
+loc_typecode:
+  class: character
+loc_typename:
+  class: character
+groupnr:
+  class: integer
 typegroup_name:
   class: factor
   labels:
@@ -64,7 +65,11 @@ typegroup_name:
   - 14
   - 15
   ordered: no
-selectie:
+rasterid:
+  class: integer
+cat:
   class: numeric
-n_tubes_zondermodel:
+gew_aantal_meetptn:
+  class: numeric
+geselecteerd:
   class: numeric
