@@ -21,6 +21,8 @@ library(tidyverse)
 library(kableExtra)
 library(knitr)
 library(units)
+library(RSQLite) 
+library (googledrive)
 
 gw_types <- read_scheme_types(lan = "nl") %>%
   filter(scheme == "GW_05.1_terr") %>%
@@ -612,13 +614,13 @@ tubes_cat1B <-
   sel_cat1B_raster %>% 
   inner_join(tubes_in_raster, 
              by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
-  inner_join(tubes_lg3_avail, 
-             by = "loc_code") %>% # aanduiding van pb lg3, geen lgl
+  # inner_join(tubes_lg3_avail, 
+  #            by = "loc_code") %>% # aanduiding van pb lg3, geen lgl
   st_drop_geometry() %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
-  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(), -xg3_variable,
+  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(),
          -starts_with("loc_v"), -starts_with("loc_t")) %>% 
-  arrange(rasterid, groupnr, desc(nryears))
+  arrange(rasterid, groupnr)
 
 tubes_cat1B %>% distinct(rasterid, groupnr)
 
@@ -963,8 +965,10 @@ sel_cat1B_table_bis %>%
   rename(GTgroep = groupnr
   )
 
-sel_cat1B_raster %>% st_drop_geometry() %>% 
-  anti_join( sel_cat1B_raster_bis %>% st_drop_geometry(), by = c("rasterid", "groupnr", "n_tubes"))
+sel_cat1B_raster_bis %>% st_drop_geometry() %>% 
+  anti_join( sel_cat1B_raster %>% st_drop_geometry(), by = c("rasterid", "groupnr", "n_tubes"))
+
+
 
 tubes_cat1B_bis <- 
   sel_cat1B_raster_bis %>% 
@@ -1231,12 +1235,16 @@ str(tubes_cat3_bis)
 tubes_excess <- tubes_in_raster %>% 
             inner_join(tubes_cat3_bis %>% 
               mutate(cat = 3) %>%  
-              select(loc_code, cat) %>% 
+              select(loc_code, cat, gew_aantal_meetptn) %>% 
               bind_rows(tubes_cat1Bb %>% 
                           mutate(cat = 1) %>%  
-                          select(loc_code, cat)
+                          select(loc_code, cat, gew_aantal_meetptn)
               )
             , by = "loc_code") 
+
+#toevoegen van een uniek rijnummer
+tubes_excess <- rownames_to_column(tubes_excess, "unieknr") %>% 
+  mutate(unieknr = as.integer(unieknr))
 
 tubes_excess_sf <- as_points(tubes_excess)
 
@@ -1279,31 +1287,59 @@ grts_level9 <- read_GRTSmh(brick = TRUE) %>%
 # uitgesloten_tubes <- c("MOSP001", "HALP005", "BUIP027")
 
 # reserve <- tubes_excess
-for (i in seq(1:nrow(sel_excess))) {
-  rasterid_grid <- sel_excess[i,] %>% as.integer()
+
+sel_excess <- tubes_cat1Bb %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  distinct() %>% 
+  bind_rows(sel_cat3_table_bis %>% 
+              select(rasterid, groupnr, rest_aantal_meetptn) %>%
+              rename(gew_aantal_meetptn = rest_aantal_meetptn)) %>% 
+  arrange(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  distinct()
+
+sel_excess_rasterid <- sel_excess %>% 
+  distinct(rasterid)
+
+tubes_excess$geselecteerd <- 0
+tubes_excess$reserve <- 0
+rasterid_grid <- 177
+
+for (i in seq(1:nrow(sel_excess_rasterid))) {
+  rasterid_grid <- sel_excess_rasterid[i,] %>% as.integer()
   clip9 <- grts_level9[grts_level9 == rasterid_grid, drop =  FALSE]
   clip1 <- grts_level1[clip9, drop =  FALSE]
   
+  tubes_excess_1grid <- tubes_excess %>% 
+    filter(rasterid == rasterid_grid) %>% 
+    count(groupnr, gew_aantal_meetptn) %>% 
+    rename(aantalpb = n)
+  
   # plot(tubes_excess_level1)
-  for (j in seq(1:nrow(sel_excess_lgl %>% filter(rasterid == rasterid_grid)))) {
-    
-    sel_excess_lgl_gwgroup <- sel_excess_lgl %>% 
-      filter(rasterid == rasterid_grid) %>%
-      arrange(beschikbaar_aantal_cluster) %>% 
-      slice(j) 
-    gewenst_aantal_pb <- sel_excess_lgl_gwgroup %>% 
+  for (j in seq(1:nrow(tubes_excess_1grid))) {
+    #j <- 2
+    # sel_excess_one <- tubes_excess_1grid %>% 
+    #   filter(rasterid == rasterid_grid) %>%
+    #   # arrange(beschikbaar_aantal_cluster) %>% 
+    #   slice(j) 
+    # ophalen van bijhorend aantal gewenste meetpunten en gw-groep, want een rastercel kan meerdere gw-groepen hebben waar er een overtal is (en het gewenste aantal meetpunten is specifiek per gw-groep)
+    gewenst_aantal_pb <- tubes_excess_1grid %>% 
+      slice(j) %>% 
       pull(gew_aantal_meetptn) %>% 
       as.integer()
-    gwgroup <- sel_excess_lgl_gwgroup %>% 
+    gwgroup <- tubes_excess_1grid %>% 
+      slice(j) %>%
       pull(groupnr) %>% 
       as.integer()
-    
+    aantalpb <- tubes_excess_1grid %>% 
+      slice(j) %>%
+      pull(aantalpb) %>% 
+      as.integer()
     
     #binnen een deelraster (clip1), alleen de rastercellen van level1 selecteren waarbinnen een pb valt. 
     #De andere rastercellen worden NA
     tubes_excess_level1 <- 
       raster::rasterize(tubes_excess %>% 
-                          filter(groupnr == gwgroup & selecteerbaar == 1) %>% 
+                          filter(groupnr == gwgroup) %>% 
                           select(x, y) %>% 
                           as.matrix(), 
                         y = clip1, #raster-object
@@ -1322,24 +1358,25 @@ for (i in seq(1:nrow(sel_excess))) {
     
     # rank_cells_level1
     
-    # raster met grts-nrs herindexeren naar 0 en 1 waarden. Het aantal 1 waarden stemt overeen met het gewenst aantal peilbuizen (voor dat grid).
+    # raster met grts-nrs herindexeren naar 0, 1 en 2 waarden. Het aantal 2-waarden stemt overeen met het gewenst aantal peilbuizen (voor dat grid), 1 zijn de reservepunt(en).
     # Hiervoor moet er eerst een n*2 matrix (rcl) gemaakt worden met de oude en nieuwe celwaarde.
     rcl <- data.frame("grtsnr" = rank_cells_level1 %>% pull(celwaarde), 
                       "selectie" = 
-                        c(rep(1,gewenst_aantal_pb), rep(0,nrow(rank_cells_level1) - gewenst_aantal_pb))) %>% 
+                        c(rep(1,gewenst_aantal_pb), seq(from = gewenst_aantal_pb + 1, to = nrow(rank_cells_level1)))) %>% 
       as.matrix()
     
     #herindexeren
     tubes_excess_level1_rcl <- raster::reclassify(tubes_excess_level1, rcl)
     
-    #raster maken met de unieke nummers van de pb, maar dat enkel voor het gewenste aantal
+    #raster maken met de unieke nummers van de pb, maar dat enkel voor het gewenste aantal pb
     tubes_excess_level1_unieknr <- raster::rasterize(tubes_excess %>% 
-                                                       filter(groupnr == gwgroup & selecteerbaar == 1) %>% 
+                                                       filter(groupnr == gwgroup) %>% 
                                                        select(x, y) %>% 
                                                        as.matrix(),
-                                                     tubes_excess_level1_rcl[tubes_excess_level1_rcl == 1, drop = FALSE],
+                                                     tubes_excess_level1_rcl[tubes_excess_level1_rcl == 1, 
+                                                                             drop = FALSE],
                                                      field = tubes_excess %>% 
-                                                       filter(groupnr == gwgroup & selecteerbaar == 1) %>%
+                                                       filter(groupnr == gwgroup) %>%
                                                        select(unieknr), 
                                                      mask = FALSE)
     
@@ -1351,36 +1388,83 @@ for (i in seq(1:nrow(sel_excess))) {
     tubes_excess_selected_unieknr <- tubes_excess_selected_unieknr %>% 
       filter(!is.na(unieknr)) %>%  
       distinct() %>% 
-      arrange(unieknr) 
+      arrange(unieknr) %>% 
+      pull(unieknr)
     
-    #opzoeken van pb met die unieke nr(s)
-    tubes_excess_selected_part <- 
-      tubes_excess %>% 
-      inner_join(tubes_excess_selected_unieknr, 
-                 by = "unieknr") %>% 
-      rename(geselecteerd = selecteerbaar) %>% 
-      select(unieknr, geselecteerd)
-    #markeren en ook zo vermijden dat een pb twee keer wordt geselecteerd
-    tubes_excess <- 
-      tubes_excess %>% 
-      left_join(tubes_excess_selected_part, 
-                by = "unieknr") %>% 
-      mutate(selecteerbaar = ifelse(is.na(geselecteerd), selecteerbaar, 0)) %>% 
-      select(-geselecteerd)
+    #peilbuis als geselecteerd markeren
+    tubes_excess[tubes_excess$unieknr %in% tubes_excess_selected_unieknr, "geselecteerd"] <- 1
+
+    #idem maar nu voor de reservepunten
+    #raster maken met de unieke nummers van de pb, maar dat enkel voor de reservepunten
+    for (k in seq(from = (gewenst_aantal_pb + 1), to = nrow(rank_cells_level1))) {
+ 
+      # #herindexeren
+      # tubes_excess_level1_rcl <- raster::reclassify(tubes_excess_level1, rcl)
+      
+      tubes_excess_level1_unieknr <- raster::rasterize(tubes_excess %>% 
+                                                         filter(groupnr == gwgroup) %>% 
+                                                         select(x, y) %>% 
+                                                         as.matrix(),
+                                                       tubes_excess_level1_rcl[tubes_excess_level1_rcl == k, 
+                                                                               drop = FALSE],
+                                                       field = tubes_excess %>% 
+                                                         filter(groupnr == gwgroup) %>%
+                                                         select(unieknr), 
+                                                       mask = FALSE)
+      
+      #ophalen van de unieke nummers
+      tubes_excess_selected_unieknr <- tubes_excess_level1_unieknr %>% 
+        raster::getValues() %>% 
+        as.data.frame()
+      names(tubes_excess_selected_unieknr) <- "unieknr" 
+      tubes_excess_selected_unieknr <- tubes_excess_selected_unieknr %>% 
+        filter(!is.na(unieknr)) %>%  
+        distinct() %>% 
+        arrange(unieknr) %>% 
+        pull(unieknr)
+      
+      #peilbuis als geselecteerd markeren
+      tubes_excess[tubes_excess$unieknr %in% tubes_excess_selected_unieknr, "reserve"] <- k
+    }
+    # #opzoeken van pb met die unieke nr(s)
+    # tubes_excess_selected_part <- 
+    #   tubes_excess %>% 
+    #   inner_join(tubes_excess_selected_unieknr, 
+    #              by = "unieknr") %>% 
+    #   rename(geselecteerd = selecteerbaar) %>% 
+    #   select(unieknr, geselecteerd)
+    # #markeren en ook zo vermijden dat een pb twee keer wordt geselecteerd
+    # tubes_excess <- 
+    #   tubes_excess %>% 
+    #   left_join(tubes_excess_selected_part, 
+    #             by = "unieknr") %>% 
+    #   mutate(selecteerbaar = ifelse(is.na(geselecteerd), selecteerbaar, 0)) %>% 
+    #   select(-geselecteerd)
     
   } #loop gw-groepen
 } # loop gridcellen
 
 #aanduiden welke pb geselecteerd zijn
-tubes_group4 <-
-  tubes_excess %>% 
-  rename(geselecteerd = selecteerbaar) %>% 
-  mutate(geselecteerd = ifelse(geselecteerd == 0,1,0)) %>% 
-  filter(geselecteerd == 1) %>% 
+tubes_cat3_gtrs <- tubes_excess %>% 
+  filter(geselecteerd == 1 & cat == 3) %>% 
   arrange(rasterid, groupnr, loc_code)
 
+tubes_cat1Bb_gtrs <- tubes_excess %>% 
+  filter(geselecteerd == 1 & cat == 1) %>% 
+  arrange(rasterid, groupnr, loc_code)
+
+check_aantal <- tubes_cat3_bis %>% 
+  distinct(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  summarise(som_aantal_meetptn = sum(gew_aantal_meetptn))
+
+check_aantal <- tubes_cat1Bb %>% 
+  distinct(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  summarise(som_aantal_meetptn = sum(gew_aantal_meetptn))
+
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
-write_vc(tubes_group4, file.path(".","data","tubes_group4"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
+write_vc(tubes_cat3_gtrs, file.path(".","data","tubes_cat3_gtrs"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
+write_vc(tubes_cat1Bb_gtrs, file.path(".","data","tubes_cat1Bb_gtrs"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
+
 # test <- read_vc(file.path(".","data","tubes_group4"))
 
 
@@ -1393,3 +1477,145 @@ test <- sel_cat1B_raster_bis %>%
   bind_rows(tubes_cat3 %>% select(rasterid, groupnr) %>% distinct() )
 
 test %>% count(rasterid, groupnr) %>% arrange (desc(n))
+
+tubes_cat1B_bis <- 
+  sel_cat1B_raster_bis %>% 
+  inner_join(tubes_eval_namenyanthes %>% 
+               filter(selectie <= 0), by = c("rasterid", "groupnr")) %>% 
+  st_drop_geometry() %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(),
+         -starts_with("loc_v"), -starts_with("loc_t"), -starts_with("ser"), -starts_with("xg3")) %>% 
+  arrange(rasterid, groupnr)
+
+
+tubes_cat1Ba <- tubes_cat1B_bis %>% 
+  inner_join(tubes_cat1B_bis %>% 
+               group_by(rasterid, groupnr, gew_aantal_meetptn, aantal_cat1A) %>% 
+               summarise(n_tubes_zondermodel = n())
+  ) %>% 
+  mutate(n_tubes_zondermodel = n_tubes_zondermodel + aantal_cat1A) %>% 
+  filter(gew_aantal_meetptn == n_tubes_zondermodel)
+
+tubes_cat1Bb <- tubes_cat1B_bis %>% 
+  anti_join(tubes_cat1Ba, by = "loc_code") %>% 
+  inner_join(tubes_cat1B_bis %>% 
+               group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+               summarise(n_tubes_zondermodel = n())
+  ) 
+write_csv(tubes_cat1B_bis %>% 
+            anti_join(tubes_cat1B, by = "loc_code"), file.path(".","data", "local","tubes_1B_nolgl3.csv"))
+
+test <- 
+  sel_cat1B_raster %>% 
+  inner_join(tubes_in_raster, 
+             by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
+  # inner_join(tubes_lg3_avail, 
+  #            by = "loc_code") %>% # aanduiding van pb lg3, geen lgl
+  st_drop_geometry() %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(), 
+         -starts_with("loc_v"), -starts_with("loc_t")) %>% 
+  arrange(rasterid, groupnr)
+
+test %>% 
+  select(-n_tubes_lgl, -aantal_cat1A, -typegroup_name) %>% 
+  rename(GTgroep = groupnr,
+         rasternr = rasterid,
+         watinacode = loc_code,
+         'gewenst aantal meetptn' = gew_aantal_meetptn,
+         '# peilbuizen' =  n_tubes,
+         gebied = area_name,
+         gebiedcode = area_code,
+         '# op te waarderen ptn' = aantal_cat1B
+  ) %>% 
+  arrange(watinacode)
+
+datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
+dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+st_write(habmap_polygons_gw,
+         file.path(datapath, 
+                   "GIS/VoorR/habmap_terr_gw.gpkg"), 
+         layer = "habitatmap_terr_polygons_gw", 
+         driver = "GPKG",
+         delete_dsn = TRUE)
+
+con = dbConnect(SQLite(),
+                dbname = file.path(
+                  datapath, 
+                  "GIS/VoorR/habmap_terr_gw.gpkg")
+)
+
+dbWriteTable(con, "habitatmap_terr_patches_gw", habmap_patches_gw)
+
+dbDisconnect(con)
+test <- drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c")
+test2 <- drive_download(drive_get(id  = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
+
+drive_download(drive_get(id = "1o4-92mysyQL-kusSYxNKlhyHgyeXkj22"), path = file.path(".","data","local", "droogtemeetnet_gis.gpkg"), overwrite = TRUE)
+
+drive_download(test)
+
+habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+                "habitatmap_terr_polygons_gw")
+
+habmap_polygons_gw <- habmap_polygons_gw %>%
+  mutate(polygon_id = factor(.data$polygon_id),
+         type = factor(.data$type),
+         typegroup_name = factor(.data$typegroup_name)
+         )
+
+habmap_patches_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+                "habitatmap_terr_patches_gw"))
+
+datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
+dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+
+st_write(habmap_polygons_gw,
+         file.path(datapath, 
+                   "GIS/VoorR/droogtemeetnet_gis.gpkg"), 
+         layer = "habitatmap_terr_polygons_gw", 
+         driver = "GPKG",
+         delete_dsn = TRUE)
+
+con = dbConnect(SQLite(),
+                dbname = file.path(
+                  datapath, 
+                  "GIS/VoorR/droogtemeetnet_gis.gpkg")
+)
+
+dbWriteTable(con, "habitatmap_terr_patches_gw", habmap_patches_gw)
+
+
+
+#GRTS-data
+raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
+
+dbWriteTable(con, "raster_meetnet_poly", raster_meetnet_poly)
+
+dbDisconnect(con)
+
+drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
+
+
+all.equal(test,raster_meetnet_poly)
+
+st_write(raster_meetnet_poly,
+         file.path(datapath, 
+                   "GIS/VoorR/raster_meetnet_poly.gpkg"), 
+         layer = "raster_meetnet_poly", 
+         driver = "GPKG",
+         delete_dsn = TRUE)
+
+drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), path = file.path(".","data","local", "raster_meetnet_poly.gpkg"), overwrite = TRUE)
+
+test <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"),
+                                 "raster_meetnet_poly"))
+
+#inlezen grts-raster level 1 (hoogste resolutie = kleinste gridcelgrootte)
+grts_level1 <- read_GRTSmh(brick = TRUE) %>% 
+  raster::subset(1)
+
+#inlezen grts-raster level 9 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 1. 
+grts_level9 <- read_GRTSmh(brick = TRUE) %>% 
+  raster::subset(9)
+
+

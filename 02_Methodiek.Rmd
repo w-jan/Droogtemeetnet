@@ -110,9 +110,11 @@ We beschouwen een meetpunt als geschikt voor het berekenen van een droogte-indic
 - Deze tijdreeks bevat _minstens 5 (hydrologische) jaren_ waarvoor een lg3[^1] kan berekend worden.
 
 Het is belangrijk te vermelden dat deze basiskwaliteitscriteria vooral dienen voor een eerste screening van de meetpunten op basis actueel beschikbare feitelijke grondwatermetingen. 
-De eigenlijke kwaliteit van de tijdreeks wordt bepaald door een tijdreeksanalyse (zie \@ref(tijdreeksanalyse). 
+De eigenlijke kwaliteit van de tijdreeks wordt bepaald door een tijdreeksanalyse (zie \@ref(tijdreeksanalyse)). 
 
 Een meetpunt kan op basis van de actueel beschikbare gegevens ongeschikt zijn, omdat de gegevens niet toelaten om deze indicator voldoende betrouwbaar te berekenen. 
+
+<!-- #####Een rastercel kan tot meerdere categorieën horen  -->
 
 Nemen we ook het kwaliteitsaspect mee in de beoordeling, dan wordt de categorie-indeling complexer. 
 We kunnen niet alleen meerdere subcategorieën onderscheiden, maar een rastercel zal ook tot meerdere categorieën kunnen behoren.
@@ -155,9 +157,9 @@ Cat. 3 omvat de rastercellen waarbij er meer meetpunten met gelijkwaardige kwali
 Voor deze laatste groep zal nog een ruimtelijke selectie (zie \@ref(sel-habvlek)) van peilbuizen dienen te gebeuren.
 
 
-#### Selecteren van potentiële geschikte habitatvlekken voor rastercellen waarvoor nu geen (of te weinig) pb’en bestaan (cat. 1) {#sel-pot-habvlek}
+#### Selecteren van potentiële geschikte habitatvlekken voor rastercellen waarvoor nu geen (of te weinig) pb’en bestaan (cat. 1A) {#sel-pot-habvlek}
 
-Voor rastercellen van cat. 1 is er een nood aan één of meer extra meetpunten.
+Voor rastercellen van cat. 1A is er een nood aan één of meer extra meetpunten.
 Om hierbinnen (8192 * 8192 m) de plaatskeuze zo aselect mogelijk te doen, doen we beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m). 
 Opnieuw wordt op deze manier een synergie bekomen met de aselecte locatiekeuzes in MNM.
 Elk deelrastercel heeft binnen de rastercel een bepaalde rangnummer. 
@@ -167,11 +169,13 @@ Aan de selectie van deelrastercellen kunnen, naast de aanwezigheid van de juiste
 Blijkt bij inspectie op terrein dat de geselecteerde plaats toch niet aan de verwachtingen/criteria voldoet, dan wordt binnen dezelfde rastercel de rastercel die het eerst in rang volgt bezocht.  
 
 
-#### Selecteren van meetlocaties binnen rastercellen waarvoor meer kandidaat locaties zijn dan gezocht (cat. 3) {#sel-habvlek}
+#### Selecteren van een meetpunt in een rastercel waarvoor meerdere kandidaten zijn (cat. 1B en 3) {#sel-habvlek}
 
-Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen (zie \@ref(sel-pot-habvlek)). We doen hiervoor terug beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m).
+Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen (zie \@ref(sel-pot-habvlek)). 
+We doen hiervoor terug beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m).
 Het/de meetpunt(en) gelegen in de deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden.
-
+Deze werkwijze laat ook gemakkelijk toe om reserve-punten te kiezen.
+Het zijn de meetpunten die in rang volgen op de laagste rang van een gekozen punt.
 
 #### Opstellen van bijkomende kwaliteitscriteria voor meetpunten {#suppl-criteria}
 
@@ -186,7 +190,7 @@ We stellen volgende drie extra kwaliteitscriteria voor:
 
 1. Meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks: 
 de meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
-<!-- @jan: checken of het inderdaad 'eindjaar' is -->
+
 Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren`** jaar is.
 1. Meetpunten met een langere tijdreeks krijgen ook een hogere prioriteit: 
 meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
@@ -242,9 +246,16 @@ en
 $$trend + 2* sd \geq -1(cm/jaar)$$
 
 Bij de modelselectie kwam toch ook nog expertoordeel bij kijken. 
-Sommige tijdreeksen werden bijna perfect gefit, maar omdat het aantal beschikbare metingen maar op één meetjaar sloeg, was het toch onbetrouwbaar om het model te extrapoleren over een relatief lange tijdsperiode. 
-Anderzijds werd een model met een verklarende variantie < 66% toch soms nog weerhouden, als het model goed de lage grondwaterstanden kon modelleren.
-Zo kon ook een model met een niet significante trend, maar met een heel geringe fluctuaties toch afgekeurd worden en vice versa.
+
+Er werden geen kwaliteitseisen gesteld aan een meetreeks die deze a priori zou uitsluiten van een tijdreeksanalyse. 
+De gestelde eisen hebben alleen een weerslag op de categorie-indeling. 
+In principe kan elke peilbuis in categorie 1B terecht komen, zelfs is er maar één meting van bekend.
+En zo geschiedde ook.
+Deze meetreeksen werden manueel afgekeurd. Sommige van deze tijdreeksen hadden bijna een perfecte fit, maar het was toch onbetrouwbaar om hiermee waarden te simuleren over een relatief lange tijdsperiode. 
+
+Anderzijds werd een model met een verklarende variantie beneden 66% soms nog weerhouden, indien bleek dat het model de lage grondwaterstanden goed kon modelleren.
+
+Een model met een trend < 1cm/jaar, maar met een heel geringe fluctuaties kon toch afgekeurd worden en vice versa.
 
 
 Het al dan niet weerhouden van een tijdreeks kan gevolgen hebben voor de categorie-indeling van een rastercel. 

@@ -11,11 +11,12 @@ Met natuurgebieden worden hier alle locaties met grondwaterafhankelijke habitatt
 
 ```{r gw-typen, eval=TRUE, include = TRUE, echo=FALSE, warning=FALSE}
 # read_schemes_local(path = "../../n2khab/inst/textdata")
-gw_types <- read_scheme_types(lang = "nl") %>%
-    filter(scheme == "GW_05.1_terr") %>%
-    arrange(typegroup) %>%
-    mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
-    dplyr::select(type, groupnr, typegroup_name)
+# gw_types <- read_scheme_types(lang = "nl") %>%
+#     filter(scheme == "GW_05.1_terr") %>%
+#     arrange(typegroup) %>%
+#     mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
+#     dplyr::select(type, groupnr, typegroup_name)
+gw_types <- read_vc("gw_types", file.path(getwd(),"data"))
 kable(gw_types %>% 
         dplyr::select(type, groupnr) %>% 
         inner_join(read_namelist(lang = "nl") %>% 
@@ -71,42 +72,53 @@ Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog
 
 
 ```{r loading habitatmap, include=FALSE, eval= TRUE}
-# habmap_terr <- read_habitatmap_terr()
+# # habmap_terr <- read_habitatmap_terr()
+# # 
+# # habmap_polygons <- habmap_terr$habitatmap_terr_polygons
+# # 
+# # habmap_patches <- habmap_terr$habitatmap_terr_patches
+# habfile <- "20_processed/habitatmap_terr/habitatmap_terr.gpkg"
 # 
-# habmap_polygons <- habmap_terr$habitatmap_terr_polygons
+# habmap_stdized <- read_habitatmap_stdized(file = habfile)
 # 
-# habmap_patches <- habmap_terr$habitatmap_terr_patches
-habfile <- "20_processed/habitatmap_terr/habitatmap_terr.gpkg"
-
-habmap_stdized <- read_habitatmap_stdized(file = habfile)
-
-habmap_polygons <- habmap_stdized$habitatmap_polygons
-
-habmap_patches <- habmap_stdized$habitatmap_patches
-
-types <- read_types(lang = "nl")
-
-habmap_patches <- habmap_patches %>%
-    mutate( polygon_id = as.factor(.data$polygon_id),
-            patch_id = as.numeric(.data$patch_id),
-            certain = .data$certain == 1,
-            type = factor(.data$type,
-                          levels = levels(types$type)
-                          )
-            )
+# habmap_polygons <- habmap_stdized$habitatmap_polygons
+# 
+# habmap_patches <- habmap_stdized$habitatmap_patches
+# 
+# types <- read_types(lang = "nl")
+# 
+# habmap_patches <- habmap_patches %>%
+#     mutate( polygon_id = as.factor(.data$polygon_id),
+#             patch_id = as.numeric(.data$patch_id),
+#             certain = .data$certain == 1,
+#             type = factor(.data$type,
+#                           levels = levels(types$type)
+#                           )
+#             )
 
 ```
 
 
 ```{r habitat selection, echo=FALSE, eval= TRUE}
 
-# Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
-habmap_patches_gw <- habmap_patches %>% 
-  inner_join(gw_types, by = c("type" = "type"))
-habmap_polygons_gw <- 
-  habmap_polygons %>% 
-      inner_join(habmap_patches_gw %>% 
-                   dplyr::select(-code_orig), 
-                by = "polygon_id")
+# # Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
+# habmap_patches_gw <- habmap_patches %>% 
+#   inner_join(gw_types, by = c("type" = "type"))
+# habmap_polygons_gw <- 
+#   habmap_polygons %>% 
+#       inner_join(habmap_patches_gw %>% 
+#                    dplyr::select(-code_orig), 
+#                 by = "polygon_id")
+drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
 
+habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+                "habitatmap_terr_polygons_gw")
+
+habmap_polygons_gw <- habmap_polygons_gw %>%
+  mutate(polygon_id = factor(.data$polygon_id),
+         type = factor(.data$type),
+         typegroup_name = factor(.data$typegroup_name)
+         )
+habmap_patches_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+                "habitatmap_terr_patches_gw"))
 ```

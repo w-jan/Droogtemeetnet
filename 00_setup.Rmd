@@ -34,6 +34,7 @@ library(tmap)
 library(tidyverse)
 library(kableExtra)
 library(knitr)
+library(RSQLite) 
 ```
 
 ```{r constanten, eval= TRUE, include= TRUE, echo= FALSE}
@@ -61,6 +62,108 @@ minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
 #zoekstraal rond peilbuizen (buffer)
 bufferpb <- 3 
 
-
+#peilbuizen niet zeker niet kunnen opgenomen worden, bijv. geen toelating, omdat het te dicht bij een ander geselecteerd punt ligt
+#uitgesloten_tubes <- c("MOSP001", "HALP005", "BUIP027")
+uitgesloten_tubes <- "leeg"
 
 ```
+
+```{r read-databases, eval= TRUE, include= TRUE, echo= FALSE}
+gw_types <- read_scheme_types(lang = "nl") %>%
+    filter(scheme == "GW_05.1_terr") %>%
+    arrange(typegroup) %>%
+    mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
+    dplyr::select(type, groupnr, typegroup_name)
+output_vc <- write_vc(gw_types, file.path(".","data","gw_types"), sorting = c("type"), strict =  FALSE)
+
+types <- read_types(lang = "nl")
+output_vc <- write_vc(types, file.path(".","data","types"), sorting = c("type"), strict =  FALSE)
+
+
+rm(output_vc)
+
+```
+
+```{r read-gisdata, eval= TRUE, include= TRUE, echo= FALSE}
+habmap_terr <- read_habitatmap_terr()
+
+habmap_polygons <- habmap_terr$habitatmap_terr_polygons
+
+habmap_patches <- habmap_terr$habitatmap_terr_patches
+# habfile <- "20_processed/habitatmap_terr/habitatmap_terr.gpkg"
+# 
+# habmap_stdized <- read_habitatmap_stdized(file = habfile)
+# 
+# habmap_polygons <- habmap_stdized$habitatmap_polygons
+# 
+# habmap_patches <- habmap_stdized$habitatmap_patches
+
+habmap_patches <- habmap_patches %>%
+    mutate( polygon_id = as.factor(.data$polygon_id),
+            patch_id = as.numeric(.data$patch_id),
+            certain = .data$certain == 1,
+            type = factor(.data$type,
+                          levels = levels(types$type)
+                          )
+            )
+
+# Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
+habmap_patches_gw <- habmap_patches %>% 
+  inner_join(gw_types, by = c("type" = "type"))
+
+habmap_polygons_gw <- 
+  habmap_polygons %>% 
+      inner_join(habmap_patches_gw %>% 
+                   dplyr::select(-code_orig), 
+                by = "polygon_id")
+
+
+#wegschrijven als geopackage
+datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
+dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+
+st_write(habmap_polygons_gw,
+         file.path(datapath, 
+                   "GIS/VoorR/habmap_terr_gw.gpkg"), 
+         layer = "habitatmap_terr_polygons_gw", 
+         driver = "GPKG",
+         delete_dsn = TRUE)
+
+con = dbConnect(SQLite(),
+                dbname = file.path(
+                  datapath, 
+                  "GIS/VoorR/habmap_terr_gw.gpkg")
+                )
+
+dbWriteTable(con, "habitatmap_terr_patches_gw", habmap_patches_gw)
+
+dbDisconnect(con)
+
+
+#GRTS-data
+raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
+
+dbWriteTable(con, "raster_meetnet_poly", raster_meetnet_poly)
+
+#inlezen grts-raster level 1 (hoogste resolutie = kleinste gridcelgrootte)
+grts_level1 <- read_GRTSmh(brick = TRUE) %>% 
+  raster::subset(1)
+
+#inlezen grts-raster level 9 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 1. 
+grts_level9 <- read_GRTSmh(brick = TRUE) %>% 
+  raster::subset(9)
+
+writeRaster(grts_level9,
+            filename = file.path(datapath, "GIS/VoorR/grts_level9.tif"), 
+            format = "GTiff", 
+            datatype = "INT4S",
+            overwrite = TRUE)
+
+writeRaster(grts_level1,
+            filename = file.path(datapath, "GIS/VoorR/grts_level1.tif"), 
+            format = "GTiff", 
+            datatype = "INT4S",
+            overwrite = TRUE)
+
+```
+
