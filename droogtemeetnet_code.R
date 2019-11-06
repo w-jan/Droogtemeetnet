@@ -1579,7 +1579,7 @@ st_write(habmap_polygons_gw,
 con = dbConnect(SQLite(),
                 dbname = file.path(
                   datapath, 
-                  "GIS/VoorR/droogtemeetnet_gis.gpkg")
+                  "GIS/VoorR/habmap_terr_gw.gpkg")
 )
 
 dbWriteTable(con, "habitatmap_terr_patches_gw", habmap_patches_gw)
@@ -1618,4 +1618,57 @@ grts_level1 <- read_GRTSmh(brick = TRUE) %>%
 grts_level9 <- read_GRTSmh(brick = TRUE) %>% 
   raster::subset(9)
 
+writeRaster(filename = "../../n2khab_data/20_processed/GRTSmh_brick/GRTSmh_brick.tif",
+            format = "GTiff", 
+            datatype = "INT4S",
+            overwrite = TRUE)
 
+writeRaster(grts_level9,
+            filename = file.path(datapath, "GIS/VoorR/grts_level9.tif"), 
+            format = "GTiff", 
+            datatype = "INT4S",
+            overwrite = TRUE)
+
+writeRaster(grts_level1,
+            filename = file.path(datapath, "GIS/VoorR/grts_level1.tif"), 
+            format = "GTiff", 
+            datatype = "INT4S",
+            overwrite = TRUE)
+
+
+
+drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), path = file.path(".","data","local", "grts_level1.tif"), overwrite = TRUE)
+drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), path = file.path(".","data","local", "grts_level9.tif"), overwrite = TRUE)
+
+test <- raster(file.path(".","data","local", "grts_level9.tif"))
+test2 <- raster(file.path(".","data","local", "grts_level1.tif"))
+
+tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
+
+tubes_xg3_basis <- read_vc(file.path(".","data","tubes_xg3"))
+
+watina <- connect_watina()
+tubes_xg3 <- tubes_hab %>% 
+  get_xg3(watina, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
+          truncated =  TRUE, collect = TRUE)
+
+test <- 
+  
+habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
+  st_intersection(raster_meetnet_poly)
+
+habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+  mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
+
+st_write(habmap_gw_raster_overlay,
+         file.path(datapath, 
+                   "GIS/VoorR/habmap_gw_raster_overlay.gpkg"), 
+         layer = "habmap_gw_raster_overlay", 
+         driver = "GPKG",
+         delete_dsn = TRUE)
+
+dbWriteTable(con, "habmap_gw_raster_overlay", habmap_gw_raster_overlay)
+dbDisconnect(con)
+
+drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), path = file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), overwrite = TRUE)
+test <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))

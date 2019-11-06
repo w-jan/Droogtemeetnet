@@ -68,7 +68,7 @@ uitgesloten_tubes <- "leeg"
 
 ```
 
-```{r read-databases, eval= TRUE, include= TRUE, echo= FALSE}
+```{r read-databases, eval= FALSE, include= TRUE, echo= FALSE}
 gw_types <- read_scheme_types(lang = "nl") %>%
     filter(scheme == "GW_05.1_terr") %>%
     arrange(typegroup) %>%
@@ -84,7 +84,7 @@ rm(output_vc)
 
 ```
 
-```{r read-gisdata, eval= TRUE, include= TRUE, echo= FALSE}
+```{r read-gisdata, eval= FALSE, include= TRUE, echo= FALSE}
 habmap_terr <- read_habitatmap_terr()
 
 habmap_polygons <- habmap_terr$habitatmap_terr_polygons
@@ -118,6 +118,7 @@ habmap_polygons_gw <-
                 by = "polygon_id")
 
 
+
 #wegschrijven als geopackage
 datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
 dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
@@ -137,13 +138,26 @@ con = dbConnect(SQLite(),
 
 dbWriteTable(con, "habitatmap_terr_patches_gw", habmap_patches_gw)
 
-dbDisconnect(con)
 
 
 #GRTS-data
 raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
 
 dbWriteTable(con, "raster_meetnet_poly", raster_meetnet_poly)
+
+
+#overlay maken hab-kaart en GRTS-rooster
+habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
+  st_intersection(raster_meetnet_poly)
+
+habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+    mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
+
+#wegschrijven van deze intersectie
+
+
+dbWriteTable(con, "habmap_gw_raster_overlay", habmap_gw_raster_overlay)
+dbDisconnect(con)
 
 #inlezen grts-raster level 1 (hoogste resolutie = kleinste gridcelgrootte)
 grts_level1 <- read_GRTSmh(brick = TRUE) %>% 
@@ -165,5 +179,66 @@ writeRaster(grts_level1,
             datatype = "INT4S",
             overwrite = TRUE)
 
+
+
+```
+
+
+```{r read-watina-data, eval= FALSE, include= TRUE, echo= FALSE}
+watina <- connect_watina()
+tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
+                      buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), collect = TRUE)
+
+
+#beperken van peilbuizen tot de rastercel waar ze effectief in liggen. Door het gebruik van een buffer is het immers mogelijk dat een peilbuis in twee of meer cellen komt te liggen.
+tubes_hab_sf <- as_points(tubes_hab)
+
+#overlay van peilbuizen met het raster
+tubes_hab_gw_raster_overlay <- tubes_hab_sf %>% 
+  distinct(loc_code, x, y) %>% 
+  st_intersection(raster_meetnet_poly)
+
+tubes_hab <- tubes_hab %>% 
+  semi_join(tubes_hab_gw_raster_overlay, by = c("loc_code","rasterid"))
+
+#save tubes_hab as a git2rdata-object
+tubes_hab <- tubes_hab %>% 
+  arrange(loc_code, polygon_id, rasterid, patch_id, type)
+
+output_vc <- write_vc(tubes_hab, file.path(".","data","tubes_hab"), sorting = c("loc_code", "polygon_id", "rasterid", "patch_id", "type" ), strict =  FALSE)
+rm(output_vc)
+
+
+tubes_xg3 <- tubes_hab %>% 
+    get_xg3(watina, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
+            truncated =  TRUE, collect = TRUE)
+
+#oplossen van UTF-probleem: strings worden in inbo-SQL-databanken opgeslagen in UTF-16, terwijl hier gewerkt wordt met UTF-8. Dit geeft een probleem bij de kable-functie
+
+#tubes_xg3 <- mutate_if(tubes_xg3, is.character, iconv, to = "UTF-8")
+
+tubes_xg3 <- tubes_xg3 %>% 
+  arrange(loc_code, hydroyear)
+
+output_vc <- write_vc(tubes_xg3, file.path(".","data","tubes_xg3"), sorting = c("loc_code", "hydroyear"),
+         strict =  FALSE, root = ".")
+
+
+DBI::dbDisconnect(watina)
+
+#volgende watina-functie werkt ook zonder databankconnectie, maar omdat deze op sommige pc's niet stabiel werkt, worden de data hier alvast lokaal weggeschreven.
+
+tubes_lg3_eval <- tubes_xg3 %>%
+  eval_xg3_series(xg3_type = c("L"),
+                  max_gap = maxgap,
+                  min_dur = minlength)
+
+tubes_lgl_eval <- tubes_lg3_eval %>%
+    filter(ser_nryears >= minnryears)
+
+output_vc <- write_vc(tubes_lgl_eval, file.path(".","data","tubes_lgl_eval"), sorting = c("loc_code", "hydroyear"),
+         strict =  FALSE, root = ".")
+
+rm(output_vc)
 ```
 

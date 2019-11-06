@@ -15,8 +15,8 @@ Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de 
 
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
 drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), path = file.path(".","data","local", "raster_meetnet_poly.gpkg"), overwrite = TRUE)
-raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"),
-                                 "raster_meetnet_poly"))
+raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
+
 #oppervlakte van elk hok berekenen
 raster_meetnet_poly_opp <- raster_meetnet_poly %>% 
   mutate(opp = as.integer(st_area(raster_meetnet_poly))) %>% 
@@ -55,11 +55,14 @@ Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vij
 
 ```{r overlay habitatkaart en GRTS-raster, eval=TRUE, echo=FALSE, warning=FALSE, include=TRUE}
 # overlay maken van de habitatkaart (enkel van GT-groepen) en het GTRS-raster (level8)
-habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
-  st_intersection(raster_meetnet_poly)
+# habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
+#   st_intersection(raster_meetnet_poly)
+# 
+# habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+#     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
+drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), path = file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), overwrite = TRUE)
+habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
 
-habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
-    mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
 
 habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
 #plot(habmap_gw_raster_overlay, main = "Voorkomen van ")
@@ -461,35 +464,33 @@ Om dat te vermijden, voegen we de verschillende habitattypen samen die tot eenze
 Alleen de GT-groep met een opp-aandeel van minstens 50% wordt dan weerhouden. 
 
 ```{r loading-selecting-tubes-watina, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE}
-watina <- connect_watina()
+# watina <- connect_watina()
 
-# ?watina
-# ?selectlocs_xg3
-# ?get_locs
-# debugonce(get_locs)
-tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
-                      buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), collect = TRUE)
-
-
-#beperken van peilbuizen tot de rastercel waar ze effectief in liggen. Door het gebruik van een buffer is het immers mogelijk dat een peilbuis in twee of meer cellen komt te liggen.
-tubes_hab_sf <- as_points(tubes_hab)
-
-#overlay van peilbuizen met het raster
-tubes_hab_gw_raster_overlay <- tubes_hab_sf %>% 
-  distinct(loc_code, x, y) %>% 
-  st_intersection(raster_meetnet_poly)
-
-tubes_hab <- tubes_hab %>% 
-  semi_join(tubes_hab_gw_raster_overlay, by = c("loc_code","rasterid"))
-
-#save tubes_hab as a git2rdata-object
-tubes_hab <- tubes_hab %>% 
-  arrange(loc_code, polygon_id, rasterid, patch_id, type)
-
-output_vc <- write_vc(tubes_hab, file.path(".","data","tubes_hab"), sorting = c("loc_code", "polygon_id", "rasterid", "patch_id", "type" ), strict =  FALSE)
-rm(output_vc)
+# tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
+#                       buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), collect = TRUE)
+# 
+# 
+# #beperken van peilbuizen tot de rastercel waar ze effectief in liggen. Door het gebruik van een buffer is het immers mogelijk dat een peilbuis in twee of meer cellen komt te liggen.
+# tubes_hab_sf <- as_points(tubes_hab)
+# 
+# #overlay van peilbuizen met het raster
+# tubes_hab_gw_raster_overlay <- tubes_hab_sf %>% 
+#   distinct(loc_code, x, y) %>% 
+#   st_intersection(raster_meetnet_poly)
+# 
+# tubes_hab <- tubes_hab %>% 
+#   semi_join(tubes_hab_gw_raster_overlay, by = c("loc_code","rasterid"))
+# 
+# #save tubes_hab as a git2rdata-object
+# tubes_hab <- tubes_hab %>% 
+#   arrange(loc_code, polygon_id, rasterid, patch_id, type)
+# 
+# output_vc <- write_vc(tubes_hab, file.path(".","data","tubes_hab"), sorting = c("loc_code", "polygon_id", "rasterid", "patch_id", "type" ), strict =  FALSE)
+# rm(output_vc)
 
 # str(tubes_hab)
+
+tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
 
 # een peilbuis kan meerdere keren voorkomen, namelijk wanneer de pb in een habitat-complex ligt en wanneer de bufferopp meerdere polygonen doorsnijdt. We kunnen ze groeperen als de verschillende eenheden tot eenzelfde gw-groep behoren.
 # Alleen de gw-groep met een opp-aandeel van minstens 50% wordt weerhouden. Dit om te vermijden dat indien een rastercel gekozen werd voor een bep. gw-groep, een pb geselecteerd wordt waarvan de kans klein is dat ze die gw-groep representeert.
@@ -603,22 +604,26 @@ Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecte
 # pb waarvoor een lgl kan berekend worden: tubes_lgl_eval
 
 #voor elke pb de xg3 waarden ophalen (meerdere rec per pb)
+# tubes_xg3 <- tubes_in_raster %>% 
+#     get_xg3(watina, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
+#             truncated =  TRUE, collect = TRUE)
+
+tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3"))
 tubes_xg3 <- tubes_in_raster %>% 
-    get_xg3(watina, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
-            truncated =  TRUE, collect = TRUE)
+  semi_join (tubes_xg3, by = "loc_code")
 
 #oplossen van UTF-probleem: strings worden in inbo-SQL-databanken opgeslagen in UTF-16, terwijl hier gewerkt wordt met UTF-8. Dit geeft een probleem bij de kable-functie
 
 #tubes_xg3 <- mutate_if(tubes_xg3, is.character, iconv, to = "UTF-8")
 
-tubes_xg3 <- tubes_xg3 %>% 
-  arrange(loc_code, hydroyear)
-
-output_vc <- write_vc(tubes_xg3, file.path(".","data","tubes_xg3"), sorting = c("loc_code", "hydroyear"),
-         strict =  FALSE, root = ".")
-rm(output_vc)
-
-DBI::dbDisconnect(watina)
+# tubes_xg3 <- tubes_xg3 %>% 
+#   arrange(loc_code, hydroyear)
+# 
+# output_vc <- write_vc(tubes_xg3, file.path(".","data","tubes_xg3"), sorting = c("loc_code", "hydroyear"),
+#          strict =  FALSE, root = ".")
+# rm(output_vc)
+# 
+# DBI::dbDisconnect(watina)
 ```
 
 ```{r table-tubes-with-good-time-series-in-selected-cells, eval= TRUE, include= TRUE, echo= FALSE}
