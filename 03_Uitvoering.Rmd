@@ -492,6 +492,11 @@ Alleen de GT-groep met een opp-aandeel van minstens 50% wordt dan weerhouden.
 
 tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
 
+#peilbuizen uit de lijst verwijderen die niet (meer) mogen meegenomen worden
+if (uitgesloten_tubes != "leeg"){
+  tubes_hab <- tubes_hab[!(tubes_hab$loc_code %in% uitgesloten_tubes),]
+}
+
 # een peilbuis kan meerdere keren voorkomen, namelijk wanneer de pb in een habitat-complex ligt en wanneer de bufferopp meerdere polygonen doorsnijdt. We kunnen ze groeperen als de verschillende eenheden tot eenzelfde gw-groep behoren.
 # Alleen de gw-groep met een opp-aandeel van minstens 50% wordt weerhouden. Dit om te vermijden dat indien een rastercel gekozen werd voor een bep. gw-groep, een pb geselecteerd wordt waarvan de kans klein is dat ze die gw-groep representeert.
 
@@ -663,6 +668,8 @@ tubes_lg3_avail <- tubes_xg3_avail %>%
 # getwd()
 # file.path(".","data","local")
 tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data","local"))
+tubes_lgl_eval <- tubes_in_raster %>% 
+  semi_join(tubes_lgl_eval, by = "loc_code")
 ```
 
 

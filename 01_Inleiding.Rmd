@@ -16,7 +16,7 @@ Met natuurgebieden worden hier alle locaties met grondwaterafhankelijke habitatt
 #     arrange(typegroup) %>%
 #     mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
 #     dplyr::select(type, groupnr, typegroup_name)
-gw_types <- read_vc("gw_types", file.path(getwd(),"data"))
+gw_types <- read_vc("gw_types", file.path(".","data"))
 kable(gw_types %>% 
         dplyr::select(type, groupnr) %>% 
         inner_join(read_namelist(lang = "nl") %>% 

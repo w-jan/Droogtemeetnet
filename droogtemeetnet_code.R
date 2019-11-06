@@ -1672,3 +1672,57 @@ dbDisconnect(con)
 
 drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), path = file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), overwrite = TRUE)
 test <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
+
+DBI::dbDisconnect(watina)
+tubes_xg3_avail <- tubes_xg3 %>% 
+  eval_xg3_avail( xg3_type = "L")
+
+
+tubes_lg3_eval <-   tubes_xg3 %>%
+  eval_xg3_series(xg3_type = c("L"),
+                  max_gap = maxgap,
+                  min_dur = minlength)
+
+
+tubes_lgl_eval <- tubes_lg3_eval %>%
+      filter(ser_nryears >= minnryears)
+
+#gewenste grootte van het meetnet
+tot_n_tub <- 100
+
+#aantal stratificatielagen
+aantal_strat <- 5
+
+#verdeling meetpunten over de stratificatielagen
+minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
+
+#kwaliteitscriteria meetreeksen
+#minimale lengte van de tijdreeks 
+minlength <- 5
+#maximale duur van een onderbreking van de tijdreeks 
+maxgap <- 2
+#binnen een tijdreeks minimaal aantal meetjaren waarvoor een lg3 kan berekend worden
+minnryears <- 5
+
+#aanvullende criteria om meetreeksen te vergelijken
+toelaatbare_spreiding_jaren <- 5
+toelaatbaar_verschil_lengte_tijdreeks <- 5
+
+#zoekstraal rond peilbuizen (buffer)
+bufferpb <- 3 
+
+#peilbuizen niet zeker niet kunnen opgenomen worden, bijv. geen toelating, omdat het te dicht bij een ander geselecteerd punt ligt
+#uitgesloten_tubes <- c("MOSP001", "HALP005", "BUIP027")
+uitgesloten_tubes <- "leeg"
+
+gw_types <- read_scheme_types(lang = "nl") %>%
+  filter(scheme == "GW_05.1_terr") %>%
+  arrange(typegroup) %>%
+  mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
+  dplyr::select(type, groupnr, typegroup_name)
+output_vc <- write_vc(gw_types, file.path(".","data","gw_types"), sorting = c("type"), strict =  FALSE)
+
+types <- read_types(lang = "nl")
+output_vc <- write_vc(types, file.path(".","data","types"), sorting = c("type"), strict =  FALSE)
+
+gw_types <- read_vc("gw_types", file.path(".","data"))
