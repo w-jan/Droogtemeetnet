@@ -21,7 +21,7 @@ De drie hoofdfactoren waar we bij het ontwerp mee rekening houden, zijn:
 
 - We willen zoveel mogelijk een ruimtelijk gebalanceerde keuze. 
 De keuze van de grootte van een rastercel en bijgevolg van het aantal cellen, is hierbij sturend. 
-Deze wordt bepaald door de ingeschatte grootte van het meetnet en door de trefkans op een peilbuis. 
+Deze wordt bepaald door de ingeschatte grootte van het meetnet en door de trefkans op een (liefst actueel) meetpunt van grondwaterpeilen. 
 Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans kan zijn, omdat men minder vrij is om een locatie te kiezen, maar ook hoe kleiner de kans is om daar een geschikt meetpunt aan te treffen. 
 Hier is het dus wat zoeken naar een goede maat. 
 Concreet:  
@@ -58,45 +58,59 @@ Het kan dan zijn dat het bekomen aantal lichtjes hoger uitvalt.
 ### Selectie van de meetpunten
 
 In dit deel bespreken we hoe we aan de gekozen rastercellen effectief meetpunten kunnen koppelen. 
-Een meetpunt is een locatie waar het waterpeil periodiek gemeten wordt (of zal worden).
+Een meetpunt is een locatie waar het (freatisch) grondwaterpeil periodiek gemeten wordt (of zal worden).
+In de praktijk gebeurt dat in een piëzometer of peilbuis.[^1]
+
+[^1]: Normaal gesproken duidt een meetpunt op de locatie eerder dan op het meetinstrument (peilbuis of piëzometer), maar soms slaat het op beide. Met peilbuis wordt in dit document ook een piëzometer bedoeld. 
 
 We willen de toewijzing van een meetpunt aan een rastercel afhankelijk stellen van de verhouding tussen het aantal meetpunten dat voor een rastercel gezocht wordt (zie hoger) en het aantal effectief beschikbare meetpunten. 
-We willen ook rekening houden dat een beschikbaar meetpunt niet noodzakelijk ook een geschikt meetpunt is.
+
+We willen er ook rekening mee houden dat een beschikbaar meetpunt niet noodzakelijk ook een geschikt meetpunt is.
+
 Om een geschikt meetpunt te zijn, moet het meetpunt aan kwalitatieve standaarden voldoen.
+
 Afhankelijk van die verhoudingen worden de _rastercellen_ **per GT-groep** eerst in _categorieën_ ingedeeld.
 
 #### Indeling van rastercellen in categorieën {#indeling-cat}
 
-_A. Alle meetpunten zijn kwalitatief gelijkwaardig_
+_A. Alle meetpunten met een peilbuis zijn kwalitatief gelijkwaardig_
 
 We stellen eerst voor de eenvoud dat alle beschikbare meetpunten even geschikt zijn: er wordt bvb. geen onderscheid gemaakt tussen een lang en kort bemeten meetpunt. 
 Vergelijken we dan de vraag (het gewenst aantal meetpunten per rastercel) met het aanbod van meetpunten dan kunnen de rastercellen in drie categorieën verdeeld worden:
 
 - Cat. 1: de vraag is groter dan het aanbod: 
+meetpunten ontbreken of er is een gebrek aan
 - Cat. 2: de vraag is gelijk aan het aanbod: 
-Elk meetpunt wordt geselecteerd
-- Cat. 3: de vraag is kleiner dan het aanbod: er is een overschot aan meetpunten
+elk meetpunt wordt geselecteerd
+- Cat. 3: de vraag is kleiner dan het aanbod: 
+er is een overschot aan meetpunten
 
 **Categorie 1**
-Er is een gebrek aan meetpunten.
-Alle beschikbare meetpunten worden zonder verder analyse geselecteerd.
-_**Als er voor een rastercel een gebrek is aan geschikte meetpunten, stellen we voor om die cel te voorzien van een (nieuw) meetpunt gelegen op een plaats met die GT-groep. **_
-Het gaat hier vooral over een tijdsinvestering: dergelijke meetpunten kunnen pas na enkele jaren effectief meedraaien in het meetnet. 
+Vanuit het oogpunt van een meetnetontwerp kan een rastercel van categorie 1 over twee soorten meetpunten beschikken. 
+Je hebt meetpunten zonder en mogelijke meetpunten met een peilbuis. 
+Alle meetpunten met een peilbuis worden zonder verder analyse geselecteerd.
+Daarnaast zijn er (vele) kandidaat-meetpunten om te voorzien van een nieuwe peilbuis. 
+
+_**Bovenstaande is een voorstel. Je zou ook kunnen beslissen dat enkel meetpunten met een peilbuis in aanmerking komen voor het meetnet.**_ 
+_**We raden dit eerder af om zo toch tot een voldoende ruimtelijk gebalanceerde verdeling van meetpunten te komen.**_
+Het gaat hier vooral over een tijdsinvestering: dergelijke meetpunten zullen pas na enkele jaren effectief meedraaien in het meetnet. 
 In afwachting daarvan zal het meetnet dus met een kleiner aantal meetpunten moeten functioneren.
 
-In categorie 1 staat het zoeken naar nieuwe meetpunten centraal. Welke habitatvlek wordt best van een peilbuis voorzien?
+In rastercellen van categorie 1 zal vooral de zoektocht naar nieuwe meetpunten dan aandacht vergen. 
 Voor de uitwerking van deze selectie van potentiële geschikte habitatvlekken: zie paragraaf \@ref(sel-pot-habvlek).
 
 **Categorie 2**
-Het aantal meetpunten volstaat juist.
-Alle beschikbare meetpunten worden zonder verder analyse geselecteerd.
+Rastercellen van deze categorie zijn voor het meetnetontwerp een zegen.
+Het aantal locaties met peilbuizen volstaat juist om te voldoen aan de vraag..
+Alle deze locaties kunnen zonder verdere analyse in het meetnet worden opgenomen.
 
 **Categorie 3**
-Is er voor een bepaalde rastercel een overschot aan beschikbare meetpunten, dan dienen hieruit nog één (of meer) meetpunten gekozen te worden. 
+Voor een rastercel van categorie 3 stelt er zich een ander 'probleem'.
+Er is een overschot aan meetpunten met peilbuizen, waaruit nog één (of meer) meetpunten gekozen moeten worden. 
 Hiervoor verwijzen we naar paragraaf \@ref(sel-habvlek).
 
 
-_B. Alle meetpunten zijn kwalitatief niet gelijkwaardig_
+_B. Alle meetpunten met een peilbuis zijn kwalitatief niet gelijkwaardig_
 
 In werkelijkheid zijn niet alle meetpunten even geschikt. 
 
@@ -107,27 +121,32 @@ We beschouwen een meetpunt als geschikt voor het berekenen van een droogte-indic
 
 - De tijdreeks omspant binnen de periode _2001_ en _2016_ minstens _5 jaar_
 - Deze tijdreeks is _maximaal 2 opeenvolgende jaren_ onderbroken
-- Deze tijdreeks bevat _minstens 5 (hydrologische) jaren_ waarvoor een lg3[^1] kan berekend worden.
+- Deze tijdreeks bevat _minstens 5 (hydrologische) jaren_ waarvoor een lg3[^2] kan berekend worden.
 
 Het is belangrijk te vermelden dat deze basiskwaliteitscriteria vooral dienen voor een eerste screening van de meetpunten op basis actueel beschikbare feitelijke grondwatermetingen. 
 De eigenlijke kwaliteit van de tijdreeks wordt bepaald door een tijdreeksanalyse (zie \@ref(tijdreeksanalyse)). 
 
 Een meetpunt kan op basis van de actueel beschikbare gegevens ongeschikt zijn, omdat de gegevens niet toelaten om deze indicator voldoende betrouwbaar te berekenen. 
 
-<!-- #####Een rastercel kan tot meerdere categorieën horen  -->
+Nemen we ook het kwaliteitsaspect mee in de beoordeling, dan wordt de categorie-indeling van rastercellen complexer. 
+We kunnen niet alleen meerdere subcategorieën onderscheiden, de behandeling van de meetpunten in een rastercel wordt ook minder éénduidig.
+In het geval dat alle peilbuislocaties gelijkwaardig waren, bevatten alleen rastercellen van categorie 1 twee soorten meetpunten.
+Maken we een onderscheid in kwaliteit van de meetreeksen, dan zijn er meer toestanden mogelijk.
+We lichten dit toe aan de hand van een drietal voorbeelden.
 
-Nemen we ook het kwaliteitsaspect mee in de beoordeling, dan wordt de categorie-indeling complexer. 
-We kunnen niet alleen meerdere subcategorieën onderscheiden, maar een rastercel zal ook tot meerdere categorieën kunnen behoren.
 Voorbeeld 1: in een rastercel zijn drie meetpunten gewenst. 
 Er zijn momenteel maar twee peilbuizen beschikbaar, één met een goede tijdreeks en één met een slechte. 
-De rastercel zal dan behoren tot categorie 1A: er dient nog een meetlocatie bij gezocht te worden, tot categorie 1B: de peilbuis met een slechte tijdreeks komt in de wachtrij en tot categorie 2: de peilbuis met een goede tijdreeks wordt sowieso geselecteerd voor onmiddellijke ingebruikname.
+De drie locaties vragen elk een andere benadering. 
+Voor het meetpunt zonder peilbuis, moet op zoek gegaan worden naar de meest presentatieve keuze. 
+De twee andere meetlocaties kunnen opgenomen worden, maar de ene locatie komt in de wachtrij te zitten, terwijl met de andere effectief al van start kan gegaan worden. 
+Om dit technisch te kunnen ondervangen, zal de rastercel tot drie categorieën gerekend worden (1A, 1Ba en 2).
 
 Voorbeeld 2: in een rastercel zijn drie meetpunten gewenst. 
 Er zijn vijf peibuizen beschikbaar, twee met kwaliteitsvolle tijdreeksen, de drie andere met tijdreeksen van onvoldoende kwaliteit. 
 Deze rastercel zal behoren tot categorie 2 voor de twee peilbuizen van goede kwaliteit en tot categorie 1B: voor het derde meetpunt moet uit de drie peilbuizen met onvoldoende kwaliteit er één nog gekozen worden.
 
 
-[^1]: lg3 =  het gemiddelde van de drie laagste waterpeilen binnen een hydrologisch jaar (1 april - 31 maart), waarbij er tussen deze drie metingen minstens 14 dagen verschil ligt.
+[^2]: lg3 =  het gemiddelde van de drie laagste waterpeilen binnen een hydrologisch jaar (1 april - 31 maart), waarbij er tussen deze drie metingen minstens 14 dagen verschil ligt.
 
 De extreem droge zomers van 2017 en 2018 worden niet meegenomen in de berekening. Het is namelijk nu nog onduidelijk (door mogelijke naijling) of de actuele vegetatie geen nadelige effecten van deze twee zomers heeft ondervonden.
 
@@ -135,10 +154,13 @@ Voor een meetpunt dat voldoet aan deze criteria kan een gemiddeld laagste grondw
 
 Op basis van de kwaliteit van de tijdreeksen kunnen dan per GT-groep de rastercellen in (één of meer van de volgende) vier categorieën opgedeeld worden:
 
-- **Cat. 1A**: de vraag is groter dan het aanbod: er is een gebrek aan meetpunten, aan de vraag kan enkel voldaan worden door nieuwe meetpunten te introduceren.
-- **Cat. 1B**: de vraag is groter aan het aanbod: er is een gebrek aan geschikte meetpunten, de vraag kan vervolledigd worden met actueel ongeschikte meetpunten
-- **Cat. 2**: de vraag is groter of gelijk aan het aanbod: er zijn geschikte meetpunten, juist voldoende of te weinig: elk meetpunt wordt geselecteerd en kan onmiddellijk ingezet worden.
-- **Cat. 3**: de vraag is kleiner dan het aanbod: er is een overschot aan geschikte meetpunten
+- **Cat. 1A**: de vraag is groter dan het aanbod, er is geen aanbod: aan de vraag kan enkel voldaan worden door nieuwe meetpunten te introduceren.
+- **Cat. 1B**: de vraag is groter dan het aanbod van peilbuizen van goede kwaliteit: er is een gebrek aan geschikte meetpunten, de vraag kan wel ingevuld worden met actueel ongeschikte meetpunten.
+Op basis van het aantal ongeschikte meetpunten, wordt nog een opdeling gemaakt:
+- **Cat. 1Ba**: het aantal ongeschikte meetpunten is onvoldoende tot juist voldoende om alle gewenste locaties te kunnen invullen.
+- **Cat. 1Bb**: het aantal ongeschikte meetpunten is groter dan het aantal gewenste locaties: er zal hiertussen nog een keuze moeten gemaakt worden.
+- **Cat. 2**: de vraag is groter of gelijk aan het aanbod van peilbuizen van goede kwaliteit: er zijn geschikte meetpunten, juist voldoende of te weinig: elk meetpunt wordt geselecteerd en kan onmiddellijk ingezet worden.
+- **Cat. 3**: de vraag is kleiner dan het aanbod van peilbuizen van goede kwaliteit: er is een overschot aan geschikte meetpunten
 
 
 **_vraag: wat te doen met bestaande meetlocaties die actueel niet voldoen aan de basiscriteria (zie verder bij B)? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**

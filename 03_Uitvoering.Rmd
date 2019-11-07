@@ -2039,9 +2039,9 @@ Figuur \@ref(fig:cat3-plot-bis) toont de spreiding ervan.
 De rastercellen liggen goed gespreid over Vlaanderen.
 Het is echter opvallend dat de verschillende GT-groepen waartoe ze behoren daarentegen vrij geclusterd voorkomen.
 Groepen 1 en 3 komen vooral in de Kempen voor.
-Rastercellen van groep 4 ligt alle in de (zand)leemstreek [^2] en deze van groep 5 liggen uitsluitend in de duinstreek. 
+Rastercellen van groep 4 ligt alle in de (zand)leemstreek [^3] en deze van groep 5 liggen uitsluitend in de duinstreek. 
 
-[^2]: Dit is normaal, omdat alle cellen van deze groep in de (zand)leemstreek liggen.
+[^3]: Dit is normaal, omdat alle cellen van deze groep in de (zand)leemstreek liggen.
 
 ```{r cat3-plot-bis, eval= TRUE, fig.cap = "rastercellen met een overschot aan geschikte peilbuizen", include= TRUE, echo= FALSE, warning= FALSE}
 
