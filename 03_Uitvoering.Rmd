@@ -63,6 +63,8 @@ Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vij
 drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), path = file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), overwrite = TRUE)
 habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
 
+habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+  rename(rasterid =  value)
 
 habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
 #plot(habmap_gw_raster_overlay, main = "Voorkomen van ")
@@ -517,9 +519,9 @@ tubes_hab_multipolyg <- tubes_hab_groep %>%
           by = "loc_code")
 
 tubes_hab_aggr <- tubes_hab %>%
-  select(-patch_id,-phab, -certain, -type, -source.y) %>% 
+  select(-patch_id,-phab, -certain, -type, -source.y, -polygon_id, -starts_with("description"), -opp, -source.x) %>% 
   distinct %>% 
-  semi_join(tubes_hab_multipolyg, by = c("loc_code", "polygon_id", "rasterid", "groupnr" ))
+  semi_join(tubes_hab_multipolyg, by = c("loc_code", "rasterid", "groupnr" ))
 
 ```
 Tabel \@ref(tab:tabel-Watina-in-gaHT) geeft een overzicht van deze `r nrow(tubes_hab_aggr)` peilbuizen.
@@ -527,12 +529,12 @@ Tabel \@ref(tab:tabel-Watina-in-gaHT) geeft een overzicht van deze `r nrow(tubes
 ```{r tabel-Watina-in-gaHT, eval= TRUE, include= TRUE, echo= FALSE}
 
 kable(tubes_hab_aggr %>% 
-        select(loc_code, area_name, x,y, filterdepth, description) %>% 
+        select(loc_code, area_name, x,y, filterdepth, groupnr) %>% 
         #mutate(area_name = utf8::utf8_encode(area_name)) %>% 
         rename(watinacode = loc_code,
                gebied = area_name,
                "diepte filter" = filterdepth,
-               beschrijving = description
+               "GT-groep" = groupnr
                ) ,
       caption =  "Watina-meetpunten in een gaHT"
       ) %>% 
@@ -553,7 +555,7 @@ kable(tubes_hab_aggr %>%
 We kunnen vervolgens de peilbuizen weerhouden die in een geselecteerde rastercel liggen (tabel \@ref(tab:tubes-in-selected-cells-table)).
 ```{r tubes-in-selected-cells, eval= TRUE, include= TRUE, echo= FALSE}
 tubes_in_raster <- tubes_hab_aggr %>% 
-  select(-10:-15, -opp) %>%  
+  # select(-opp, -description_orig, -source.x, -starts_with("loc_"), loc_code) %>%  
   inner_join(sel_raster_meetnet %>% 
                select(rasterid, groupnr) %>% 
                st_drop_geometry(), by = c("rasterid", "groupnr")) %>% 
@@ -614,8 +616,9 @@ Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecte
 #             truncated =  TRUE, collect = TRUE)
 
 tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3"))
-tubes_xg3 <- tubes_in_raster %>% 
-  semi_join (tubes_xg3, by = "loc_code")
+tubes_xg3 <- tubes_xg3 %>% 
+  inner_join (tubes_in_raster %>% 
+                select(loc_code), by = "loc_code")
 
 #oplossen van UTF-probleem: strings worden in inbo-SQL-databanken opgeslagen in UTF-16, terwijl hier gewerkt wordt met UTF-8. Dit geeft een probleem bij de kable-functie
 
@@ -668,8 +671,9 @@ tubes_lg3_avail <- tubes_xg3_avail %>%
 # getwd()
 # file.path(".","data","local")
 tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data","local"))
-tubes_lgl_eval <- tubes_in_raster %>% 
-  semi_join(tubes_lgl_eval, by = "loc_code")
+tubes_lgl_eval <- tubes_lgl_eval %>% 
+  inner_join(tubes_in_raster %>% 
+               select(loc_code), by = "loc_code")
 ```
 
 
@@ -1703,7 +1707,7 @@ Tabel \@ref(tab:tubes-cat1Bb-bis) geeft een overzicht van de peilbuizen die tot 
 kable(tubes_cat1Bb %>% 
         select(-n_tubes_lgl, -aantal_cat1A, -aantal_cat1B,
                -typegroup_name, -selectie) %>% 
-        select(1:3,10,7,4,8:9) %>% 
+        select(1:3,12,7,4,8:9) %>% 
         rename(GTgroep = groupnr,
                rasternr = rasterid,
                watinacode = loc_code,
@@ -2432,7 +2436,7 @@ kable(tubes_cat3_gtrs %>%
 ```
 
 ###Samenvatting selectie
-
+nog te doen
 
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
