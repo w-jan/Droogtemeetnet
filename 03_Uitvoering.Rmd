@@ -14,7 +14,13 @@ Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de 
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
-drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), path = file.path(".","data","local", "raster_meetnet_poly.gpkg"), overwrite = TRUE)
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh >= 1 ){
+    drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
+                   path = file.path(".","data","local", 
+                                    "raster_meetnet_poly.gpkg"), overwrite = 
+                     TRUE)
+}
+
 raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
 
 #oppervlakte van elk hok berekenen
@@ -43,9 +49,6 @@ raster_meetnet_poly_tm
 check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(value) %>% filter(n > 1)
 #van bepaalde cellen zijn er dus meerdere polygonen, dit zijn rasters die door de gewestgrens verdeeld werden (bijv. streek van Baarle-Nassau) 
 
-raster_meetnet_poly <- raster_meetnet_poly %>% 
-  rename(rasterid =  value)
-
 
 ```
 
@@ -60,11 +63,16 @@ Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vij
 # 
 # habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
 #     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
-drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), path = file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), overwrite = TRUE)
-habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
 
-habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
-  rename(rasterid =  value)
+if (file.exists(file.path(".","data","local", 
+                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh >= 1) {
+    drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
+                   path = file.path(".","data","local", 
+                                    "habmap_gw_raster_overlay.gpkg"), 
+                   overwrite = TRUE)
+}
+
+habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
 
 habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
 #plot(habmap_gw_raster_overlay, main = "Voorkomen van ")
@@ -77,7 +85,7 @@ habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm +
 # interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
 # tmap_mode("view")
 # statische modus, dus niet inzoombaar
-# tmap_mode("plot")
+tmap_mode("plot")
 
 habmap_gw_raster_overlay_tm
 ```
@@ -519,7 +527,7 @@ tubes_hab_multipolyg <- tubes_hab_groep %>%
           by = "loc_code")
 
 tubes_hab_aggr <- tubes_hab %>%
-  select(-patch_id,-phab, -certain, -type, -source.y, -polygon_id, -starts_with("description"), -opp, -source.x) %>% 
+  select(-phab, -certain, -type, -source.y, -polygon_id, -starts_with("description"), -opp, -source.x) %>% 
   distinct %>% 
   semi_join(tubes_hab_multipolyg, by = c("loc_code", "rasterid", "groupnr" ))
 
@@ -670,7 +678,7 @@ tubes_lg3_avail <- tubes_xg3_avail %>%
 
 # getwd()
 # file.path(".","data","local")
-tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data","local"))
+tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data"))
 tubes_lgl_eval <- tubes_lgl_eval %>% 
   inner_join(tubes_in_raster %>% 
                select(loc_code), by = "loc_code")
@@ -2174,13 +2182,24 @@ Normaal sluiten in een rastercel beide keuzen elkaar uit, tenzij in deze rasterc
 # grts_level1 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(1)
 
-drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), path = file.path(".","data","local", "grts_level1.tif"), overwrite = TRUE)
+if (file.exists(file.path(".","data","local", "grts_level1.tif")) == FALSE | refresh >= 1) {
+    drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
+                   path = file.path(".","data","local", "grts_level1.tif"), 
+                   overwrite = TRUE)
+}
 grts_level1 <- raster(file.path(".","data","local", "grts_level1.tif"))
+
+
 #inlezen grts-raster level 9 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 1. 
 # grts_level9 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(9)
 
-drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), path = file.path(".","data","local", "grts_level9.tif"), overwrite = TRUE)
+if (file.exists(file.path(".","data","local", "grts_level9.tif")) == FALSE | refresh >= 1) {
+    drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
+                   path = file.path(".","data","local", "grts_level9.tif"), 
+                   overwrite = TRUE)
+}
+
 grts_level9 <- raster(file.path(".","data","local", "grts_level9.tif"))
 
 
