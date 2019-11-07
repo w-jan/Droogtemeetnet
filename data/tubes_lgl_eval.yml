@@ -2,9 +2,11 @@
   git2rdata: '0.1'
   optimize: yes
   NA string: NA
-  sorting: loc_code
-  hash: 0a7b6ce7da52d328f901be94ed5535af0ba5d169
-  data_hash: e9d4be9cff4a5791489cf172c5f1cb34acb60226
+  sorting:
+  - loc_code
+  - ser_firstyear
+  hash: 98c452b39edf6c3b5006df72928d30fc4ffbcb76
+  data_hash: a3a91a9a4b47315d909004fee6342b9c69ff7f8a
 loc_code:
   class: character
 xg3_variable:
@@ -20,8 +22,6 @@ ser_rel_nryears:
 ser_firstyear:
   class: numeric
 ser_lastyear:
-  class: numeric
-ser_pval_uniform:
   class: numeric
 ser_mean:
   class: numeric
