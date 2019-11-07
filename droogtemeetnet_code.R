@@ -1726,3 +1726,49 @@ types <- read_types(lang = "nl")
 output_vc <- write_vc(types, file.path(".","data","types"), sorting = c("type"), strict =  FALSE)
 
 gw_types <- read_vc("gw_types", file.path(".","data"))
+
+uitgesloten_tubes <- c("AABP013")
+
+if (uitgesloten_tubes != "leeg"){
+  tubes_hab <- tubes_hab[!(tubes_hab$loc_code %in% uitgesloten_tubes),]
+}
+
+raster_meetnet_poly <- raster_meetnet_poly %>% 
+  rename(rasterid =  value)
+
+raster_gw_opp <- habmap_gw_raster_overlay %>% 
+  st_drop_geometry() %>% 
+  group_by(rasterid,groupnr) %>% 
+  summarise(opp_gw_cel = sum(opp*phab/100) %>% set_units("m^2") %>% set_units("ha")) %>% 
+  ungroup()
+
+tubes_hab_groep <- tubes_hab %>%
+  group_by(loc_code, polygon_id, rasterid, groupnr) %>%
+  summarise(phab_gw = sum(phab),
+            aantal =  n()) %>%
+  ungroup() %>% 
+  filter(phab_gw >= 50)
+
+#oplossen van meerdere polygonen
+tubes_hab_multipolyg <- tubes_hab_groep %>% 
+  semi_join(tubes_hab_groep %>% 
+              distinct(loc_code, groupnr) %>% 
+              count(loc_code) %>% 
+              filter(n == 1),
+            by = "loc_code")
+
+tubes_hab_aggr <- tubes_hab %>%
+  select(-patch_id,-phab, -certain, -type, -source.y) %>% 
+  distinct %>% 
+  semi_join(tubes_hab_multipolyg, by = c("loc_code", "polygon_id", "rasterid", "groupnr" ))
+
+tubes_in_raster <- tubes_hab_aggr %>% 
+  select(-10:-15, -opp) %>%  
+  inner_join(sel_raster_meetnet %>% 
+               select(rasterid, groupnr) %>% 
+               st_drop_geometry(), by = c("rasterid", "groupnr")) %>% 
+  distinct()
+
+
+tubes_xg3_avail <- tubes_xg3 %>% 
+  eval_xg3_avail( xg3_type = "L")
