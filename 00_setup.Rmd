@@ -90,35 +90,25 @@ habmap_terr <- read_habitatmap_terr()
 
 habmap_polygons <- habmap_terr$habitatmap_terr_polygons
 
-habmap_patches <- habmap_terr$habitatmap_terr_patches
-# habfile <- "20_processed/habitatmap_terr/habitatmap_terr.gpkg"
-# 
-# habmap_stdized <- read_habitatmap_stdized(file = habfile)
-# 
-# habmap_polygons <- habmap_stdized$habitatmap_polygons
-# 
-# habmap_patches <- habmap_stdized$habitatmap_patches
+habmap_types <- habmap_terr$habitatmap_terr_types
 
-habmap_patches <- habmap_patches %>%
-    mutate( polygon_id = as.factor(.data$polygon_id),
-            patch_id = as.numeric(.data$patch_id),
-            certain = .data$certain == 1,
-            type = factor(.data$type,
-                          levels = levels(types$type)
-                          )
-            )
+habmap_types <- habmap_types %>%
+  mutate( polygon_id = as.factor(.data$polygon_id),
+          certain = .data$certain == 1,
+          type = factor(.data$type,
+                        levels = levels(types$type)
+          )
+  )
 
 # Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
-habmap_patches_gw <- habmap_patches %>% 
+habmap_types_gw <- habmap_types %>% 
   inner_join(gw_types, by = c("type" = "type"))
 
 habmap_polygons_gw <- 
   habmap_polygons %>% 
-      inner_join(habmap_patches_gw %>% 
-                   dplyr::select(-code_orig), 
-                by = "polygon_id")
-
-
+  inner_join(habmap_types_gw %>% 
+               dplyr::select(-code_orig), 
+             by = "polygon_id")
 
 #wegschrijven als geopackage
 datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
@@ -137,7 +127,7 @@ con = dbConnect(SQLite(),
                   "GIS/VoorR/habmap_terr_gw.gpkg")
                 )
 
-dbWriteTable(con, "habitatmap_terr_patches_gw", habmap_patches_gw)
+dbWriteTable(con, "habitatmap_terr_types_gw", habmap_types_gw)
 
 
 
