@@ -6,8 +6,8 @@
   - rasterid
   - groupnr
   - loc_code
-  hash: 467728faa4ff727c2f3f1461d019a9824ad7d5db
-  data_hash: ac8934b9f1b65f3f64a7629b5c45e9ebf85bdc0a
+  hash: fe18da1a0b26d437db4740fc00a4c0325c41f8a0
+  data_hash: 2881add07e08a2fe83a653a2b53e05f6caeca626
 unieknr:
   class: integer
 loc_code:
@@ -74,4 +74,8 @@ gew_aantal_meetptn:
 geselecteerd:
   class: numeric
 reserve:
+  class: numeric
+filterdepth:
+  class: numeric
+soilsurf_ost:
   class: numeric

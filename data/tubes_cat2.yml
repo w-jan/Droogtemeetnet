@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 6add0a65b6497cd0910e36146412800083e5d4f2
-  data_hash: a2bc74fd6d2a815efec01fc27d655e2dd122f0c0
+  hash: 8b8a746034291c6c8c4a56ccdde808d07051a76d
+  data_hash: 389c5cf6c9926fe0fb3756349ae5b3a02bce389c
 loc_code:
   class: character
 area_code:
@@ -15,14 +15,6 @@ x:
   class: numeric
 'y':
   class: numeric
-loc_validitycode:
-  class: character
-loc_validity:
-  class: character
-loc_typecode:
-  class: character
-loc_typename:
-  class: character
 groupnr:
   class: integer
 typegroup_name:
@@ -88,3 +80,15 @@ aantal_cat1B:
   class: numeric
 'n':
   class: integer
+filterdepth:
+  class: numeric
+soilsurf_ost:
+  class: numeric
+loc_validitycode:
+  class: character
+loc_validity:
+  class: character
+loc_typecode:
+  class: character
+loc_typename:
+  class: character

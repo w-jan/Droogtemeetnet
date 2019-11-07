@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 7c2486ba00ac8b5d672b5c2f6ff553289d284398
-  data_hash: eee147d34774d5ab872ae3812f6c560e2c9aa072
+  hash: 0f91df9c7eb2c8d651834f62d3b98470fc4caa7f
+  data_hash: c8cfc7f368f3a839c44007999888c199932e003f
 rasterid:
   class: integer
 groupnr:
@@ -67,4 +67,8 @@ typegroup_name:
 selectie:
   class: numeric
 n_tubes_zondermodel:
+  class: numeric
+filterdepth:
+  class: numeric
+soilsurf_ost:
   class: numeric

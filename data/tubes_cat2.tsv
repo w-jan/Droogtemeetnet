@@ -1,10 +1,10 @@
-loc_code	area_code	area_name	x	y	loc_validitycode	loc_validity	loc_typecode	loc_typename	groupnr	typegroup_name	rasterid	ser_firstyear	ser_lastyear	ser_nryears	ser_length	rest_aantal_meetptn	rankclus	rankclus_lastyear	rankclus_nryears	beschikbaar_aantal_cluster	gew_aantal_meetptn	aantal_cat1A	aantal_cat1B	n
-COOP001	COO	Coolhembos	146113	196127	VLD	Gevalideerd	P	Peilbuis/Piëzometer	1	11	233	2006	2015	8	10	1	1	1	1	1	1	0	0	1
-DYLP037	DYL	Dijlevallei	169802	167510	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	582	2008	2016	9	9	1	1	1	1	1	1	0	0	1
-DYLP109	DYL	Dijlevallei	169049	168137	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	262	2008	2016	9	9	1	1	1	1	1	1	0	0	1
-HAGP019	HAG	Hageven	224064	217725	VLD	Gevalideerd	P	Peilbuis/Piëzometer	2	12	274	2002	2015	14	14	1	1	1	1	1	1	0	0	1
-KBRP060	KBR	Potpolder Kruibeke Rupelmonde	145448	202168	VLD	Gevalideerd	P	Peilbuis/Piëzometer	2	12	233	2001	2012	11	12	1	1	1	1	1	1	0	0	1
-LDOP041	LDO	Langdonken	186424	191178	VLD	Gevalideerd	P	Peilbuis/Piëzometer	3	13	310	2005	2016	10	12	1	1	1	1	1	1	0	0	1
-TORP018	TOR	Torfbroek	162023	179712	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	198	2005	2016	12	12	1	1	1	1	1	1	0	0	1
-ZEMP005	ZEM	Zemst	158392	184259	VLD	Gevalideerd	P	Peilbuis/Piëzometer	4	14	710	2005	2010	6	6	1	1	1	1	1	1	0	0	1
-ZWAP241	ZWA	Zwarte Beek	215877	198283	VLD	Gevalideerd	P	Peilbuis/Piëzometer	5	15	950	2009	2016	8	8	1	1	1	1	1	1	0	0	1
+loc_code	area_code	area_name	x	y	groupnr	typegroup_name	rasterid	ser_firstyear	ser_lastyear	ser_nryears	ser_length	rest_aantal_meetptn	rankclus	rankclus_lastyear	rankclus_nryears	beschikbaar_aantal_cluster	gew_aantal_meetptn	aantal_cat1A	aantal_cat1B	n	filterdepth	soilsurf_ost	loc_validitycode	loc_validity	loc_typecode	loc_typename
+COOP001	COO	Coolhembos	146113	196127	1	11	233	2006	2015	8	10	1	1	1	1	1	1	0	0	1	1.4	2.56	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
+DYLP037	DYL	Dijlevallei	169802	167510	4	14	582	2008	2016	9	9	1	1	1	1	1	1	0	0	1	1.12	28.42	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
+DYLP109	DYL	Dijlevallei	169049	168137	4	14	262	2008	2016	9	9	1	1	1	1	1	1	0	0	1	2.97	28.13	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
+HAGP019	HAG	Hageven	224064	217725	2	12	274	2002	2015	14	14	1	1	1	1	1	1	0	0	1	2.061	34.611	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
+KBRP060	KBR	Potpolder Kruibeke Rupelmonde	145448	202168	2	12	233	2001	2012	11	12	1	1	1	1	1	1	0	0	1	2.14	2.233	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
+LDOP041	LDO	Langdonken	186424	191178	3	13	310	2005	2016	10	12	1	1	1	1	1	1	0	0	1	2.62	14.604	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
+TORP018	TOR	Torfbroek	162023	179712	4	14	198	2005	2016	12	12	1	1	1	1	1	1	0	0	1	0.42	16.963	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
+ZEMP005	ZEM	Zemst	158392	184259	4	14	710	2005	2010	6	6	1	1	1	1	1	1	0	0	1	2.52	8.223	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer
+ZWAP241	ZWA	Zwarte Beek	215877	198283	5	15	950	2009	2016	8	8	1	1	1	1	1	1	0	0	1	0.85	51.711	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer

@@ -1,4 +1,4 @@
-rasterid	groupnr	gew_aantal_meetptn	loc_code	n_tubes	n_tubes_lgl	aantal_cat1A	aantal_cat1B	area_code	area_name	x	y	typegroup_name	selectie	n_tubes_zondermodel
-990	5	2	BRSP008	1	0	1	1	BRS	Domeinbos Brasschaat (Inslag)	160451	222061	15	-1	2
-306	2	1	DPBP007	1	0	0	1	DPB	Diepenbeek	221649	179772	12	-1	1
-758	1	1	MOGP003	1	0	0	1	MOG	Mosselgoren	188983	208897	11	-1	1
+rasterid	groupnr	gew_aantal_meetptn	loc_code	n_tubes	n_tubes_lgl	aantal_cat1A	aantal_cat1B	area_code	area_name	x	y	typegroup_name	selectie	n_tubes_zondermodel	filterdepth	soilsurf_ost
+990	5	2	BRSP008	1	0	1	1	BRS	Domeinbos Brasschaat (Inslag)	160451	222061	15	-1	2	2.19	15.78
+306	2	1	DPBP007	1	0	0	1	DPB	Diepenbeek	221649	179772	12	-1	1	2.21	0
+758	1	1	MOGP003	1	0	0	1	MOG	Mosselgoren	188983	208897	11	-1	1	1.63	14.721
