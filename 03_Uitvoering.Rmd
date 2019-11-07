@@ -27,8 +27,8 @@ raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "r
 raster_meetnet_poly_opp <- raster_meetnet_poly %>% 
   mutate(opp = as.integer(st_area(raster_meetnet_poly))) %>% 
   st_drop_geometry() %>% 
-  dplyr::select(value, opp) %>% 
-  group_by(value) %>% 
+  dplyr::select(rasterid, opp) %>% 
+  group_by(rasterid) %>% 
   summarise(totopp = sum(opp))
 
 #welke crs?
@@ -46,7 +46,7 @@ raster_meetnet_poly_tm
 
 
 #check op unieke celwaarden
-check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(value) %>% filter(n > 1)
+check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filter(n > 1)
 #van bepaalde cellen zijn er dus meerdere polygonen, dit zijn rasters die door de gewestgrens verdeeld werden (bijv. streek van Baarle-Nassau) 
 
 

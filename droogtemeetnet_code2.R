@@ -402,8 +402,8 @@ raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "r
 raster_meetnet_poly_opp <- raster_meetnet_poly %>% 
   mutate(opp = as.integer(st_area(raster_meetnet_poly))) %>% 
   st_drop_geometry() %>% 
-  dplyr::select(value, opp) %>% 
-  group_by(value) %>% 
+  dplyr::select(rasterid, opp) %>% 
+  group_by(rasterid) %>% 
   summarise(totopp = sum(opp))
 
 #welke crs?
@@ -421,7 +421,7 @@ raster_meetnet_poly_tm
 
 
 #check op unieke celwaarden
-check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(value) %>% filter(n > 1)
+check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filter(n > 1)
 #van bepaalde cellen zijn er dus meerdere polygonen, dit zijn rasters die door de gewestgrens verdeeld werden (bijv. streek van Baarle-Nassau) 
 
 
@@ -1551,31 +1551,7 @@ sel_qual_basis <-
  #   count(rasterid, groupnr )
  
  
- kable(tubes_cat3_bis %>% 
-         mutate(ser_nryears = ifelse(is.na(ser_length), NA, ser_nryears),
-                ser_firstyear = ifelse(is.na(ser_length), NA, ser_firstyear),
-                ser_lastyear = ifelse(is.na(ser_length), NA, ser_lastyear)
-         ) %>% 
-         select(loc_code, ser_length, ser_nryears, ser_firstyear,
-                ser_lastyear) %>% 
-         rename(watinacode = loc_code,
-                'lengte tijdreeks' = ser_length,
-                'aantal lg3' = ser_nryears,
-                beginjaar = ser_firstyear,
-                eindjaar = ser_lastyear
-         ) ,
-       caption =  "Peilbuizen die behoren tot rastercellen van cat. 3"
- ) %>% 
-   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-                 full_width = T, 
-                 position = "left",
-                 font_size = 8, 
-                 fixed_thead = T) %>%
-   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
-   # column_spec(2, width = "30em", background = "yellow")
-   #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
-   scroll_box(height = "350px", box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
- 
+
  output_vc <- write_vc(tubes_cat3_bis, file.path(".","data","tubes_cat3_bis"), 
                        sorting = c("loc_code"), strict =  FALSE, root = ".")
  
