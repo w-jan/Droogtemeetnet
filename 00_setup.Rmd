@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 	eval = FALSE,
 	dpi = 300,
 	include = FALSE,
-  cache = TRUE,
+  cache = FALSE,
   cache.path = "cache/"	
 )
 # opts_chunk$set(
@@ -40,18 +40,22 @@ library(RSQLite)
 #keuzen voor het aanmaken van een document
 #welke data verversen
 # 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
-refresh_data <- 1
+refresh_data <- 0
 if (refresh_data == 2) {
   datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
   dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
 }
 
 #figuren opnieuw aanmaken of inlezen
-# 1: figuren terug aanmaken (en wegschrijven); 0: figuren inlezen
-refresh_figures <- 1
-if (refresh_figures == 1) {
+# 2: figuren terug aanmaken (en wegschrijven); 1: de huidige figuren van google-drive downloaden, 0: alleen lokale figuren inlezen
+refresh_figures <- 0
+if (refresh_figures == 2) {
   figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
 }
+# interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
+# tmap_mode("view")
+# statische modus, dus niet inzoombaar
+tmap_mode("plot")
 ```
 
 ```{r constanten, eval= TRUE, include= TRUE, echo= FALSE}

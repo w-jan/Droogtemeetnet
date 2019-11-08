@@ -74,7 +74,7 @@ Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog
 ```{r habitat selection, echo=FALSE, eval= TRUE}
 
 ## Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
-if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | refresh >= 1) {
+if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | refresh_data >= 1) {
     drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
                    path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
 }

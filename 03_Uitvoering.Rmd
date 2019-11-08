@@ -80,17 +80,33 @@ habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
 ```
 
 ```{r overlay-habitatkaart-GRTS-plot, eval=TRUE, echo=FALSE, fig.cap="Verspreiding van de GT-groepen", message=FALSE, warning=FALSE, include=TRUE}
-habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
-  tm_shape(habmap_gw_raster_overlay) + 
-  tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
-  tm_layout(title = "Verspreiding van de GT-groepen" )
+if (refresh_figures == 2) {
+  habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
+    tm_shape(habmap_gw_raster_overlay) + 
+    tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
+    tm_layout(title = "Verspreiding van de GT-groepen" )
+  
+  tmap_save(habmap_gw_raster_overlay_tm, 
+            filename = file.path(figpath, "habmap_gw_raster_overlay.png"),
+            dpi = 250
+            )
+  include_graphics(path = file.path(figpath, "habmap_gw_raster_overlay.png")) 
 
-# interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
-# tmap_mode("view")
-# statische modus, dus niet inzoombaar
-tmap_mode("plot")
+}
+if (file.exists(file.path(".","figures","local", 
+                          "habmap_gw_raster_overlay.png")) == FALSE | refresh_figures >= 1) {
+  drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
+                 path = file.path(".","data","local", 
+                                  "habmap_gw_raster_overlay.png"), 
+                 overwrite = TRUE)
+}
 
-habmap_gw_raster_overlay_tm
+if (refresh_figures < 2) {
+  include_graphics(path = file.path(".","data","local", 
+                                    "habmap_gw_raster_overlay.png"))  
+}
+
+#habmap_gw_raster_overlay_tm
 ```
 
 Tabel \@ref(tab:totopp-gw-groep) geeft weer hoeveel de totale oppervlakte van een GT-groep bedraagt.

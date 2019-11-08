@@ -34,11 +34,15 @@ if (refresh_data == 2) {
 }
 
 #figuren opnieuw aanmaken of inlezen
-# 1: figuren terug aanmaken (en wegschrijven); 0: figuren inlezen
-refresh_figures <- 1
-if (refresh_figures == 1) {
+# 2: figuren terug aanmaken (en wegschrijven); 1: enkel de huidige google-drive-bestanden downloaden, 0: figuren inlezen
+refresh_figures <- 2
+if (refresh_figures == 2) {
   figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
 }
+# interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
+# tmap_mode("view")
+# statische modus, dus niet inzoombaar
+tmap_mode("plot")
 
 #gewenste grootte van het meetnet
 tot_n_tub <- 100
@@ -455,34 +459,34 @@ habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local
 
 habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
 
-if (file.exists(file.path(".","data","local", 
-                          "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh_figures >= 1) {
-  drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
+
+if (refresh_figures == 2) {
+  habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
+    tm_shape(habmap_gw_raster_overlay) + 
+    tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
+    tm_layout(title = "Verspreiding van de GT-groepen" )
+  
+  tmap_save(habmap_gw_raster_overlay_tm, 
+            filename = file.path(figpath, "habmap_gw_raster_overlay.png"),
+            dpi = 250
+            )
+  include_graphics(path = file.path(figpath, "habmap_gw_raster_overlay.png")) 
+
+}
+if (file.exists(file.path(".","figures","local", 
+                          "habmap_gw_raster_overlay.png")) == FALSE | refresh_figures >= 1) {
+  drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
                  path = file.path(".","data","local", 
-                                  "habmap_gw_raster_overlay.gpkg"), 
+                                  "habmap_gw_raster_overlay.png"), 
                  overwrite = TRUE)
 }
 
-habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
-  tm_shape(habmap_gw_raster_overlay) + 
-  tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
-  tm_layout(title = "Verspreiding van de GT-groepen" )
-
-# interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
-# tmap_mode("view")
-# statische modus, dus niet inzoombaar
-tmap_mode("plot")
-
-habmap_gw_raster_overlay_tm
-
-if (refresh_figures >= 1) {
-  G:\Mijn Drive\PRJ_Meetnet_Droogte\2_Uitvoering\figuren
-  tmap_save(habmap_gw_raster_overlay_tm, 
-            filename = file.path(".","figures","local", 
-                                 "habmap_gw_raster_overlay.png"),
-            dpi = 250
-            )
+if (refresh_figures < 2) {
+  include_graphics(path = file.path(".","data","local", 
+                                    "habmap_gw_raster_overlay.png"))  
 }
+
+#habmap_gw_raster_overlay_tm
 
 #oppervlakte gw-groep per rastercel
 raster_gw_opp <- habmap_gw_raster_overlay %>% 
