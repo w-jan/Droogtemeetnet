@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 77db0e9de25c1a6c6e1b8bd3b54bf7facb6f0a6f
-  data_hash: 7c4d11d8c52f9534d2ed0bedc23a4f706fb434d4
+  hash: 695d8b6285b8c3d708fb5b03f0adc3da75bed01e
+  data_hash: a15b4cf4955fcf8b582f586d654da2637b716462
 loc_code:
   class: character
 groupnr:
@@ -39,3 +39,58 @@ aantal_cat1B:
   class: integer
 selectie:
   class: numeric
+area_code:
+  class: character
+area_name:
+  class: character
+x:
+  class: numeric
+'y':
+  class: numeric
+loc_validitycode:
+  class: character
+loc_validity:
+  class: character
+loc_typecode:
+  class: character
+loc_typename:
+  class: character
+filterdepth:
+  class: numeric
+soilsurf_ost:
+  class: numeric
+typegroup_name:
+  class: factor
+  labels:
+  - zeer gevoelige niet-bostypes
+  - gevoelige niet-bostypes
+  - minder tot niet gevoelige niet-bostypes
+  - zeer gevoelige bostypes
+  - gevoelige bostypes
+  - minder tot niet gevoelige bostypes
+  - types van oligotroof milieu
+  - types van mesotroof milieu
+  - types van zwak eutroof milieu
+  - types van matig eutroof tot eutroof milieu
+  - types van zeer nat milieu
+  - types van nat milieu
+  - types van matig nat milieu
+  - types van vochtig milieu
+  - types van droog milieu
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  ordered: no
