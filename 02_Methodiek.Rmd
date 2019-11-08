@@ -27,7 +27,8 @@ Hier is het dus wat zoeken naar een goede maat.
 Concreet:  
     - We maken gebruik van een set gekoppelde GRTS-rasters op verschillende resolutie ([GRTSmh_diffres](https://doi.org/10.5281/zenodo.3354405)) die zijn afgeleid van het basisraster 'GRTSmaster_habitats' ([link](https://doi.org/10.5281/zenodo.2682323)).
 Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetnet biotische habitatkwaliteit.
-    - Voor het meetnet kiezen we voor 8km-hokken (8192 m, level 8). In totaal zijn er 262 hokken in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
+    - Voor de ruimtelijke spreiding van meetpunten in het meetnet kiezen we voor rastercellen met resolutie 8 km (8192 m, level 8).
+In totaal zijn er 262 cellen in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
     - Het gewenst totaal aantal meetpunten **_(nog te beslissen)_** = `r tot_n_tub `  
 
 - We willen daarenboven ook gestratificeerd werken volgens de 5-delige GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden. 
@@ -67,7 +68,6 @@ We willen de toewijzing van een meetpunt aan een rastercel afhankelijk stellen v
 
 We willen er ook rekening mee houden dat een beschikbaar meetpunt niet noodzakelijk ook een geschikt meetpunt is.
 
-Om een geschikt meetpunt te zijn, moet het meetpunt aan kwalitatieve standaarden voldoen.
 
 Afhankelijk van die verhoudingen worden de _rastercellen_ **per GT-groep** eerst in _categorieën_ ingedeeld.
 
@@ -84,6 +84,7 @@ er zijn geen meetpunten met een peilbuis of er is een gebrek aan
 elk meetpunt met een peilbuis wordt geselecteerd
 - Cat. 3: de vraag is kleiner dan het aanbod: 
 er is een overschot aan meetpunten met een peilbuis 
+elk meetpunt wordt geselecteerd
 
 **Categorie 1**
 Vanuit het oogpunt van een meetnetontwerp kan een rastercel van categorie 1 over twee soorten meetpunten beschikken. 
@@ -106,6 +107,7 @@ Rastercellen van deze categorie zijn voor het meetnetontwerp een zegen.
 Het aantal locaties met peilbuizen volstaat juist om te voldoen aan de vraag.
 Alle locaties kunnen zonder verdere analyse in het meetnet worden opgenomen.
 
+
 **Categorie 3**
 Voor een rastercel van categorie 3 stelt er zich een ander 'luxe-probleem'.
 Er is een overschot aan meetpunten met peilbuizen.
@@ -127,15 +129,17 @@ We beschouwen een meetpunt als geschikt voor het berekenen van een droogte-indic
 - Deze tijdreeks bevat _minstens 5 (hydrologische) jaren_ waarvoor een lg3[^2] kan berekend worden.
 
 Het is belangrijk te vermelden dat deze basiskwaliteitscriteria vooral dienen voor een eerste screening van de meetpunten op basis van actueel beschikbare feitelijke grondwatermetingen. 
+
 De eigenlijke kwaliteit van de tijdreeks wordt bepaald door een tijdreeksanalyse (zie \@ref(tijdreeksanalyse)). 
 
 Een meetpunt kan op basis van de actueel beschikbare gegevens ongeschikt zijn, omdat de gegevens niet toelaten om deze indicator voldoende betrouwbaar te berekenen. 
 
 Nemen we ook het kwaliteitsaspect mee in de beoordeling, dan wordt de categorie-indeling van rastercellen complexer. 
+
 We kunnen niet alleen meerdere subcategorieën onderscheiden, de behandeling van de meetpunten in een rastercel wordt ook minder éénduidig.
 In het geval dat alle peilbuislocaties gelijkwaardig waren, bevatten alleen rastercellen van categorie 1 twee soorten meetpunten.
 Maken we een onderscheid in kwaliteit van de meetreeksen, dan zijn er meer toestanden mogelijk.
-We lichten dit toe aan de hand van een drietal voorbeelden.
+We lichten dit toe aan de hand van een tweetal voorbeelden.
 
 Voorbeeld 1: in een rastercel zijn drie meetpunten gewenst. 
 Er zijn momenteel maar twee peilbuizen beschikbaar, één met een goede tijdreeks en één met een slechte. 
@@ -251,9 +255,9 @@ Voor de waterstandgegevens werd de Watina-databank geraadpleegd.
 
 Het is, door het hoge aantal beschikbare meetpunten, niet doenbaar om een tijdreeksanalyse uit te voeren op alle meetpunten. 
 Door rekening te houden met bovenstaande criteria wordt een eerste, voorlopige, schifting gerealiseerd. 
-De kwaliteit van een tijdreeks kan na een tijdreeks-analyse anders beoordeeld worden. 
-Bijvoorbeeld een meetpunt met veel peilmetingen, maar die een duidelijke lineaire trend vertonen, is weinig geschikt om onmiddellijk in het meetnet te worden opgenomen.
-Anderzijds een meetpunt met minder metingen, maar waarvoor een goed model kan gebouwd worden (zonder lineaire trend), komt wel in aanmerking om nu in het meetnet te worden opgenomen.
+De kwaliteit van een tijdreeks kan na een tijdreeksanalyse anders beoordeeld worden. 
+Bijvoorbeeld een meetpunt met veel peilmetingen, die echter een duidelijke lineaire trend vertonen, is weinig geschikt om onmiddellijk in het meetnet te worden opgenomen.
+Anderzijds komt een meetpunt met minder metingen, maar waarvoor een goed model kan gebouwd worden (zonder lineaire trend), wel in aanmerking om nu in het meetnet te worden opgenomen.
 
 De meetreeksen van alle meetpunten die behoren tot cat. 1B werden geanalyseerd. 
 Van de categorieën 2 en 3 was dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
@@ -261,8 +265,8 @@ Van de categorieën 2 en 3 was dat beperkt tot die meetpunten die behoren tot de
 Een meetreeks werd weerhouden als er een tijdsmodel kon voor samengesteld worden dat minstens 66% van de variatie in de waargenomen peilen kon verklaren en ook geen significante lineaire trend vertoont. 
 Bij het tijdsmodel werden uitsluitend neerslag- en evapotranspiratiedata als verklarende reeksen gebruikt. 
 
-Minstens tweederde van het peilverloop dient dus verklaard te kunnen worden door het weer.
-Eenderde kan/mag door andere factoren beïnvloed worden (bijv. het naburige peil van een waterloop).
+Minstens twee derden van het peilverloop dient dus verklaard te kunnen worden door het weer.
+Eén derde kan/mag door andere factoren beïnvloed worden (bijv. het naburige peil van een waterloop).
 
 Een [lineaire trend]{#lintrend} werd als **niet-**significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `sd`), voldoet aan de volgende twee regels:
 
@@ -280,7 +284,7 @@ Deze meetreeksen werden manueel afgekeurd. Sommige van deze tijdreeksen hadden b
 
 Anderzijds werd een model met een verklarende variantie beneden 66% soms nog weerhouden, indien bleek dat het model de lage grondwaterstanden goed kon modelleren.
 
-Een model met een trend < 1cm/jaar, maar met een heel geringe fluctuaties kon toch afgekeurd worden en vice versa.
+Een tijdreeks met een trend < 1cm/jaar, maar waarbij de peilen maar weinig schommelen (kleine amplitude) kon toch afgekeurd worden en vice versa.
 
 
 Het al dan niet weerhouden van een tijdreeks kan gevolgen hebben voor de categorie-indeling van een rastercel. 
