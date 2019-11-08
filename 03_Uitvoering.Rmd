@@ -96,13 +96,13 @@ if (refresh_figures == 2) {
 if (file.exists(file.path(".","figures","local", 
                           "habmap_gw_raster_overlay.png")) == FALSE | refresh_figures >= 1) {
   drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
-                 path = file.path(".","data","local", 
+                 path = file.path(".","figures","local", 
                                   "habmap_gw_raster_overlay.png"), 
                  overwrite = TRUE)
 }
 
 if (refresh_figures < 2) {
-  include_graphics(path = file.path(".","data","local", 
+  include_graphics(path = file.path(".","figures","local", 
                                     "habmap_gw_raster_overlay.png"))  
 }
 
@@ -2473,8 +2473,11 @@ kable(tubes_cat3_gtrs %>%
     scroll_box(height = "250px")
 ```
 
-###Samenvatting selectie
+###Samenvatting selectie peilbuizen
 nog te doen
+```{r}
+
+```
 
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
