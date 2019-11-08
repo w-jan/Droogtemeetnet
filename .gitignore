@@ -43,6 +43,6 @@ rsconnect/
 # Other
 _bookdown_files/
 *.html
-
+!header.html
 .Rproj.user
 
