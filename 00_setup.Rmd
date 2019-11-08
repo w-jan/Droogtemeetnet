@@ -52,6 +52,11 @@ refresh_figures <- 0
 if (refresh_figures == 2) {
   figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
 }
+
+# lokale gitignored paden aanmaken
+if (!dir.exists("data/local")) dir.create("data/local", recursive = TRUE)
+if (!dir.exists("figures/local")) dir.create("figures/local", recursive = TRUE)
+
 # interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
 # tmap_mode("view")
 # statische modus, dus niet inzoombaar
