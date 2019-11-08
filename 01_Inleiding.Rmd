@@ -71,7 +71,7 @@ De permanent gevoede locaties (GT-groep 1) zullen naar verwachting trager reager
 Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog af te spreken)_** balans worden verzekerd. 
 
 
-```{r habitat selection, echo=FALSE, eval= TRUE}
+```{r habitat selection, include=FALSE}
 
 ## Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
 if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | refresh_data >= 1) {

@@ -1,21 +1,17 @@
 <!-- #setup -->
 ```{r include=FALSE}
 knitr::opts_chunk$set(
-	eval = FALSE,
-	dpi = 300,
-	include = FALSE,
-  cache = FALSE,
-  cache.path = "cache/"	
+	eval = TRUE,
+	include = TRUE,
+	echo = FALSE,
+	cache = FALSE,
+  cache.path = "cache/",
+	dpi = 300
 )
-# opts_chunk$set(
-#   echo = FALSE,
-#   dpi = 300
-# )
+
 options(stringsAsFactors = FALSE)
-# library(plyr)
 
 library(stringr)
-library(knitr)
 library(sf)
 library(units)
 library(git2rdata)
@@ -63,7 +59,7 @@ if (!dir.exists("figures/local")) dir.create("figures/local", recursive = TRUE)
 tmap_mode("plot")
 ```
 
-```{r constanten, eval= TRUE, include= TRUE, echo= FALSE}
+```{r constanten, include= FALSE}
 #gewenste grootte van het meetnet
 tot_n_tub <- 100
 
@@ -88,13 +84,13 @@ minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
 #zoekstraal rond peilbuizen (buffer)
 bufferpb <- 3 
 
-#peilbuizen niet zeker niet kunnen opgenomen worden, bijv. geen toelating, omdat het te dicht bij een ander geselecteerd punt ligt
+#peilbuizen die zeker niet kunnen opgenomen worden, bijv. geen toelating, omdat het te dicht bij een ander geselecteerd punt ligt
 #uitgesloten_tubes <- c("MOSP001", "HALP005", "BUIP027")
 uitgesloten_tubes <- "leeg"
 
 ```
 
-```{r read-databases, eval= TRUE, include= TRUE, echo= FALSE}
+```{r read-databases, include= FALSE}
 if (refresh_data == 2) {
   gw_types <- read_scheme_types(lang = "nl") %>%
       filter(scheme == "GW_05.1_terr") %>%
@@ -111,7 +107,7 @@ if (refresh_data == 2) {
 }
 ```
 
-```{r read-gisdata, eval= TRUE, include= TRUE, echo= FALSE}
+```{r read-gisdata, include= FALSE}
 if (refresh_data == 2) {
   habmap_terr <- read_habitatmap_terr()
   
@@ -189,30 +185,40 @@ if (refresh_data == 2) {
            delete_dsn = TRUE)
   
   
-  #inlezen grts-raster level 1 (hoogste resolutie = kleinste gridcelgrootte)
-  grts_level1 <- read_GRTSmh(brick = TRUE) %>% 
+  #inlezen grts-raster level 0 (hoogste resolutie = kleinste gridcelgrootte)
+  grts_level0 <- read_GRTSmh(brick = TRUE) %>% 
     raster::subset(1)
   
-  #inlezen grts-raster level 9 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 1. 
-  grts_level9 <- read_GRTSmh(brick = TRUE) %>% 
+  #inlezen grts-raster level 8 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 0. 
+  grts_level8 <- read_GRTSmh(brick = TRUE) %>% 
     raster::subset(9)
   
-  writeRaster(grts_level9,
-              filename = file.path(datapath, "GIS/VoorR/grts_level9.tif"), 
+  #±inlezen grts-raster level 5 : voor het selecteren van habitatvlekken
+  grts_level5 <- read_GRTSmh(brick = TRUE) %>% 
+    raster::subset(6)
+  
+  writeRaster(grts_level8,
+              filename = file.path(datapath, "GIS/VoorR/grts_level8.tif"), 
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)
   
-  writeRaster(grts_level1,
-              filename = file.path(datapath, "GIS/VoorR/grts_level1.tif"), 
+  writeRaster(grts_level0,
+              filename = file.path(datapath, "GIS/VoorR/grts_level0.tif"), 
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)
+
+    writeRaster(grts_level5,
+              filename = file.path(datapath, "GIS/VoorR/grts_level5.tif"), 
+              format = "GTiff", 
+              datatype = "INT4S",
+              overwrite = TRUE)  
 }
 ```
 
 
-```{r read-watina-data, eval= TRUE, include= TRUE, echo= FALSE}
+```{r read-watina-data, include= FALSE}
 if (refresh_data == 2) {
   watina <- connect_watina()
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
