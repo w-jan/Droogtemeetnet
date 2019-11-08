@@ -75,38 +75,41 @@ Afhankelijk van die verhoudingen worden de _rastercellen_ **per GT-groep** eerst
 
 _A. Alle meetpunten met een peilbuis zijn kwalitatief gelijkwaardig_
 
-We stellen eerst voor de eenvoud dat alle beschikbare meetpunten even geschikt zijn: er wordt bvb. geen onderscheid gemaakt tussen een lang en kort bemeten meetpunt. 
-Vergelijken we dan de vraag (het gewenst aantal meetpunten per rastercel) met het aanbod van meetpunten dan kunnen de rastercellen in drie categorieën verdeeld worden:
+We stellen eerst voor de eenvoud dat alle beschikbare meetpunten even geschikt zijn: er wordt bvb. geen onderscheid gemaakt tussen een lang en een kort bemeten meetpunt. 
+Vergelijken we dan de vraag, het gewenst aantal meetpunten per rastercel, met het aanbod van meetpunten met een peilbuis dan kunnen de rastercellen in drie categorieën verdeeld worden:
 
 - Cat. 1: de vraag is groter dan het aanbod: 
-meetpunten ontbreken of er is een gebrek aan
+er zijn geen meetpunten met een peilbuis of er is een gebrek aan
 - Cat. 2: de vraag is gelijk aan het aanbod: 
-elk meetpunt wordt geselecteerd
+elk meetpunt met een peilbuis wordt geselecteerd
 - Cat. 3: de vraag is kleiner dan het aanbod: 
-er is een overschot aan meetpunten
+er is een overschot aan meetpunten met een peilbuis 
 
 **Categorie 1**
 Vanuit het oogpunt van een meetnetontwerp kan een rastercel van categorie 1 over twee soorten meetpunten beschikken. 
-Je hebt meetpunten zonder en mogelijke meetpunten met een peilbuis. 
+Je hebt meetpunten zonder peilbuis en mogelijk ook meetpunten met een peilbuis. 
 Alle meetpunten met een peilbuis worden zonder verder analyse geselecteerd.
 Daarnaast zijn er (vele) kandidaat-meetpunten om te voorzien van een nieuwe peilbuis. 
 
-_**Bovenstaande is een voorstel. Je zou ook kunnen beslissen dat enkel meetpunten met een peilbuis in aanmerking komen voor het meetnet.**_ 
-_**We raden dit eerder af om zo toch tot een voldoende ruimtelijk gebalanceerde verdeling van meetpunten te komen.**_
+_**Bovenstaande is een voorstel. Je zou ook kunnen beslissen dat enkel meetpunten met een peilbuis in aanmerking komen voor het meetnet.**_
+_**Of het tegenovergestelde is ook een alternatief: dat voor de ruimtelijke balancering we geen voorkeur geven aan meetpunten met een peilbuis.**_
+_**We vinden dat het huidige voorstel een goede balans vertoont tussen beide.**_
+
 Het gaat hier vooral over een tijdsinvestering: dergelijke meetpunten zullen pas na enkele jaren effectief meedraaien in het meetnet. 
 In afwachting daarvan zal het meetnet dus met een kleiner aantal meetpunten moeten functioneren.
 
-In rastercellen van categorie 1 zal vooral de zoektocht naar nieuwe meetpunten dan aandacht vergen. 
+In rastercellen van categorie 1 zal vooral de zoektocht naar nieuwe meetpunten aandacht vergen. 
 Voor de uitwerking van deze selectie van potentiële geschikte habitatvlekken: zie paragraaf \@ref(sel-pot-habvlek).
 
 **Categorie 2**
 Rastercellen van deze categorie zijn voor het meetnetontwerp een zegen.
-Het aantal locaties met peilbuizen volstaat juist om te voldoen aan de vraag..
-Alle deze locaties kunnen zonder verdere analyse in het meetnet worden opgenomen.
+Het aantal locaties met peilbuizen volstaat juist om te voldoen aan de vraag.
+Alle locaties kunnen zonder verdere analyse in het meetnet worden opgenomen.
 
 **Categorie 3**
-Voor een rastercel van categorie 3 stelt er zich een ander 'probleem'.
-Er is een overschot aan meetpunten met peilbuizen, waaruit nog één (of meer) meetpunten gekozen moeten worden. 
+Voor een rastercel van categorie 3 stelt er zich een ander 'luxe-probleem'.
+Er is een overschot aan meetpunten met peilbuizen.
+Uit dit aanbod moet nog het gewenste aantal meetpunten gekozen worden. 
 Hiervoor verwijzen we naar paragraaf \@ref(sel-habvlek).
 
 
@@ -123,7 +126,7 @@ We beschouwen een meetpunt als geschikt voor het berekenen van een droogte-indic
 - Deze tijdreeks is _maximaal 2 opeenvolgende jaren_ onderbroken
 - Deze tijdreeks bevat _minstens 5 (hydrologische) jaren_ waarvoor een lg3[^2] kan berekend worden.
 
-Het is belangrijk te vermelden dat deze basiskwaliteitscriteria vooral dienen voor een eerste screening van de meetpunten op basis actueel beschikbare feitelijke grondwatermetingen. 
+Het is belangrijk te vermelden dat deze basiskwaliteitscriteria vooral dienen voor een eerste screening van de meetpunten op basis van actueel beschikbare feitelijke grondwatermetingen. 
 De eigenlijke kwaliteit van de tijdreeks wordt bepaald door een tijdreeksanalyse (zie \@ref(tijdreeksanalyse)). 
 
 Een meetpunt kan op basis van de actueel beschikbare gegevens ongeschikt zijn, omdat de gegevens niet toelaten om deze indicator voldoende betrouwbaar te berekenen. 

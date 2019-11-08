@@ -37,6 +37,7 @@ rsconnect/
 
 # local, large binary data
 /data/local/*
+/figures/local/*
 .Rproj.user
 
 # Other

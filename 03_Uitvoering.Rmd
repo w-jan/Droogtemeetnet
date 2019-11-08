@@ -14,7 +14,7 @@ Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de 
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
-if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh >= 1 ){
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh_data >= 1 ){
     drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
                    path = file.path(".","data","local", 
                                     "raster_meetnet_poly.gpkg"), overwrite = 
@@ -56,7 +56,7 @@ check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filt
 
 Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vijf grondwatergroepen volgens de habitatkaart. 
 
-```{r overlay habitatkaart en GRTS-raster, eval=TRUE, echo=FALSE, warning=FALSE, include=TRUE}
+```{r overlay-habitatkaart-GRTS-raster, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE, include=TRUE}
 # overlay maken van de habitatkaart (enkel van GT-groepen) en het GTRS-raster (level8)
 # habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
 #   st_intersection(raster_meetnet_poly)
@@ -65,7 +65,7 @@ Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vij
 #     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
 
 if (file.exists(file.path(".","data","local", 
-                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh >= 1) {
+                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh_data >= 1) {
     drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
                    path = file.path(".","data","local", 
                                     "habmap_gw_raster_overlay.gpkg"), 
@@ -77,10 +77,13 @@ habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local
 habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
 #plot(habmap_gw_raster_overlay, main = "Voorkomen van ")
 
+```
+
+```{r overlay-habitatkaart-GRTS-plot, eval=TRUE, echo=FALSE, fig.cap="Verspreiding van de GT-groepen", message=FALSE, warning=FALSE, include=TRUE}
 habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
   tm_shape(habmap_gw_raster_overlay) + 
   tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
-  tm_layout(title = "Voorkomen GT-groepen" )
+  tm_layout(title = "Verspreiding van de GT-groepen" )
 
 # interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
 # tmap_mode("view")
@@ -2182,7 +2185,7 @@ Normaal sluiten in een rastercel beide keuzen elkaar uit, tenzij in deze rasterc
 # grts_level1 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(1)
 
-if (file.exists(file.path(".","data","local", "grts_level1.tif")) == FALSE | refresh >= 1) {
+if (file.exists(file.path(".","data","local", "grts_level1.tif")) == FALSE | refresh_data >= 1) {
     drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
                    path = file.path(".","data","local", "grts_level1.tif"), 
                    overwrite = TRUE)
@@ -2194,7 +2197,7 @@ grts_level1 <- raster(file.path(".","data","local", "grts_level1.tif"))
 # grts_level9 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(9)
 
-if (file.exists(file.path(".","data","local", "grts_level9.tif")) == FALSE | refresh >= 1) {
+if (file.exists(file.path(".","data","local", "grts_level9.tif")) == FALSE | refresh_data >= 1) {
     drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
                    path = file.path(".","data","local", "grts_level9.tif"), 
                    overwrite = TRUE)

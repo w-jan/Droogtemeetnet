@@ -24,9 +24,21 @@ library(knitr)
 library(googledrive)
 library(RSQLite) 
 
-#data verversen
+#keuzen voor het aanmaken van een document
+#welke data verversen
 # 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
-refresh <- 2
+refresh_data <- 1
+if (refresh_data == 2) {
+  datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
+  dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+}
+
+#figuren opnieuw aanmaken of inlezen
+# 1: figuren terug aanmaken (en wegschrijven); 0: figuren inlezen
+refresh_figures <- 1
+if (refresh_figures == 1) {
+  figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
+}
 
 #gewenste grootte van het meetnet
 tot_n_tub <- 100
@@ -58,7 +70,7 @@ uitgesloten_tubes <- "leeg"
 
 
 #inladen gegevens (niet verplicht, enkel nodig bij updates van de brondata)
-if (refresh == 2) {
+if (refresh_data == 2) {
   gw_types <- read_scheme_types(lang = "nl") %>%
     filter(scheme == "GW_05.1_terr") %>%
     arrange(typegroup) %>%
@@ -73,7 +85,7 @@ if (refresh == 2) {
   rm(output_vc)
 }
 
-if (refresh == 2) {
+if (refresh_data == 2) {
   habmap_terr <- read_habitatmap_terr()
   
   habmap_polygons <- habmap_terr$habitatmap_terr_polygons
@@ -99,8 +111,7 @@ if (refresh == 2) {
                by = "polygon_id")
   
   #wegschrijven als geopackage
-  datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
-  dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+
   
   st_write(habmap_polygons_gw,
            file.path(datapath, 
@@ -173,7 +184,7 @@ if (refresh == 2) {
               overwrite = TRUE)
 }
 
-if (refresh == 2) {
+if (refresh_data == 2) {
   watina <- connect_watina()
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                         buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
@@ -369,7 +380,7 @@ gw_types_groupen <- gw_types %>%
          "GT-groep: naam" = typegroup_name)
 
 
-if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | refresh >= 1) {
+if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | refresh_data >= 1) {
   drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
                  path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
 }
@@ -389,7 +400,7 @@ habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habma
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
 
 
-if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh >= 1 ){
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh_data >= 1 ){
   drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
                  path = file.path(".","data","local", 
                                   "raster_meetnet_poly.gpkg"), overwrite = 
@@ -433,7 +444,7 @@ check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filt
 #     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
 
 if (file.exists(file.path(".","data","local", 
-                          "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh >= 1) {
+                          "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh_data >= 1) {
   drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
                  path = file.path(".","data","local", 
                                   "habmap_gw_raster_overlay.gpkg"), 
@@ -443,20 +454,35 @@ if (file.exists(file.path(".","data","local",
 habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
 
 habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
-#plot(habmap_gw_raster_overlay, main = "Voorkomen van ")
+
+if (file.exists(file.path(".","data","local", 
+                          "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh_figures >= 1) {
+  drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
+                 path = file.path(".","data","local", 
+                                  "habmap_gw_raster_overlay.gpkg"), 
+                 overwrite = TRUE)
+}
 
 habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
   tm_shape(habmap_gw_raster_overlay) + 
   tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
-  tm_layout(title = "Voorkomen GT-groepen" )
+  tm_layout(title = "Verspreiding van de GT-groepen" )
 
 # interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
 # tmap_mode("view")
 # statische modus, dus niet inzoombaar
-# tmap_mode("plot")
+tmap_mode("plot")
 
 habmap_gw_raster_overlay_tm
 
+if (refresh_figures >= 1) {
+  G:\Mijn Drive\PRJ_Meetnet_Droogte\2_Uitvoering\figuren
+  tmap_save(habmap_gw_raster_overlay_tm, 
+            filename = file.path(".","figures","local", 
+                                 "habmap_gw_raster_overlay.png"),
+            dpi = 250
+            )
+}
 
 #oppervlakte gw-groep per rastercel
 raster_gw_opp <- habmap_gw_raster_overlay %>% 
@@ -1608,7 +1634,7 @@ sel_qual_basis <-
  # grts_level1 <- read_GRTSmh(brick = TRUE) %>% 
  #   raster::subset(1)
  
- if (file.exists(file.path(".","data","local", "grts_level1.tif")) == FALSE | refresh >= 1) {
+ if (file.exists(file.path(".","data","local", "grts_level1.tif")) == FALSE | refresh_data >= 1) {
    drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
                   path = file.path(".","data","local", "grts_level1.tif"), 
                   overwrite = TRUE)
@@ -1620,7 +1646,7 @@ sel_qual_basis <-
  # grts_level9 <- read_GRTSmh(brick = TRUE) %>% 
  #   raster::subset(9)
  
- if (file.exists(file.path(".","data","local", "grts_level9.tif")) == FALSE | refresh >= 1) {
+ if (file.exists(file.path(".","data","local", "grts_level9.tif")) == FALSE | refresh_data >= 1) {
    drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
                   path = file.path(".","data","local", "grts_level9.tif"), 
                   overwrite = TRUE)

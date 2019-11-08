@@ -37,9 +37,21 @@ library(knitr)
 library(googledrive)
 library(RSQLite) 
 
-#data verversen
+#keuzen voor het aanmaken van een document
+#welke data verversen
 # 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
-refresh <- 1
+refresh_data <- 1
+if (refresh_data == 2) {
+  datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
+  dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+}
+
+#figuren opnieuw aanmaken of inlezen
+# 1: figuren terug aanmaken (en wegschrijven); 0: figuren inlezen
+refresh_figures <- 1
+if (refresh_figures == 1) {
+  figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
+}
 ```
 
 ```{r constanten, eval= TRUE, include= TRUE, echo= FALSE}
@@ -74,7 +86,7 @@ uitgesloten_tubes <- "leeg"
 ```
 
 ```{r read-databases, eval= TRUE, include= TRUE, echo= FALSE}
-if (refresh == 2) {
+if (refresh_data == 2) {
   gw_types <- read_scheme_types(lang = "nl") %>%
       filter(scheme == "GW_05.1_terr") %>%
       arrange(typegroup) %>%
@@ -91,7 +103,7 @@ if (refresh == 2) {
 ```
 
 ```{r read-gisdata, eval= TRUE, include= TRUE, echo= FALSE}
-if (refresh == 2) {
+if (refresh_data == 2) {
   habmap_terr <- read_habitatmap_terr()
   
   habmap_polygons <- habmap_terr$habitatmap_terr_polygons
@@ -192,7 +204,7 @@ if (refresh == 2) {
 
 
 ```{r read-watina-data, eval= TRUE, include= TRUE, echo= FALSE}
-if (refresh == 2) {
+if (refresh_data == 2) {
   watina <- connect_watina()
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                         buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
