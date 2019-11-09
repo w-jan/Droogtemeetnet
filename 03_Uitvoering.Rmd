@@ -780,7 +780,7 @@ kable(sel_raster_pb %>% st_drop_geometry() %>%
 ```
 
 
-### Categorie 1A: Zijn er rastercellen met onvoldoende peilbuizen?
+### Categorie 1A: Zijn er rastercellen met onvoldoende geschikte peilbuizen?
 
 Tabel \@ref(tab:cat1A-table) geeft een overzicht per GT-groep van het aantal geselecteerde rastercellen zonder peilbuis of met een onvoldoend aantal peilbuizen.
 
