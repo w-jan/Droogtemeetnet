@@ -490,7 +490,7 @@ Binnen deze straal wordt aangenomen dat het grondwaterregime weinig zal variëre
 Door het gebruik van een bufferzone en wanneer een peilbuis in een habitat-complex ligt, kan een peilbuis meerdere keren geselecteerd worden. 
 Dat kan ertoe leiden dat een rastercel gekozen werd voor een bep. GT-groep die er in feite maar marginaal aanwezig is.
 Om dat te vermijden, voegen we de verschillende habitattypen samen die tot eenzelfde GT-groep behoren.
-Alleen de GT-groep met een opp-aandeel van minstens 50% wordt dan weerhouden. 
+Alleen de GT-groep met een (gesommeerd) opp-aandeel van minstens 50% (in de aan een peilbuis gekoppelde polygoon) wordt dan weerhouden voor een peilbuis.
 
 ```{r loading-selecting-tubes-watina, message=FALSE, warning=FALSE}
 # watina <- connect_watina()
