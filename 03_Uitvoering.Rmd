@@ -169,7 +169,7 @@ kable(raster_gw_opp %>%
 
 ```
 
-###Berekening gemiddelde benodigde oppervlakte van een GT-groep per meetpunt
+### Berekening gemiddelde benodigde oppervlakte van een GT-groep per meetpunt
 
 We gaan hier uit van de keuze voor een gelijke verdeling van de meetpunten over de strata (= GT-groepen), namelijk we wensen `r minaantal_tub_group` meetpunten per GT-groep.
 We kennen de totale oppervlakte van een GT-groep, de oppervlakte van een GT-groep in elke rastercel en hoeveel meetpunten er per GT-groep gewenst zijn. 
@@ -374,6 +374,7 @@ kable(aantal_meetpunten_cel_overzicht %>%
 
 ```
 <br/><br/>
+
 ### De eigenlijke selectie van rastercellen
 
 We kunnen nu de rastercellen weergeven die een meetpunt dienen te bevatten.
@@ -484,7 +485,7 @@ De selectie gebeurde in enkele stappen :
 ### Opgave van de meetpunten (Watina-databank) die gelegen zijn in een verdrogingsgevoelig type.  
 
 Voor deze selectie werd met een zoekstraal van **`r bufferpb`** meter rond een meetpunt gewerkt. 
-We selecteren enkel de meetpunten die grondwaterpeilen meten (piëzometer of peilbuis). Voor de eenvoud benoemen we ze hier peilbuizen. 
+We selecteren enkel de meetpunten die grondwaterpeilen meten (piëzometer of peilbuis). Voor de eenvoud benoemen we ze hier als peilbuizen. 
 Binnen deze straal wordt aangenomen dat het grondwaterregime weinig zal variëren.
 
 Door het gebruik van een bufferzone en wanneer een peilbuis in een habitat-complex ligt, kan een peilbuis meerdere keren geselecteerd worden. 
@@ -782,7 +783,7 @@ kable(sel_raster_pb %>% st_drop_geometry() %>%
 
 ### Categorie 1A: Zijn er rastercellen met onvoldoende geschikte peilbuizen?
 
-Tabel \@ref(tab:cat1A-table) geeft een overzicht per GT-groep van het aantal geselecteerde rastercellen zonder peilbuis of met een onvoldoend aantal peilbuizen.
+Tabel \@ref(tab:cat1A-table) geeft een overzicht per GT-groep van het aantal geselecteerde rastercellen zonder peilbuis of met een onvoldoende aantal peilbuizen.
 
 Figuur \@ref(fig:cat1A-plot) toont ze op een kaart.
 
@@ -800,7 +801,7 @@ Als er onvoldoende kwalitatieve meetreeksen zijn, dan wordt de cel (ook) tot cat
 #   # distinct(rasterid, groupnr) %>% 
 #   arrange(rasterid, groupnr)
 
-#eerste groep rastercellen: rastercellen zonder peilbuis of met een onvoldoend aantal peilbuizen
+#eerste groep rastercellen: rastercellen zonder peilbuis of met een onvoldoende aantal peilbuizen
 sel_cat1A_raster <- sel_raster_meetnet %>% 
   left_join(sel_raster_pb %>% 
               st_drop_geometry() %>% 
@@ -839,11 +840,11 @@ kable(sel_cat1A_table %>%
     #scroll_box(height = "250px") 
 ```
 
-```{r cat1A-plot, fig.cap = "Rastercellen met een onvoldoend aantal peilbuizen", warning= FALSE, message=FALSE}
+```{r cat1A-plot, fig.cap = "Rastercellen met een onvoldoende aantal peilbuizen", warning= FALSE, message=FALSE}
 
 sel_cat1A_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat1A_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1A: cel met een onvoldoend aantal peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1A: cel met een onvoldoende aantal peilbuizen" )
 
 sel_cat1A_tm
 ```
@@ -889,11 +890,11 @@ sel_cat1B_table <- sel_cat1B_raster %>%
 
 kable(sel_cat1B_table %>% 
         group_by(groupnr ) %>% 
-        summarise('aantal cellen met een onvoldoend aantal peilbuizen met een goede meetreeks' = n(),
+        summarise('aantal cellen met een onvoldoende aantal peilbuizen met een goede meetreeks' = n(),
                   'aantal gewenste meetlocaties met pb zonder goede meetreeks' =  sum(aantal_cat1B)) %>% 
         rename(GTgroep = groupnr
                ),
-      caption =  "Categorie 1B: rastercellen met een onvoldoend aantal peilbuizen met een goede meetreeks"
+      caption =  "Categorie 1B: rastercellen met een onvoldoende aantal peilbuizen met een goede meetreeks"
       ) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
@@ -907,11 +908,11 @@ kable(sel_cat1B_table %>%
 ```
 
 
-```{r cat1B-plot, fig.cap = "rastercellen met een onvoldoend aantal peilbuizen met een goede meetreeks", warning= FALSE, message=FALSE}
+```{r cat1B-plot, fig.cap = "rastercellen met een onvoldoende aantal peilbuizen met een goede meetreeks", warning= FALSE, message=FALSE}
 
 sel_cat1B_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat1B_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1B: cel met een onvoldoend aantal peilbuizen met goede meetreeks" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1B: cel met een onvoldoende aantal peilbuizen met goede meetreeks" )
 
 sel_cat1B_tm
 ```
@@ -1457,7 +1458,7 @@ plot(rc)
 ```
 <br/><br/>
 
-##Tijdreeksanalyse {#tijdreeksanalyse_uitvoering}
+## Tijdreeksanalyse {#tijdreeksanalyse_uitvoering}
 
 De meetreeksen van peilbuizen die behoren tot de geselecteerde rastercellen van cat. 1B en 2 werden alle geïmporteerd in Menyanthes. 
 Van cat. 3 werden alleen de meetreeksen geïmporteerd van de beste clusters, die toch ook al aanleiding gaven tot een overaanbod.
@@ -1582,7 +1583,7 @@ sel_raster_pb_bis <-
 
 Deze categorie bleef onveranderd. 
 
-### Categorie 1B: Rastercellen met een onvoldoend aantal **geschikte** peilbuizen
+### Categorie 1B: Rastercellen met een onvoldoende aantal **geschikte** peilbuizen
 
 De categorie 1B kan na de tijdreeksanalyse wel veranderd zijn. 
 Het kan immers zijn dat in een rastercel van 1B modelmatig voor één of meer peilbuizen een bruikbare tijdreeks is berekend, zodat deze cellen dan tot categorie 2 of 3 zijn gaan behoren. 
@@ -1615,11 +1616,11 @@ sel_cat1B_table_bis <- sel_cat1B_raster_bis %>%
 
 kable(sel_cat1B_table_bis %>% 
         group_by(groupnr ) %>% 
-        summarise('aantal cellen met een onvoldoend aantal geschikte peilbuizen' = n(),
+        summarise('aantal cellen met een onvoldoende aantal geschikte peilbuizen' = n(),
                   'aantal gewenste meetlocaties met een, momenteel ongeschikte, pb' =  sum(aantal_cat1B)) %>% 
         rename(GTgroep = groupnr
                ),
-      caption =  "Categorie 1B: rastercellen met een onvoldoend aantal peilbuizen met een goede meetreeks"
+      caption =  "Categorie 1B: rastercellen met een onvoldoende aantal peilbuizen met een goede meetreeks"
       ) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
@@ -1634,11 +1635,11 @@ kable(sel_cat1B_table_bis %>%
 
 Er zijn, na de tijdreeksanalyse, nog steeds `r sum(sel_cat1B_table_bis$aantal_cat1B)` gewenste meetlocaties waar zich een peilbuis bevindt, maar waarover we geen goede tijdreeks beschikken. Ze liggen verspreid over `r nrow(sel_cat1B_table_bis)` rastercellen (figuur \@ref(fig:cat1B-plot-bis)). 
 
-```{r cat1B-plot-bis, fig.cap = "rastercellen met een onvoldoend aantal peilbuizen met een goede meetreeks", message=FALSE}
+```{r cat1B-plot-bis, fig.cap = "rastercellen met een onvoldoende aantal peilbuizen met een goede meetreeks", message=FALSE}
 
 sel_cat1B_tm_bis <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat1B_raster_bis) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1B: cel met een onvoldoend aantal peilbuizen met goede meetreeks" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1B: cel met een onvoldoende aantal peilbuizen met goede meetreeks" )
 
 sel_cat1B_tm_bis
 ```
