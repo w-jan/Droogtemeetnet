@@ -1068,7 +1068,7 @@ kable(sel_qual_basis %>%
 
 ```
 
-We groeperen vervolgens de peilbuizen (naast rastercel en GTgroep) voor elke voorkomende combinatie van de twee clusters (zie tabel \@ref(tab:synthese-clusters-extra-criteria)).
+We groeperen vervolgens de peilbuizen (naast rastercel en GTgroep) voor elke voorkomende combinatie van de twee criteria (zie tabel \@ref(tab:synthese-clusters-extra-criteria)).
 We berekenen voor deze combinaties een rangorde, waarbij ook het [derde kwaliteitscriterium](#suppl-criteria) in rekening gebracht wordt (= rang combi in de tabel). 
 Peilbuizen in clusters met een lager rang combi-waarde zullen voorrang krijgen. 
 We berekenen ook het hoogste rangnummer dat nodig is om in het resterend gewenste aantal peilbuizen te kunnen voorzien (= max rang).
