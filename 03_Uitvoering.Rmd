@@ -854,7 +854,7 @@ De hiaten zijn bijgevolg ruimtelijk goed verdeeld.
 ### Categorie 1B: Rastercellen met peilbuizen, maar onvoldoende **geschikte** {#cat1b}
 
 Categorie 1B is een andere selectie van de tabel \@ref(tab:join-tubes-on-raster).
-Het groepeert de rastercellen waarvoor in principe voldoende peilbuizen beschikbaar zijn, maar waarvoor het gewenst aantal meetpunten toch kleiner is dan het aantal peilbuizen met een goede tijdreeks.
+Het groepeert de rastercellen waarvoor in principe voldoende peilbuizen beschikbaar zijn, maar waarvoor het aantal peilbuizen met een goede tijdreeks toch kleiner is dan het gewenst aantal meetpunten.
 
 Het resultaat van deze selectie wordt gegeven in tabel \@ref(tab:cat1B-table).
 Voor deze groep kan onderzocht worden of door het modelmatig verbeteren van de tijdreeksen wel aan de criteria kan voldaan worden.
