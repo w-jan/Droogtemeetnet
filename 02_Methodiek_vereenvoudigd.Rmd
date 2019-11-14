@@ -83,7 +83,7 @@ We willen er ook rekening mee houden dat een beschikbaar meetpunt niet noodzakel
 
 
 Afhankelijk van die verhoudingen worden de _rastercellen_ **per GT-groep** eerst in categorieën ingedeeld.
-Deze opdeling is een hulp bij het ontwerp, omdat elke categorie een specifieke behandeling toelaat.
+Deze opdeling is een hulp bij het ontwerp, omdat elke categorie een specifieke behandeling vraagt.
 
 _A. Alle meetpunten met een peilbuis zijn kwalitatief gelijkwaardig_
 

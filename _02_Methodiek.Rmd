@@ -161,7 +161,9 @@ We lichten dit toe aan de hand van een tweetal voorbeelden.
 
 Voorbeeld 1: in een rastercel zijn drie meetpunten gewenst. 
 Er zijn momenteel maar twee peilbuizen beschikbaar, één met een goede tijdreeks en één met een slechte. 
+
 De drie locaties vragen elk een andere behandeling. 
+
 Voor het meetpunt zonder peilbuis, moet op zoek gegaan worden naar de meest representatieve keuze. 
 De twee andere meetlocaties kunnen opgenomen worden, maar de ene locatie komt in de wachtrij te zitten, terwijl met de andere effectief al van start kan gegaan worden. 
 Om deze drie verschillende behandelingen technisch te kunnen ondervangen, zal de rastercel tot drie categorieën gerekend worden (1A, 1Ba en 2).
