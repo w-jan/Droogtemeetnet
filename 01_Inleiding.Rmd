@@ -48,11 +48,13 @@ Hierbij achten we het belangrijk om rekening te houden met de mogelijke verschil
 We veronderstellen hierbij dat er een relatie bestaat tussen het hydrologisch regime en de responstijd: permanent grondwatergevoede systemen reageren trager dan systemen met een tijdelijke of zwakke grondwatervoeding. 
 
 We vertrekken hiervoor van de 5-delige indeling in grondwatertypegroepen (GT-groep) die toegepast wordt in het MNM (tabel \@ref(tab:GTgroepen)). In de vorige tabel \@ref(tab:gw-typen)) is weergegeven tot welke GT-groep een gaHT gerekend wordt.
-```{r GTgroepen, eval = TRUE, include = TRUE, echo=FALSE}
+```{r GTgroepen}
 gw_types_groupen <- gw_types %>%
     distinct(groupnr, typegroup_name) %>% 
+    arrange(groupnr) %>% 
     rename("GT-groep: nummer" = groupnr,
       "GT-groep: naam" = typegroup_name)
+
 kable(gw_types_groupen, 
       caption = "Grondwatertype-groepen") %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
@@ -65,7 +67,8 @@ kable(gw_types_groupen,
 ```
     
 
-_GT-groep 5 bevat uitsluitend grondwaterafhankelijke HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms tot meestalniet._ **_De vraag is of we deze groep al dan niet meenemen._**  
+_GT-groep 5 bundelt grondwaterafhankelijke HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms tot meestal niet.
+_ **_De vraag is of we deze groep meenemen._**  
 De GT-groepen lenen zich heel goed om een stratificatie uit te voeren op basis van de verwachte responssnelheid van een locatie op droogte. 
 De permanent gevoede locaties (GT-groep 1) zullen naar verwachting trager reageren dan de tijdelijk of zwak gevoede locaties. 
 Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog af te spreken)_** balans worden verzekerd. 

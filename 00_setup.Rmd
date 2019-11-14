@@ -81,7 +81,7 @@ minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
   toelaatbare_spreiding_jaren <- 5
   toelaatbaar_verschil_lengte_tijdreeks <- 5
 
-#zoekstraal rond peilbuizen (buffer)
+#zoekstraal rond peilbuizen (buffer) (meter)
 bufferpb <- 3 
 
 #peilbuizen die zeker niet kunnen opgenomen worden, bijv. geen toelating, omdat het te dicht bij een ander geselecteerd punt ligt
