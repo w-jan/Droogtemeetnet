@@ -1,38 +1,32 @@
-loc_code	groupnr	rasterid	ser_firstyear	ser_lastyear	ser_nryears	ser_length	rest_aantal_meetptn	rankclus	rankclus_lastyear	rankclus_nryears	beschikbaar_aantal_cluster	gew_aantal_meetptn	aantal_cat1A	aantal_cat1B	n	selectie	area_code	area_name	x	y	loc_validitycode	loc_validity	loc_typecode	loc_typename	filterdepth	soilsurf_ost	typegroup_name
-BOBP018	1	850	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	BOB	Bosbeekvallei	240525	196690	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.31	47.724	11
-BTRP001	4	25	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	BTR	Bos ter Rijst	101924	164018	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.17	68.17	14
-COOP001	1	233	2006	2015	8	10	1	1	1	1	1	1	0	0	1	1	COO	Coolhembos	146113	196127	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.4	2.56	11
-DYLP037	4	582	2008	2016	9	9	1	1	1	1	1	1	0	0	1	1	DYL	Dijlevallei	169802	167510	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.12	28.42	14
-HAGP019	2	274	2002	2015	14	14	1	1	1	1	1	1	0	0	1	1	HAG	Hageven	224064	217725	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.061	34.611	12
-IJSP023	4	262	2006	2010	5	5	1	1	1	1	1	1	0	0	1	1	IJS	Ijsevallei	166813	166073	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.43	36.094	14
-ITTP212	1	146	2012	2016	5	5	1	1	1	1	1	1	0	0	1	1	ITT	Itterbeekvallei	242307	202672	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.14	35.225	11
-KALP136	3	734	2011	2015	5	5	1	1	1	1	1	1	0	0	1	1	KAL	Kalmthoutse heide	154423	234049	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.19	18.514	13
-KALP319	5	734	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	KAL	Kalmthoutse heide	155060	233988	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.65	18.898	15
-KBRP060	2	233	2001	2012	11	12	1	1	1	1	1	1	0	0	1	1	KBR	Potpolder Kruibeke Rupelmonde	145448	202168	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.14	2.233	12
-LDOP041	3	310	2005	2016	10	12	1	1	1	1	1	1	0	0	1	1	LDO	Langdonken	186424	191178	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.62	14.604	13
-MOEP030	3	217	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	MOE	Moenebroeken	116473	166514	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.5	22.71	13
-ORCP002	3	745	NA	2019	100	NA	2	1	1	1	2	2	0	0	2	1	ORC	De Orchis	139863	196974	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.84	4.92	13
-ORCP003	3	745	NA	2019	100	NA	2	1	1	1	2	2	0	0	2	1	ORC	De Orchis	139866	197010	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.8	4.87	13
-OSKP038	5	113	2003	2009	5	7	1	1	1	1	1	1	0	0	1	1	OSK	Oostends krekengebied	54530	210938	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.09	3.155	15
-SCPP025	2	886	2006	2011	6	6	1	1	1	1	1	1	0	0	1	1	SCP	Scheps	206960	204244	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.53	31.348	12
-SHHP035	3	210	2011	2016	6	6	1	1	1	1	1	1	0	0	1	0	SHH	Schietveld Houthalen Hechteren	225904	194393	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.16	78.211	13
-SWEP004	5	1	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	SWE	Schorreweide	57388	213820	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.96	2.192	15
-SWPP032	4	537	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	SWP	Scheldemeersen Wortegem-Petege	94675	169402	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.68	10.47	14
-TEUP043	1	722	2007	2016	10	10	1	1	1	1	1	1	0	0	1	1	TEU	De Teut	223696	188700	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.56	60.053	11
-TEUP045	3	722	2008	2014	7	7	1	1	1	1	1	1	0	0	1	1	TEU	De Teut	225036	188792	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.04	62.697	13
-TIEP026	1	1014	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	TIE	Militair domein Tielen	189050	217720	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.14	18.45	11
-TORP018	4	198	2005	2016	12	12	1	1	1	1	1	1	0	0	1	1	TOR	Torfbroek	162023	179712	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.42	16.963	14
-TVGP043	5	46	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	TVG	Turnhouts Vennengebied	189364	226376	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.45	31.52	15
-UKPP018	5	437	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	UKP	Uitkerkse Polder	62808	222365	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1	2.33	15
-VDBP018	3	438	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	VDB	Vallei van de Drie Beken	202838	192210	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.06	22.487	13
-VDBP514	2	438	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	VDB	Vallei van de Drie Beken	202304	191370	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.77	21.76	12
-VISP015	1	470	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	VIS	Visbeekvallei	180942	217539	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.141	17.511	11
-VOTP055	1	134	2007	2015	9	9	1	1	1	1	1	1	0	0	1	1	VOT	Vorsdonkbos-Turfputten	179763	184526	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.76	12.49	11
-VRIP024	5	918	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	VRI	Vrieselhof	167122	212402	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	3	8.98	15
-VRIP039	1	918	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	VRI	Vrieselhof	166653	213046	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	1.86	8.417	11
-WALP005	5	134	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	WAL	Walenbos	184748	179727	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.91	26.42	15
-ZEBP009	2	693	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	ZEB	Zeebrugge	69111	219114	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.42	3.6	12
-ZEBP046	3	693	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	ZEB	Zeebrugge	69422	220210	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1	3.3782	13
-ZEMP005	4	710	2005	2010	6	6	1	1	1	1	1	1	0	0	1	1	ZEM	Zemst	158392	184259	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.52	8.223	14
-ZIEP003	1	1010	2006	2016	10	11	1	1	1	1	1	1	0	0	1	1	ZIE	Ziepbeekvallei	238289	181160	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.87	70.11	11
-ZWAP144	5	950	NA	2019	100	NA	1	1	1	1	1	1	0	0	1	1	ZWA	Zwarte Beek	216583	198160	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.53	52.4	15
+loc_code	groupnr	rasterid	rankclus	rankclus_lastyear	rankclus_nryears	beschikbaar_aantal_cluster	gew_aantal_meetptn	n	selectie	area_code	area_name	x	y	loc_validitycode	loc_validity	loc_typecode	loc_typename	filterdepth	soilsurf_ost	typegroup_name	lastyear	nryears	firstyear
+BOBP018	1	850	1	1	1	1	1	1	1	BOB	Bosbeekvallei	240525	196690	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.31	47.724	11	2019	100	2012
+BTRP001	4	25	1	1	1	1	1	1	1	BTR	Bos ter Rijst	101924	164018	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.17	68.17	14	2019	100	2003
+COOP001	1	233	1	1	1	1	1	1	1	COO	Coolhembos	146113	196127	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.4	2.56	11	2019	100	2006
+DPBP007	2	306	1	1	1	1	1	1	-1	DPB	Diepenbeek	221649	179772	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.21	0	12	0	0	NA
+DYLP037	4	582	1	1	1	1	1	1	1	DYL	Dijlevallei	169802	167510	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.12	28.42	14	2019	100	2004
+HAGP019	2	274	1	1	1	1	1	1	1	HAG	Hageven	224064	217725	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.061	34.611	12	2019	100	2002
+IJSP023	4	262	1	1	1	1	1	1	1	IJS	Ijsevallei	166813	166073	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.43	36.094	14	2019	100	2006
+ITTP212	1	146	1	1	1	1	1	1	1	ITT	Itterbeekvallei	242307	202672	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.14	35.225	11	2019	100	2012
+KALP136	3	734	1	1	1	1	1	1	1	KAL	Kalmthoutse heide	154423	234049	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.19	18.514	13	2019	100	2011
+KALP319	5	734	1	1	1	1	1	1	1	KAL	Kalmthoutse heide	155060	233988	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.65	18.898	15	2019	100	NA
+KBRP060	2	233	1	1	1	1	1	1	1	KBR	Potpolder Kruibeke Rupelmonde	145448	202168	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.14	2.233	12	2019	100	2001
+LDOP041	3	310	1	1	1	1	1	1	1	LDO	Langdonken	186424	191178	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.62	14.604	13	2019	100	2005
+MOGP003	1	758	1	1	1	1	1	1	-1	MOG	Mosselgoren	188983	208897	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.63	14.721	11	0	0	NA
+OSKP038	5	113	1	1	1	1	1	1	1	OSK	Oostends krekengebied	54530	210938	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.09	3.155	15	2019	100	2003
+SCPP025	2	886	1	1	1	1	1	1	1	SCP	Scheps	206960	204244	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.53	31.348	12	2019	100	2006
+SWEP004	5	1	1	1	1	1	1	1	1	SWE	Schorreweide	57388	213820	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.96	2.192	15	2019	100	NA
+SWPP032	4	537	1	1	1	1	1	1	1	SWP	Scheldemeersen Wortegem-Petege	94675	169402	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.68	10.47	14	2019	100	2010
+TEUP043	1	722	1	1	1	1	1	1	1	TEU	De Teut	223696	188700	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.56	60.053	11	2019	100	2007
+TEUP045	3	722	1	1	1	1	1	1	1	TEU	De Teut	225036	188792	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.04	62.697	13	2019	100	2008
+TIEP026	1	1014	1	1	1	1	1	1	1	TIE	Militair domein Tielen	189050	217720	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.14	18.45	11	2019	100	NA
+TORP018	4	198	1	1	1	1	1	1	1	TOR	Torfbroek	162023	179712	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.42	16.963	14	2019	100	2005
+TVGP043	5	46	1	1	1	1	1	1	1	TVG	Turnhouts Vennengebied	189364	226376	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.45	31.52	15	2019	100	NA
+UKPP018	5	437	1	1	1	1	1	1	1	UKP	Uitkerkse Polder	62808	222365	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1	2.33	15	2019	100	NA
+VDBP514	2	438	1	1	1	1	1	1	1	VDB	Vallei van de Drie Beken	202304	191370	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.77	21.76	12	2019	100	2006
+VOTP055	1	134	1	1	1	1	1	1	1	VOT	Vorsdonkbos-Turfputten	179763	184526	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1.76	12.49	11	2019	100	2007
+VRIP024	5	918	1	1	1	1	1	1	1	VRI	Vrieselhof	167122	212402	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	3	8.98	15	2019	100	NA
+WALP005	5	134	1	1	1	1	1	1	1	WAL	Walenbos	184748	179727	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.91	26.42	15	2019	100	NA
+ZEBP009	2	693	1	1	1	1	1	1	1	ZEB	Zeebrugge	69111	219114	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.42	3.6	12	2019	100	NA
+ZEMP005	4	710	1	1	1	1	1	1	1	ZEM	Zemst	158392	184259	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.52	8.223	14	2019	100	2005
+ZIEP003	1	1010	1	1	1	1	1	1	1	ZIE	Ziepbeekvallei	238289	181160	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	0.87	70.11	11	2019	100	2006
+ZWAP144	5	950	1	1	1	1	1	1	1	ZWA	Zwarte Beek	216583	198160	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2.53	52.4	15	2019	100	NA
