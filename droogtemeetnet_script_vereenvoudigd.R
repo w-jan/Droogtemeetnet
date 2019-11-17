@@ -1079,13 +1079,13 @@ sel_qual <- sel_qual %>%
 # rastercellen met een juist voldoende of een tekort aantal evenwaardige meetpunten dat gewenst is voor het meetnet
 sel_cat2_table <- 
   sel_qual %>% 
-  filter(rankclus <= maxrank ) %>% 
+#  filter(rankclus <= maxrank ) %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
   ungroup %>% 
   inner_join(sel_qual,
              by = c("rasterid", "groupnr", "gew_aantal_meetptn")) %>% 
-  filter(beschikbaar_aantal == gew_aantal_meetptn, rankclus <= maxrank) %>% 
+  filter(beschikbaar_aantal == gew_aantal_meetptn) %>% 
   select(-beschikbaar_aantal, -maxrank)
 
 
@@ -1124,7 +1124,7 @@ sel_cat3_raster <-
 
 sel_cat3_table <- 
   sel_qual %>% 
-  filter(rankclus <= maxrank ) %>% 
+#  filter(rankclus <= maxrank ) %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
   ungroup %>% 
@@ -1567,7 +1567,7 @@ sel_cat3_raster_bis <-
 
 sel_cat3_table_bis <- 
   sel_qual_bis %>% 
-  filter(rankclus <= maxrank ) %>% 
+  #filter(rankclus <= maxrank ) %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
   ungroup %>% 

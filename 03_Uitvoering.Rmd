@@ -779,11 +779,11 @@ Ongeacht of er peilbuizen in deze rastercellen staan, zullen er in deze cellen n
 
 Figuur \@ref(fig:cat1A-plot) toont ze op een kaart.
 
-Indien een geselecteerde rastercel geen enkele peilbuis bevat, is deze rastercel uniek aan deze categorie verbonden.
+<!-- Indien een geselecteerde rastercel geen enkele peilbuis bevat, is deze rastercel uniek aan deze categorie verbonden. -->
 
-Indien een rastercel wel enkele peilbuizen heeft, weliswaar onvoldoende, dan zal deze rastercel ook tot andere categorieën behoren, afhankelijk van de kwaliteit van de meetreeksen (zie \@ref(indeling-cat)). 
-Als de kwaliteit van de tijdreeks van een aantal peilbuizen voldoende is om onmiddellijk in een meetnet te kunnen worden opgenomen, wordt de cel ook tot categorie 2 gerekend. 
-Als er onvoldoende kwalitatieve meetreeksen zijn, dan wordt de cel (ook) tot categorie 1B gerekend. 
+<!-- Indien een rastercel wel enkele peilbuizen heeft, weliswaar onvoldoende, dan zal deze rastercel ook tot andere categorieën behoren, afhankelijk van de kwaliteit van de meetreeksen (zie \@ref(indeling-cat)).  -->
+<!-- Als de kwaliteit van de tijdreeks van een aantal peilbuizen voldoende is om onmiddellijk in een meetnet te kunnen worden opgenomen, wordt de cel ook tot categorie 2 gerekend.  -->
+<!-- Als er onvoldoende kwalitatieve meetreeksen zijn, dan wordt de cel (ook) tot categorie 1B gerekend.  -->
 
 
 ```{r cat1A-raster, warning=FALSE, message=FALSE}
@@ -980,10 +980,10 @@ rm(output_vc)
 
 Er liggen `r nrow(tubes_in_raster)` peilbuizen in de geselecteerde rastercellen. 
 Dit aantal is te groot om op alle meetreeksen een tijdreeksanalyse toe te passen. 
-Er dient nog een selectie te gebeuren.
-We zullen bij de selectie rekening houden dat er tussen de beschikbare peilbuizen nog kwaliteitsverschillen bestaan (op het vlak van het aantal meetjaren en de tijdsperiode van de metingen). 
-Zoals in sectie \@ref(indeling-cat) werd toegelicht, kunnen we de peilbuizen in kwaliteitsklassen of clusters opdelen vooral op basis van het aantal meetjaren en het laatste meetjaar:  
-tijdreeksen die niet meer dan `r toelaatbare_spreiding_jaren` jaar uit elkaar liggen en waarvan hun lengte niet meer dan `r toelaatbaar_verschil_lengte_tijdreeks` jaar van elkaar afwijkt, kunnen tot eenzelfde cluster gerekend worden.
+We willen dit aantal reduceren. 
+De meetreeksen van peilbuizen in rastercellen van categorie 1 en 2 zullen sowieso moeten geanalyseerd worden. 
+Voor rastercellen van categorie willen we het aantal analyses beperken door eerst de meetreeksen met de (relatief) beste kwaliteit (zie \@ref(basiskwaliteitscriteria)) te analyseren. 
+We blijven meetreeksen analyseren tot wanneer het aantal geschikte reeksen gelijk of groter is dan het gewenste aantal.
 
 De kwaliteitscriteria werden enkel gebruikt om de peilbuizen in klassen te verdelen en binnen een rastercel en GT-groep de peilbuizen met **relatief** de beste reeksen aan te duiden. 
 Er werden geen absolute minimale vereisten aan een tijdreeks opgelegd.
@@ -1132,22 +1132,22 @@ kable(sel_qual %>%
 
 ```
 
-### Categorie 2: Rastercellen met juist voldoende peilbuizen van vergelijkbare kwaliteit {#cat2}
+### Categorie 2: Rastercellen met juist voldoende peilbuizen {#cat2}
 
-Wanneer voor een rastercel en een GTgroep het nog gewenste aantal meetpunten gelijk is aan een som van het aantal beschikbare peilbuizen in een cluster, vertrekkend van de cluster het hoogst in rang, dan rekenen we die rastercel tot categorie 2.
+Wanneer voor een rastercel en een GTgroep het gewenste aantal meetpunten gelijk is aan een som van het aantal beschikbare peilbuizen in een cluster dan rekenen we die rastercel tot categorie 2.
 Tabel \@ref(tab:cat2-table) geeft hiervan het overzicht.
 
 ```{r cat2-table}
 # rastercellen met een juist voldoende evenwaardige meetpunten dat gewenst is voor het meetnet
 sel_cat2_table <- 
   sel_qual %>% 
-  filter(rankclus <= maxrank ) %>% 
+  #filter(rankclus <= maxrank ) %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
   ungroup %>% 
   inner_join(sel_qual,
              by = c("rasterid", "groupnr", "gew_aantal_meetptn")) %>% 
-  filter(beschikbaar_aantal == gew_aantal_meetptn, rankclus <= maxrank) %>% 
+  filter(beschikbaar_aantal == gew_aantal_meetptn) %>% 
   select(-beschikbaar_aantal, -maxrank)
 
 kable(sel_cat2_table %>% 
@@ -1197,9 +1197,9 @@ sel_cat2_tm
 ```
 
 
-### Categorie 3: Rastercellen met een overschot aan peilbuizen van vergelijkbare kwaliteit {#cat3}
+### Categorie 3: Rastercellen met een overschot aan peilbuizen {#cat3}
 
-De rastercellen van categorie 3 bevatten meer meetlocaties (Watina-peilbuizen) met vergelijkbare kwaliteit dan er voor het droogtemeetnet gezocht worden. 
+De rastercellen van categorie 3 bevatten meer meetlocaties (Watina-peilbuizen) dan er voor het droogtemeetnet gezocht worden. 
 Het zijn in feite de resterende cellen, cellen die niet tot een van de vorige categorieën behoren.
 
 Hier geven we een overzicht over welke rastercellen het gaat (tabel \@ref(tab:cat3-table)) 
@@ -1224,7 +1224,7 @@ sel_cat3_raster <-
 ```{r cat3-table}
 sel_cat3_table <- 
   sel_qual %>% 
-      filter(rankclus <= maxrank ) %>% 
+      #filter(rankclus <= maxrank ) %>% 
       group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
       summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
       ungroup %>% 
@@ -1795,13 +1795,13 @@ sel_qual_bis <- sel_qual_bis %>%
 # rastercellen met een juist voldoende aantal evenwaardige meetpunten dat gewenst is voor het meetnet
 sel_cat2_table_bis <- 
   sel_qual_bis %>% 
-  filter(rankclus <= maxrank ) %>% 
+#  filter(rankclus <= maxrank ) %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
   ungroup %>% 
   inner_join(sel_qual_bis,
              by = c("rasterid", "groupnr", "gew_aantal_meetptn")) %>% 
-  filter(beschikbaar_aantal == gew_aantal_meetptn, rankclus <= maxrank) %>% 
+  filter(beschikbaar_aantal == gew_aantal_meetptn) %>% 
   select(-beschikbaar_aantal, -maxrank)
 
 #kable(sel_cat2_table_bis ) %>% 
@@ -1906,7 +1906,7 @@ sel_cat3_raster_bis <-
 ```{r cat3-table-bis}
 sel_cat3_table_bis <- 
   sel_qual_bis %>% 
-      filter(rankclus <= maxrank ) %>% 
+      #filter(rankclus <= maxrank ) %>% 
       group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
       summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
       ungroup %>% 
@@ -2069,7 +2069,7 @@ kable( bind_rows(
 Het ontwerp van het meetnet moet resulteren in de aanduiding van een aantal meetlocaties.
 Tot nog toe kennen we enkel voor de cat. 2 (tabel \@ref(tab:tubes-cat2-bis)) de exacte meetlocaties.
 
-Voor cat 1A moeten we nog uit alle geschikte habitatvlekken een vlek kiezen en voor cat 3 is nog een keuze te maken uit de peilbuizen. 
+Voor cat. 1 moeten we nog uit alle geschikte habitatvlekken een vlek kiezen en voor cat. 3 is nog een keuze te maken uit de peilbuizen. 
 Binnen categorie 3 wordt nog een onderscheid gemaakt of de peilbuizen onmiddellijk (op vlak van datakwaliteit) in gebruik kunnen genomen worden of niet.
 Deze keuzen worden in dit deel behandeld.
 
@@ -2085,7 +2085,7 @@ Er is een routine geschreven die per rastercel en hierbinnen per GT-groep deze k
 
 Figuur \@ref(fig:tubes-excess-plot) geeft geografisch weer over welke meetpunten en rasters het hier gaat.
 Er is hierbij een verschil gemaakt tussen rasters waar een keuze uit peilbuizen van actueel lage kwaliteit moet gemaakt worden en waar dit uit peilbuizen met modelleerbare tijdreeksen kan. 
-Normaal sluiten in een rastercel beide keuzen elkaar uit, tenzij in deze rastercel voor meerdere GT-groepen een meetlocatie gezocht wordt.
+In een rastercel sluiten beide keuzen elkaar uit wanneer er slechts één meetpunt gezocht wordt.
 
 ```{r inlezen-grts-rasters}
 #inlezen grts-raster level 1 (hoogste resolutie = kleinste gridcelgrootte)
@@ -2306,33 +2306,24 @@ tubes_cat3_grts <- tubes_excess %>%
   filter(geselecteerd == 1 & selectie == 1) %>% 
   arrange(rasterid, groupnr, loc_code)
 
-tubes_cat1_grts <- tubes_excess %>% 
-  filter(geselecteerd == 1 & selectie == -1) %>% 
-  arrange(rasterid, groupnr, loc_code)
-
 tubes_cat3_grts_reserve <- tubes_excess %>% 
   filter(reserve > 0 & selectie == 1) %>% 
   arrange(rasterid, groupnr, reserve)
 
-tubes_cat1_grts_reserve <- tubes_excess %>% 
-  filter(reserve > 0 & selectie == -1) %>% 
-  arrange(rasterid, groupnr, reserve)
 ```
 
 ```{r write-grts-tubes, message=FALSE}
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
 output_vc <- write_vc(tubes_cat3_grts, file.path(".","data","tubes_cat3_grts"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
-output_vc <- write_vc(tubes_cat1_grts, file.path(".","data","tubes_cat1_grts"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
 output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
-output_vc <- write_vc(tubes_cat1_grts_reserve, file.path(".","data","tubes_cat1_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 rm(output_vc)
 
   
 ```
 
-Tabel \@ref(tab:grts-result-1-table) en tabel \@ref(tab:grts-result-3-table) geven  het overzicht van de resp. `r nrow(tubes_cat1_grts)` en `r nrow(tubes_cat3_grts)` geselecteerde meetpunten .
+Tabel \@ref(tab:grts-result-3-table) geeft  het overzicht van de `r nrow(tubes_cat3_grts)` geselecteerde meetpunten .
 
-```{r grts-result-1-table, message=FALSE}
+```{r grts-result-1-table, message=FALSE, eval = FALSE}
 kable(tubes_cat1_grts %>%
         select(rasterid, groupnr, area_name, loc_code, x, y) %>%
         rename(GTgroep = groupnr,
@@ -2355,7 +2346,7 @@ kable(tubes_cat1_grts %>%
     scroll_box(height = "250px")
 ```
 
-<br/><br/>
+#<br/><br/>
 
 ```{r grts-result-3-table, message=FALSE}
 kable(tubes_cat3_grts %>%
@@ -2449,7 +2440,7 @@ kable(tubes_reserve %>%
 ```
 
 
-###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
+###Selecteren van potentiële geschikte habitatvlekken voor rastercellen van categorie 1.
 Via een desktop-analyse zoals hieronder beschreven wordt, kunnen slechts kandidaat habitatvlekken geselecteerd worden. Opdat deze habitatvlek werkelijk geschikt is om er een pb te plaatsen, vergt meestal nog nader onderzoek en meestal ook een inspectie ter plaatse. Een kandidaat habitatvlek kan dan alsnog geweerd worden. Alternatieve habitatvlekken liggen best in de buurt van de oorspronkelijke kandidaat-habitatvlek, maar als je GRTS-proof werkt en je gridcel heeft een grote oppervlakte, kan het vinden van een geschikt alternatief leiden tot ellenlange zoektochten en veel over en weer gerij. 
 De hier gepresenteerde methode volgt een meer pragmatische benadering. 
 Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseerd obv de grondwatergroepen. Elke cel van 32\*32m wordt zo in een van de vijf groepen ingedeeld. Is er voor een bepaalde grondwatergroep een pb gewenst, dan wordt de bijhorende rastercel met het laagste rangnummer gekozen. Deze cel ligt ingebed in een grotere grid van bijv. 1024\*1024. Hierbinnen worden de rastercellen die tot dezelfde gw-groep behoren geselecteerd en gerangschikt volgens oplopend rangnummer. Dit zijn bij voorkeur de alternatieve plaatsen.
