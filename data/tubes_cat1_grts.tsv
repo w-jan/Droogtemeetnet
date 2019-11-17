@@ -1,0 +1,13 @@
+unieknr	loc_code	area_code	area_name	x	y	loc_validitycode	loc_validity	loc_typecode	loc_typename	groupnr	rasterid	filterdepth	soilsurf_ost	typegroup_name	selectie	gew_aantal_meetptn	geselecteerd	reserve
+151	WAHP712	WAH	Waaslandhaven	144656	214876	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	41	1.84	2.452	12	-1	1	1	0
+211	ZWIP104	ZWI	Zwinduinen en -polders	75551	226763	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	5	53	2.64	5.137	15	-1	1	1	0
+65	MSBP007	MSB	Molenstedebroek	194938	187299	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	54	1.914	19.073	12	-1	1	1	0
+70	NEIP001	NEI	Neigembos	128122	167393	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	57	1.48	0.31	14	-1	1	1	0
+7	BOEP003	BOE	Boembeke	107334	170403	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	89	2.8	0.6	14	-1	1	1	0
+37	HALP001	HAL	Hallerbos	143431	155389	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	185	2.02	74.902	14	-1	1	1	0
+81	RASP002	RAS	Raspaillebos	120111	162861	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	217	1.06	56.755	14	-1	1	1	0
+137	VIEP117	VIE	Vierkensbroek-Demervallei	192297	188970	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	310	0.7	16.91	12	-1	1	1	0
+3	ARHP009	ARH	Aronst Hoek	203834	177051	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	2	486	2.1	24.31	12	-1	1	1	0
+216	ZWIP213	ZWI	Zwinduinen en -polders	79544	228488	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	1	565	1.99	4.71	11	-1	1	1	0
+102	TLAP003	TLA	Terlaemen & Weijerman	214025	187912	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1	694	1.46	33.033	11	-1	1	1	0
+155	WELP018	WEL	Wellemeersen	128284	176954	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	3	1017	2.63	9.24	13	-1	1	1	0

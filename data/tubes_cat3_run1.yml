@@ -3,16 +3,30 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 8d3c10ca9815d4d6bc279eaebd71b5432af40063
-  data_hash: c99b3c93e320fc53a69eb8e03923c3451179c0e0
+  hash: b6cf94e5b16d3f7384f66ad1abfbd69d9ab76316
+  data_hash: c6da72124278f6b8ab4742fefc08384fea76f9c6
 unieknr:
   class: integer
 loc_code:
   class: character
+x:
+  class: numeric
+'y':
+  class: numeric
 rasterid:
   class: integer
 groupnr:
   class: integer
+ser_length:
+  class: numeric
+ser_firstyear:
+  class: numeric
+ser_lastyear:
+  class: numeric
+ser_nryears:
+  class: numeric
+rest_aantal_meetptn:
+  class: numeric
 rankclus:
   class: integer
 rankclus_lastyear:
@@ -23,13 +37,7 @@ beschikbaar_aantal_cluster:
   class: integer
 gew_aantal_meetptn:
   class: numeric
+aantal_cat1A:
+  class: numeric
 'n':
-  class: integer
-selectie:
-  class: numeric
-lastyear:
-  class: numeric
-nryears:
-  class: numeric
-firstyear:
   class: integer

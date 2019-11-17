@@ -2,14 +2,9 @@
   git2rdata: '0.1'
   optimize: yes
   NA string: NA
-  sorting:
-  - rasterid
-  - groupnr
-  - reserve
-  hash: 0d7e018b8fed9af8d19987bd81fb3e3dc1fb95df
-  data_hash: 3d547289e8d571cb71b2aae1c6c8d2920996bbd5
-unieknr:
-  class: integer
+  sorting: loc_code
+  hash: 05534f13a29a2659daf3bbe51604aaacdcee1098
+  data_hash: 22deb757e9e9c1f0fb08309001033954f2d00c82
 loc_code:
   class: character
 area_code:
@@ -30,6 +25,12 @@ loc_typename:
   class: character
 groupnr:
   class: integer
+rasterid:
+  class: integer
+filterdepth:
+  class: numeric
+soilsurf_ost:
+  class: numeric
 typegroup_name:
   class: factor
   labels:
@@ -65,17 +66,27 @@ typegroup_name:
   - 14
   - 15
   ordered: no
-rasterid:
+ser_firstyear:
+  class: numeric
+ser_lastyear:
+  class: numeric
+ser_nryears:
+  class: numeric
+ser_length:
+  class: numeric
+rest_aantal_meetptn:
+  class: numeric
+rankclus:
+  class: integer
+rankclus_lastyear:
+  class: numeric
+rankclus_nryears:
+  class: numeric
+beschikbaar_aantal_cluster:
   class: integer
 gew_aantal_meetptn:
   class: numeric
-geselecteerd:
+aantal_cat1A:
   class: numeric
-reserve:
-  class: numeric
-filterdepth:
-  class: numeric
-soilsurf_ost:
-  class: numeric
-selectie:
-  class: numeric
+'n':
+  class: integer

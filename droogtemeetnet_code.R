@@ -1772,3 +1772,12 @@ tubes_in_raster <- tubes_hab_aggr %>%
 
 tubes_xg3_avail <- tubes_xg3 %>% 
   eval_xg3_avail( xg3_type = "L")
+
+
+if (file.exists(file.path(".","figures","local", 
+                          "habmap_gw_raster_overlay.png")) == FALSE | refresh_figures >= 1) {
+  drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
+                 path = file.path(".","figures","local", 
+                                  "habmap_gw_raster_overlay.png"), 
+                 overwrite = TRUE)
+}
