@@ -219,7 +219,6 @@ Voor deze laatste groep zal nog een selectie van peilbuizen dienen te gebeuren.
 
 Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie \@ref(suppl-criteria)). 
 
-
 Cat. 3 omvat de rastercellen waarbij er meer meetpunten bestaan dan het gewenst aantal meetpunten. 
 Voor deze laatste groep zal nog een ruimtelijke selectie (zie \@ref(sel-habvlek)) van peilbuizen dienen te gebeuren.
 

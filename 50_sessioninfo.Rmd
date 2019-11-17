@@ -1,4 +1,6 @@
-# Used environment
+# (APPENDIX) Bijlagen {-}
+
+# Gebruikte werkomgeving
 
 ```{r session-info, results = "asis", echo=FALSE}
 si <- devtools::session_info()
