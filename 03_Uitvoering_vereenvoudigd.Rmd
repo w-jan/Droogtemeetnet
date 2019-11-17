@@ -470,7 +470,7 @@ In het projectvoorstel werden nog andere databanken vermeld:
 1. het grondwatermeetnet van het ANB voor beheermonitoring
 
 Het freatisch grondwatermeetnet van de VMM werd al gescreend om te komen tot het huidige droogtemeetnet. 
-Er kan wel nog nagegaan worden of er in rastercellen met een tekort aan meetpunten (cat. 1A en 1B) soms VMM-meetpunten vallen. **_eventueel nog te doen_**
+Er kan wel nog nagegaan worden of er in rastercellen met een tekort aan meetpunten (cat. 1) soms VMM-meetpunten vallen. **_eventueel nog te doen_**
 
 Het grondwatermeetnet van ANB is nog in ontwerp.
 De meetpunten van dit meetnet zullen ook in de Watina-databank worden opgenomen.
@@ -484,13 +484,14 @@ De selectie gebeurde in enkele stappen :
 ### Opgave van de meetpunten (Watina-databank) die gelegen zijn in een verdrogingsgevoelig type.  
 
 Voor deze selectie werd met een zoekstraal van **`r bufferpb`** meter rond een meetpunt gewerkt. 
-We selecteren enkel de meetpunten die grondwaterpeilen meten (piëzometer of peilbuis). Voor de eenvoud benoemen we ze hier peilbuizen. 
+We selecteren enkel de meetpunten die grondwaterpeilen meten tot op een maximale diepte van 3 m (piëzometer of peilbuis). 
 Binnen deze straal wordt aangenomen dat het grondwaterregime weinig zal variëren.
 
 Door het gebruik van een bufferzone en wanneer een peilbuis in een habitat-complex ligt, kan een peilbuis meerdere keren geselecteerd worden. 
 Dat kan ertoe leiden dat een rastercel gekozen werd voor een bep. GT-groep die er in feite maar marginaal aanwezig is.
 Om dat te vermijden, voegen we de verschillende habitattypen samen die tot eenzelfde GT-groep behoren.
 Alleen de GT-groep met een opp-aandeel van minstens 50% wordt dan weerhouden. 
+We selecteren dan de peilbuizen die met juist één GT-groep kunnen geassocieerd worden.
 
 ```{r loading-selecting-tubes-watina, message=FALSE, warning=FALSE}
 # watina <- connect_watina()
@@ -2189,11 +2190,28 @@ for (i in seq(1:nrow(sel_excess_rasterid))) {
       slice(j) %>%
       pull(aantalpb) %>% 
       as.integer()
+
+    #groep pb indien mogelijk beperken tot alleen de geschikte. 
+    aantalgoedepb <- tubes_excess %>% 
+      filter(rasterid == rasterid_grid & selectie == 1 & groupnr == gwgroup) %>% 
+      count(gew_aantal_meetptn) %>% 
+      pull(n) %>% 
+      as.integer()
+
+    if (purrr::is_empty(aantalgoedepb)) {
+      tubes_toselect <- tubes_excess 
+    } else if (aantalgoedepb >= gewenst_aantal_pb) {
+      tubes_toselect <- tubes_excess %>% 
+        filter(selectie == 1)
+    } else {
+      tubes_toselect <- tubes_excess 
+    }
     
+        
     #binnen een deelraster (clip0), alleen de rastercellen van level0 selecteren waarbinnen een pb valt. 
     #De andere rastercellen worden NA
     tubes_excess_level0 <- 
-      raster::rasterize(tubes_excess %>% 
+      raster::rasterize(tubes_toselect %>% 
                           filter(groupnr == gwgroup) %>% 
                           select(x, y) %>% 
                           as.matrix(), 
