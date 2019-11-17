@@ -57,6 +57,15 @@ Dit gaat door tot wanneer het gewenst aantal bereikt wordt.
 De variatie in oppervlakten bepaalt de grootte van de verkleining. 
 Is de sprong voldoende klein, zal het bekomen aantal hooguit lichtjes hoger dan het gewenste aantal uitvallen.
 
+Figuur \@ref(fig:workflow-rastercellen) geeft een schematisch overzicht van de gevolgde werkgang.
+
+(ref:workflow-rastercellen) werkgang selectie rastercellen. Blauw gekleurde cirkels zijn brongegevens. De rode gekleurde zijn genereerde data. Het groen gekleurde is een (tussentijds) output-resultaat. De gele vakken stellen handelingen/bewerkingen voor.
+
+```{r workflow-rastercellen, fig.cap='(ref:workflow-rastercellen)'}
+include_graphics(path = file.path("figures", "workflow_rasterselectie.png"))
+```
+
+
 
 ### Selectie van de meetpunten
 
@@ -64,15 +73,20 @@ In dit deel bespreken we hoe we aan de gekozen rastercellen effectief meetpunten
 Een meetpunt is een locatie waar het (freatisch) grondwaterpeil periodiek gemeten wordt (of zal worden).
 In de praktijk gebeurt dat in een piëzometer of peilbuis.[^2]
 
-Elke locatie die tot één van GT-groepen behoort, kan in principe in het meetnet opgenomen worden.
+Elke locatie die tot één van de GT-groepen behoort, kan in principe in het meetnet opgenomen worden.
 Locaties waarvan het onduidelijk is tot welke GT-groep ze behoren worden niet meegenomen. 
-Het kan zowel gaan over locaties die op grens liggen van habitatvlekken die tot een verschillende GT-groep behoren of over locaties die in een habitatvlek gelegen zijn dat gekarteerd is als een complex van vegetaties die tot verschillende GT-groepen behoren.
-In de praktijk wordt deze voorwaarde opgelegd door enkel die habitatvlekken en/of peilbuizen te selecteren die voor 50% of meer toegewezen kunnen worden aan eenzelfde GT-groep en die op minstens `r bufferpb` m afstand liggen van een andere GT-groep.
-
-
+Dit kunnen locaties zijn die op grens liggen van habitatvlekken die tot een verschillende GT-groep behoren of het zijn locaties die in een habitatvlek gelegen zijn dat gekarteerd is als een complex van vegetaties die tot verschillende GT-groepen behoren.
+In de praktijk wordt deze voorwaarde toegepast door enkel die habitatvlekken en/of peilbuizen te selecteren die voor 50% of meer toegewezen kunnen worden aan eenzelfde GT-groep en die op minstens `r bufferpb` m afstand liggen van een andere GT-groep.
 
 [^2]: Normaal gesproken duidt in dit rapport de term meetpunt op de locatie eerder dan op het meetinstrument (peilbuis of piëzometer), maar soms slaat het op beide. Met peilbuis wordt in dit document ook een piëzometer bedoeld. 
 
+Figuur \@ref(fig:workflow-selectiepb-part1) geeft een schematisch overzicht van de werkgang die gevolgd werd om na te gaan welke peilbuizen beschikbaar zijn.
+
+(ref:workflow-selectiepb1) werkgang selectie rastercellen. Voor de betekenis van de symbolen zie figuur \@ref(fig:workflow-rastercellen).
+
+```{r workflow-selectiepb-part1, fig.cap='(ref:workflow-selectiepb1)'}
+include_graphics(path = file.path("figures", "workflow_pbselectie_part1.png"))
+```
 
 
 #### Indeling van rastercellen in categorieën {#indeling-cat}
@@ -88,18 +102,18 @@ Deze opdeling is een hulp bij het ontwerp, omdat elke categorie een specifieke b
 _A. Alle meetpunten met een peilbuis zijn kwalitatief gelijkwaardig_
 
 We stellen eerst voor de eenvoud dat alle beschikbare meetpunten even geschikt zijn: er wordt bvb. geen onderscheid gemaakt tussen een lang en een kort bemeten meetpunt. 
-Vergelijken we dan de vraag, het gewenste aantal meetpunten per rastercel (= V), met het aanbod van meetpunten met een peilbuis (of kortweg het aantal peilbuizen = A) dan kunnen de rastercellen in drie categorieën verdeeld worden. 
+Vergelijken we dan de vraag, het gewenste aantal meetpunten per rastercel (= G), met het aanbod van meetpunten met een peilbuis (of kortweg het aantal peilBuizen = B) dan kunnen de rastercellen in drie categorieën verdeeld worden. 
 De categorieën sluiten elkaar mutueel uit.
 
-- Cat. 1: de vraag is groter dan het aanbod (V > A) 
+- Cat. 1: de vraag is groter dan het aanbod (G > B) 
 
 Er zijn geen meetpunten met een peilbuis of er is een gebrek aan.
 
-- Cat. 2: de vraag is gelijk aan het aanbod (V = A) 
+- Cat. 2: de vraag is gelijk aan het aanbod (G = B) 
 
 Het aantal beschikbare meetpunten met een peilbuis stemt juist overeen met het aantal dat gezocht wordt.
 
-- Cat. 3: de vraag is kleiner dan het aanbod (V < A) 
+- Cat. 3: de vraag is kleiner dan het aanbod (G < B) 
 
 Er is een overschot aan meetpunten met een peilbuis.
 
@@ -181,7 +195,6 @@ lg3 =  het gemiddelde van de drie laagste waterpeilen binnen een hydrologisch ja
 <!-- Op basis van de kwaliteit van de tijdreeksen kunnen dan per GT-groep de rastercellen in één of meer van de volgende categorieën opgedeeld worden. Deze categorieën sluiten elkaar niet mutueel uit (zie onder). -->
 
 
-
 **_vraag: wat te doen met bestaande meetlocaties die actueel niet geschikt zijn? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**
 
 Alleen bij rastercellen van cat. 1 is er een nood aan extra meetpunten. Hoe potentieel geschikte habitatvlekken geselecteerd kunnen worden, wordt in \@ref(sel-pot-habvlek) nader toegelicht.
@@ -195,71 +208,20 @@ Kan het resterende aantal ingevuld worden met de som van het aantal peilbuizen i
 In het andere geval rekenen we ze tot cat. 3.
 Voor deze laatste groep zal nog een selectie van peilbuizen dienen te gebeuren.
 
-```{r voorbeeld-selectie-part1, fig.cap="Voorbeeld van een gevolgde workflow bij de selectie", , fig.width=8, fig.height=8}
+```{r voorbeeld-selectie-part1, fig.cap="Cijfervoorbeeld van de gevolgde workflow bij de selectie", , fig.width=8, fig.height=8, eval = FALSE}
   include_graphics(path = file.path(".","figures", 
                                     "voorbeeld_selectie_part1.png")) 
 ```
-```{r voorbeeld-selectie-part2, fig.cap="Voorbeeld van een gevolgde workflow bij de selectie (vervolg)", fig.width=8, fig.height=8}
+```{r voorbeeld-selectie-part2, fig.cap="Cijfervoorbeeld van de gevolgde workflow bij de selectie (vervolg)", fig.width=8, fig.height=8, eval = FALSE}
   include_graphics(path = file.path(".","figures", 
                                     "voorbeeld_selectie_part2.png")) 
 ```
 
 Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie \@ref(suppl-criteria)). 
-Met een juist voldoende aantal wordt hier een juist voldoende aantal kwalitatief vergelijkbare meetpunten bedoeld.
 
-Cat. 3 omvat de rastercellen waarbij er meer meetpunten met gelijkwaardige kwaliteit bestaan dan het gewenst aantal meetpunten. 
+
+Cat. 3 omvat de rastercellen waarbij er meer meetpunten bestaan dan het gewenst aantal meetpunten. 
 Voor deze laatste groep zal nog een ruimtelijke selectie (zie \@ref(sel-habvlek)) van peilbuizen dienen te gebeuren.
-
-
-#### Selecteren van potentiële geschikte habitatvlekken voor rastercellen waarvoor nu geen (of te weinig) pb’en bestaan (cat. 1) {#sel-pot-habvlek}
-
-Voor rastercellen van cat. 1 is er een nood aan één of meer extra meetpunten.
-Om hierbinnen (8192 * 8192 m) de plaatskeuze zo aselect mogelijk te doen, doen we beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m). 
-Opnieuw wordt op deze manier een synergie bekomen met de aselecte locatiekeuzes in MNM.
-Elk deelrastercel heeft binnen de rastercel een bepaalde rangnummer. 
-Alleen deelrastercellen _die voor het merendeel vegetaties bevatten die tot de GT-groep behoren_ komen voor selectie in aanmerking. 
-De deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden. 
-Aan de selectie van deelrastercellen kunnen, naast de aanwezigheid van de juiste GT-groep, nog bijkomende voorwaarden gekoppeld worden (beheerder, ...).
-Blijkt bij inspectie op terrein dat de geselecteerde plaats toch niet aan de verwachtingen/criteria voldoet, dan wordt binnen dezelfde rastercel de rastercel die het eerst in rang volgt bezocht.  
-
-
-#### Selecteren van een meetpunt in een rastercel waarvoor meerdere kandidaten zijn (cat. 1Bb en 3) {#sel-habvlek}
-
-Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen (zie \@ref(sel-pot-habvlek)). 
-We doen hiervoor terug beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m).
-Het/de meetpunt(en) gelegen in de deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden.
-Deze werkwijze laat ook gemakkelijk toe om reserve-punten te kiezen.
-Het zijn de meetpunten die in rang volgen op de laagste rang van een gekozen punt.
-
-#### Opstellen van bijkomende kwaliteitscriteria voor meetpunten {#suppl-criteria}
-
-Bij cat. 3 en vaak ook bij cat. 2 zijn er meer meetpunten die aan de basiskwaliteitscriteria ([zie eerder](#basiskwaliteitscriteria)) voldoen dan dat er punten gezocht worden. 
-Deze basiscriteria zijn nog behoorlijk ruim. 
-Bijvoorbeeld een droogte-indicator baseren op een tijdreeks van een meetpunt waar 'slechts' 5 jaar tussen 2001 en 2006 gemeten werd, is vermoedelijk minder betrouwbaar dan een punt met een tijdreeks van 10 jaar of langer en dat bovendien actueel nog bemeten is. 
-
-Door het toevoegen van extra voorwaarden, verkleint echter de kans op een goede ruimtelijke spreiding (representativiteit). 
-Ook hier is het zoeken naar een goed evenwicht tussen het selecteren van goed gedocumenteerde meetpunten en een gebalanceerde ruimtelijke spreiding.
-
-We stellen volgende drie extra kwaliteitscriteria voor:
-
-1. Meetpunten met een recente tijdreeks primeren boven meetpunten met een oudere tijdreeks: 
-de meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
-
-Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren`** jaar is.
-1. Meetpunten met een langere tijdreeks krijgen ook een hogere prioriteit: 
-meetpunten waarvan de lengte van de tijdreeks niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschillen, worden als evenwaardig beschouwd.
-1. Een meetpunt met een lange tijdreeks, maar niet recent, krijgt een hogere prioriteit dan een meetpunt met een recentere maar kortere tijdreeks.
-
-Op basis van deze extra criteria kunnen de meetpunten in kwaliteitsklassen worden ingedeeld. 
-
-<!-- onderstaande alinea is moeilijk te snappen, bv. 'één _of meer_ van de aantallen van een kwaliteitsklasse'. Hoe en waar de term 'juist voldoende' wordt ingezet (functie ervan) is niet zo duidelijk, dit komt wat vreemd over. -->
-Onder 'juist voldoende' (cfr. categorie 2) wordt dan verstaan dat het gewenste aantal overeenstemt met de som van één _of meer_ van de aantallen van de hoogste(n) kwaliteitsklasse(n). 
-Een voorbeeld kan dit verduidelijken.
-Stel dat men in een rastercel 3 meetpunten zoekt en hier 6 peilbuizen zijn die aan de basiscriteria voldoen. 
-Echter op basis van de extra criteria kunnen ze in drie klassen ingedeeld worden, met name: 
-één in de hoogste klasse, twee in de middelste klasse en drie in de derde klasse. 
-Deze rastercel kan dan tot categorie 2 gerekend worden, omdat er juist drie (één hoogste + twee middelste) peilbuizen gevonden worden om aan het gewenste aantal te kunnen tegemoet komen.
-Stemt dit niet overeen, dan wordt de rastercel tot cat. 3 gerekend: er wordt dan enkel op de meetpunten die behoren tot de klasse met een overschot aan punten een ruimtelijke selectie zoals beschreven onder A toegepast. 
 
 
 ### Tijdreeksanalyse {#tijdreeksanalyse}
@@ -299,11 +261,12 @@ Bij het tijdsmodel werden uitsluitend neerslag- en evapotranspiratiedata als ver
 Minstens twee derden van het peilverloop dient dus verklaard te kunnen worden door het weer.
 Eén derde kan/mag door andere factoren beïnvloed worden (bijv. het naburige peil van een waterloop).
 
-Een [lineaire trend]{#lintrend} werd als **niet-**significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `sd`), voldoet aan de volgende twee regels:
+Een [lineaire trend]{#lintrend} werd als significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `se`), voldoet één van de volgende twee regels:
 
-$$trend - 2* sd \leq 1(cm/jaar)$$ 
-en 
-$$trend + 2* sd \geq -1(cm/jaar)$$
+$$trend - 1.96* se > 1(cm/jaar)$$ 
+of 
+$$trend + 1.96* se < -1(cm/jaar)$$
+Er is dan 2.5% kans een trendwaarde die groter resp. kleiner is ten onrechte als een significante trend te bestempelen.
 
 Bij de modelselectie kwam toch ook nog expertoordeel bij kijken. 
  
@@ -322,6 +285,65 @@ Een lange tijdreeks met een trend < 1cm/jaar, maar waarbij de peilen maar weinig
 Het al dan niet weerhouden van een tijdreeks kan gevolgen hebben voor de categorie-indeling van een rastercel. 
 Voor een rastercel kunnen immers na een tijdreeksanalyse meer of ook minder peilbuizen geschikt zijn. 
 Daarom voeren we na de tijdreeksanalyse de categorisering nog een tweede keer (en mogelijk nog meerdere keren) uit, waarbij met de uitkomst van de tijdreeksanalyse rekening wordt gehouden. **_of verkiezen we de peilbuizen met de beste modellen ?_**
+
+
+#### Bijkomende GRTS-analysen
+
+Afhankelijk van de verhouding tussen het aantal gewenste en beschikbare peilbuizen, moeten er nog enkele bijkomende GRTS-analysen uitgevoerd worden.
+
+##### Selecteren van potentiële geschikte habitatvlekken voor rastercellen waarvoor er te weinig peilbuizen bestaan (cat. 1) {#sel-pot-habvlek}
+
+Voor rastercellen van cat. 1 is er een nood aan één of meer extra meetpunten.
+Om hierbinnen (8192 * 8192 m) de plaatskeuze zo aselect mogelijk te doen, doen we beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m). 
+Opnieuw wordt op deze manier een synergie bekomen met de aselecte locatiekeuzes in MNM.
+Elk deelrastercel heeft binnen de rastercel een bepaalde rangnummer. 
+Alleen deelrastercellen _die voor het merendeel vegetaties bevatten die tot de GT-groep behoren_ komen voor selectie in aanmerking. 
+De deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden. 
+Aan de selectie van deelrastercellen kunnen, naast de aanwezigheid van de juiste GT-groep, nog bijkomende voorwaarden gekoppeld worden (beheerder, ...).
+Blijkt bij inspectie op terrein dat de geselecteerde plaats toch niet aan de verwachtingen/criteria voldoet, dan wordt binnen dezelfde rastercel de rastercel die het eerst in rang volgt binnen een zoekstraal van 1 km bezocht.  
+
+
+##### Selecteren van een meetpunt in een rastercel waarvoor meerdere kandidaten zijn (cat. 3) {#sel-habvlek}
+Als het aantal beschikbare peilbuizen groter is dan het gewenste aantal en wanneer ook het aantal geschikte peilbuizen (cfr. tijdreeksanalyse) hiervan afwijkt, dient nog een bijkomende selectie van peilbuizen te gebeuren.
+Indien het aantal geschikte peilbuizen dan groter is dan het gewenste aantal wordt enkel binnen deze groep verder gezocht.
+In het andere geval omvat het alle peilbuizen.
+
+Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen. 
+We doen hiervoor terug beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m).
+Het/de meetpunt(en) gelegen in de deelrastercel(len) met het /de laagste rangnummer(s) zal/zullen dan geselecteerd worden.
+Deze werkwijze laat ook gemakkelijk toe om reserve-punten te kiezen.
+Het zijn de meetpunten die in rang volgen op de laagste rang van een gekozen punt.
+
+### Samenvatting werkgang selectie peilbuizen
+Na de ruimtelijke selectie kennen we hoeveel meetpunten er per rastercel en per GT-groep gewenst zijn.
+We proberen die wensen zoveel mogelijk in te vullen met bestaande peilbuizen waarvan hun meetreeksen toelaten een droogte-indicator te berekenen.
+
+Hiertoe evalueren (zonder te selecteren) we de kwaliteit van de meetreeksen op basis van de mogelijkheid om voor minstens één jaar een lg3 te berekenen voor de metingen na 2000, van het aantal meetjaren en van de ouderdom van de meetreeks. 
+
+De kwalitatief beste meetreeksen worden verder beoordeeld met een tijdreeksanalyse. Door het grote aantal peilbuizen was het niet mogelijk ze alle te analyseren. De voorkeur ging daarom uit naar de relatief beste reeksen. Een meetreeks wordt 'geschikt' bevonden als minstens 2/3 van de variatie door het weer kan verklaard worden en er in de reeks geen lineaire trend te zien is. Op basis van de tijdreeksanalyse worden de meetreeksen geherklasseerd in 'geschikt', 'niet 'geschikt' en 'onbekend' (indien niet behandeld). Er worden minstens zoveel peilbuizen geanalyseerd tot er evenveel of meer geschikte reeksen zijn dan het gewenste aantal, zoniet worden ze allemaal geanalyseerd.
+
+Is een meetreeks 'geschikt', dan kan de peilbuis onmiddellijk in het meetnet opgenomen worden.
+Is ze 'niet geschikt', dan kan dit pas na verloop van enkele jaren.
+
+De rastercellen kunnen in drie categorieën (cat. 1- 3) verdeeld worden op basis van de verhouding tussen het aantal gewenste en beschikbare peilbuizen. 
+Bij cat. 1 zijn er te weinig peilbuizen. De meetreeksen van alle peilbuizen werden geanalyseerd. Via een GRTS-procedure wordt het ontbrekend aantal aangevuld met habitatvlekken. 
+In cat. 2 klopt het gewenste aantal met het beschikbaar aantal en hoeft er geen aansluitende analyse meer uitgevoerd te worden.
+In cat. 3 zijn er meer peilbuizen beschikbaar. Afhankelijk van de verhouding tussen gewenste aantal en het aantal geschikte peilbuizen is er mogelijk een extra analyse nodig. 
+
+- Is het aantal geschikte peilbuizen groter dan wordt enkel binnen deze groep een GRTS-analyse uitgevoerd om het gewenste aantal te selecteren.
+
+- Is het aantal kleiner dan wordt er uit alle beschikbare peilbuizen via een GRTS-analyse het gewenste aantal geselecteerd.
+
+- Is het aantal gelijk dan hoeft er geen verdere analyse te gebeuren. Alle meetpunten kunnen in het meetnet worden opgenomen.
+
+Figuur \@ref(fig:workflow-selectiepb-part2) geeft schematisch het overzicht van de werkgang die gevolgd werd om uit de beschikbare peilbuizen meetpunten te selecteren en deze desnoods aan te vullen met nieuwe.
+
+(ref:workflow-selectiepb2) werkgang selectie rastercellen. Voor de betekenis van de symbolen zie figuur \@ref(fig:workflow-rastercellen).
+
+```{r workflow-selectiepb-part2, fig.cap='(ref:workflow-selectiepb2)'}
+  include_graphics(path = file.path(".","figures", 
+                                    "workflow_pbselectie_part2.png")) 
+```
 
 
 <!-- [^3]: KWR & Waterware (2018). Menyanthes, versie 3.x.b.w.  -->

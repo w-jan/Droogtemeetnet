@@ -1777,6 +1777,8 @@ for (i in seq(1:nrow(sel_excess_rasterid))) {
     count(groupnr, gew_aantal_meetptn) %>% 
     rename(aantalpb = n)
   
+
+  
   # plot(tubes_excess_level0)
   for (j in seq(1:nrow(tubes_excess_1grid))) {
     # ophalen van bijhorend aantal gewenste meetpunten en gw-groep, want een rastercel kan meerdere gw-groepen hebben waar er een overtal is (en het gewenste aantal meetpunten is specifiek per gw-groep)
@@ -1793,10 +1795,26 @@ for (i in seq(1:nrow(sel_excess_rasterid))) {
       pull(aantalpb) %>% 
       as.integer()
     
+    #groep pb indien mogelijk beperken tot alleen de geschikte. 
+    aantalgoedepb <- tubes_excess %>% 
+      filter(rasterid == rasterid_grid & selectie == 1 & groupnr == gwgroup) %>% 
+      count(gew_aantal_meetptn) %>% 
+      pull(n) %>% 
+      as.integer()
+
+    if (purrr::is_empty(aantalgoedepb)) {
+      tubes_toselect <- tubes_excess 
+    } else if (aantalgoedepb >= gewenst_aantal_pb) {
+      tubes_toselect <- tubes_excess %>% 
+        filter(selectie == 1)
+    } else {
+      tubes_toselect <- tubes_excess 
+    }
+
     #binnen een deelraster (clip0), alleen de rastercellen van level0 selecteren waarbinnen een pb valt. 
     #De andere rastercellen worden NA
     tubes_excess_level0 <- 
-      raster::rasterize(tubes_excess %>% 
+      raster::rasterize(tubes_toselect %>% 
                           filter(groupnr == gwgroup) %>% 
                           select(x, y) %>% 
                           as.matrix(), 
