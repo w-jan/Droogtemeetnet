@@ -164,7 +164,9 @@ We leggen geen absolute minimum-criteria op. Indien in een rastercel voor een be
 
 We delen de meetpunten op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
 
-(@) Meetpunten met een _recente_ kwalitatief goede tijdreeks[^3] primeren boven meetpunten met een oudere tijdreeks. 
+(@) De meetpunten hebben vanaf 2000 voor minstens één jaar een goede tijdreeks[^3], die een toelaat een lg3 te berekenen.
+
+(@) Meetpunten met een _recente_ kwalitatief goede tijdreeks primeren boven meetpunten met een oudere tijdreeks. 
 
 De meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
 
@@ -186,7 +188,7 @@ Het gebruik van deze criteria leidt er ook toe dat in een rastercel bij de toewi
 Alleen wanneer er meer beschikbare punten van vergelijkbare kwaliteit zijn dan gewenst (categorie 3) zal een keuze volgens een ruimtelijk stramien gevolgd worden (zie verder).
 
 
-[^3]: Een kwalitatief goed meetjaar wordt hier gedefinieerd als een hydrologisch jaar waarvoor een lg3 kan berekend worden. We beschouwen enkel tijdreeksen vanaf 2000. Dit houdt in dat er minstens 20 goed gespreide metingen per jaar zijn. Het verschil tussen twee metingen mag niet groter zijn dan 30 dagen en de eerste en laatste meting moet resp. in april en maart (van het daaropvolgende kalenderjaar) vallen. 
+[^3]: Een kwalitatief goed meetjaar wordt hier gedefinieerd als een hydrologisch jaar waarvoor een lg3 kan berekend worden. Dit houdt in dat er minstens 20 goed gespreide metingen per jaar zijn. Het verschil tussen twee metingen mag niet groter zijn dan 30 dagen en de eerste en laatste meting moet resp. in april en maart (van het daaropvolgende kalenderjaar) vallen. 
 lg3 =  het gemiddelde van de drie laagste waterpeilen binnen een hydrologisch jaar (1 april - 31 maart), waarbij er tussen deze drie metingen minstens 14 dagen verschil ligt. -->
 
 <!-- De extreem droge zomers van 2017 en 2018 worden niet meegenomen in de berekening. Het is namelijk nu nog onduidelijk (door mogelijke naijling) of de actuele vegetatie geen nadelige effecten van deze twee zomers heeft ondervonden. -->
@@ -217,13 +219,13 @@ Voor deze laatste groep zal nog een selectie van peilbuizen dienen te gebeuren.
                                     "voorbeeld_selectie_part2.png")) 
 ```
 
-Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie \@ref(suppl-criteria)). 
+Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie \@ref(basiskwaliteitscriteria)). 
 
 Cat. 3 omvat de rastercellen waarbij er meer meetpunten bestaan dan het gewenst aantal meetpunten. 
 Voor deze laatste groep zal nog een ruimtelijke selectie (zie \@ref(sel-habvlek)) van peilbuizen dienen te gebeuren.
 
 
-### Tijdreeksanalyse {#tijdreeksanalyse}
+#### Tijdreeksanalyse {#tijdreeksanalyse}
 
 Tijdreeksanalyse is een middel om grondwaterstandsmetingen te analyseren [zie bijv. @RN877]. 
 In feite zouden ook meetreeksen van oppervlaktewaterpeilen geanalyseerd kunnen worden, maar dit is weinig gebruikelijk, waarschijnlijk omdat er moeilijker een verband te leggen is met het weer (zoals neerslag en verdamping). 
@@ -313,7 +315,7 @@ Het/de meetpunt(en) gelegen in de deelrastercel(len) met het /de laagste rangnum
 Deze werkwijze laat ook gemakkelijk toe om reserve-punten te kiezen.
 Het zijn de meetpunten die in rang volgen op de laagste rang van een gekozen punt.
 
-### Samenvatting werkgang selectie peilbuizen
+#### Samenvatting werkgang selectie peilbuizen
 Na de ruimtelijke selectie kennen we hoeveel meetpunten er per rastercel en per GT-groep gewenst zijn.
 We proberen die wensen zoveel mogelijk in te vullen met bestaande peilbuizen waarvan hun meetreeksen toelaten een droogte-indicator te berekenen.
 
