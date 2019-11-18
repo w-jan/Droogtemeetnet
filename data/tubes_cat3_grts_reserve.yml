@@ -7,7 +7,7 @@
   - groupnr
   - reserve
   hash: 39d3fe269185c59456ea1c9a24e17d20e98a316f
-  data_hash: 59f2aa293054dd4aa7b64b6ac199ebf87f2f2bcf
+  data_hash: 0e7eb64b566689fd405f04ec875ca97702d84ea2
 unieknr:
   class: integer
 loc_code:

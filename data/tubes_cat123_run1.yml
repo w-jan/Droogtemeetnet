@@ -4,7 +4,7 @@
   NA string: NA
   sorting: loc_code
   hash: db19f5efd59b0230cdc56d3be0fe06f10816d506
-  data_hash: 77a3cc2bcdfc3750115e8fd2eaccdf42049d10cc
+  data_hash: ee0af518a9fd8744f34b8917a9735707813baf5e
 loc_code:
   class: character
 area_code:
