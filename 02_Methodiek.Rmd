@@ -158,7 +158,7 @@ Het berekenen van deze indicator op een meetpunt vergt een ononderbroken meetree
 De beschikbare terreinwaarnemingen in Watina zijn meestal ontoereikend. 
 Door middel van een tijdreeksanalyse (zie \@ref(tijdreeksanalyse)) kunnen de tijdreeksen met modelgegevens aangevuld worden, waardoor het wel mogelijk wordt om de indicator te berekenen.
 
-Het zal bijgevolg op basis van de tijdreeksanalyse zijn dat meetpunten als geschikt (er is tijdsmodel mogelijk) of niet geschikt (een model is niet mogelijk) zullen bevonden worden.
+Het zal bijgevolg op basis van de tijdreeksanalyse zijn dat meetpunten als geschikt (een tijdsmodel is mogelijk) of niet geschikt (een tijdsmodel is niet mogelijk) zullen bevonden worden.
 
 Het vergt veel tijd om op alle beschikbare meetpunten een tijdreeksanalyse uit te voeren.
 We willen dit beperken tot de *relatief (beschouwd op het niveau van combinatie rastercel en GT-groep)* kwalitatief beste meetreeksen. 
