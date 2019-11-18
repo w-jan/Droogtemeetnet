@@ -308,11 +308,11 @@ Blijkt bij inspectie op terrein dat de geselecteerde plaats toch niet aan de ver
 ##### Selecteren van een meetpunt in een rastercel waarvoor meerdere kandidaten zijn (cat. 3) {#sel-habvlek}
 Afhankelijk van de verhouding tussen gewenste aantal en het aantal geschikte peilbuizen is er mogelijk een extra analyse nodig. 
 
-- Is het aantal geschikte peilbuizen groter dan wordt enkel binnen deze groep een GRTS-analyse uitgevoerd om het gewenste aantal te selecteren.
+- Is het aantal geschikte peilbuizen groter dan het gewenste aantal, dan wordt enkel binnen deze groep een GRTS-analyse uitgevoerd om het gewenste aantal te selecteren.
 
-- Is het aantal kleiner dan wordt er uit alle beschikbare peilbuizen via een GRTS-analyse het gewenste aantal geselecteerd.
+- Is het aantal kleiner dan het gewenste aantal, dan wordt er uit alle beschikbare peilbuizen via een GRTS-analyse het gewenste aantal geselecteerd.
 
-- Is het aantal gelijk dan hoeft er geen verdere analyse te gebeuren. Alle meetpunten kunnen in het meetnet worden opgenomen.
+- Is het aantal gelijk aan het gewenste aantal, dan hoeft er geen verdere analyse te gebeuren. Alle meetpunten kunnen in het meetnet worden opgenomen.
 
 Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen. 
 We doen hiervoor terug beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m).
