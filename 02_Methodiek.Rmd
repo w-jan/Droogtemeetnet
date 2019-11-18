@@ -28,7 +28,7 @@ Deze wordt bepaald door de ingeschatte grootte van het meetnet en door de trefka
 Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans kan zijn, omdat men minder vrij is om een locatie te kiezen, maar ook hoe kleiner de kans is om daar een geschikt meetpunt aan te treffen. 
 Hier is het dus wat zoeken naar een goede maat. 
 Concreet:  
-    - We maken gebruik van een set gekoppelde GRTS-rasters op een verschillende resolutie ([GRTSmh_diffres](https://doi.org/10.5281/zenodo.3354405)) die zijn afgeleid van het basisraster 'GRTSmaster_habitats' ([link](https://doi.org/10.5281/zenodo.2682323)).
+    - We maken gebruik van een set gekoppelde GRTS-rasters op een verschillende resolutie [@vanderhaeghe_grtsmh_diffres_2019] die zijn afgeleid van het basisraster 'GRTSmaster_habitats' [@onkelinx_grts_2019].
 Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetnet biotische habitatkwaliteit.
     - Voor de ruimtelijke spreiding van meetpunten in het meetnet kiezen we voor rastercellen met resolutie 8 km (8192 m, level 8).
 In totaal zijn er 262 cellen in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
