@@ -1,4 +1,4 @@
-#Gebruikte methodieken
+# Methode
 
 ## Ontwerp van het meetnet
 
@@ -7,7 +7,8 @@
 Idealiter liggen de meetlocaties ruimtelijk gebalanceerd, omdat dit de beste garantie biedt dat de gebeurtenissen die zich op deze locaties voordoen, representatief zijn voor het hele gebied.   
 Men kan een ruimtelijk gebalanceerde set opbouwen door de verspreiding van de GT-groepen over een fijn GRTS-raster[^1] te leggen. 
 
-[^1]: GRTS = Generalized Random Tessellation Stratified
+[^1]: GRTS-design = Generalized Random Tessellation Stratified design.
+Een GRTS-raster is hiervoor de basis.
 
 Een GRTS-raster is een raster, waarbij een willekeurig gekozen subset van opeenvolgende genummerde punten steeds een ruimtelijk gebalanceerde set vormen. 
 Kiezen we een willekeurig nummer en vormen we een reeks opeenvolgende punten ter grootte van ons vooraf gekozen aantal, dan verkrijgen we steeds een goed ruimtelijk gebalanceerde set.  
@@ -27,7 +28,7 @@ Deze wordt bepaald door de ingeschatte grootte van het meetnet en door de trefka
 Hoe kleiner de celgrootte, hoe beter de ruimtelijke balans kan zijn, omdat men minder vrij is om een locatie te kiezen, maar ook hoe kleiner de kans is om daar een geschikt meetpunt aan te treffen. 
 Hier is het dus wat zoeken naar een goede maat. 
 Concreet:  
-    - We maken gebruik van een set gekoppelde GRTS-rasters op een verschillende resolutie ([GRTSmh_diffres](https://doi.org/10.5281/zenodo.3354405)) die zijn afgeleid van het basisraster 'GRTSmaster_habitats' ([link](https://doi.org/10.5281/zenodo.2682323)).
+    - We maken gebruik van een set gekoppelde GRTS-rasters op een verschillende resolutie [@vanderhaeghe_grtsmh_diffres_2019] die zijn afgeleid van het basisraster 'GRTSmaster_habitats' [@onkelinx_grts_2019].
 Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetnet biotische habitatkwaliteit.
     - Voor de ruimtelijke spreiding van meetpunten in het meetnet kiezen we voor rastercellen met resolutie 8 km (8192 m, level 8).
 In totaal zijn er 262 cellen in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
@@ -159,7 +160,7 @@ Het berekenen van deze indicator op een meetpunt vergt een ononderbroken meetree
 De beschikbare terreinwaarnemingen in Watina zijn hiervoor meestal ontoereikend. 
 Door middel van een tijdreeksanalyse (zie \@ref(tijdreeksanalyse)) kunnen de tijdreeksen met modelgegevens aangevuld worden, waardoor het wel mogelijk wordt om de indicator te berekenen.
 
-Het zal bijgevolg op basis van de tijdreeksanalyse zijn dat meetpunten als geschikt (er is tijdsmodel mogelijk) of niet geschikt (een model is niet mogelijk) zullen bevonden worden.
+Het zal bijgevolg op basis van de tijdreeksanalyse zijn dat meetpunten als geschikt (een tijdsmodel is mogelijk) of niet geschikt (een tijdsmodel is niet mogelijk) zullen bevonden worden.
 Deze evaluatie willen we vertalen in het gebruik van het meetpunt in het meetnet.
 Een geschikt meetpunt kan op basis van de data onmiddellijk in het meetnet worden opgenomen.
 Een niet geschikt meetpunt daarentegen kan dat pas na verloop van tijd, nl. wanneer er voldoende data zijn die toelaten een betrouwbaar tijdreeksmodel (zie onder) te bouwen.
@@ -170,9 +171,9 @@ Dit is een selectie, maar we leggen geen absolute minimum-criteria op.
 Dit wil zeggen dat indien bijvoorbeeld in een rastercel voor een bepaalde GT-groep de langste tijdreeks één jaar is, dan zal deze peilbuis toch voor een tijdreeksanalyse geselecteerd kunnen worden. 
 De kans wordt uiteraard kleiner dat met deze beperkte data een betrouwbaar model kan gebouwd worden.
 
-We delen de meetpunten op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
+We delen de meetpunten daarom op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
 
-(@) De meetpunten hebben vanaf 2000 voor minstens één jaar een goede tijdreeks[^3], die een toelaat een lg3 te berekenen.
+(@) De meetpunten hebben vanaf 2000 voor minstens één jaar een goede tijdreeks[^3], die een toelaat een zogenaamde lg3-waarde[^3] te berekenen.
 
 (@) Meetpunten met een _recente_ kwalitatief goede tijdreeks primeren boven meetpunten met een oudere tijdreeks. 
 
@@ -331,8 +332,10 @@ Bij cat. 1 zijn er te weinig peilbuizen.
 De meetreeksen van alle peilbuizen werden geanalyseerd. 
 Via een GRTS-procedure wordt het ontbrekend aantal aangevuld met habitatvlekken. 
 In cat. 2 klopt het gewenste aantal met het beschikbaar aantal en hoeft er geen aansluitende analyse meer uitgevoerd te worden.
+
 In cat. 3 zijn er meer peilbuizen beschikbaar. 
-Afhankelijk van de verhouding tussen gewenste aantal en het aantal geschikte peilbuizen is er mogelijk een extra GTRS-analyse nodig om het gewenste aantal te selecteren. 
+Afhankelijk van de verhouding tussen het gewenste aantal en het aantal geschikte peilbuizen is er mogelijk een extra GTRS-analyse nodig om het gewenste aantal te selecteren. 
+
 
 Figuur \@ref(fig:workflow-selectiepb-part2) geeft schematisch het overzicht van de werkgang die gevolgd werd om uit de beschikbare peilbuizen meetpunten te selecteren en deze desnoods aan te vullen met nieuwe.
 
