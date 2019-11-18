@@ -31,15 +31,15 @@ output:
     toc_depth: 4
     includes:
         in_header: header.html
-  # bookdown::pdf_document2:
-  #   fig_caption: yes
-  #   keep_tex: yes
-  #   toc: yes
-  #   toc_depth: 3
-  #   latex_engine: xelatex
-  #   number_sections: true
-  #   includes:
-  #       in_header: header.tex    
+  bookdown::pdf_document2:
+    fig_caption: yes
+    keep_tex: yes
+    toc: yes
+    toc_depth: 3
+    latex_engine: xelatex
+    number_sections: true
+    includes:
+        in_header: header.tex
 editor_options: 
   chunk_output_type: console
 ---

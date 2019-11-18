@@ -17,7 +17,8 @@ Met natuurgebieden worden hier alle locaties met grondwaterafhankelijke habitatt
 #     mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
 #     dplyr::select(type, groupnr, typegroup_name)
 gw_types <- read_vc("gw_types", file.path(".","data"))
-kable(gw_types %>% 
+
+kobj <- kable(gw_types %>% 
         dplyr::select(type, groupnr) %>% 
         inner_join(read_namelist(lang = "nl") %>% 
                      dplyr::select(code, shortname),
@@ -28,15 +29,20 @@ kable(gw_types %>%
                "(verkorte) naam" = shortname,
                "GT-groep: nummer" = groupnr
                           ),
-      caption =  "grondwaterafhankelijke habitattypen en rbb's"
-      ) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
-                full_width = F, 
+
+      caption =  "grondwaterafhankelijke habitattypen en rbb's") 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj   %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = F,
                 position = "left",
                 font_size = 9,
                 fixed_thead = T) %>%
   #row_spec(0, angle = -45)  %>% #fixeer veldnamen
-  scroll_box(height = "200px") 
+  scroll_box(height = "200px")
+}
 ```
   
 
@@ -55,8 +61,13 @@ gw_types_groupen <- gw_types %>%
     rename("GT-groep: nummer" = groupnr,
       "GT-groep: naam" = typegroup_name)
 
-kable(gw_types_groupen, 
-      caption = "Grondwatertype-groepen") %>% 
+kobj <- kable(gw_types_groupen, 
+      caption = "Grondwatertype-groepen") 
+
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj   %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
                   full_width = TRUE, 
                   position = "left",
@@ -64,6 +75,7 @@ kable(gw_types_groupen,
                   fixed_thead = T) 
     #row_spec(0, angle = -45)  %>% #fixeer veldnamen
      # scroll_box(height = "200px") 
+}
 ```
     
 

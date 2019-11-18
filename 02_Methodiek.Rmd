@@ -64,7 +64,11 @@ Figuur \@ref(fig:workflow-rastercellen) geeft een schematisch overzicht van de g
 (ref:workflow-rastercellen) werkgang selectie rastercellen. Blauw gekleurde cirkels zijn brongegevens. De rode gekleurde zijn genereerde data. Het groen gekleurde is een (tussentijds) output-resultaat. De gele vakken stellen handelingen/bewerkingen voor.
 
 ```{r workflow-rastercellen, fig.cap='(ref:workflow-rastercellen)'}
-include_graphics(path = file.path("figures", "workflow_rasterselectie.png"))
+if (pdfmaken == TRUE) {
+  include_graphics(path = file.path("figures", "workflow_rasterselectie_portrait.jpg"))  
+} else {
+  include_graphics(path = file.path("figures", "workflow_rasterselectie.png"))
+}
 ```
 
 
@@ -87,7 +91,12 @@ Figuur \@ref(fig:workflow-selectiepb-part1) geeft een schematisch overzicht van 
 (ref:workflow-selectiepb1) werkgang selectie rastercellen. Voor de betekenis van de symbolen zie figuur \@ref(fig:workflow-rastercellen).
 
 ```{r workflow-selectiepb-part1, fig.cap='(ref:workflow-selectiepb1)'}
-include_graphics(path = file.path("figures", "workflow_pbselectie_part1.png"))
+if (pdfmaken == TRUE) {
+  include_graphics(path = file.path(".","figures", 
+                                    "workflow_pbselectie_part1_portrait.jpg"))
+} else {
+  include_graphics(path = file.path("figures", "workflow_pbselectie_part1.png"))
+}
 ```
 
 
@@ -342,8 +351,13 @@ Figuur \@ref(fig:workflow-selectiepb-part2) geeft schematisch het overzicht van 
 (ref:workflow-selectiepb2) werkgang selectie rastercellen. Voor de betekenis van de symbolen zie figuur \@ref(fig:workflow-rastercellen).
 
 ```{r workflow-selectiepb-part2, fig.cap='(ref:workflow-selectiepb2)'}
+if (pdfmaken == TRUE) {
   include_graphics(path = file.path(".","figures", 
-                                    "workflow_pbselectie_part2.png")) 
+                                    "workflow_pbselectie_part2_portrait.jpg"))
+} else {
+  include_graphics(path = file.path(".","figures", 
+                                    "workflow_pbselectie_part2.png"))
+}
 ```
 
 
