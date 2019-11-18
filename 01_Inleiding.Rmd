@@ -68,11 +68,15 @@ kable(gw_types_groupen,
     
 
 _GT-groep 5 bundelt grondwaterafhankelijke HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms tot meestal niet.
-_ **_De vraag is of we deze groep meenemen._**  
+_**De vraag is of we deze groep meenemen.**_ 
+_**We zijn voorstander om deze wel mee te nemen.**_
+_**Het voordeel van deze groep is dat ze vermoedelijk het snelst op droogte zal reageren.**_ 
+_**Ze heeft echter ook een nadeel, nl. dat je bij het uitzetten van een nieuw punt niet op voorhand weet of het wel grondwaterafhankelijk is.**_  
 De GT-groepen lenen zich heel goed om een stratificatie uit te voeren op basis van de verwachte responssnelheid van een locatie op droogte. 
 De permanent gevoede locaties (GT-groep 1) zullen naar verwachting trager reageren dan de tijdelijk of zwak gevoede locaties. 
 Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog af te spreken)_** balans worden verzekerd. 
-
+**_Een stratificatie laat toe om een globale uitspraak te doen._**
+**_We raden echter ook aan in de beoordeling elke GT-groep apart mee te nemen, omdat ze verschillende signalen zullen geven._** 
 
 ```{r habitat selection, include=FALSE}
 

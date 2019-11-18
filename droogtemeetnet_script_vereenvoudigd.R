@@ -43,6 +43,7 @@ if (refresh_figures == 2) {
 # tmap_mode("view")
 # statische modus, dus niet inzoombaar
 tmap_mode("plot")
+outermargins_tm <- c(0,0,0,0)
 
 #gewenste grootte van het meetnet
 tot_n_tub <- 100
@@ -2257,7 +2258,7 @@ tubes_cat1_polyg_tm <- raster_meetnet_poly_tm +
 
 tubes_cat1_polyg_tm <- raster_meetnet_poly_tm + 
   tm_shape(tubes_cat1_polyg %>% filter(geselecteerd_basis == 1)) + 
-  tm_bubbles(size =  0.5, col = "groupnr", style = "cat", palette = "BuGn" ) +
-  tm_layout(title = "Meetpunten van categorie 1 waar nog een peilbuis nodig is" )
+  tm_bubbles(size =  0.5, col = "groupnr", style = "cat", palette = "BuGn", title.col = "Grondwatertype" ) +
+  tm_layout(title = "Meetpunten van categorie 1 waar nog een peilbuis nodig is", outer.margins = outermargins_tm )
 
 tubes_cat1_polyg_tm

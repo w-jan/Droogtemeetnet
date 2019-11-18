@@ -108,15 +108,15 @@ De categorieën sluiten elkaar mutueel uit.
 
 - Cat. 1: de vraag is groter dan het aanbod (G > B) 
 
-Er zijn geen meetpunten met een peilbuis of er is een gebrek aan.
+  Er zijn geen meetpunten met een peilbuis of er is een gebrek aan.
 
 - Cat. 2: de vraag is gelijk aan het aanbod (G = B) 
 
-Het aantal beschikbare meetpunten met een peilbuis stemt juist overeen met het aantal dat gezocht wordt.
+  Het aantal beschikbare meetpunten met een peilbuis stemt juist overeen met het aantal dat gezocht wordt.
 
 - Cat. 3: de vraag is kleiner dan het aanbod (G < B) 
 
-Er is een overschot aan meetpunten met een peilbuis.
+  Er is een overschot aan meetpunten met een peilbuis.
 
 **Categorie 1**
 
@@ -152,16 +152,23 @@ _B. De meetpunten met een peilbuis zijn kwalitatief niet gelijkwaardig_
 
 In werkelijkheid zijn niet alle meetpunten even geschikt. 
 
+De bovenstaande categorie-indeling blijft weliswaar behouden, maar er zijn verschillen t.a.v. de selectie van meetpunten en het gebruik ervan in het meetnet.
+
 We noemen een meetpunt geschikt, indien er hiervoor een droogte-indicator kan berekend worden.
 Het berekenen van deze indicator op een meetpunt vergt een ononderbroken meetreeks van _dagelijkse_ peilen en dit over een stabiele, langdurige periode (een paar tiental jaren) . 
-De beschikbare terreinwaarnemingen in Watina zijn meestal ontoereikend. 
+De beschikbare terreinwaarnemingen in Watina zijn hiervoor meestal ontoereikend. 
 Door middel van een tijdreeksanalyse (zie \@ref(tijdreeksanalyse)) kunnen de tijdreeksen met modelgegevens aangevuld worden, waardoor het wel mogelijk wordt om de indicator te berekenen.
 
 Het zal bijgevolg op basis van de tijdreeksanalyse zijn dat meetpunten als geschikt (er is tijdsmodel mogelijk) of niet geschikt (een model is niet mogelijk) zullen bevonden worden.
+Deze evaluatie willen we vertalen in het gebruik van het meetpunt in het meetnet.
+Een geschikt meetpunt kan op basis van de data onmiddellijk in het meetnet worden opgenomen.
+Een niet geschikt meetpunt daarentegen kan dat pas na verloop van tijd, nl. wanneer er voldoende data zijn die toelaten een betrouwbaar tijdreeksmodel (zie onder) te bouwen.
 
 Het vergt veel tijd om op alle beschikbare meetpunten een tijdreeksanalyse uit te voeren.
 We willen dit beperken tot de *relatief (beschouwd op het niveau van combinatie rastercel en GT-groep)* kwalitatief beste meetreeksen. 
-We leggen geen absolute minimum-criteria op. Indien in een rastercel voor een bepaalde GT-groep de langste tijdreeks één jaar is, dan zal deze peilbuis toch voor een tijdreeksanalyse geselecteerd kunnen worden. De kans wordt uiteraard kleiner dat met deze beperkte data een betrouwbaar model kan gebouwd worden.
+Dit is een selectie, maar we leggen geen absolute minimum-criteria op. 
+Dit wil zeggen dat indien bijvoorbeeld in een rastercel voor een bepaalde GT-groep de langste tijdreeks één jaar is, dan zal deze peilbuis toch voor een tijdreeksanalyse geselecteerd kunnen worden. 
+De kans wordt uiteraard kleiner dat met deze beperkte data een betrouwbaar model kan gebouwd worden.
 
 We delen de meetpunten op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
 
@@ -169,13 +176,13 @@ We delen de meetpunten op in een aantal kwaliteitsklassen op basis van volgende 
 
 (@) Meetpunten met een _recente_ kwalitatief goede tijdreeks primeren boven meetpunten met een oudere tijdreeks. 
 
-De meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
+  De meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
 
-Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren`** jaar is.
+  Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren`** jaar is.
 
 (@) Meetpunten met een _langere_ tijdreeks, t.t.z. een groter aantal kwalitatief goede meetjaren, krijgen ook een hogere prioriteit.
 
-Meetpunten waarvan het aantal niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschilt, worden als evenwaardig beschouwd.
+  Meetpunten waarvan het aantal niet meer dan **`r toelaatbaar_verschil_lengte_tijdreeks`** jaar van elkaar verschilt, worden als evenwaardig beschouwd.
 
 (@) Een meetpunt met een lange tijdreeks, maar niet recent, primeert op een meetpunt met een recentere maar [kortere tijdreeks.]{#derde-criterium}
 
@@ -185,8 +192,7 @@ Meetpunten waarvan het aantal niet meer dan **`r toelaatbaar_verschil_lengte_tij
 
 Deze basiskwaliteitscriteria zijn te beschouwen als een eerste screening op basis van actueel beschikbare feitelijke grondwatermetingen. 
 
-Het gebruik van deze criteria leidt er ook toe dat in een rastercel bij de toewijzing van een meetpunt rekening wordt gehouden met de datakwaliteit.
-Alleen wanneer er meer beschikbare punten van vergelijkbare kwaliteit zijn dan gewenst (categorie 3) zal een keuze volgens een ruimtelijk stramien gevolgd worden (zie verder).
+Het gebruik van deze criteria leidt er ook toe dat in een rastercel bij de toewijzing van een meetpunt, indien mogelijk (= in categorie 3), rekening wordt gehouden met de datakwaliteit.
 
 
 [^3]: Een kwalitatief goed meetjaar wordt hier gedefinieerd als een hydrologisch jaar waarvoor een lg3 kan berekend worden. Dit houdt in dat er minstens 20 goed gespreide metingen per jaar zijn. Het verschil tussen twee metingen mag niet groter zijn dan 30 dagen en de eerste en laatste meting moet resp. in april en maart (van het daaropvolgende kalenderjaar) vallen. 
@@ -200,17 +206,6 @@ lg3 =  het gemiddelde van de drie laagste waterpeilen binnen een hydrologisch ja
 
 **_vraag: wat te doen met bestaande meetlocaties die actueel niet geschikt zijn? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**
 
-Alleen bij rastercellen van cat. 1 is er een nood aan extra meetpunten. Hoe potentieel geschikte habitatvlekken geselecteerd kunnen worden, wordt in \@ref(sel-pot-habvlek) nader toegelicht.
-In categorie 1 wordt, ook als we rekening houden met het al dan niet geschikt zijn van een meetpunt, elk eventueel beschikbaar meetpunt geselecteerd.
-
-Het onderscheiden van kwaliteitsverschillen heeft vooral een impact op de behandeling van de twee andere categorieën. 
-
-De grootte van deze clusters wordt dan vergeleken met het gewenste aantal gewenste meetlocaties voor een rastercel. 
-
-Kan het resterende aantal ingevuld worden met de som van het aantal peilbuizen in de x beste clusters, dan rekenen we die rastercel tot cat. 2. 
-In het andere geval rekenen we ze tot cat. 3.
-Voor deze laatste groep zal nog een selectie van peilbuizen dienen te gebeuren.
-
 ```{r voorbeeld-selectie-part1, fig.cap="Cijfervoorbeeld van de gevolgde workflow bij de selectie", , fig.width=8, fig.height=8, eval = FALSE}
   include_graphics(path = file.path(".","figures", 
                                     "voorbeeld_selectie_part1.png")) 
@@ -219,11 +214,6 @@ Voor deze laatste groep zal nog een selectie van peilbuizen dienen te gebeuren.
   include_graphics(path = file.path(".","figures", 
                                     "voorbeeld_selectie_part2.png")) 
 ```
-
-Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie [hier](basiskwaliteitscriteria)). 
-
-Cat. 3 omvat de rastercellen waarbij er meer meetpunten bestaan dan het gewenst aantal meetpunten. 
-Voor deze laatste groep zal nog een ruimtelijke selectie (zie \@ref(sel-habvlek)) van peilbuizen dienen te gebeuren.
 
 
 #### Tijdreeksanalyse {#tijdreeksanalyse}
@@ -247,15 +237,11 @@ Voor de tijdreeksanalyse doen we beroep op het computerprogramma Menyanthes [@RN
 Voor het samenstellen van de verklarende reeksen (neerslag en evapotranspiratie) werd beroep gedaan op de data van de meetstations beheerd door KMI, VMM, HIC en KNMI. 
 Voor de waterstandgegevens werd de Watina-databank geraadpleegd. 
 
-Er werden geen kwaliteitseisen gesteld aan een meetreeks die deze a priori zou uitsluiten van een tijdreeksanalyse.
+Er werden, zoals hoger al aangehaald, geen kwaliteitseisen gesteld aan een meetreeks die deze a priori zou uitsluiten van een tijdreeksanalyse.
 Het is, door het hoge aantal beschikbare meetpunten, echter niet doenbaar om een tijdreeksanalyse uit te voeren op alle meetpunten. 
 
-Wel werden alle meetreeksen van de meetpunten die behoren tot rastercellen van cat. 1B geanalyseerd. 
-Voor de categorieën 2 en 3 bleef dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
-
-De kwaliteit van een tijdreeks kan na een tijdreeksanalyse anders beoordeeld worden. 
-Bijvoorbeeld een meetpunt met veel peilmetingen, die echter een duidelijke lineaire trend vertonen, is weinig geschikt om onmiddellijk in het meetnet te worden opgenomen.
-Anderzijds komt een meetpunt met minder metingen, maar waarvoor een goed model kan gebouwd worden (zonder lineaire trend), wel in aanmerking om nu reeds in het meetnet te worden opgenomen.
+Wel werden alle meetreeksen van de meetpunten die behoren tot rastercellen van cat. 1 en cat. 2 geanalyseerd. 
+Voor categorie 3 bleef dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
 
 Een meetreeks werd weerhouden als er een tijdsmodel kon voor samengesteld worden dat minstens 66% van de variatie in de waargenomen peilen (cfr. EVP, explained variance percentage, in de Menyanthes-software) kon verklaren en ook geen significante lineaire trend vertoont. 
 Bij het tijdsmodel werden uitsluitend neerslag- en evapotranspiratiedata als verklarende reeksen gebruikt. 
@@ -270,11 +256,14 @@ of
 $$trend + 1.96* se < -1(cm/jaar)$$
 Er is dan 2.5% kans een trendwaarde die groter resp. kleiner is ten onrechte als een significante trend te bestempelen.
 
+De kwaliteit van een tijdreeks kan na een tijdreeksanalyse anders beoordeeld worden. 
+Bijvoorbeeld een meetpunt met veel peilmetingen, die echter een duidelijke lineaire trend vertonen, is weinig geschikt om onmiddellijk in het meetnet te worden opgenomen.
+Anderzijds komt een meetpunt met minder metingen, maar waarvoor een goed model kan gebouwd worden (zonder lineaire trend), wel in aanmerking om nu reeds in het meetnet te worden opgenomen.
+
 Bij de modelselectie kwam toch ook nog expertoordeel bij kijken. 
  
-De gestelde kwaliteitseisen hebben alleen een weerslag op de categorie-indeling.
-Ze leiden niet tot uitsluiting.
-In principe kan daarom elke peilbuis in categorie 1B terecht komen, zelfs is er maar één meting van bekend.
+De gestelde kwaliteitseisen leiden niet tot uitsluiting van een tijdreeksanalyse.
+In principe kan elke peilbuis, zelfs al is er maar één meting van bekend, geselecteerd worden.
 En zo geschiedde ook.
 Deze meetreeksen werden manueel afgekeurd. 
 Sommige heel korte tijdreeksen hadden zelfs bijna een perfecte fit, maar het was toch onbetrouwbaar om hiermee waarden te simuleren over een relatief lange tijdsperiode. 
@@ -284,14 +273,15 @@ Anderzijds werd een model met een verklarende variantie beneden 66% soms nog wee
 Een lange tijdreeks met een trend < 1cm/jaar, maar waarbij de peilen maar weinig schommelen (kleine amplitude) kon toch owv deze trend afgekeurd worden (bijv. een tijdreeks waarbij over 15 jaar er een duidelijke stijging van 10 cm te zien is, terwijl de peilen slechts een amplitude van 40 cm hebben) en vice versa.
 
 
-Het al dan niet weerhouden van een tijdreeks kan gevolgen hebben voor de categorie-indeling van een rastercel. 
-Voor een rastercel kunnen immers na een tijdreeksanalyse meer of ook minder peilbuizen geschikt zijn. 
-Daarom voeren we na de tijdreeksanalyse de categorisering nog een tweede keer (en mogelijk nog meerdere keren) uit, waarbij met de uitkomst van de tijdreeksanalyse rekening wordt gehouden. **_of verkiezen we de peilbuizen met de beste modellen ?_**
+Het al dan niet weerhouden van een tijdreeks kan in categorie 3 gevolgen hebben voor het selecteren van een meetpunt. 
+Immers hierbinnen wordt gestreefd minstens zoveel geschikte meetpunten te vinden dan er gezocht worden. 
+Zijn er meer geschikte punten dan gezocht, dan kan gestopt worden met verder zoeken. 
+Zolang dit aantal echter niet bereikt is, wordt (iteratief) verder gezocht. 
 
 
 #### Bijkomende GRTS-analysen
 
-Afhankelijk van de verhouding tussen het aantal gewenste en beschikbare peilbuizen, moeten er nog enkele bijkomende GRTS-analysen uitgevoerd worden.
+Afhankelijk van de verhouding tussen het aantal gewenste, beschikbare enerzijds (categorie 1) en het aantal gewenste en geschikte peilbuizen anderzijds (categorie 3), moeten er nog enkele bijkomende GRTS-analysen uitgevoerd worden.
 
 ##### Selecteren van potentiële geschikte habitatvlekken voor rastercellen waarvoor er te weinig peilbuizen bestaan (cat. 1) {#sel-pot-habvlek}
 
@@ -306,9 +296,13 @@ Blijkt bij inspectie op terrein dat de geselecteerde plaats toch niet aan de ver
 
 
 ##### Selecteren van een meetpunt in een rastercel waarvoor meerdere kandidaten zijn (cat. 3) {#sel-habvlek}
-Als het aantal beschikbare peilbuizen groter is dan het gewenste aantal en wanneer ook het aantal geschikte peilbuizen (cfr. tijdreeksanalyse) hiervan afwijkt, dient nog een bijkomende selectie van peilbuizen te gebeuren.
-Indien het aantal geschikte peilbuizen dan groter is dan het gewenste aantal wordt enkel binnen deze groep verder gezocht.
-In het andere geval omvat het alle peilbuizen.
+Afhankelijk van de verhouding tussen gewenste aantal en het aantal geschikte peilbuizen is er mogelijk een extra analyse nodig. 
+
+- Is het aantal geschikte peilbuizen groter dan wordt enkel binnen deze groep een GRTS-analyse uitgevoerd om het gewenste aantal te selecteren.
+
+- Is het aantal kleiner dan wordt er uit alle beschikbare peilbuizen via een GRTS-analyse het gewenste aantal geselecteerd.
+
+- Is het aantal gelijk dan hoeft er geen verdere analyse te gebeuren. Alle meetpunten kunnen in het meetnet worden opgenomen.
 
 Net zoals voor cat. 1 willen we de keuze zo aselect mogelijk doen. 
 We doen hiervoor terug beroep op het fijnste GRTS-raster 'GRTSmaster_habitats' (celgrootte = 32 m).
@@ -317,26 +311,28 @@ Deze werkwijze laat ook gemakkelijk toe om reserve-punten te kiezen.
 Het zijn de meetpunten die in rang volgen op de laagste rang van een gekozen punt.
 
 #### Samenvatting werkgang selectie peilbuizen
-Na de ruimtelijke selectie kennen we hoeveel meetpunten er per rastercel en per GT-groep gewenst zijn.
+Na de ruimtelijke selectie weten we hoeveel meetpunten er per rastercel en per GT-groep gewenst zijn.
+
 We proberen die wensen zoveel mogelijk in te vullen met bestaande peilbuizen waarvan hun meetreeksen toelaten een droogte-indicator te berekenen.
 
-Hiertoe evalueren (zonder te selecteren) we de kwaliteit van de meetreeksen op basis van de mogelijkheid om voor minstens één jaar een lg3 te berekenen voor de metingen na 2000, van het aantal meetjaren en van de ouderdom van de meetreeks. 
+Hiertoe evalueren we de kwaliteit van de meetreeksen op basis van de mogelijkheid om voor minstens één jaar een lg3 te berekenen voor de metingen na 2000, van het aantal meetjaren en van de ouderdom van de meetreeks. 
 
-De kwalitatief beste meetreeksen worden verder beoordeeld met een tijdreeksanalyse. Door het grote aantal peilbuizen was het niet mogelijk ze alle te analyseren. De voorkeur ging daarom uit naar de relatief beste reeksen. Een meetreeks wordt 'geschikt' bevonden als minstens 2/3 van de variatie door het weer kan verklaard worden en er in de reeks geen lineaire trend te zien is. Op basis van de tijdreeksanalyse worden de meetreeksen geherklasseerd in 'geschikt', 'niet 'geschikt' en 'onbekend' (indien niet behandeld). Er worden minstens zoveel peilbuizen geanalyseerd tot er evenveel of meer geschikte reeksen zijn dan het gewenste aantal, zoniet worden ze allemaal geanalyseerd.
+De kwalitatief beste meetreeksen worden verder beoordeeld met een tijdreeksanalyse. 
+Door het grote aantal peilbuizen was het niet mogelijk ze alle te analyseren. De voorkeur ging daarom uit naar de relatief beste reeksen. 
+Een meetreeks wordt 'geschikt' bevonden als minstens 2/3 van de variatie door het weer kan verklaard worden en er in de reeks geen lineaire trend te zien is. 
+Op basis van de tijdreeksanalyse worden de meetreeksen geherklasseerd in 'geschikt', 'niet 'geschikt' en 'onbekend' (indien niet behandeld). 
+Er worden minstens zoveel peilbuizen geanalyseerd tot er evenveel of meer geschikte reeksen zijn dan het gewenste aantal, zoniet worden ze allemaal geanalyseerd.
 
 Is een meetreeks 'geschikt', dan kan de peilbuis onmiddellijk in het meetnet opgenomen worden.
 Is ze 'niet geschikt', dan kan dit pas na verloop van enkele jaren.
 
 De rastercellen kunnen in drie categorieën (cat. 1- 3) verdeeld worden op basis van de verhouding tussen het aantal gewenste en beschikbare peilbuizen. 
-Bij cat. 1 zijn er te weinig peilbuizen. De meetreeksen van alle peilbuizen werden geanalyseerd. Via een GRTS-procedure wordt het ontbrekend aantal aangevuld met habitatvlekken. 
+Bij cat. 1 zijn er te weinig peilbuizen. 
+De meetreeksen van alle peilbuizen werden geanalyseerd. 
+Via een GRTS-procedure wordt het ontbrekend aantal aangevuld met habitatvlekken. 
 In cat. 2 klopt het gewenste aantal met het beschikbaar aantal en hoeft er geen aansluitende analyse meer uitgevoerd te worden.
-In cat. 3 zijn er meer peilbuizen beschikbaar. Afhankelijk van de verhouding tussen gewenste aantal en het aantal geschikte peilbuizen is er mogelijk een extra analyse nodig. 
-
-- Is het aantal geschikte peilbuizen groter dan wordt enkel binnen deze groep een GRTS-analyse uitgevoerd om het gewenste aantal te selecteren.
-
-- Is het aantal kleiner dan wordt er uit alle beschikbare peilbuizen via een GRTS-analyse het gewenste aantal geselecteerd.
-
-- Is het aantal gelijk dan hoeft er geen verdere analyse te gebeuren. Alle meetpunten kunnen in het meetnet worden opgenomen.
+In cat. 3 zijn er meer peilbuizen beschikbaar. 
+Afhankelijk van de verhouding tussen gewenste aantal en het aantal geschikte peilbuizen is er mogelijk een extra GTRS-analyse nodig om het gewenste aantal te selecteren. 
 
 Figuur \@ref(fig:workflow-selectiepb-part2) geeft schematisch het overzicht van de werkgang die gevolgd werd om uit de beschikbare peilbuizen meetpunten te selecteren en deze desnoods aan te vullen met nieuwe.
 
@@ -363,8 +359,8 @@ De indicator evalueert dus de droogtetoestand rekening houdend met de tijd van h
 Zo kunnen ook relatief lage grondwaterstanden in het voorjaar als droogte aangeduid worden. 
 
 De indicator kleurt respectievelijk rood, oranje of geel op een bepaalde plaats en dag zodra de grondwaterstand er minstens 14 dagen onder de p10, p20 of p30 (situatie met overschrijdingskans van 10, 20 of 30%) is gebleven. 
-_**De indicator kleurt respectievelijk rood, oranje of geel voor een bekken als minstens de helft van de putten in dat bekken kleurcode rood, oranje of geel heeft. (vraag: is dit ook aangewezen voor dit meetnet ?)**_
-<!-- in vergadering hadden we dacht ik besloten om niet per bekken te werken (maar Vlaams) -->
+_**De indicator kleurt respectievelijk rood, oranje of geel voor Vlaanderen als minstens de helft van de putten kleurcode rood, oranje of geel heeft. (vraag: is dit ook aangewezen voor dit meetnet ?). **_
+_**Een opsplitsing per bekken hadden we tijdens de eerste vergadering niet weerhouden.**_
 
 ### Berekeningswijze voor de geselecteerde punten 
 Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 20 (of meer?) jaren lang_**, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden. 

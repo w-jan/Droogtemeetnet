@@ -1,6 +1,11 @@
 
 # Uitvoering
 
+De toepassing van de hiervoor besproken methodiek is volledig gebeurd met R versie 3.6.1 (@citingR), tenzij anders vermeld.
+Meer details hierover is vermeld in bijlage \@ref(gebruikte-werkomgeving).
+
+De code voor analyse en dit rapport is ook te vinden op de GitHub-repository [n2khab-droogtemeetnet](https://github.com/inbo/n2khab-droogtemeetnet).
+
 ## Keuze rasterlaag
 
 Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de gaHT kiezen we een opgeschaalde variant van de Vlaamse `GRTSmaster_habitats` databron, meer bepaald op 'level 8' ([bron](https://doi.org/10.5281/zenodo.3354405)), t.t.z. met cellen van 8192 m (figuur \@ref(fig:meetnetontwerp)).
@@ -39,7 +44,7 @@ raster_meetnet_poly <- lwgeom::st_make_valid(raster_meetnet_poly)
 #st_is_valid(raster_meetnet_poly)
 
 raster_meetnet_poly_tm <- tm_shape(raster_meetnet_poly) + 
-  tm_polygons() + tm_layout(title = "GRTS-raster level 8 (8192m)" )
+  tm_polygons() + tm_layout(title = "GRTS-raster level 8 (8192m)", asp = 0 )
 
 raster_meetnet_poly_tm
 #st_crs(raster_meetnet_poly) #lambert
@@ -84,7 +89,7 @@ if (refresh_figures == 2) {
   habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
     tm_shape(habmap_gw_raster_overlay) + 
     tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
-    tm_layout(title = "Verspreiding van de GT-groepen" )
+    tm_layout(title = "Verspreiding van de GT-groepen", asp = 0 )
   
   tmap_save(habmap_gw_raster_overlay_tm, 
             filename = file.path(figpath, "habmap_gw_raster_overlay.png"),
@@ -406,7 +411,7 @@ sel_raster_meetnet <- lwgeom::st_make_valid(sel_raster_meetnet)
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_raster_meetnet %>% filter(groupnr == 1)) + 
-  tm_polygons(col = "red") + tm_layout(title = "GT-groep 1" )
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 1", asp = 0 )
 
 sel_raster_meetnet_tm
 # voorbeeld van rasters van GT-groep 1 (permanent nat)
@@ -420,7 +425,7 @@ Bij GT-groepen 2 en 3 liggen deze vrij goed verspreid over Vlaanderen, voor groe
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_raster_meetnet %>% filter(groupnr == 2)) + 
-  tm_polygons(col = "red") + tm_layout(title = "GT-groep 2" )
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 2", asp = 0 )
 
 sel_raster_meetnet_tm
 ```
@@ -429,7 +434,7 @@ sel_raster_meetnet_tm
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_raster_meetnet %>% filter(groupnr == 3)) + 
-  tm_polygons(col = "red") + tm_layout(title = "GT-groep 3" )
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 3", asp = 0 )
 
 sel_raster_meetnet_tm
 ```
@@ -438,7 +443,7 @@ sel_raster_meetnet_tm
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_raster_meetnet %>% filter(groupnr == 4)) + 
-  tm_polygons(col = "red") + tm_layout(title = "GT-groep 4" )
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 4", asp = 0 )
 
 sel_raster_meetnet_tm
 ```
@@ -447,7 +452,7 @@ sel_raster_meetnet_tm
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_raster_meetnet %>% filter(groupnr == 5)) + 
-  tm_polygons(col = "red") + tm_layout(title = "GT-groep 5" )
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 5", asp = 0 )
 
 sel_raster_meetnet_tm
 ```
@@ -457,7 +462,7 @@ Figuur \@ref(fig:selectie-rastercel-met-meetpunt-fig6) geeft het totaalbeeld.
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_raster_meetnet) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "alle groepen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "alle groepen", asp = 0 )
 
 sel_raster_meetnet_tm
 ```
@@ -836,7 +841,7 @@ kable(sel_cat1A_table %>%
 
 sel_cat1A_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat1A_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1A: cel met een onvoldoende aantal peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1: cel met een onvoldoende aantal peilbuizen", asp = 0 )
 
 sel_cat1A_tm
 ```
@@ -1054,7 +1059,7 @@ kable(sel_qual_basis %>%
 
 
 We groeperen vervolgens de peilbuizen (naast rastercel en GTgroep) voor elke voorkomende combinatie van de twee criteria (zie tabel \@ref(tab:synthese-clusters-extra-criteria)).
-We berekenen voor deze combinaties een rangorde, waarbij ook het [derde kwaliteitscriterium](#suppl-criteria) in rekening gebracht wordt (= rang combi in de tabel). 
+We berekenen voor deze combinaties een rangorde, waarbij ook het [vierde kwaliteitscriterium](#suppl-criteria) in rekening gebracht wordt (= rang combi in de tabel). 
 Peilbuizen in clusters met een lagere rang combi-waarde zullen voorrang krijgen. 
 
 We berekenen ook het hoogste rangnummer dat nodig is om in het resterend gewenste aantal peilbuizen te kunnen voorzien (= max rang).
@@ -1191,7 +1196,7 @@ sel_cat2_raster <- sel_raster_pb %>%
 
 sel_cat2_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat2_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.2: rastercellen met een juist voldoende aantal peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.2: rastercellen met een juist voldoende aantal peilbuizen", asp = 0 )
 
 sel_cat2_tm
 ```
@@ -1265,7 +1270,7 @@ Ze zijn ruimtelijk goed verspreid over `r nrow(sel_cat3_table)` rastercellen (fi
 
 sel_cat3_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat3_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.3: rastercellen met een overschot aan peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.3: rastercellen met een overschot aan peilbuizen", asp = 0 )
 
 sel_cat3_tm
 ```
@@ -1846,7 +1851,7 @@ sel_cat2_raster_bis <- sel_raster_pb %>%
 
 sel_cat2_tm_bis <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat2_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.2: rastercellen met een juist voldoende aantal peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.2: rastercellen met een juist voldoende aantal peilbuizen", asp = 0 )
 
 sel_cat2_tm_bis
 ```
@@ -1955,7 +1960,7 @@ Rastercellen van groep 4 ligt alle in de (zand)leemstreek [^4] en deze van groep
 
 sel_cat3_tm_bis <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat3_raster) + 
-  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.3: rastercellen met een overschot aan geschikte peilbuizen" )
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.3: rastercellen met een overschot aan geschikte peilbuizen", asp = 0 )
 
 sel_cat3_tm_bis
 ```
@@ -2141,7 +2146,7 @@ tubes_excess_sf <- as_points(tubes_excess)
 
 tubes_excess_tm <- raster_meetnet_poly_tm + 
   tm_shape(tubes_excess_sf %>% mutate(cat = factor(if_else(selectie == -1, 1, 3)))) + 
-  tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "cat", clustering = FALSE) + tm_layout(title = "beschikbare peilbuizen voor selectie" )
+  tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "cat", clustering = FALSE) + tm_layout(title = "beschikbare peilbuizen voor selectie" , asp = 0)
 
 tubes_excess_tm
 ```
@@ -2406,7 +2411,7 @@ tubes_reserve <- tubes_reserve %>%
 
 
 Tabel \@ref(tab:synthese-selection-tubes) toont het overzicht van alle `r nrow(tubes_selected)` geselecteerde peilbuizen.
-Hiervan zijn er `nrow(tubes_selected %>% filter(selectie ==1))` die op basis van hun data nu reeds inzetbaar zijn.
+Hiervan zijn er `r nrow(tubes_selected %>% filter(selectie ==1))` die op basis van hun data nu reeds inzetbaar zijn.
 
 
 Tabel \@ref(tab:synthese-reserve-tubes) geeft alle `r nrow(tubes_reserve)` reservepunten weer.
@@ -2475,7 +2480,7 @@ tubes_selected_sf <- as_points(tubes_selected)
 
 tubes_selected_tm <- raster_meetnet_poly_tm + 
   tm_shape(tubes_selected_sf %>% mutate(Inzetbaarheid = factor(if_else(selectie == -1, "potentieel", "actueel")))) + 
-  tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "Inzetbaarheid", clustering = FALSE) + tm_layout(title = "geselecteerde peilbuizen" )
+  tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "Inzetbaarheid", clustering = FALSE) + tm_layout(title = "geselecteerde peilbuizen", asp = 0 )
 
 tubes_selected_tm
 ```
@@ -2683,8 +2688,8 @@ Figuur \@ref(fig:tubes-cat1-new) toont de verspreiding van de plaatsen waar er b
 ```{r tubes-cat1-new, fig.cap="Meetpunten waar nog een peilbuis nodig is "}
 tubes_cat1_polyg_tm <- raster_meetnet_poly_tm + 
   tm_shape(tubes_cat1_polyg %>% filter(geselecteerd_basis == 1)) + 
-  tm_bubbles(size =  0.5, col = "groupnr", style = "cat", palette = "BuGn" ) +
-  tm_layout(title = "Meetpunten van categorie 1 waar nog een peilbuis nodig is" )
+  tm_bubbles(size =  0.5, col = "groupnr", style = "cat", palette = "BuGn", title.col = "Grondwatertype" ) +
+  tm_layout(title = "Meetpunten van categorie 1 waar nog een peilbuis nodig is", asp = 0 )
 
 tubes_cat1_polyg_tm
 ```
