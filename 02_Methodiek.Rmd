@@ -1,4 +1,4 @@
-#Gebruikte methodieken
+# Methode
 
 ## Ontwerp van het meetnet
 
