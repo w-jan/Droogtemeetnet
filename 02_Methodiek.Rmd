@@ -161,7 +161,7 @@ Door middel van een tijdreeksanalyse (zie \@ref(tijdreeksanalyse)) kunnen de tij
 Het zal bijgevolg op basis van de tijdreeksanalyse zijn dat meetpunten als geschikt (een tijdsmodel is mogelijk) of niet geschikt (een tijdsmodel is niet mogelijk) zullen bevonden worden.
 
 Het vergt veel tijd om op alle beschikbare meetpunten een tijdreeksanalyse uit te voeren.
-We willen dit beperken tot de *relatief (beschouwd op het niveau van combinatie rastercel en GT-groep)* kwalitatief beste meetreeksen. 
+We beperken dit daarom tot de *relatief (beschouwd op het niveau van combinatie rastercel en GT-groep)* kwalitatief beste meetreeksen. 
 We leggen geen absolute minimum-criteria op. Indien in een rastercel voor een bepaalde GT-groep de langste tijdreeks één jaar is, dan zal deze peilbuis toch voor een tijdreeksanalyse geselecteerd kunnen worden. De kans wordt uiteraard kleiner dat met deze beperkte data een betrouwbaar model kan gebouwd worden.
 
 We delen de meetpunten op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
