@@ -166,7 +166,7 @@ We leggen geen absolute minimum-criteria op. Indien in een rastercel voor een be
 
 We delen de meetpunten op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
 
-(@) De meetpunten hebben vanaf 2000 voor minstens één jaar een goede tijdreeks[^3], die een toelaat een lg3 te berekenen.
+(@) De meetpunten hebben vanaf 2000 voor minstens één jaar een goede tijdreeks[^3], die een toelaat een zogenaamde lg3-waarde[^3] te berekenen.
 
 (@) Meetpunten met een _recente_ kwalitatief goede tijdreeks primeren boven meetpunten met een oudere tijdreeks. 
 
