@@ -7,7 +7,8 @@
 Idealiter liggen de meetlocaties ruimtelijk gebalanceerd, omdat dit de beste garantie biedt dat de gebeurtenissen die zich op deze locaties voordoen, representatief zijn voor het hele gebied.   
 Men kan een ruimtelijk gebalanceerde set opbouwen door de verspreiding van de GT-groepen over een fijn GRTS-raster[^1] te leggen. 
 
-[^1]: GRTS = Generalized Random Tessellation Stratified
+[^1]: GRTS-design = Generalized Random Tessellation Stratified design.
+Een GRTS-raster is hiervoor de basis.
 
 Een GRTS-raster is een raster, waarbij een willekeurig gekozen subset van opeenvolgende genummerde punten steeds een ruimtelijk gebalanceerde set vormen. 
 Kiezen we een willekeurig nummer en vormen we een reeks opeenvolgende punten ter grootte van ons vooraf gekozen aantal, dan verkrijgen we steeds een goed ruimtelijk gebalanceerde set.  
