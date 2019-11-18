@@ -170,7 +170,7 @@ We delen de meetpunten daarom op in een aantal kwaliteitsklassen op basis van vo
 
 (@) Meetpunten met een _recente_ kwalitatief goede tijdreeks primeren boven meetpunten met een oudere tijdreeks. 
 
-De meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
+  De meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
 
 Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren`** jaar is.
 
