@@ -172,7 +172,7 @@ We delen de meetpunten daarom op in een aantal kwaliteitsklassen op basis van vo
 
   De meetpunten worden hierbij gerangschikt volgens aflopend jaartal (eindjaar) van de laatst beschikbare kwalitatief goede tijdreeks. 
 
-Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren`** jaar is.
+  Meetpunten worden als evenwaardig beschouwd als het verschil niet groter dan **`r toelaatbare_spreiding_jaren`** jaar is.
 
 (@) Meetpunten met een _langere_ tijdreeks, t.t.z. een groter aantal kwalitatief goede meetjaren, krijgen ook een hogere prioriteit.
 
