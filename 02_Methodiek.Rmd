@@ -337,7 +337,7 @@ In cat. 3 zijn er meer peilbuizen beschikbaar. Afhankelijk van de verhouding tus
 
 - Is het aantal kleiner dan wordt er uit alle beschikbare peilbuizen via een GRTS-analyse het gewenste aantal geselecteerd.
 
-- Is het aantal gelijk dan hoeft er geen verdere analyse te gebeuren. Alle meetpunten kunnen in het meetnet worden opgenomen.
+- Is het aantal gelijk aan het gewenste aantal, dan hoeft er geen verdere analyse te gebeuren. Alle meetpunten kunnen in het meetnet worden opgenomen.
 
 Figuur \@ref(fig:workflow-selectiepb-part2) geeft schematisch het overzicht van de werkgang die gevolgd werd om uit de beschikbare peilbuizen meetpunten te selecteren en deze desnoods aan te vullen met nieuwe.
 
