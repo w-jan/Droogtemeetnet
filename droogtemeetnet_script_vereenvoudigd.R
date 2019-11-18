@@ -1489,13 +1489,13 @@ sel_qual_bis <- sel_qual_bis %>%
 # rastercellen met een juist voldoende aantal evenwaardige meetpunten dat gewenst is voor het meetnet
 sel_cat2_table_bis <- 
   sel_qual_bis %>% 
-  filter(rankclus <= maxrank ) %>% 
+#  filter(rankclus <= maxrank ) %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
   summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
   ungroup %>% 
   inner_join(sel_qual_bis,
              by = c("rasterid", "groupnr", "gew_aantal_meetptn")) %>% 
-  filter(beschikbaar_aantal == gew_aantal_meetptn, rankclus <= maxrank) %>% 
+  filter(beschikbaar_aantal == gew_aantal_meetptn) %>% 
   select(-beschikbaar_aantal, -maxrank)
 
 #kable(sel_cat2_table_bis ) %>% 
@@ -1777,7 +1777,7 @@ for (i in seq(1:nrow(sel_excess_rasterid))) {
     count(groupnr, gew_aantal_meetptn) %>% 
     rename(aantalpb = n)
   
-
+  print(rasterid_grid)
   
   # plot(tubes_excess_level0)
   for (j in seq(1:nrow(tubes_excess_1grid))) {
@@ -1795,90 +1795,72 @@ for (i in seq(1:nrow(sel_excess_rasterid))) {
       pull(aantalpb) %>% 
       as.integer()
     
+    
     #groep pb indien mogelijk beperken tot alleen de geschikte. 
     aantalgoedepb <- tubes_excess %>% 
       filter(rasterid == rasterid_grid & selectie == 1 & groupnr == gwgroup) %>% 
       count(gew_aantal_meetptn) %>% 
       pull(n) %>% 
       as.integer()
-
+    geen_grts_nodig <- FALSE
     if (purrr::is_empty(aantalgoedepb)) {
       tubes_toselect <- tubes_excess 
     } else if (aantalgoedepb >= gewenst_aantal_pb) {
-      tubes_toselect <- tubes_excess %>% 
-        filter(selectie == 1)
+      if (aantalgoedepb == gewenst_aantal_pb) {
+        geen_grts_nodig <- TRUE
+        tubes_toselect <- tubes_excess %>% 
+          filter(selectie == 1)
+      } else {
+        tubes_toselect <- tubes_excess %>% 
+          filter(selectie == 1)
+      }
     } else {
       tubes_toselect <- tubes_excess 
     }
-
-    #binnen een deelraster (clip0), alleen de rastercellen van level0 selecteren waarbinnen een pb valt. 
-    #De andere rastercellen worden NA
-    tubes_excess_level0 <- 
-      raster::rasterize(tubes_toselect %>% 
-                          filter(groupnr == gwgroup) %>% 
-                          select(x, y) %>% 
-                          as.matrix(), 
-                        y = clip0, #raster-object
-                        mask = TRUE)
+    tubes_toselect <- tubes_toselect %>% 
+      filter(rasterid == rasterid_grid & groupnr == gwgroup)
     
-    #rangorde bepalen van de grts-nrs van de geselecteerde rastercellen 
-    rank_cells_level0 <- tubes_excess_level0 %>% 
-      raster::getValues() %>% 
-      as.data.frame()
-    names(rank_cells_level0) <- "celwaarde" 
-    rank_cells_level0 <- rank_cells_level0 %>% 
-      filter(!is.na(celwaarde)) %>%  
-      distinct() %>% 
-      mutate(minrank = min_rank(celwaarde)) %>% 
-      arrange(minrank) 
-    
-    # rank_cells_level0
-    
-    # raster met grts-nrs herindexeren. Een 1-waarde stemt overeen met een gewenste peilbuis (voor dat grid), de overige nummer(s) zijn de reservepunt(en).
-    # Hiervoor moet er eerst een n*2 matrix (rcl) gemaakt worden met de oude en nieuwe celwaarde.
-    rcl <- data.frame("grtsnr" = rank_cells_level0 %>% pull(celwaarde), 
-                      "selectie" = 
-                        c(rep(1,gewenst_aantal_pb), seq(from = gewenst_aantal_pb + 1, to = nrow(rank_cells_level0)))) %>% 
-      as.matrix()
-    
-    #herindexeren
-    tubes_excess_level0_rcl <- raster::reclassify(tubes_excess_level0, rcl)
-    
-    #raster maken met de unieke nummers van de pb, maar dat enkel voor het gewenste aantal pb
-    tubes_excess_level0_unieknr <- 
-      raster::rasterize(tubes_excess %>% 
-                          filter(groupnr == gwgroup) %>% 
-                          select(x, y) %>% 
-                          as.matrix(),
-                        tubes_excess_level0_rcl[tubes_excess_level0_rcl == 1, drop = FALSE],
-                        field = tubes_excess %>% 
-                          filter(groupnr == gwgroup) %>%
-                          select(unieknr), 
-                        mask = FALSE)
-    
-    #ophalen van de unieke nummers
-    tubes_excess_selected_unieknr <- tubes_excess_level0_unieknr %>% 
-      raster::getValues() %>% 
-      as.data.frame()
-    names(tubes_excess_selected_unieknr) <- "unieknr" 
-    tubes_excess_selected_unieknr <- tubes_excess_selected_unieknr %>% 
-      filter(!is.na(unieknr)) %>%  
-      distinct() %>% 
-      arrange(unieknr) %>% 
-      pull(unieknr)
-    
-    #peilbuis als geselecteerd markeren
-    tubes_excess[tubes_excess$unieknr %in% tubes_excess_selected_unieknr, "geselecteerd"] <- 1
-    
-    #idem maar nu voor de reservepunten. Dit kan ik niet in één keer, gelukkig duurt het niet lang.
-    #raster maken met de unieke nummers van de pb, maar dat enkel voor de reservepunten
-    for (k in seq(from = (gewenst_aantal_pb + 1), to = nrow(rank_cells_level0))) {
+    if (geen_grts_nodig == FALSE) {
+      
+      #binnen een deelraster (clip0), alleen de rastercellen van level0 selecteren waarbinnen een pb valt. 
+      #De andere rastercellen worden NA
+      tubes_excess_level0 <- 
+        raster::rasterize(tubes_toselect %>% 
+                            select(x, y) %>% 
+                            as.matrix(), 
+                          y = clip0, #raster-object
+                          mask = TRUE)
+      
+      #rangorde bepalen van de grts-nrs van de geselecteerde rastercellen 
+      rank_cells_level0 <- tubes_excess_level0 %>% 
+        raster::getValues() %>% 
+        as.data.frame()
+      names(rank_cells_level0) <- "celwaarde" 
+      rank_cells_level0 <- rank_cells_level0 %>% 
+        filter(!is.na(celwaarde)) %>%  
+        distinct() %>% 
+        mutate(minrank = min_rank(celwaarde)) %>% 
+        arrange(minrank) 
+      
+      # rank_cells_level0
+      
+      # raster met grts-nrs herindexeren. Een 1-waarde stemt overeen met een gewenste peilbuis (voor dat grid), de overige nummer(s) zijn de reservepunt(en).
+      # Hiervoor moet er eerst een n*2 matrix (rcl) gemaakt worden met de oude en nieuwe celwaarde.
+      rcl <- data.frame("grtsnr" = rank_cells_level0 %>% pull(celwaarde), 
+                        "selectie" = 
+                          c(rep(1,gewenst_aantal_pb), seq(from = gewenst_aantal_pb + 1, to = nrow(rank_cells_level0)))) %>% 
+        as.matrix()
+      
+      #herindexeren
+      tubes_excess_level0_rcl <- raster::reclassify(tubes_excess_level0, rcl)
+      
+      #raster maken met de unieke nummers van de pb, maar dat enkel voor het gewenste aantal pb
       tubes_excess_level0_unieknr <- 
         raster::rasterize(tubes_excess %>% 
                             filter(groupnr == gwgroup) %>% 
                             select(x, y) %>% 
                             as.matrix(),
-                          tubes_excess_level0_rcl[tubes_excess_level0_rcl == k, drop = FALSE],
+                          tubes_excess_level0_rcl[tubes_excess_level0_rcl == 1, drop = FALSE],
                           field = tubes_excess %>% 
                             filter(groupnr == gwgroup) %>%
                             select(unieknr), 
@@ -1896,42 +1878,74 @@ for (i in seq(1:nrow(sel_excess_rasterid))) {
         pull(unieknr)
       
       #peilbuis als geselecteerd markeren
-      tubes_excess[tubes_excess$unieknr %in% tubes_excess_selected_unieknr, "reserve"] <- k
-    } #loop reservepunten
+      tubes_excess[tubes_excess$unieknr %in% tubes_excess_selected_unieknr, "geselecteerd"] <- 1
+    } else {
+      tubes_excess[tubes_excess$unieknr %in% tubes_toselect$unieknr, "geselecteerd"] <- 1      
+    }
+    #idem maar nu voor de reservepunten. Dit kan ik niet in één keer, gelukkig duurt het niet lang.
+    #raster maken met de unieke nummers van de pb, maar dat enkel voor de reservepunten
+    #enkel indien het aantal pb (voldoende in rang) > aantal gewenst
+    if (aantalpb > gewenst_aantal_pb) {
+      for (k in seq(from = (gewenst_aantal_pb + 1), to = nrow(rank_cells_level0))) {
+        tubes_excess_level0_unieknr <- 
+          raster::rasterize(tubes_excess %>% 
+                              filter(groupnr == gwgroup) %>% 
+                              select(x, y) %>% 
+                              as.matrix(),
+                            tubes_excess_level0_rcl[tubes_excess_level0_rcl == k, drop = FALSE],
+                            field = tubes_excess %>% 
+                              filter(groupnr == gwgroup) %>%
+                              select(unieknr), 
+                            mask = FALSE)
+        
+        #ophalen van de unieke nummers
+        tubes_excess_selected_unieknr <- tubes_excess_level0_unieknr %>% 
+          raster::getValues() %>% 
+          as.data.frame()
+        names(tubes_excess_selected_unieknr) <- "unieknr" 
+        tubes_excess_selected_unieknr <- tubes_excess_selected_unieknr %>% 
+          filter(!is.na(unieknr)) %>%  
+          distinct() %>% 
+          arrange(unieknr) %>% 
+          pull(unieknr)
+        
+        #peilbuis als geselecteerd markeren
+        tubes_excess[tubes_excess$unieknr %in% tubes_excess_selected_unieknr, "reserve"] <- k
+      }#loop reservepunten
+    } #controle aantal reservepunten
   } #loop gw-groepen
 } # loop gridcellen
-
 #aanduiden welke pb geselecteerd zijn
-tubes_cat3_gtrs <- tubes_excess %>% 
-  filter(geselecteerd == 1 & cat == 3) %>% 
+tubes_cat3_grts <- tubes_excess %>% 
+  filter(geselecteerd == 1) %>% 
   arrange(rasterid, groupnr, loc_code)
 
-tubes_cat1Bb_gtrs <- tubes_excess %>% 
-  filter(geselecteerd == 1 & cat == 1) %>% 
-  arrange(rasterid, groupnr, loc_code)
-
-tubes_cat3_gtrs_reserve <- tubes_excess %>% 
-  filter(reserve > 0 & cat == 3) %>% 
+tubes_cat3_grts_reserve <- tubes_excess %>% 
+  filter(reserve > 0 ) %>% 
   arrange(rasterid, groupnr, reserve)
 
-tubes_cat1Bb_gtrs_reserve <- tubes_excess %>% 
-  filter(reserve > 0 & cat == 1) %>% 
-  arrange(rasterid, groupnr, reserve)
+# tubes_cat1Bb_gtrs <- tubes_excess %>% 
+#   filter(geselecteerd == 1 & cat == 1) %>% 
+#   arrange(rasterid, groupnr, loc_code)
+
+
+# tubes_cat1Bb_gtrs_reserve <- tubes_excess %>% 
+#   filter(reserve > 0 & cat == 1) %>% 
+#   arrange(rasterid, groupnr, reserve)
 
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
 output_vc <- write_vc(tubes_cat3_gtrs, file.path(".","data","tubes_cat3_gtrs"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
-output_vc <- write_vc(tubes_cat1Bb_gtrs, file.path(".","data","tubes_cat1Bb_gtrs"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
+# output_vc <- write_vc(tubes_cat1Bb_gtrs, file.path(".","data","tubes_cat1Bb_gtrs"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
 output_vc <- write_vc(tubes_cat3_gtrs_reserve, file.path(".","data","tubes_cat3_gtrs_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
-output_vc <- write_vc(tubes_cat1Bb_gtrs_reserve, file.path(".","data","tubes_cat1Bb_gtrs_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
+# output_vc <- write_vc(tubes_cat1Bb_gtrs_reserve, file.path(".","data","tubes_cat1Bb_gtrs_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 rm(output_vc)
 
 
 ###Samenvatting selectie
 
 
-tubes_selected <- bind_rows(tubes_cat1Ba %>% mutate(cat = "1Ba"), tubes_cat1Bb_gtrs %>% mutate(cat = "1Bb"), tubes_cat2_bis %>% mutate(cat = "2"), tubes_cat3_gtrs %>% mutate(cat = "3"))
-tubes_reserve <- bind_rows(tubes_cat1Bb_gtrs_reserve %>% mutate(cat = "1Bb"),
-                           tubes_cat3_gtrs_reserve %>% mutate(cat = "3")
+tubes_selected <- bind_rows(tubes_cat1 %>% mutate(cat = "1"), tubes_cat2_bis %>% mutate(cat = "2"), tubes_cat3_gtrs %>% mutate(cat = "3"))
+tubes_reserve <- bind_rows(tubes_cat3_gtrs_reserve %>% mutate(cat = "3")
 )
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.

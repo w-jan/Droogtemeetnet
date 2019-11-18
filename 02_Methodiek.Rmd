@@ -8,6 +8,7 @@ Idealiter liggen de meetlocaties ruimtelijk gebalanceerd, omdat dit de beste gar
 Men kan een ruimtelijk gebalanceerde set opbouwen door de verspreiding van de GT-groepen over een fijn GRTS-raster[^1] te leggen. 
 
 [^1]: GRTS = Generalized Random Tessellation Stratified
+
 Een GRTS-raster is een raster, waarbij een willekeurig gekozen subset van opeenvolgende genummerde punten steeds een ruimtelijk gebalanceerde set vormen. 
 Kiezen we een willekeurig nummer en vormen we een reeks opeenvolgende punten ter grootte van ons vooraf gekozen aantal, dan verkrijgen we steeds een goed ruimtelijk gebalanceerde set.  
 Kees denkt dan wel dat hij klaar is, het is jammergenoeg niet zo eenvoudig.    
@@ -219,7 +220,7 @@ Voor deze laatste groep zal nog een selectie van peilbuizen dienen te gebeuren.
                                     "voorbeeld_selectie_part2.png")) 
 ```
 
-Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie \@ref(basiskwaliteitscriteria)). 
+Bij cat. 2 en cat. 3 wordt bijkomend rekening gehouden dat er tussen de geschikte meetpunten nog kwalitatieve verschillen bestaan (zie [hier](basiskwaliteitscriteria)). 
 
 Cat. 3 omvat de rastercellen waarbij er meer meetpunten bestaan dan het gewenst aantal meetpunten. 
 Voor deze laatste groep zal nog een ruimtelijke selectie (zie \@ref(sel-habvlek)) van peilbuizen dienen te gebeuren.
