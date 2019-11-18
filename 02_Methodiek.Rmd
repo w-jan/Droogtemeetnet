@@ -164,7 +164,7 @@ Het vergt veel tijd om op alle beschikbare meetpunten een tijdreeksanalyse uit t
 We beperken dit daarom tot de *relatief (beschouwd op het niveau van combinatie rastercel en GT-groep)* kwalitatief beste meetreeksen. 
 We leggen geen absolute minimum-criteria op. Indien in een rastercel voor een bepaalde GT-groep de langste tijdreeks één jaar is, dan zal deze peilbuis toch voor een tijdreeksanalyse geselecteerd kunnen worden. De kans wordt uiteraard kleiner dat met deze beperkte data een betrouwbaar model kan gebouwd worden.
 
-We delen de meetpunten op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
+We delen de meetpunten daarom op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
 
 (@) De meetpunten hebben vanaf 2000 voor minstens één jaar een goede tijdreeks[^3], die een toelaat een zogenaamde lg3-waarde[^3] te berekenen.
 
