@@ -333,7 +333,7 @@ Bij cat. 1 zijn er te weinig peilbuizen. De meetreeksen van alle peilbuizen werd
 In cat. 2 klopt het gewenste aantal met het beschikbaar aantal en hoeft er geen aansluitende analyse meer uitgevoerd te worden.
 In cat. 3 zijn er meer peilbuizen beschikbaar. Afhankelijk van de verhouding tussen gewenste aantal en het aantal geschikte peilbuizen is er mogelijk een extra analyse nodig. 
 
-- Is het aantal geschikte peilbuizen groter dan wordt enkel binnen deze groep een GRTS-analyse uitgevoerd om het gewenste aantal te selecteren.
+- Is het aantal geschikte peilbuizen groter dan het gewenste aantal, dan wordt enkel binnen deze groep een GRTS-analyse uitgevoerd om het gewenste aantal te selecteren.
 
 - Is het aantal kleiner dan wordt er uit alle beschikbare peilbuizen via een GRTS-analyse het gewenste aantal geselecteerd.
 
