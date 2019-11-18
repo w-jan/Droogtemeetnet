@@ -1944,9 +1944,26 @@ rm(output_vc)
 ###Samenvatting selectie
 
 
-tubes_selected <- bind_rows(tubes_cat1 %>% mutate(cat = "1"), tubes_cat2_bis %>% mutate(cat = "2"), tubes_cat3_gtrs %>% mutate(cat = "3"))
-tubes_reserve <- bind_rows(tubes_cat3_gtrs_reserve %>% mutate(cat = "3")
+tubes_selected <- bind_rows(tubes_cat1 %>% mutate(cat = "1"), tubes_cat2_bis %>% mutate(cat = "2"), tubes_cat3_grts %>% mutate(cat = "3"))
+tubes_selected <- tubes_selected %>% 
+  select(-selectie) %>% 
+  left_join(tubes_eval_namenyanthes %>% 
+              select(loc_code, selectie), by = "loc_code")
+
+tubes_reserve <- bind_rows(tubes_cat3_grts_reserve %>% mutate(cat = "3")
 )
+tubes_reserve <- tubes_reserve %>% 
+  select(-selectie) %>% 
+  left_join(tubes_eval_namenyanthes %>% 
+              select(loc_code, selectie), by = "loc_code")
+
+tubes_selected_sf <- as_points(tubes_selected)
+
+tubes_selected_tm <- raster_meetnet_poly_tm + 
+  tm_shape(tubes_selected_sf %>% mutate(Inzetbaarheid = factor(if_else(selectie == -1, "potentieel", "actueel")))) + 
+  tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "Inzetbaarheid", clustering = FALSE) + tm_layout(title = "geselecteerde peilbuizen" )
+
+tubes_selected_tm
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
 
@@ -1988,11 +2005,8 @@ sel_cat1A_raster_df <- sel_cat1A_raster_gw_df %>%
 # loop per rastercel
 for (i in seq(1:nrow(sel_cat1A_raster_df))) {
   
-  i <- 10
   rasterid_grid <- sel_cat1A_raster_df[i, "rasterid"] %>% 
     as.integer()
-  
-  xx <- sel_cat1A_raster_gw_df %>% filter(rasterid == rasterid_grid)
   
   sel_cat1A_raster_1grid <- sel_cat1A_raster_gw_df %>% 
     filter(rasterid == rasterid_grid) %>% 
@@ -2006,11 +2020,7 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
   
   #loop per gGT-groep
   for (j in seq(1:nrow(sel_cat1A_raster_1grid))) {
-    j <- 1
-    # sel_raster_gw_grid <- sel_cat1A_raster_gw_df %>% 
-    #   filter(rasterid == rasterid_grid) %>% 
-    #   slice(j) 
-    # 
+    
     gewenst_aantal_pb <- sel_cat1A_raster_1grid %>% 
       pull(gewenst_aantal_pb) %>% 
       as.integer()
@@ -2019,18 +2029,11 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
       pull(groupnr) %>% 
       as.integer()
     
-    # gewenst_aantal_pb <- 2
-    
-    
     # raster met binnen het grid (level8) de rangnummers (GRTS) van de habitatpolygonen die behoren tot een bep. grondwatergroep
     habmap_raster_rangnr <- raster::rasterize(habmap_gw_raster_overlay %>% 
                                                 filter(groupnr == gwgroup & selecteerbaar == 1),
                                               clip0, 
                                               mask = TRUE)
-    # plot(habmap_raster_gwgroup)
-    # plot(habmap_raster_rangnr)
-    
-    # habmap_raster_rangnr[habmap_raster_rangnr == 170982, drop = FALSE]
     
     #opzoeken van de laagste rangnummer(s) grid level 0(hoogste resolutie)
     grid_rangnr <- habmap_raster_rangnr %>% 
@@ -2041,8 +2044,6 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
       filter(!is.na(celwaarde)) %>%  
       distinct() %>% 
       arrange(celwaarde) 
-    # grid_rangnr_min <- grid_rangnr %>% slice(1:gewenst_aantal_pb)  
-    
     
     # raster met grts-nrs herindexeren naar 0 en 1 waarden. Het aantal 1 waarden stemt overeen met het gewenst aantal peilbuizen (voor dat grid).
     # Hiervoor moet er eerst een n*2 matrix (rcl) gemaakt worden met de oude en nieuwe celwaarde.
@@ -2053,8 +2054,6 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
     
     #herindexeren
     habmap_raster_rcl <- raster::reclassify(habmap_raster_rangnr, rcl)
-    # habmap_raster_rcl[habmap_raster_rangnr[habmap_raster_rangnr == 46054, drop = FALSE], drop = FALSE]
-    # plot(habmap_raster_rcl)
     
     # raster met binnen het grid (level8) alle unieke nrs van de habitatpolygonen die behoren tot een bep. grondwatergroep
     habmap_raster_unieknr <- raster::rasterize(habmap_gw_raster_overlay %>%
@@ -2065,22 +2064,8 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
     # habmap_raster_unieknr[habmap_raster_rangnr[habmap_raster_rangnr == 46054, drop = FALSE], drop= FALSE]
     
     #raster maken met de unieke nummers van de pb, maar dat enkel voor het gewenste aantal
-    #volgende verrastering geeft een verkeerd resultaat, van het bestaande raster-object (y) worden m.i. enkel de extent, de resolutie en de crs overgenomen. Het al dan niet NA zijn van een cel wordt niet meegenomen
-    #werkt niet
-    # habmap_raster_unieknr_select1 <- raster::rasterize(habmap_gw_raster_overlay %>%
-    #                                                    filter(groupnr == gwgroup & selecteerbaar == 1),
-    #                                           habmap_raster_rcl[habmap_raster_rcl == 0, drop = FALSE],
-    #                                           field = "unieknr",
-    #                                           mask = FALSE)
     
     habmap_raster_unieknr_select <- habmap_raster_unieknr * habmap_raster_rcl[habmap_raster_rcl == 1, drop = FALSE]
-    
-    # plot(habmap_raster_unieknr_select)
-    # plot(habmap_raster_unieknr_select1)
-    #     plot(habmap_raster_rcl, add = TRUE)
-    # all.equal(habmap_raster_unieknr_select,habmap_raster_unieknr_select1)
-    # 
-    # plot(habmap_gw_raster_overlay %>%  filter (unieknr %in% c(40705, 40915)) %>% select(unieknr))
     
     habmap_raster_unieknr_select_df <- habmap_raster_unieknr_select %>% 
       raster::getValues() %>% 
@@ -2093,21 +2078,6 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
       mutate(geselecteerd = 1)
     
     #vind de habmap-polygoon voor die rastercel
-    # habmap_polygons_gw_part <- 
-    #   habmap_polygons_gw %>% 
-    #     st_drop_geometry() %>% 
-    #     filter(unieknr == habmap_raster_unieknr[clip0_min]) %>% 
-    #     mutate(geselecteerd = 1) %>% 
-    #     select(unieknr, geselecteerd)
-    #markeren en ook zo vermijden dat een polygoon twee keer wordt geselecteerd
-    
-    # habmap_polygons_gw <- 
-    #   habmap_polygons_gw %>% 
-    #     left_join(habmap_raster_unieknr_select_df, 
-    #               by = "unieknr") %>% 
-    #     mutate(selecteerbaar = ifelse(is.na(geselecteerd), selecteerbaar, 0)) %>% 
-    #     select(-geselecteerd)
-    
     habmap_gw_raster_overlay <- 
       habmap_gw_raster_overlay %>% 
       left_join(habmap_raster_unieknr_select_df, 
@@ -2118,11 +2088,9 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
     
     #opzoeken reservepunten
     #ophalen van bijhorende rangnr's van level5 (+/- 1km-hok)
-    clip5_select <- clip5 * habmap_raster_rcl[habmap_raster_rcl == 1, drop = FALSE]
-    # clip5_select
-    # plot(clip5_select)
-    # test <- raster::ratify(clip5_select)
-    # rat <- levels(test)[[1]]
+    clip5_select <- clip5 * habmap_raster_rcl[habmap_raster_rcl == 1, 
+                                              drop = FALSE]
+    
     
     #selectie van de geselecteerde rangnr(s)
     clip5_select_df <- clip5_select %>% 
@@ -2152,13 +2120,14 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
     
     rcl <- data.frame("grtsnr" = clip5_rcl %>% pull(celwaarde), 
                       "selectie" = 
-                        c(rep(1,gewenst_aantal_pb), rep(0,nrow(clip5_rcl) - gewenst_aantal_pb))) %>% 
+                        c(rep(1,gewenst_aantal_pb), 
+                          rep(0,nrow(clip5_rcl) - gewenst_aantal_pb))) %>% 
       as.matrix()
     
-    habmap_raster_reserve_rcl <- raster::reclassify(clip5, rcl)    
-    # plot(habmap_raster_reserve_rcl)
-    habmap_raster_unieknr_reserve <- habmap_raster_unieknr * habmap_raster_reserve_rcl
-    # plot(habmap_raster_unieknr_reserve)    
+    habmap_raster_reserve_rcl <- raster::reclassify(clip5, rcl)
+    habmap_raster_unieknr_reserve <- 
+      habmap_raster_unieknr * habmap_raster_reserve_rcl
+    
     
     #ophalen van unieke nummers
     #selectie van de geselecteerde rangnr(s)
@@ -2183,11 +2152,8 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
       select(-geselecteerd)
   } #loop grondwatergroup
 } #loop grid
-# reserve1 <- reserve %>%
-#   inner_join(habmap_gw_raster_overlay %>% 
-#                st_drop_geometry() %>% 
-#                select(polygon_id, groupnr, rasterid), by = c("polygon_id", "groupnr"))
-tubes_cat1A <-
+
+tubes_cat1_polyg <-
   habmap_gw_raster_overlay %>% 
   rename(geselecteerd_basis = selecteerbaar,
          geselecteerd_reserve = selecteerbaar_reserve) %>% 
@@ -2201,8 +2167,8 @@ habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>%
   select(-starts_with("selecteerbaar"))
 
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
-write_vc(tubes_cat1A %>% st_drop_geometry(), file.path(".","data","tubes_cat1A"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
-# test <- read_vc(file.path(".","data","tubes_group4"))
+output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
+rm(output_vc)
 
 # raster::plot(clip5)
 # raster::plot(clip5_1cel, add= FALSE)
@@ -2282,6 +2248,16 @@ write_vc(tubes_cat1A %>% st_drop_geometry(), file.path(".","data","tubes_cat1A")
 #   rclmat <- matrix(m, ncol = 3, byrow = TRUE)
 #   rc <- reclassify(test2, rclmat) 
 #   plot(rc)
-```
 
 
+tubes_cat1_polyg_tm <- raster_meetnet_poly_tm + 
+  tm_shape(tubes_cat1_polyg %>% filter (geselecteerd_basis ==1)) + 
+  tm_fill(col = "groupnr", palette = "BuGn", title = "Grondwatertype") + 
+  tm_layout(title = "Meetpunten van categorie 1 waar nog een peilbuis nodig is" )
+
+tubes_cat1_polyg_tm <- raster_meetnet_poly_tm + 
+  tm_shape(tubes_cat1_polyg %>% filter(geselecteerd_basis == 1)) + 
+  tm_bubbles(size =  0.5, col = "groupnr", style = "cat", palette = "BuGn" ) +
+  tm_layout(title = "Meetpunten van categorie 1 waar nog een peilbuis nodig is" )
+
+tubes_cat1_polyg_tm
