@@ -34,4 +34,15 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+
+# local, large binary data
+/data/local/*
+/figures/local/*
 .Rproj.user
+
+# Other
+_bookdown_files/
+*.html
+!header.html
+.Rproj.user
+droogtemeetnet_ontwerp.md

@@ -1,0 +1,38 @@
+unieknr	loc_code	area_code	area_name	x	y	loc_validitycode	loc_validity	loc_typecode	loc_typename	groupnr	typegroup_name	rasterid	cat	gew_aantal_meetptn	geselecteerd	reserve	filterdepth	soilsurf_ost
+125	WAHP711	WAH	Waaslandhaven	144524	214863	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	41	1	1	0	2	2.31	2.485
+182	ZWIP108	ZWI	Zwinduinen en -polders	75653	226501	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	5	15	53	1	1	0	2	1.05	5.351
+57	MSBP003	MSB	Molenstedebroek	194861	187151	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	2	12	54	1	1	0	2	1.97	19.154
+56	MSBP002	MSB	Molenstedebroek	194917	187270	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	54	1	1	0	3	2.0920000000001	19.1069999999999
+62	MSBP013	MSB	Molenstedebroek	195275	186651	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	54	1	1	0	4	2.215	19.3709999999999
+61	MSBP009	MSB	Molenstedebroek	194851	187121	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	54	1	1	0	5	2.766	19.452
+63	MSBP014	MSB	Molenstedebroek	195268	186601	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	54	1	1	0	6	2.2659999999999	19.376
+60	MSBP008	MSB	Molenstedebroek	194883	187199	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	54	1	1	0	7	1.6270000000001	19.3859999999999
+58	MSBP006	MSB	Molenstedebroek	194955	187335	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	54	1	1	0	8	2.136	18.91
+65	NEIP002	NEI	Neigembos	128078	167410	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	57	1	1	0	2	1.1	0.45
+174	ZWBP013	ZWB	Zwalmbeek	107282	173439	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	89	1	1	0	2	3	20.23
+74	SBBP002	SBB	Steenbergse bossen	109983	170962	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	89	1	1	0	3	1.34	52.147
+176	ZWBP017	ZWB	Zwalmbeek	107421	173519	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	89	1	1	0	4	3	32.07
+175	ZWBP014	ZWB	Zwalmbeek	107312	173473	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	89	1	1	0	5	3	20.17
+36	HALP005	HAL	Hallerbos	144281	156162	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	185	1	1	0	2	1.96	68.673
+35	HALP002	HAL	Hallerbos	143429	155341	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	185	1	1	0	3	1.79	74.66
+40	KLUP003	KLU	Kluysbos	119864	161359	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	217	1	1	0	2	0.93	45.12
+69	RASP001	RAS	Raspaillebos	120085	162768	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	217	1	1	0	3	2.57	69.404
+71	RASP003	RAS	Raspaillebos	120002	163028	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	4	14	217	1	1	0	4	1.32	40.862
+121	VIEP173	VIE	Vierkensbroek-Demervallei	192713	188703	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	310	1	1	0	2	2.04	16.98
+117	VIEP106	VIE	Vierkensbroek-Demervallei	192282	188686	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	310	1	1	0	3	1.84	17.15
+118	VIEP107	VIE	Vierkensbroek-Demervallei	192278	188526	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	310	1	1	0	4	2.04	17.387
+120	VIEP118	VIE	Vierkensbroek-Demervallei	192266	188817	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	310	1	1	0	5	0.81	17.09
+122	VIEP174	VIE	Vierkensbroek-Demervallei	192711	188697	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	310	1	1	0	6	2.07	16.92
+123	VINP044	VIN	Het Vinne	203993	170797	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	486	1	1	0	2	1.46	26.181
+124	VINP084	VIN	Het Vinne	203095	170251	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	2	12	486	1	1	0	3	2.13	26.64
+4	ARHP010	ARH	Aronst Hoek	203804	177070	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	2	12	486	1	1	0	4	2.3	24.191
+187	ZWIP217	ZWI	Zwinduinen en -polders	79750	228352	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	1	11	565	1	1	0	2	2	5.05
+185	ZWIP210	ZWI	Zwinduinen en -polders	80185	228761	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	1	11	565	1	1	0	3	1.96	4.51
+188	ZWIP218	ZWI	Zwinduinen en -polders	80145	228399	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	1	11	565	1	1	0	4	2.01	4.47
+184	ZWIP209	ZWI	Zwinduinen en -polders	79771	228690	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	1	11	565	1	1	0	5	1.96	4.64
+183	ZWIP204	ZWI	Zwinduinen en -polders	79694	228868	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	1	11	565	1	1	0	6	1.98	4.71
+189	ZWIP220	ZWI	Zwinduinen en -polders	79710	228136	ENT	Ingegeven	P	Peilbuis/Pi<eb>zometer	1	11	565	1	1	0	7	1.96	4.63
+89	TLAP001	TLA	Terlaemen & Weijerman	213998	188072	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1	11	694	1	1	0	2	2.27	32.923
+73	SANP006	SAN	Schansbeemden	216032	191815	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	1	11	694	1	1	0	3	2.14	36.79
+131	WELP022	WEL	Wellemeersen	128519	176887	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	3	13	1017	1	1	0	2	1.17	8.67
+130	WELP020	WEL	Wellemeersen	128401	177063	VLD	Gevalideerd	P	Peilbuis/Pi<eb>zometer	3	13	1017	1	1	0	3	2.44	9.26

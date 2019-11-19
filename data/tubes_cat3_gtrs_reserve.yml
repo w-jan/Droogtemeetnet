@@ -1,0 +1,81 @@
+..generic:
+  git2rdata: '0.1'
+  optimize: yes
+  NA string: NA
+  sorting:
+  - rasterid
+  - groupnr
+  - reserve
+  hash: 0d7e018b8fed9af8d19987bd81fb3e3dc1fb95df
+  data_hash: 3d547289e8d571cb71b2aae1c6c8d2920996bbd5
+unieknr:
+  class: integer
+loc_code:
+  class: character
+area_code:
+  class: character
+area_name:
+  class: character
+x:
+  class: numeric
+'y':
+  class: numeric
+loc_validitycode:
+  class: character
+loc_validity:
+  class: character
+loc_typecode:
+  class: character
+loc_typename:
+  class: character
+groupnr:
+  class: integer
+typegroup_name:
+  class: factor
+  labels:
+  - zeer gevoelige niet-bostypes
+  - gevoelige niet-bostypes
+  - minder tot niet gevoelige niet-bostypes
+  - zeer gevoelige bostypes
+  - gevoelige bostypes
+  - minder tot niet gevoelige bostypes
+  - types van oligotroof milieu
+  - types van mesotroof milieu
+  - types van zwak eutroof milieu
+  - types van matig eutroof tot eutroof milieu
+  - types van zeer nat milieu
+  - types van nat milieu
+  - types van matig nat milieu
+  - types van vochtig milieu
+  - types van droog milieu
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  ordered: no
+rasterid:
+  class: integer
+gew_aantal_meetptn:
+  class: numeric
+geselecteerd:
+  class: numeric
+reserve:
+  class: numeric
+filterdepth:
+  class: numeric
+soilsurf_ost:
+  class: numeric
+selectie:
+  class: numeric

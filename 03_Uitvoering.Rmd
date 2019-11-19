@@ -1,0 +1,2805 @@
+
+# Uitvoering
+
+De toepassing van de hiervoor besproken methodiek is volledig gebeurd met R versie 3.6.1 (@citingR), tenzij anders vermeld.
+Meer details hierover is vermeld in bijlage \@ref(gebruikte-werkomgeving).
+
+De code voor analyse en dit rapport is ook te vinden op de GitHub-repository [n2khab-droogtemeetnet](https://github.com/inbo/n2khab-droogtemeetnet).
+
+## Keuze rasterlaag
+
+Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de gaHT kiezen we een opgeschaalde variant van de Vlaamse `GRTSmaster_habitats` databron, meer bepaald op 'level 8' ([bron](https://doi.org/10.5281/zenodo.3354405)), t.t.z. met cellen van 8192 m (figuur \@ref(fig:meetnetontwerp)).
+
+```{r meetnetontwerp, fig.cap = "Het GRTS-raster voor Vlaanderen, level 8 (8192m)"}
+
+#importeren van GRTS-lagen, voor het meetnet kiezen we level 8: cellen van 8192 m
+#datapath <- "./data/local/n2khab-binaire-databronnen"
+
+
+#level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
+
+#raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh_data >= 1 ){
+    drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
+                   path = file.path(".","data","local", 
+                                    "raster_meetnet_poly.gpkg"), overwrite = 
+                     TRUE)
+}
+
+raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
+
+#oppervlakte van elk hok berekenen
+raster_meetnet_poly_opp <- raster_meetnet_poly %>% 
+  mutate(opp = as.integer(st_area(raster_meetnet_poly))) %>% 
+  st_drop_geometry() %>% 
+  dplyr::select(rasterid, opp) %>% 
+  group_by(rasterid) %>% 
+  summarise(totopp = sum(opp))
+
+#welke crs?
+#st_crs(habmap_polygons_gw) #lambert
+#plot(raster_meetnet_poly, main = "GRTS-raster level 8")
+#st_is_valid(raster_meetnet_poly)
+raster_meetnet_poly <- lwgeom::st_make_valid(raster_meetnet_poly)
+#st_is_valid(raster_meetnet_poly)
+
+raster_meetnet_poly_tm <- tm_shape(raster_meetnet_poly) + 
+  tm_polygons() + tm_layout(title = "GRTS-raster level 8 (8192m)", asp = 0 )
+
+raster_meetnet_poly_tm
+#st_crs(raster_meetnet_poly) #lambert
+
+
+#check op unieke celwaarden
+check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filter(n > 1)
+#van bepaalde cellen zijn er dus meerdere polygonen, dit zijn rasters die door de gewestgrens verdeeld werden (bijv. streek van Baarle-Nassau) 
+
+
+```
+
+## Selectie rastercellen
+
+Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vijf grondwatergroepen volgens de habitatkaart (figuur \@ref(fig:overlay-habitatkaart-GRTS-plot)). 
+
+```{r overlay-habitatkaart-GRTS-raster, message=FALSE, warning=FALSE}
+# overlay maken van de habitatkaart (enkel van GT-groepen) en het GRTS-raster (level8)
+# habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
+#   st_intersection(raster_meetnet_poly)
+# 
+# habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+#     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
+
+if (file.exists(file.path(".","data","local", 
+                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh_data >= 1) {
+    drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
+                   path = file.path(".","data","local", 
+                                    "habmap_gw_raster_overlay.gpkg"), 
+                   overwrite = TRUE)
+}
+
+habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
+
+habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
+#plot(habmap_gw_raster_overlay, main = "Voorkomen van ")
+
+```
+
+```{r overlay-habitatkaart-GRTS-plot, fig.cap="verspreiding-GT-groepen", message=FALSE, warning=TRUE}
+if (refresh_figures == 2) {
+  habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
+    tm_shape(habmap_gw_raster_overlay) + 
+    tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
+    tm_layout(title = "Verspreiding van de GT-groepen", asp = 0 )
+  
+  tmap_save(habmap_gw_raster_overlay_tm, 
+            filename = file.path(figpath, "habmap_gw_raster_overlay.png"),
+            dpi = 250
+            )
+  include_graphics(path = file.path(figpath, "habmap_gw_raster_overlay.png")) 
+
+}
+if (file.exists(file.path(".","figures","local", 
+                          "habmap_gw_raster_overlay.png")) == FALSE | refresh_figures == 1) {
+  drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
+                 path = file.path(".","figures","local", 
+                                  "habmap_gw_raster_overlay.png"), 
+                 overwrite = TRUE)
+}
+
+if (refresh_figures < 2) {
+  include_graphics(path = file.path(".","figures","local", 
+                                    "habmap_gw_raster_overlay.png"))  
+}
+
+#habmap_gw_raster_overlay_tm
+```
+
+Tabel \@ref(tab:totopp-gw-groep) geeft weer hoeveel de totale oppervlakte van een GT-groep bedraagt.
+
+```{r totopp-gw-groep}
+
+#oppervlakte gw-groep per rastercel
+raster_gw_opp <- habmap_gw_raster_overlay %>% 
+  st_drop_geometry() %>% 
+  group_by(rasterid,groupnr) %>% 
+  summarise(opp_gw_cel = sum(opp*phab/100) %>% set_units("m^2") %>% set_units("ha")) %>% 
+  ungroup()
+# view(raster_gw_opp)
+
+#totale opp van een gw-groep
+gw_opp <- raster_gw_opp %>% 
+  group_by(groupnr) %>% 
+  summarise(opp_gw = sum(opp_gw_cel)) %>% 
+  ungroup()
+
+kobj <- kable(gw_opp %>% 
+        rename(GTgroep = groupnr,
+               oppervlakte = opp_gw),
+      caption =  "Totale oppervlakte van een GT-groep"
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj  %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = F, 
+                position = "left",
+                font_size = 12, 
+                fixed_thead = T) %>%
+  column_spec(1:2, bold = F, border_right = F, width = "35em") #%>%
+  # column_spec(2, width = "30em", background = "yellow")
+  #row_spec(0, angle = -45)  %>% #fixeer veldnamen
+  #scroll_box(height = "200px")
+}
+```
+
+
+
+We kunnen ook per rastercel de (absolute) oppervlakte van een GT-groep berekenen (tabel \@ref(tab:oppGTpercel)).
+
+```{r oppGTpercel}
+
+
+kobj <- kable(raster_gw_opp %>% 
+        rename(rastercelnummer = rasterid,
+               GTgroep = groupnr,
+               oppervlakte = opp_gw_cel) , 
+      caption =  "Oppervlakte van een GT-groep in een rastercel",
+      digits = 0
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = F, 
+                position = "left",
+                font_size = 12, 
+                fixed_thead = T) %>%
+  column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+  #row_spec(0, angle = -45)  %>% #fixeer veldnamen
+  scroll_box(height = "200px") 
+}
+```
+
+### Berekening gemiddelde benodigde oppervlakte van een GT-groep per meetpunt
+
+We gaan hier uit van de keuze voor een gelijke verdeling van de meetpunten over de strata (= GT-groepen), namelijk we wensen `r minaantal_tub_group` meetpunten per GT-groep.
+We kennen de totale oppervlakte van een GT-groep, de oppervlakte van een GT-groep in elke rastercel en hoeveel meetpunten er per GT-groep gewenst zijn. 
+Deze gegevens maken volgende berekeningen mogelijk : 
+
+- de minimaal nodige oppervlakte per meetpunt in een GT-groep (tabel \@ref(tab:gemiddelde-oppervlakte-per-GTgroep)); 
+- het gewenste aantal meetpunten per rastercel (tabel \@ref(tab:gewenst-aantal-meetpunten-per-raster))
+
+Voor dit laatste wordt een iteratie uitgevoerd, zoals beschreven in \@ref(ruimte-sel-raster).
+
+
+```{r gemiddelde-oppervlakte-per-GTgroep, message=FALSE}
+
+#minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
+min_aantal_tub = data.frame("groupnr" = 1:aantal_strat, minaantal = seq(minaantal_tub_group,minaantal_tub_group,length.out = aantal_strat))
+
+for (group in seq(1,aantal_strat)) {
+  #group <- 5
+  minaantal_tub_group <- min_aantal_tub[min_aantal_tub$groupnr == group,"minaantal"]
+  aantal_tub_group <- 0
+  corrafronding <- 1
+  gw_opp <- gw_opp %>% 
+    left_join(gw_opp %>% 
+                filter(groupnr == group) %>% 
+                mutate(bewerkt = TRUE) %>% 
+                select(groupnr, bewerkt)
+              , by = "groupnr")
+  
+  while (aantal_tub_group < minaantal_tub_group) {
+    if (group == 1){
+    gw_opp <- gw_opp %>% 
+      mutate(minopp = 
+               ifelse(bewerkt == TRUE, round(opp_gw/minaantal_tub_group * corrafronding,0), minopp) %>% set_units("ha")
+             )
+    } else {
+    gw_opp <- gw_opp %>% 
+      mutate(minopp = 
+               if_else(bewerkt == TRUE, round(opp_gw/minaantal_tub_group * corrafronding,0), minopp, missing = minopp) %>% set_units("ha")
+             )
+    }    
+
+    gw_opp
+    
+    #berekening van het aantal meetpunten per cel
+    
+    aantal_meetpunten_cel_group <- 
+      raster_gw_opp %>% 
+      inner_join(gw_opp, 
+                 by = "groupnr") %>% 
+      mutate(gew_aantal_meetptn = as.numeric(opp_gw_cel/minopp)) %>% 
+      arrange(desc(gew_aantal_meetptn))
+    
+    aantal_meetpunten_cel_group
+    
+    aantal_meetpunten_cel_group <- aantal_meetpunten_cel_group %>% 
+      filter(gew_aantal_meetptn >= 0.5, groupnr == group) %>% 
+      mutate(gew_aantal_meetptn_afgerond = round(gew_aantal_meetptn + 0.01, digits = 0) )
+    
+    df <- aantal_meetpunten_cel_group %>% 
+      filter(groupnr == group) %>% 
+      summarise(aantal = sum(gew_aantal_meetptn_afgerond)) %>% 
+      ungroup() %>% 
+      summarise(minaantal = min(aantal)) %>% 
+      ungroup() 
+    
+    aantal_tub_group <- as.integer(df[1])
+    corrafronding <- corrafronding - 0.01 
+    
+
+  }
+  
+  if (group == 1){
+    gw_opp <- gw_opp %>% 
+    mutate(correctiefactor = 
+             ifelse(bewerkt == TRUE, 
+                    as.numeric(round(minopp*minaantal_tub_group/opp_gw, 2)), 
+                    correctiefactor))
+  } else {
+    gw_opp <- gw_opp %>% 
+    mutate(correctiefactor = 
+             if_else(bewerkt == TRUE, 
+                     as.numeric(round(minopp*minaantal_tub_group/opp_gw, 2)), 
+                     correctiefactor, missing = correctiefactor))
+  }
+
+  gw_opp <- gw_opp %>% 
+    select(-bewerkt)   
+
+  if (group == 1){
+    aantal_meetpunten_cel <- aantal_meetpunten_cel_group
+  } else {
+    aantal_meetpunten_cel <- aantal_meetpunten_cel %>% 
+      full_join(aantal_meetpunten_cel_group %>% 
+                  select(-correctiefactor))
+  }
+}
+# df <- aantal_meetpunten_cel %>% group_by(groupnr)  %>% 
+#    summarise(aantal  = sum(gew_aantal_meetptn_afgerond)) %>% 
+#    ungroup()
+# df
+
+kobj <- kable(gw_opp %>% 
+        mutate(opp_gw = round(opp_gw,0)) %>% 
+        rename("oppervl. GT-groep" = opp_gw,
+               GTgroep = groupnr,
+               "min. oppervl. per meetpunt" = minopp) ,
+      caption =  "Minimaal benodigde oppervlakte van een GT-groep per meetpunt en per rastercel"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = F, 
+                position = "left",
+                font_size = 12, 
+                fixed_thead = T) %>%
+    #column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+  #row_spec(0, angle = -45)  %>% #fixeer veldnamen
+    scroll_box(height = "200px") 
+}
+
+```
+<br/><br/>
+
+```{r gewenst-aantal-meetpunten-per-raster}
+aantal_meetpunten_cel <- aantal_meetpunten_cel %>% 
+  select(-bewerkt)
+# df <- aantal_meetpunten_cel %>% group_by(groupnr)  %>% 
+#    summarise(aantal  = sum(gew_aantal_meetptn_afgerond)) %>% 
+#    ungroup()
+# df
+kobj <- kable(aantal_meetpunten_cel %>% 
+        mutate(opp_gw = round(opp_gw,0),
+               opp_gw_cel= round(opp_gw_cel,0)) %>%         
+        select(-gew_aantal_meetptn) %>% 
+        rename(rastercelnummer = rasterid,
+               GTgroep = groupnr,
+               "GToppervl. in cel" = opp_gw_cel,
+               "GToppervl. totaal" = opp_gw,
+               "min. oppervl. per meetpunt" = minopp,
+               "gewenst aantal meetptn" = gew_aantal_meetptn_afgerond
+               ) ,
+      caption =  "gewenst aantal meetpunten per GT-groep en per rastercel"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "250px") 
+}
+```
+<br/><br/>
+Uit tabel \@ref(tab:gewenst-aantal-meetpunten-per-raster) blijkt dat in de meeste gevallen er in elke rastercel slechts één en hooguit twee meetpunten gezocht worden.
+Hieruit kunnen we afleiden dat de grootte van de rastercellen niet te groot gekozen werd.
+
+
+Tabel \@ref(tab:overzicht-perGT-gewenst-aantal-meetpunten) geeft een overzicht van het totaal aantal gewenste meetpunten. 
+Door de uitgevoerde iteratie en afronding kan dit aantal hoger zijn dan het vooropgestelde aantal.
+Enkel bij GT-groep 1 is het oppervlaktegerelateerd aantal meetpunten hoger dan het vereiste aantal. 
+Dit kan nog in een latere fase worden bijgesteld.
+Voor de overige GT-groepen stemmen de aantallen overeen met het vooropgestelde aantal.
+
+```{r overzicht-perGT-gewenst-aantal-meetpunten}
+
+aantal_meetpunten_cel_overzicht <- aantal_meetpunten_cel %>% 
+  group_by(groupnr) %>% 
+  summarise("totaal aantal meetptn" = sum(gew_aantal_meetptn_afgerond))
+
+kobj <- kable(aantal_meetpunten_cel_overzicht %>% 
+      rename(GTgroep = groupnr) ,
+      caption =  "berekend totaal aantal gewenste meetpunten per GT-groep"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed" ,"responsive"),
+                full_width = F, 
+                position = "left",
+                font_size = 12, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+
+# Twv de ruimtelijke balancering wordt bij voorkeur voor de gw-groepen waar het minimum aantal wordt overschreden, dit aantal tot het minimum teruggebracht door de hokken te selecteren op basis van hun rangorde in het GRTS-raster. Men kan echter ook de koppeling met geschikte watina-meetptn afwachten. 
+# We doen hier eerst de aanbevolen GRTS-strategie
+# if (df[df$groupnr == 1,"aantal"] > minaantal_tub_group) {}
+# 
+# sel_raster <- raster_meetnet_poly %>% 
+#   st_drop_geometry()  %>% 
+#   inner_join(raster_gw_opp, by = "rasterid") %>% 
+#   inner_join(aantal_meetpunten_cel_group, by =  c("rasterid", "groupnr")) %>% 
+#   inner_join(min_aantal_tub, by = "groupnr") %>% 
+#   group_by(groupnr) %>% 
+#   distinct(rasterid, minaantal) %>% 
+#   top_n(minaantal, rasterid)
+# 
+# sel_raster_meetnet <- raster_meetnet_poly %>% 
+#   inner_join(sel_raster, by = "rasterid")
+# 
+# plot(sel_raster_meetnet)
+
+
+```
+<br/><br/>
+
+### De eigenlijke selectie van rastercellen
+
+We kunnen nu de rastercellen weergeven die een meetpunt dienen te bevatten.
+Figuur \@ref(fig:selectie-rastercel-met-meetpunt-fig1) geeft toont de selectie voor GT-groep 1, de groep habitattypen van zeer natte bodems. Er werden 20 cellen geselecteerd, die op één na, allemaal in het oosten gelegen zijn.
+```{r selectie-rastercel-met-meetpunt-fig1, fig.cap = "Geselecteerde rastercellen voor GT-groep 1 (= zeer nat)"}
+
+#cellen selecteren met een gewenst meetpunt, een cel kan voor meerdere GT-groepen geselecteerd zijn
+sel_raster_meetnet <- 
+  raster_meetnet_poly %>%
+    inner_join(raster_gw_opp, by = "rasterid") %>%
+    inner_join(aantal_meetpunten_cel %>% 
+                 select(rasterid, groupnr, gew_aantal_meetptn_afgerond), 
+               by =  c("rasterid", "groupnr")) %>% 
+    rename(gew_aantal_meetptn = gew_aantal_meetptn_afgerond)
+
+sel_raster_meetnet <- lwgeom::st_make_valid(sel_raster_meetnet)
+
+#groeperen van gefragmenteerde rastercellen
+sel_raster_meetnet <- 
+  sel_raster_meetnet  %>% 
+  group_by(rasterid, groupnr, opp_gw_cel, gew_aantal_meetptn) %>% 
+  summarise (temp = n()) %>% 
+  ungroup %>% 
+  select(-temp)
+
+#uit voorzorg nog eens de geometrie checken
+sel_raster_meetnet <- lwgeom::st_make_valid(sel_raster_meetnet)
+#st_is_valid(raster_meetnet_poly)
+
+sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_raster_meetnet %>% filter(groupnr == 1)) + 
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 1", asp = 0 )
+
+sel_raster_meetnet_tm
+# voorbeeld van rasters van GT-groep 1 (permanent nat)
+#plot(sel_raster_meetnet %>% filter(groupnr == 1))
+```
+Figuren \@ref(fig:selectie-rastercel-met-meetpunt-fig2), \@ref(fig:selectie-rastercel-met-meetpunt-fig3), \@ref(fig:selectie-rastercel-met-meetpunt-fig4) en \@ref(fig:selectie-rastercel-met-meetpunt-fig5) tonen de selecties voor de andere  GT-groepen.
+Er zijn nagenoeg steeds 20 rastercellen geselecteerd. 
+Bij GT-groepen 2 en 3 liggen deze vrij goed verspreid over Vlaanderen, voor groepen 4 en 5 zien we duidelijk enkele clusters: bij 4 in de leemstreek en bij 5 in de duinen.
+
+```{r selectie-rastercel-met-meetpunt-fig2, fig.cap = "Geselecteerde rastercellen voor GT-groep 2 (= nat)"}
+
+sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_raster_meetnet %>% filter(groupnr == 2)) + 
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 2", asp = 0 )
+
+sel_raster_meetnet_tm
+```
+
+```{r selectie-rastercel-met-meetpunt-fig3, fig.cap = "Geselecteerde rastercellen voor GT-groep 3 (= matig nat)"}
+
+sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_raster_meetnet %>% filter(groupnr == 3)) + 
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 3", asp = 0 )
+
+sel_raster_meetnet_tm
+```
+
+```{r selectie-rastercel-met-meetpunt-fig4, fig.cap = "Geselecteerde rastercellen voor GT-groep 4 (= vochtig)"}
+
+sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_raster_meetnet %>% filter(groupnr == 4)) + 
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 4", asp = 0 )
+
+sel_raster_meetnet_tm
+```
+
+```{r selectie-rastercel-met-meetpunt-fig5, fig.cap = "Geselecteerde rastercellen voor GT-groep 5 (= droog)"}
+
+sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_raster_meetnet %>% filter(groupnr == 5)) + 
+  tm_polygons(col = "red") + tm_layout(title = "GT-groep 5", asp = 0 )
+
+sel_raster_meetnet_tm
+```
+Figuur \@ref(fig:selectie-rastercel-met-meetpunt-fig6) geeft het totaalbeeld. 
+
+```{r selectie-rastercel-met-meetpunt-fig6, fig.cap = "Geselecteerde rastercellen (alle GT-groepen)"}
+
+sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_raster_meetnet) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "alle groepen", asp = 0 )
+
+sel_raster_meetnet_tm
+```
+
+## Selecteren van grondwater-meetpunten
+
+Voor deze selectie wordt uitsluitend gewerkt met de Watina-databank. 
+In het projectvoorstel werden nog andere databanken vermeld:
+
+1. het freatisch grondwatermeetnet van de VMM
+1. het grondwatermeetnet van het ANB voor beheermonitoring
+
+Het freatisch grondwatermeetnet van de VMM werd al gescreend om te komen tot het huidige droogtemeetnet. 
+Er kan wel nog nagegaan worden of er in rastercellen met een tekort aan meetpunten (cat. 1) soms VMM-meetpunten vallen. **_eventueel nog te doen_**
+
+Het grondwatermeetnet van ANB is nog in ontwerp.
+De meetpunten van dit meetnet zullen ook in de Watina-databank worden opgenomen.
+
+De selectie gebeurde in enkele stappen :
+
+1. Aanduiden van de meetpunten die gelegen zijn in een gaHT.
+1. Selecteren van de meetpunten die binnen een geselecteerde rastercel vallen.
+
+
+### Opgave van de meetpunten (Watina-databank) die gelegen zijn in een verdrogingsgevoelig type.  
+
+Voor deze selectie werd met een zoekstraal van **`r bufferpb`** meter rond een meetpunt gewerkt. 
+We selecteren enkel de meetpunten die grondwaterpeilen meten tot op een maximale diepte van 3 m (piëzometer of peilbuis). 
+Binnen deze straal wordt aangenomen dat het grondwaterregime weinig zal variëren.
+
+Door het gebruik van een bufferzone en wanneer een peilbuis in een habitat-complex ligt, kan een peilbuis meerdere keren geselecteerd worden. 
+Dat kan ertoe leiden dat een rastercel gekozen werd voor een bep. GT-groep die er in feite maar marginaal aanwezig is.
+Om dat te vermijden, voegen we de verschillende habitattypen samen die tot eenzelfde GT-groep behoren.
+Alleen de GT-groep met een (gesommeerd) opp-aandeel van minstens 50% (in de aan een peilbuis gekoppelde polygoon) wordt dan weerhouden voor een peilbuis.
+We selecteren dan de peilbuizen die met juist één GT-groep kunnen geassocieerd worden.
+
+```{r loading-selecting-tubes-watina, message=FALSE, warning=FALSE}
+# watina <- connect_watina()
+
+# tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
+#                       buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), collect = TRUE)
+# 
+# 
+# #beperken van peilbuizen tot de rastercel waar ze effectief in liggen. Door het gebruik van een buffer is het immers mogelijk dat een peilbuis in twee of meer cellen komt te liggen.
+# tubes_hab_sf <- as_points(tubes_hab)
+# 
+# #overlay van peilbuizen met het raster
+# tubes_hab_gw_raster_overlay <- tubes_hab_sf %>% 
+#   distinct(loc_code, x, y) %>% 
+#   st_intersection(raster_meetnet_poly)
+# 
+# tubes_hab <- tubes_hab %>% 
+#   semi_join(tubes_hab_gw_raster_overlay, by = c("loc_code","rasterid"))
+# 
+# #save tubes_hab as a git2rdata-object
+# tubes_hab <- tubes_hab %>% 
+#   arrange(loc_code, polygon_id, rasterid, patch_id, type)
+# 
+# output_vc <- write_vc(tubes_hab, file.path(".","data","tubes_hab"), sorting = c("loc_code", "polygon_id", "rasterid", "patch_id", "type" ), strict =  FALSE)
+# rm(output_vc)
+
+# str(tubes_hab)
+
+tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
+
+#peilbuizen uit de lijst verwijderen die niet (meer) mogen meegenomen worden
+if (uitgesloten_tubes != "leeg"){
+  tubes_hab <- tubes_hab[!(tubes_hab$loc_code %in% uitgesloten_tubes),]
+}
+
+# een peilbuis kan meerdere keren voorkomen, namelijk wanneer de pb in een habitat-complex ligt en wanneer de bufferopp meerdere polygonen doorsnijdt. We kunnen ze groeperen als de verschillende eenheden tot eenzelfde gw-groep behoren.
+# Alleen de gw-groep met een opp-aandeel van minstens 50% wordt weerhouden. Dit om te vermijden dat indien een rastercel gekozen werd voor een bep. gw-groep, een pb geselecteerd wordt waarvan de kans klein is dat ze die gw-groep representeert.
+
+#oplossen van habitatcomplexen
+tubes_hab_groep <- tubes_hab %>%
+  group_by(loc_code, polygon_id, rasterid, groupnr) %>%
+  summarise(phab_gw = sum(phab),
+            aantal =  n()) %>%
+  ungroup() %>% 
+  filter(phab_gw >= 50)
+
+#oplossen van meerdere polygonen
+tubes_hab_multipolyg <- tubes_hab_groep %>% 
+  semi_join(tubes_hab_groep %>% 
+            distinct(loc_code, groupnr) %>% 
+            count(loc_code) %>% 
+            filter(n == 1),
+          by = "loc_code")
+
+tubes_hab_aggr <- tubes_hab %>%
+  select(-phab, -certain, -type, -source.y, -polygon_id, -starts_with("description"), -opp, -source.x) %>% 
+  distinct %>% 
+  semi_join(tubes_hab_multipolyg, by = c("loc_code", "rasterid", "groupnr" ))
+
+```
+Tabel \@ref(tab:tabel-Watina-in-gaHT) geeft een overzicht van deze `r nrow(tubes_hab_aggr)` peilbuizen.
+
+```{r tabel-Watina-in-gaHT}
+
+kobj <- kable(tubes_hab_aggr %>% 
+        select(loc_code, area_name, x,y, filterdepth, groupnr) %>% 
+        #mutate(area_name = utf8::utf8_encode(area_name)) %>% 
+        rename(watinacode = loc_code,
+               gebied = area_name,
+               "diepte filter" = filterdepth,
+               "GT-groep" = groupnr
+               ) ,
+      caption =  "Watina-meetpunten in een gaHT"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "350px") 
+}
+```
+
+
+### Opzoeken van peilbuizen in de geselecteerde rastercellen
+
+We kunnen vervolgens de peilbuizen weerhouden die in een geselecteerde rastercel liggen (tabel \@ref(tab:tubes-in-selected-cells-table)).
+```{r tubes-in-selected-cells}
+tubes_in_raster <- tubes_hab_aggr %>% 
+  # select(-opp, -description_orig, -source.x, -starts_with("loc_"), loc_code) %>%  
+  inner_join(sel_raster_meetnet %>% 
+               select(rasterid, groupnr) %>% 
+               st_drop_geometry(), by = c("rasterid", "groupnr")) %>% 
+  distinct()
+
+
+```
+Het zijn in totaal **`r nrow(tubes_in_raster)`** peilbuizen. 
+
+```{r tubes-in-selected-cells-table}
+kobj <- kable(tubes_in_raster %>% 
+        select(loc_code, area_name, x,y, groupnr, rasterid) %>% 
+        #mutate(area_name = utf8::utf8_encode(area_name)) %>% 
+        rename(watinacode = loc_code,
+               gebied = area_name,
+               GTgroep = groupnr,
+               rastercelnummer = rasterid
+               ) ,
+      caption =  "Watina-meetpunten in een gaHT van een geselecteerde rastercel"
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "350px") 
+}
+```
+
+
+<!-- ### Opzoeken van peilbuizen met een goede tijdreeks binnen de geselecteerde cellen -->
+<!-- Als selectiecriteria voor een 'goede' tijdreeks gelden: -->
+
+<!-- - startjaar : 2001 of later -->
+<!-- - eindjaar : 2016.  -->
+<!-- De extreem droge zomers van 2017 en 2018 worden niet meegenomen in de berekening.  -->
+<!-- Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecten van deze twee zomers heeft gekend (door naijling). -->
+<!-- - minimale lengte van de tijdreeks : `r minlength` jaar -->
+<!-- - maximale duur van een onderbreking van de tijdreeks :  `r maxgap` jaar -->
+<!-- - binnen een tijdreeks minimaal aantal meetjaren waarvoor een lg3 kan berekend worden : `r minnryears` jaar -->
+
+```{r selection-tubes-with-good-time-series-in-selected-cells, message=FALSE, eval=FALSE}
+# watina <- connect_watina()
+# minlength <- 5 #jaar
+# maxgap <- 2 #jaar
+# minnryears <- 5 #jaar
+
+# alle bestaande peilbuizen : tubes_in_raster
+# pb met een xg3 (hoeft geen lg3 te zijn) binnen tijdsruimte: tubes_xg3_avail
+# pb met min. 1 lg3 binnen tijdsruimte: tubes_lg3_avail
+# pb waarvoor een lgl kan berekend worden: tubes_lgl_eval
+
+#voor elke pb de xg3 waarden ophalen (meerdere rec per pb)
+# tubes_xg3 <- tubes_in_raster %>% 
+#     get_xg3(watina, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
+#             truncated =  TRUE, collect = TRUE)
+
+
+# 
+
+```
+
+```{r table-tubes-with-good-time-series-in-selected-cells}
+tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3"))
+tubes_xg3 <- tubes_xg3 %>% 
+  inner_join (tubes_in_raster %>% 
+                select(loc_code), by = "loc_code")
+
+
+#overzicht per pb hoeveel lg3 er zijn, eerste en laatste jaar 
+tubes_xg3_avail <- tubes_xg3 %>% 
+    eval_xg3_avail( xg3_type = "L")
+
+#beperken tot pb met een lg3
+tubes_lg3_avail <- tubes_xg3_avail %>% 
+  filter(nryears > 0)
+
+```
+
+```{r read-tubes-lgl, eval=FALSE}
+
+#pb die voldoen aan minimale voorwaarden voor een lgl (nodige voorwaarden, maar niet noodzakelijk voldoende)
+# debugonce(eval_xg3_series)
+
+#volgende code loopt in markdown steeds mank. Daarom buiten markdown uitgevoerd en de data worden dan hier ingelezen (noodoplossing)
+
+# # tubes_lg3_eval <-   tubes_xg3 %>%
+# #   eval_xg3_series(xg3_type = c("L"),
+# #                   max_gap = maxgap,
+# #                   min_dur = minlength)
+# 
+# 
+# #pb die voldoen aan alle voorwaarden voor een lgl
+# tubes_lgl_eval <- tubes_lg3_eval %>%
+#    filter(ser_nryears >= minnryears)
+
+#write_vc(tubes_lgl_eval, file.path(".","data","local","tubes_lgl_eval"), sorting = c("loc_code"),
+#         strict =  FALSE, root = ".")
+
+#DBI::dbDisconnect(watina)
+
+# getwd()
+# file.path(".","data","local")
+tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data"))
+tubes_lgl_eval <- tubes_lgl_eval %>% 
+  inner_join(tubes_in_raster %>% 
+               select(loc_code), by = "loc_code")
+```
+
+
+Tabel \@ref(tab:table-tubes-lg3) geeft een overzicht van de **`r nrow(tubes_lg3_avail)`** peilbuizen, gelegen binnen een geselecteerde rastercel, die voldoen aan deze criteria.
+
+```{r table-tubes-lg3}
+kobj <- kable(tubes_lg3_avail %>% 
+        select(loc_code, nryears, 
+               firstyear, lastyear) %>%
+        rename(watinacode = loc_code,
+               'aantal jaren met lg3' = nryears,
+               'eerste lg3-jaar' = firstyear,
+               'laatste lg3-jaar' = lastyear
+               ) ,
+      caption =  "Watina-meetpunten met voldoende metingen"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed",
+                                        "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "350px") 
+}
+```
+
+<br/><br/>
+
+## De rastercellen categoriseren o.b.v. de beschikbaarheid van peilbuizen 
+Zoals in de methodiek (\@ref(indeling-cat)) werd besproken, kunnen afhankelijk van de verhouding tussen het aantal peilbuizen dat voor een rastercel gezocht wordt en het aantal effectief beschikbare peilbuizen de rastercellen per GT-groep in een viertal categorieën ingedeeld worden.
+
+
+### Koppeling van peilbuizen, met de kwaliteit van hun tijdreeksen, aan de geselecteerde rastercellen
+
+Voor deze indeling is het nodig eerst een overlay te maken van de geselecteerde rastercellen en de peilbuizen met een aanduiding van de kwaliteit van hun tijdreeksen. 
+In tabel \@ref(tab:tubes-in-selected-cells-table) werd al het overzicht gegeven van de overlay van de rastercellen en de peilbuizen, maar dit was zonder een kwaliteitsbeoordeling.
+
+Tabel \@ref(tab:join-tubes-on-raster) geeft het overzicht per rastercel van het totaal aantal peilbuizen en het aantal met een goede tijdreeks.
+
+```{r join-tubes-on-raster}
+
+#rastercellen met een pb
+sel_raster_pb <- 
+  sel_raster_meetnet %>% 
+    inner_join(tubes_in_raster, 
+               by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
+    left_join(tubes_lg3_avail, 
+              by = "loc_code") %>% # aanduiding van pb met een lg3
+    group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+    summarise(n_tubes = n(),
+              n_tubes_lg3 = sum(lastyear > 0)) %>% 
+    ungroup %>% 
+    select(-geom, geom)
+
+
+kobj <- kable(sel_raster_pb %>% st_drop_geometry() %>%
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               "gewenst aantal meetptn" = gew_aantal_meetptn,
+               "tot. aantal peilbuizen" = n_tubes,
+               "aantal peilbuizen met goede tijdreeks" = n_tubes_lg3
+               ) ,
+      caption =  "Per rastercel het totaal aantal peilbuizen en het aantal peilbuizen met een goede tijdreeks "
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%  
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "250px") 
+}
+```
+
+
+### Categorie 1: Zijn er rastercellen met onvoldoende peilbuizen?
+
+Tabel \@ref(tab:cat1A-table) geeft een overzicht per GT-groep van het aantal geselecteerde rastercellen met een onvoldoende aantal peilbuizen.
+Ongeacht of er peilbuizen in deze rastercellen staan, zullen er in deze cellen nog meetpunten met een peilbuis moeten uitgerust worden _(volgens het huidige voorstel)_.
+
+Figuur \@ref(fig:cat1A-plot) toont ze op een kaart.
+
+<!-- Indien een geselecteerde rastercel geen enkele peilbuis bevat, is deze rastercel uniek aan deze categorie verbonden. -->
+
+<!-- Indien een rastercel wel enkele peilbuizen heeft, weliswaar onvoldoende, dan zal deze rastercel ook tot andere categorieën behoren, afhankelijk van de kwaliteit van de meetreeksen (zie \@ref(indeling-cat)).  -->
+<!-- Als de kwaliteit van de tijdreeks van een aantal peilbuizen voldoende is om onmiddellijk in een meetnet te kunnen worden opgenomen, wordt de cel ook tot categorie 2 gerekend.  -->
+<!-- Als er onvoldoende kwalitatieve meetreeksen zijn, dan wordt de cel (ook) tot categorie 1B gerekend.  -->
+
+
+```{r cat1A-raster, warning=FALSE, message=FALSE}
+#eerste groep rastercellen: rastercellen zonder peilbuis
+# sel_cat1A_raster  <- sel_raster_meetnet %>% 
+#   anti_join(tubes_in_raster, group_by = c("rasterid", "groupnr")) %>% 
+#   # distinct(rasterid, groupnr) %>% 
+#   arrange(rasterid, groupnr)
+
+#eerste groep rastercellen: rastercellen zonder peilbuis of met een onvoldoende aantal peilbuizen
+sel_cat1A_raster <- sel_raster_meetnet %>% 
+  left_join(sel_raster_pb %>% 
+              st_drop_geometry() %>% 
+              select(-gew_aantal_meetptn),
+            by = c("rasterid", "groupnr")) %>% 
+  filter(is.na(n_tubes) | gew_aantal_meetptn > n_tubes) %>% 
+  arrange(rasterid, groupnr)
+```
+
+```{r cat1A-table, warning=FALSE, message=FALSE}
+
+sel_cat1A_table <- sel_cat1A_raster %>% 
+  st_drop_geometry() %>% 
+  rename(gewenst_aantal_meetpunten = gew_aantal_meetptn) %>% 
+  mutate(totaal_peilbuizen =  replace_na(n_tubes,0),
+         aantal_cat1A = gewenst_aantal_meetpunten - totaal_peilbuizen) %>% 
+  select(-n_tubes) %>% 
+  arrange(rasterid)
+
+kobj <- kable(sel_cat1A_table %>%
+        group_by(groupnr ) %>% 
+        summarise('aantal cellen met onvoldoende pb' = n(),
+                  'aantal locaties zonder pb' =  sum(aantal_cat1A)) %>% 
+        rename(GTgroep = groupnr
+               ) ,
+      caption =  "Categorie 1A: rastercellen met onvoldoende peilbuizen"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    #scroll_box(height = "250px") 
+}
+```
+
+```{r cat1A-plot, fig.cap = "Rastercellen met een onvoldoende aantal peilbuizen", warning= FALSE, message=FALSE}
+
+sel_cat1A_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat1A_raster) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1: cel met een onvoldoende aantal peilbuizen", asp = 0 )
+
+sel_cat1A_tm
+```
+Er zijn `r sum(sel_cat1A_table$aantal_cat1A)` gewenste meetlocaties zonder peilbuis, verspreid over `r nrow(sel_cat1A_table)` rastercellen (figuur \@ref(fig:cat1A-plot)). 
+De hiaten zijn bijgevolg ruimtelijk goed verdeeld.
+
+
+<!-- ### Categorie 1B: Rastercellen met peilbuizen, maar onvoldoende **geschikte** {#cat1b} -->
+
+<!-- Categorie 1B is een andere selectie van de tabel \@ref(tab:join-tubes-on-raster). -->
+<!-- Het groepeert de rastercellen waarvoor in principe voldoende peilbuizen beschikbaar zijn, maar waarvoor het aantal peilbuizen met een goede tijdreeks toch kleiner is dan het gewenst aantal meetpunten. -->
+<!-- Er zal om het meetnet te kunnen vervolledigen beroep gedaan worden op actueel ongeschikte meetpunten _(in het huidige voorstel)_ -->
+
+<!-- Het resultaat van deze selectie wordt gegeven in tabel \@ref(tab:cat1B-table). -->
+<!-- Voor deze groep kan onderzocht worden of door het modelmatig verbeteren van de tijdreeksen wel aan de criteria kan voldaan worden. -->
+
+<!-- Figuur \@ref(fig:cat1B-plot) toont ze op een kaart. -->
+
+```{r cat1B-raster, eval=FALSE}
+
+sel_cat1B_raster <- sel_raster_pb %>%
+  left_join(sel_cat1A_table %>%
+              select(-gewenst_aantal_meetpunten, -totaal_peilbuizen,
+                     -n_tubes_lgl, -opp_gw_cel),
+            by = c("rasterid", "groupnr")) %>%
+  mutate(aantal_cat1A = replace_na(aantal_cat1A,0),
+         rest = gew_aantal_meetptn - aantal_cat1A) %>%
+  filter(rest - n_tubes_lgl > 0 ) %>%
+  mutate(aantal_cat1B = rest - n_tubes_lgl) %>%
+  select(-geom, -rest, geom)
+
+```
+
+
+```{r cat1B-table, eval=FALSE}
+
+# deze rastercellen vormen de tweede groep (groep met pb, maar alle zonder een lgl of er zijn er te weinig)
+# voor deze groep kan onderzocht worden of door het modelmatig verbeteren van de tijdreeksen er geen lgl kan berekend worden
+
+sel_cat1B_table <- sel_cat1B_raster %>% 
+  st_drop_geometry() %>% 
+  arrange(rasterid)
+
+
+kable(sel_cat1B_table %>% 
+        group_by(groupnr ) %>% 
+        summarise('aantal cellen met een onvoldoende aantal peilbuizen met een goede meetreeks' = n(),
+                  'aantal gewenste meetlocaties met pb zonder goede meetreeks' =  sum(aantal_cat1B)) %>% 
+        rename(GTgroep = groupnr
+               ),
+      caption =  "Categorie 1B: rastercellen met een onvoldoende aantal peilbuizen met een goede meetreeks"
+      ) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    #scroll_box(height = "250px") 
+```
+
+
+```{r cat1B-plot, fig.cap = "rastercellen met een onvoldoende aantal peilbuizen met een goede meetreeks", warning= FALSE, message=FALSE, eval=FALSE}
+
+sel_cat1B_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat1B_raster) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1B: cel met een onvoldoende aantal peilbuizen met goede meetreeks" )
+
+sel_cat1B_tm
+```
+<!-- Er zijn `r #sum(sel_cat1B_table$aantal_cat1B)` gewenste meetlocaties met peilbuis echter zonder goede tijdreeks, verspreid over `r #nrow(sel_cat1B_table)` rastercellen (figuur \@ref(fig:cat1B-plot)).  -->
+<!-- De rastercellen zijn bijgevolg ruimtelijk goed verdeeld. -->
+
+<!-- #### Opzoeken van peilbuizen binnen de rastercellen van cat 1B -->
+
+<!-- In \@ref(cat1b) hebben we de rastercellen geselecteerd die één of meer meetlocaties bevatten waar er wel een peilbuis beschikbaar is, maar waarvoor de meetreeks van onvoldoende kwaliteit is. -->
+<!-- We hebben nu nog geen enkele indicatie gegeven over de kwaliteit van de meetreeks, bijv. het aantal metingen.  -->
+<!-- Het kan gaan over een meetreeks met slechts een handvol metingen tot reeksen met toch enkele volledige meetjaren. -->
+<!-- We kunnen met een tijdreeksanalyse onderzoeken of deze meetreeksen modelmatig kunnen uitgebreid worden (tabel \@ref(tab:tubes-cat1B)).  -->
+<!--OUD (in de huidige versie worden alle meetreeksen onderzocht: Om deze te kunnen uitvoeren moeten de meetreeksen toch een zekere kwaliteit hebben. 
+We weerhouden hier **de meetreeksen met minstens één lg3 waarde voor een tijdreeksanalyse**, omdat het vooral de laagste waterpeilen zijn die goed moeten kunnen gemodelleerd worden.-->
+
+```{r tubes-cat1B, eval = FALSE}
+
+tubes_cat1B <- 
+  sel_cat1B_raster %>% 
+    inner_join(tubes_in_raster, 
+               by = c("rasterid", "groupnr")) %>% # koppeling van pb aan rasters
+    # inner_join(tubes_lg3_avail, 
+    #            by = "loc_code") %>% # aanduiding van pb lg3, geen lgl
+    st_drop_geometry() %>% 
+    select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(), 
+           -starts_with("loc_v"), -starts_with("loc_t")) %>% 
+    arrange(rasterid, groupnr)
+
+kable(tubes_cat1B %>% 
+        select(-n_tubes_lgl, -aantal_cat1A, -typegroup_name) %>% 
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               watinacode = loc_code,
+               'gewenst aantal meetptn' = gew_aantal_meetptn,
+               '# peilbuizen' =  n_tubes,
+               gebied = area_name,
+               gebiedcode = area_code,
+               #'#_meetjaren' = nryears,
+               '# op te waarderen ptn' = aantal_cat1B
+               # beginjaar = firstyear,
+               # eindjaar = lastyear
+               ) %>% 
+        arrange(watinacode),
+      caption =  "Peilbuizen die in aanmerking komen voor een tijdreeksanalyse"
+      ) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = list(enabled = T, background = "red")) %>% 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+    column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
+    row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px") 
+
+
+#write_csv(tubes_cat1B, file.path(".", "data","local", "tubes_cat1B.csv"))
+output_vc <- write_vc(tubes_cat1B, file.path(".","data","tubes_cat1B"), 
+                      sorting = c("loc_code"), strict =  FALSE, root = ".")
+
+rm(output_vc)
+
+
+#oplijsten per rastercel welke peilbuizen een kwalitatief onvoldoende tijdreeks hebben
+
+
+# tubes_in_raster %>% filter(rasterid == 46)
+```
+
+
+### Het instellen van kwaliteitscriteria
+
+Er liggen `r nrow(tubes_in_raster)` peilbuizen in de geselecteerde rastercellen. 
+Dit aantal is te groot om op alle meetreeksen een tijdreeksanalyse toe te passen. 
+We willen dit aantal reduceren. 
+De meetreeksen van peilbuizen in rastercellen van categorie 1 en 2 zullen sowieso moeten geanalyseerd worden. 
+Voor rastercellen van categorie willen we het aantal analyses beperken door eerst de meetreeksen met de (relatief) beste kwaliteit (zie [hier](basiskwaliteitscriteria)) te analyseren. 
+We blijven meetreeksen analyseren tot wanneer het aantal geschikte reeksen gelijk of groter is dan het gewenste aantal.
+
+De kwaliteitscriteria werden enkel gebruikt om de peilbuizen in klassen te verdelen en binnen een rastercel en GT-groep de peilbuizen met **relatief** de beste reeksen aan te duiden. 
+Er werden geen absolute minimale vereisten aan een tijdreeks opgelegd.
+
+
+We vormen de clusters in een aantal stappen. 
+Eerst klasseren en rangschikken we de opnamen volgens de eerste twee criteria (aantal meetjaren en het laatste meetjaar) afzonderlijk. 
+Tabel \@ref(tab:berekenen-clusters-criteria) geeft een overzicht van deze indeling.
+Ze geeft per rastercel en GTgroep voor alle voorkomende combinaties van jaartal van de recentste meting en van de lengte van de tijdreeks de rang van elk van beide.
+```{r berekenen-clusters-criteria}
+
+sel_qual_basis <- 
+  sel_raster_pb %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  st_drop_geometry() %>% 
+  anti_join(sel_cat1A_table %>% 
+              select(rasterid, groupnr), 
+            by = c("rasterid", "groupnr")) %>%
+  inner_join(tubes_in_raster, 
+             by =  c("rasterid", "groupnr")) %>% 
+  distinct(rasterid, groupnr, gew_aantal_meetptn, loc_code) %>% 
+  left_join(tubes_lg3_avail, 
+             by = "loc_code") %>% 
+  mutate(lastyear = replace_na(lastyear,0),
+         nryears = replace_na(nryears,0)) %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  count(lastyear, nryears)  %>% 
+  ungroup()
+
+
+sel_qual_basis <- 
+  sel_qual_basis %>% 
+  group_by(rasterid, groupnr) %>% 
+  arrange(rasterid, groupnr, gew_aantal_meetptn, desc(lastyear)) %>% 
+  mutate(rankclus_lastyear = 
+           floor((cummax(lastyear) - lastyear)/toelaatbare_spreiding_jaren) + 1) %>% 
+  arrange(rasterid, groupnr, gew_aantal_meetptn, desc(nryears)) %>% 
+  mutate(rankclus_nryears = 
+           floor((cummax(nryears) - nryears)/toelaatbaar_verschil_lengte_tijdreeks) + 1) %>% 
+  ungroup()
+
+kobj <- kable(sel_qual_basis %>% 
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               'aantal jaren met lg3' = nryears,
+               'recentste lg3-jaar' = lastyear,
+               '# peilbuizen' =  n,
+               '# gezochte meetptn' = gew_aantal_meetptn,
+               'rang spreiding' = rankclus_lastyear,
+               'rang lengte tijdreeks' = rankclus_nryears
+               ) %>% 
+        arrange(rastercelnummer, GTgroep),
+      caption =  "Indeling van de peilbuizen in clusters o.b.v. twee criteria"
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T 
+                ) %>% 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px") 
+}
+
+
+```
+
+
+We groeperen vervolgens de peilbuizen (naast rastercel en GTgroep) voor elke voorkomende combinatie van de twee criteria (zie tabel \@ref(tab:synthese-clusters-extra-criteria)).
+We berekenen voor deze combinaties een rangorde, waarbij ook het [vierde kwaliteitscriterium](#suppl-criteria) in rekening gebracht wordt (= rang combi in de tabel). 
+Peilbuizen in clusters met een lagere rang combi-waarde zullen voorrang krijgen. 
+
+We berekenen ook het hoogste rangnummer dat nodig is om in het resterend gewenste aantal peilbuizen te kunnen voorzien (= max rang).
+
+```{r synthese-clusters-extra-criteria}
+sel_qual <- 
+  sel_qual_basis %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn, rankclus_lastyear, rankclus_nryears) %>% 
+  mutate(rankclus_temp = as.integer(paste0(rankclus_lastyear,rankclus_nryears))) %>% 
+  arrange(rasterid, groupnr,rankclus_temp) %>% 
+  ungroup() %>% 
+  group_by(rasterid, groupnr) %>% 
+  mutate(rankclus = dense_rank(rankclus_temp)) %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn, rankclus, rankclus_lastyear, rankclus_nryears) %>% 
+  summarise(beschikbaar_aantal_cluster = sum(n)) %>% 
+  ungroup 
+
+# functie om de rang te bepalen die nodig is om tot het gewenst aantal meetpunten te komen
+
+max_rank <-  function(x) {
+  # x <- sel_qual_test %>% filter (rasterid == 134, groupnr == 4)
+  clusters <- unique(x$rankclus) 
+  gewenst_aantal <- x[1,"gew_aantal_meetptn"] %>%
+    as.integer()
+  beschikbaar_aantal <- 0
+  einde <- 0
+  
+  
+  for (i in clusters) {
+    # i <- 1
+    rank <- as.integer(i)
+    beschikbaar_aantal_rank <-  x[1,"beschikbaar_aantal_cluster"] %>%
+      as.integer()
+    if (gewenst_aantal <= (beschikbaar_aantal_rank + beschikbaar_aantal) & einde == 0) {
+      maxrank <- rank
+      einde <- 1
+    } else {
+      beschikbaar_aantal <- beschikbaar_aantal_rank + beschikbaar_aantal
+    }  
+  }
+  return(maxrank)
+}
+
+sel_qual_maxrank <- plyr::ddply(sel_qual, ~rasterid+groupnr, max_rank) %>%
+  rename(maxrank = V1)
+
+sel_qual <- sel_qual %>%
+  inner_join(sel_qual_maxrank, 
+             by = c("rasterid", "groupnr"))
+
+kobj <- kable(sel_qual %>% 
+        select(1:3,7,5:6,4,8) %>% 
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               'gewenst # meetptn' = gew_aantal_meetptn,
+               '# peilbuizen' =  beschikbaar_aantal_cluster,
+               'rang combi' = rankclus,
+               'rang spreiding' = rankclus_lastyear,
+               'rang lengte tijdreeks' = rankclus_nryears,
+               'max rang' = maxrank
+               ) %>% 
+        arrange(rastercelnummer, GTgroep),
+      caption =  "Overzicht clustering o.b.v. de drie kwaliteitscriteria"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T 
+                ) %>% 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+
+```
+
+### Categorie 2: Rastercellen met juist voldoende peilbuizen {#cat2}
+
+Wanneer voor een rastercel en een GTgroep het gewenste aantal meetpunten gelijk is aan een som van het aantal beschikbare peilbuizen in een cluster dan rekenen we die rastercel tot categorie 2.
+Tabel \@ref(tab:cat2-table) geeft hiervan het overzicht.
+
+```{r cat2-table}
+# rastercellen met een juist voldoende evenwaardige meetpunten dat gewenst is voor het meetnet
+sel_cat2_table <- 
+  sel_qual %>% 
+  #filter(rankclus <= maxrank ) %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
+  ungroup %>% 
+  inner_join(sel_qual,
+             by = c("rasterid", "groupnr", "gew_aantal_meetptn")) %>% 
+  filter(beschikbaar_aantal == gew_aantal_meetptn) %>% 
+  select(-beschikbaar_aantal, -maxrank)
+
+kobj <- kable(sel_cat2_table %>% 
+        select(1:3,7,5:6,4) %>% 
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               'gewenst # meetptn' = gew_aantal_meetptn,
+               '# peilbuizen' =  beschikbaar_aantal_cluster,
+               'rang combi' = rankclus,
+               'rang cluster spreiding' = rankclus_lastyear,
+               'rang cluster lengte tijdreeks' = rankclus_nryears
+               ) %>% 
+        arrange(rastercelnummer, GTgroep),
+      caption =  "Categorie 2: rastercellen met een juist voldoende aantal peilbuizen"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T 
+                ) %>% 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px") 
+}
+```
+
+De `r sum(sel_cat2_table$gew_aantal_meetptn)` peilbuizen die, voor die GT-groep, zich in een rastercel van cat. 2 bevinden, worden alle geselecteerd voor een tijdreeksanalyse.
+
+Ze zijn ruimtelijk goed verspreid over `r nrow(sel_cat2_table)` rastercellen (figuur \@ref(fig:cat2-plot)).
+
+```{r cat2-raster}
+sel_cat2_raster <- sel_raster_pb %>% 
+  semi_join(sel_cat2_table,
+            by = c("rasterid", "groupnr")) %>% 
+  arrange(rasterid, groupnr)
+
+```
+
+```{r cat2-plot, fig.cap = "rastercellen met een juist voldoende aantal peilbuizen", warning= FALSE, message=FALSE}
+
+sel_cat2_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat2_raster) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.2: rastercellen met een juist voldoende aantal peilbuizen", asp = 0 )
+
+sel_cat2_tm
+```
+
+
+### Categorie 3: Rastercellen met een overschot aan peilbuizen {#cat3}
+
+De rastercellen van categorie 3 bevatten meer meetlocaties (Watina-peilbuizen) dan er voor het droogtemeetnet gezocht worden. 
+Het zijn in feite de resterende cellen, cellen die niet tot een van de vorige categorieën behoren.
+
+Hier geven we een overzicht over welke rastercellen het gaat (tabel \@ref(tab:cat3-table)) 
+
+```{r cat3-raster}
+
+# rastercellen met een overschot aan evenwaardige meetpunten in vergelijking met het aantal dat gewenst is voor het meetnet
+sel_cat3_raster <- 
+  sel_raster_meetnet %>% 
+  anti_join(sel_cat1A_raster %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr"))  %>% 
+  anti_join(sel_cat2_raster %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr")) %>% 
+  arrange(rasterid, groupnr)
+
+```
+
+
+
+```{r cat3-table}
+sel_cat3_table <- 
+  sel_qual %>% 
+      #filter(rankclus <= maxrank ) %>% 
+      group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+      summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
+      ungroup %>% 
+      inner_join(sel_qual, by = c("rasterid", "groupnr", "gew_aantal_meetptn") ) %>% 
+      filter(beschikbaar_aantal > gew_aantal_meetptn, rankclus <= maxrank) %>% 
+      select(-beschikbaar_aantal, -maxrank)  
+
+
+kobj <- kable(sel_cat3_table %>% 
+        select(1:3,7,5:6,4) %>% 
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               'gewenst # meetptn' = gew_aantal_meetptn,
+               '# peilbuizen' =  beschikbaar_aantal_cluster,
+               'rang combi' = rankclus,
+               'rang spreiding' = rankclus_lastyear,
+               'rang lengte tijdreeks' = rankclus_nryears
+               ) %>% 
+        arrange(rastercelnummer, GTgroep),
+      caption =  "Categorie 3: rastercellen met een overaanbod van peilbuizen"
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T 
+                ) %>% 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+```
+
+Er zijn `r sum(sel_cat3_table$gew_aantal_meetptn)` gewenste meetlocaties waaraan meerdere peilbuizen kunnen gelinkt worden.
+Ze zijn ruimtelijk goed verspreid over `r nrow(sel_cat3_table)` rastercellen (figuur \@ref(fig:cat3-plot)).
+
+```{r cat3-plot, fig.cap = "rastercellen met een overschot aan peilbuizen", warning=FALSE, message=FALSE}
+
+sel_cat3_tm <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat3_raster) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.3: rastercellen met een overschot aan peilbuizen", asp = 0 )
+
+sel_cat3_tm
+```
+
+
+#### Opzoeken van peilbuizen voor tijdreeksanalyse {#opzoeken-pb}
+
+Rastercellen van de drie categorieën kunnen peilbuizen bevatten die verder met Menyanthes geanalyseerd gaan worden.
+In tabel \@ref(tab:tubes-cat123) wordt een overzicht gegeven van de desbetreffende peilbuizen.
+
+```{r tubes-cat123}
+
+# de bijhorende geselecteerde Watina-meetpunten zijn dan
+tubes_cat1 <- 
+  tubes_in_raster %>% 
+  left_join(tubes_lg3_avail %>% 
+              select(loc_code, firstyear, lastyear, 
+                     nryears), 
+            by = "loc_code") %>% 
+  mutate(lastyear = replace_na(lastyear,0),
+         nryears = replace_na(nryears,0),
+         cat = 1) %>% 
+  inner_join(sel_cat1A_table, 
+             by = c("rasterid", "groupnr")) %>% 
+  mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
+  select(-c(19:23))
+
+
+
+tubes_cat2 <- 
+  tubes_in_raster %>% 
+  left_join(tubes_lg3_avail %>% 
+              select(loc_code, firstyear, lastyear, 
+                     nryears), 
+            by = "loc_code") %>% 
+  mutate(lastyear = replace_na(lastyear,0),
+         nryears = replace_na(nryears,0),
+         cat = 2) %>% 
+  inner_join(sel_cat2_table  %>% 
+               inner_join(sel_qual_basis %>% 
+                            select(-gew_aantal_meetptn), 
+                          by =  c("rasterid","groupnr","rankclus_lastyear", "rankclus_nryears" )), 
+             by = c("rasterid", "groupnr", "lastyear", "nryears")) %>% 
+  mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
+  select(-c(19:24))
+
+tubes_cat3 <- 
+  tubes_in_raster %>% 
+  # distinct(loc_code, x, y, rasterid, groupnr) %>% 
+  left_join(tubes_lg3_avail %>% 
+               select(loc_code, firstyear, 
+                      lastyear, nryears), 
+             by = "loc_code") %>% 
+  mutate(lastyear = replace_na(lastyear,0),
+         nryears = replace_na(nryears,0),
+         cat = 3) %>%   
+  inner_join(sel_cat3_table  %>% 
+               inner_join(sel_qual_basis %>% 
+                            select(-gew_aantal_meetptn), 
+                          by = c("rasterid","groupnr","rankclus_lastyear","rankclus_nryears" )), 
+             by = c("rasterid","groupnr", "lastyear","nryears")) %>% 
+  mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
+  select(-c(19:24))
+
+tubes_cat123 <- bind_rows(tubes_cat1, tubes_cat2, tubes_cat3) %>% arrange(loc_code)
+
+tubes_cat3 <- tubes_cat3 %>% 
+  rownames_to_column("unieknr") %>% 
+  mutate(unieknr = as.integer(unieknr))
+
+kobj <- kable(tubes_cat123 %>% 
+        select(loc_code, area_name, nryears, firstyear,
+               lastyear, cat) %>% 
+        rename(watinacode = loc_code,
+               gebied = area_name,
+               'aantal jaren met lg3' = nryears,
+               'eerste lg3-jaar' = firstyear,
+               'recentste lg3-jaar' = lastyear,
+               categorie = cat
+               ) ,
+      caption =  "Watina-meetpunten geselecteerd voor tijdreeksanalyse"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "350px", box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
+}
+
+
+output_vc <- write_vc(tubes_cat123, file.path(".","data","tubes_cat123_run1"), 
+                      sorting = c("loc_code"), strict =  FALSE, root = ".")
+
+rm(output_vc)
+
+```
+
+
+
+<br/><br/>
+
+## Tijdreeksanalyse {#tijdreeksanalyse_uitvoering}
+
+Alle meetreeksen van de peilbuizen die behoren tot de geselecteerde rastercellen van categorie 2 werden alle geïmporteerd in Menyanthes. 
+Van cat. 3 werden alleen de meetreeksen geïmporteerd van de beste clusters, die toch ook al aanleiding gaven tot een overaanbod.
+
+In Menyanthes werd een project opgezet met zoveel mogelijk verklarende reeksen.
+Het betreft :
+
+* 297 tijdreeksen van neerslaggegevens, afkomstig van KMI (214 stations), VMM (43 stations), KNMI (22 stations) en HIC (18 stations) en
+* 20 tijdreeksen van evapotranspiratie, afkomstig van KMI (5 stations), KNMI (7 stations) en VMM (8 stations).
+
+Bij de modelbouw werd steeds ook een versie met een lineaire trend berekend waarvan de significantie werd onderzocht (zie [lineaire trend](#lintrend)). 
+
+
+```{r read-results-menyanthes, message=FALSE}
+
+tubes_menyanthes <- read_csv(file.path(getwd(),"data", "tblTubes_Menyanthes_report.csv"))
+
+#veldnamen aanpassen
+tubes_menyanthes <- janitor::clean_names(tubes_menyanthes, case = "snake")
+
+#syntheseveld maken
+tubes_menyanthes <- tubes_menyanthes %>% 
+  mutate(
+    uitspraak = case_when(
+      modelbaar == 1 ~ "weerhouden, expertoordeel",
+      evaporatiefactor == -1 ~ "niet weerhouden, te korte tijdreeks",
+      !is.na(evaporatiefactor) ~ "niet weerhouden, expertoordeel",
+      evp < 66 ~ "niet weerhouden, te lage modelfit",
+      is.na(trend_verschil) | abs(trend_verschil) - 1.96*trend_sd <= trend_jaren ~ "weerhouden",
+      abs(trend_verschil) - 1.96*trend_sd > trend_jaren ~ "niet weerhouden, trend"
+      ),
+    selectie = if_else(str_detect(uitspraak, pattern = "niet weerhouden"),0,1)
+    )
+
+#wegfilteren van meetreeksen die niet in een raster vallen (is mogelijk wanneer een peilbuis van een oude selectie in de resultaattabel van Menyanthes is verzeild)
+tubes_menyanthes <- tubes_menyanthes %>% 
+  semi_join(tubes_in_raster, by = c("watinacode" = "loc_code"))
+
+tubes_menyanthes_synthese <- tubes_menyanthes %>% 
+        count(uitspraak) %>% 
+        rename(aantal = n)
+
+kobj <- kable(tubes_menyanthes_synthese,
+      caption =  "Overzicht resultaten tijdreeksanalyse"
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = F, 
+                position = "left",
+                font_size = 9, 
+                fixed_thead = T 
+                ) %>% 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px") 
+}
+```
+<br/><br/>
+
+Tabel \@ref(tab:read-results-menyanthes) geeft per categorie een synthese van de tijdreeksanalyse. 
+
+Van de `r nrow(tubes_menyanthes)` onderzochte meetreeksen werden in totaal `r weerhouden <- nrow(tubes_menyanthes %>% filter(selectie == 1)) ; weerhouden` meetreeksen weerhouden oftewel `r as.integer(weerhouden/nrow(tubes_menyanthes) *100)`%.
+
+Het grootste deel (`r as.integer(nrow(tubes_menyanthes %>% filter(str_detect(uitspraak, pattern = "te korte tijdreeks"))) / nrow(tubes_menyanthes %>% filter(str_detect(uitspraak, pattern = "expertoordeel")|str_detect(uitspraak, pattern = "te korte tijdreeks")))*100)`%) van meetpunten die beoordeeld werden met expertoordeel (zijnde `r as.integer(nrow(tubes_menyanthes %>% filter(str_detect(uitspraak, pattern = "expertoordeel")|str_detect(uitspraak, pattern = "te korte tijdreeks"))) / nrow(tubes_menyanthes)*100)`%) werd afgekeurd door een te gering aantal beschikbare peilmetingen. 
+
+<br/><br/>
+
+## De rastercellen hercategoriseren na de tijdreeksanalysen 
+
+De resultaten van de tijdreeksanalysen dienen om de peilbuizen te herevalueren. 
+Het kan ook een doorwerking op de categorie-indeling van de rastercellen hebben.
+
+```{r join-tubes-on-raster-bis}
+#peilbuizen miv evaluatie Menyanthes
+tubes_eval_namenyanthes <- tubes_in_raster %>% 
+  left_join(tubes_menyanthes %>% 
+              select(watinacode, selectie), by = c("loc_code" = "watinacode")) %>% 
+  left_join(tubes_lg3_avail,
+            by = "loc_code") %>%
+  mutate(selectie = case_when(
+    selectie == 0 ~ -1, #afgekeurde meetreeks
+    selectie == 1 ~ 1, #goedgekeurde meetreeks
+    TRUE ~ 0 #niet geanalyseerde meetreeks
+  )
+  ) 
+
+# 
+# kable(sel_raster_pb_bis %>% st_drop_geometry() %>%
+#         rename(GTgroep = groupnr,
+#                rastercelnummer = rasterid,
+#                "gewenst aantal meetptn" = gew_aantal_meetptn,
+#                "tot. aantal peilbuizen" = n_tubes,
+#                "aantal peilbuizen met goede tijdreeks" = n_tubes_lgl
+#                ) ,
+#       caption =  "Totaal aantal peilbuizen en aantal peilbuizen met een goede tijdreeks per rastercel"
+#       ) %>% 
+#     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#                 full_width = T, 
+#                 position = "left",
+#                 font_size = 8, 
+#                 fixed_thead = T) %>%  
+#    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+#   # column_spec(2, width = "30em", background = "yellow")
+#     #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+#     scroll_box(height = "250px") 
+```
+
+
+### Categorie 1: Zijn er rastercellen met onvoldoende peilbuizen?
+
+Deze categorie bleef onveranderd. 
+
+<!-- ### Categorie 1B: Rastercellen met een onvoldoende aantal **geschikte** peilbuizen -->
+
+<!-- De categorie 1B kan na de tijdreeksanalyse wel veranderd zijn.  -->
+<!-- Het kan immers zijn dat in een rastercel van 1B modelmatig voor één of meer peilbuizen een bruikbare tijdreeks is berekend, zodat deze cellen dan tot categorie 2 of 3 zijn gaan behoren.  -->
+<!-- Anderzijds kan het ook zijn dat in cellen van categorie 2 of zelfs 3 na controle geen enkele tijdreeks werd weerhouden.  -->
+<!-- Deze cellen komen dan in categorie 1B terecht.  -->
+
+<!-- Tabel \@ref(tab:cat1B-table-bis) geeft voor deze categorie het overzicht. -->
+
+```{r cat1B-raster-bis, eval=FALSE}
+
+sel_cat1B_raster_bis <- sel_raster_pb_bis %>%
+  left_join(sel_cat1A_table %>%
+              select(-gewenst_aantal_meetpunten, -totaal_peilbuizen,
+                     -n_tubes_lgl, -opp_gw_cel),
+            by = c("rasterid", "groupnr")) %>%
+  mutate(aantal_cat1A = replace_na(aantal_cat1A,0),
+         rest = gew_aantal_meetptn - aantal_cat1A) %>%
+  filter(rest - n_tubes_lgl > 0 ) %>%
+  mutate(aantal_cat1B = rest - n_tubes_lgl) %>%
+  select(-geom, -rest, geom)
+
+```
+
+
+```{r cat1B-table-bis, eval=FALSE}
+
+sel_cat1B_table_bis <- sel_cat1B_raster_bis %>% 
+  st_drop_geometry() %>% 
+  arrange(rasterid)
+
+kable(sel_cat1B_table_bis %>% 
+        group_by(groupnr ) %>% 
+        summarise('aantal cellen met een onvoldoende aantal geschikte peilbuizen' = n(),
+                  'aantal gewenste meetlocaties met een, momenteel ongeschikte, pb' =  sum(aantal_cat1B)) %>% 
+        rename(GTgroep = groupnr
+               ),
+      caption =  "Categorie 1B: rastercellen met een onvoldoende aantal peilbuizen met een goede meetreeks"
+      ) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    #scroll_box(height = "250px") 
+```
+
+<!-- Er zijn, na de tijdreeksanalyse, nog steeds `r #sum(sel_cat1B_table_bis$aantal_cat1B)` gewenste meetlocaties waar zich een peilbuis bevindt, maar waarover we geen goede tijdreeks beschikken. Ze liggen verspreid over `r #nrow(sel_cat1B_table_bis)` rastercellen (figuur \@ref(fig:cat1B-plot-bis)).  -->
+
+```{r cat1B-plot-bis, fig.cap = "rastercellen met een onvoldoende aantal peilbuizen met een goede meetreeks", message=FALSE, eval=FALSE}
+
+sel_cat1B_tm_bis <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat1B_raster_bis) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.1B: cel met een onvoldoende aantal peilbuizen met goede meetreeks" )
+
+sel_cat1B_tm_bis
+```
+
+<!-- #### Opzoeken van peilbuizen binnen de rastercellen van cat 1B -->
+
+<!-- De peilbuizen die bij deze categorie horen, kunnen nog in twee groepen verdeeld worden: -->
+
+<!-- - een deelgroep rastercellen waarvoor het gewenst aantal meetpunten gelijk is aan het beschikbaar aantal peilbuizen -->
+<!-- - een deelgroep rastercellen waarvoor het beschikbaar aantal peilbuizen groter is dan het gewenst aantal meetpunten.  -->
+
+<!-- _**Peilbuizen die tot de eerste deelgroep behoren, worden automatisch geselecteerd.**_  -->
+<!-- _**Ze kunnen nog niet onmiddellijk ingeschakeld worden in het meetnet, maar de verwachting is wel dat in de loop van enkele jaren dat wel het geval zal zijn.**_ -->
+
+```{r tubes-cat1Ba-bis-vb, message=FALSE, eval=FALSE}
+tubes_cat1B_bis <- 
+  sel_cat1B_raster_bis %>% 
+  inner_join(tubes_eval_namenyanthes %>% 
+               filter(selectie <= 0), by = c("rasterid", "groupnr")) %>% 
+  st_drop_geometry() %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn, loc_code, everything(),
+         -starts_with("loc_v"), -starts_with("loc_t"), -starts_with("ser"), -starts_with("xg3")) %>% 
+  arrange(rasterid, groupnr)
+
+
+tubes_cat1Ba <- tubes_cat1B_bis %>% 
+  inner_join(tubes_cat1B_bis %>% 
+               group_by(rasterid, groupnr, gew_aantal_meetptn, aantal_cat1A) %>% 
+               summarise(n_tubes_zondermodel = n())
+  ) %>% 
+  mutate(n_tubes_zondermodel = n_tubes_zondermodel + aantal_cat1A) %>% 
+  filter(gew_aantal_meetptn == n_tubes_zondermodel)
+
+```
+
+
+<!-- Tabel \@ref(tab:tubes-cat1Ba-bis) geeft een overzicht van deze eerste deelgroep van `r #nrow(tubes_cat1Ba) ` peilbuizen. -->
+```{r tubes-cat1Ba-bis, message=FALSE, eval=FALSE}
+
+kable(tubes_cat1Ba %>% 
+        mutate(beschikbare_ptn = n_tubes_zondermodel - aantal_cat1A) %>% 
+        select(-n_tubes_lgl, -aantal_cat1A, -aantal_cat1B,
+               -typegroup_name, -selectie, beschikbare_ptn) %>% 
+        select(1:3,beschikbare_ptn,7,4,8:9) %>% 
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               watinacode = loc_code,
+               'gewenst aantal meetptn' = gew_aantal_meetptn,
+               #'# peilbuizen' =  n_tubes,
+               gebied = area_name,
+               #gebiedcode = area_code,
+               '# beschikbare ptn' = beschikbare_ptn
+               ) %>% 
+        arrange(watinacode),
+      caption =  "Geselecteerde peilbuizen die op termijn tot het droogtemeetnet kunnen horen"
+      ) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>% 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+    column_spec(c(1:4), width = "1cm") %>% 
+    row_spec(0, angle = 0, align = "c")  #fixeer veldnamen
+    #scroll_box(height = "250px") 
+
+output_vc <- write_vc(tubes_cat1Ba, file.path(".","data","tubes_cat1Ba"), 
+                      sorting = c("loc_code"), strict =  FALSE, root = ".")
+
+rm(output_vc)
+
+```
+
+```{r tubes-cat1Bb-bis-vb, message=FALSE, eval=FALSE}
+
+tubes_cat1Bb <- tubes_cat1B_bis %>% 
+  anti_join(tubes_cat1Ba, by = "loc_code") %>% 
+  inner_join(tubes_cat1B_bis %>% 
+               group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+               summarise(n_tubes_zondermodel = n())
+             ) 
+
+```
+
+<br/><br/>
+<!-- Tussen de `r #nrow(tubes_cat1Bb) ` peilbuizen die tot de tweede deelgroep behoren, wordt nog een aselecte keuze gemaakt via het GRTS-raster (zie verder). -->
+
+<!-- Tabel \@ref(tab:tubes-cat1Bb-bis) geeft een overzicht van de peilbuizen die tot de tweede deelgroep behoren. -->
+
+
+```{r tubes-cat1Bb-bis, message=FALSE, eval=FALSE}
+
+kable(tubes_cat1Bb %>% 
+        select(-n_tubes_lgl, -aantal_cat1A, -aantal_cat1B,
+               -typegroup_name, -selectie) %>% 
+        select(1:3,12,7,4,8:9) %>% 
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               watinacode = loc_code,
+               'gewenst aantal meetptn' = gew_aantal_meetptn,
+               #'# peilbuizen' =  n_tubes,
+               gebied = area_name,
+               #gebiedcode = area_code,
+               '# beschikbare ptn' = n_tubes_zondermodel
+               ) %>% 
+        arrange(watinacode),
+      caption =  "Peilbuizen die mogelijk (na GRTS-analyse) en op termijn tot het droogtemeetnet kunnen horen"
+      ) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = list(enabled = T, background = "red")) %>% 
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+    column_spec(c(1:4), width = "1cm") %>% 
+    row_spec(0, angle = 0, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px") 
+
+output_vc <- write_vc(tubes_cat1Bb, file.path(".","data","tubes_cat1Bb"), 
+                      sorting = c("loc_code"), strict =  FALSE, root = ".")
+
+rm(output_vc)
+```
+
+
+
+```{r berekenen-clusters-extra-criteria-bis}
+
+tubes_qual_basis_bis <- 
+  sel_raster_pb %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  st_drop_geometry() %>% 
+  anti_join(sel_cat1A_table %>% 
+              select(rasterid, groupnr), 
+            by = c("rasterid", "groupnr")) %>%
+  inner_join(tubes_eval_namenyanthes, 
+             by =  c("rasterid", "groupnr")) %>% 
+  distinct(rasterid, groupnr, gew_aantal_meetptn, loc_code, 
+           lastyear, nryears, 
+           firstyear, selectie) %>%
+  mutate(lastyear = ifelse(selectie == 1, 2019, ifelse(selectie == -1, 0,replace_na(lastyear,0))),
+         nryears = ifelse(selectie == 1, 100, ifelse(selectie == -1, 0,replace_na(nryears,0)))
+  )
+# kable(tubes_qual_basis_bis) %>% 
+#     kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#                 full_width = T,
+#                 position = "left",
+#                 font_size = 8,
+#                 fixed_thead = T
+#                 ) %>%
+#    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+#    # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+#    # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+#     scroll_box(height = "250px")
+
+sel_qual_basis_bis <- 
+  tubes_qual_basis_bis %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  count(lastyear, nryears)  %>% 
+  ungroup()
+
+sel_qual_basis_bis <- 
+  sel_qual_basis_bis %>% 
+  group_by(rasterid, groupnr) %>% 
+  arrange(rasterid, groupnr, gew_aantal_meetptn, desc(lastyear)) %>% 
+  mutate(rankclus_lastyear = 
+           floor((cummax(lastyear) - lastyear)/toelaatbare_spreiding_jaren) + 1) %>% 
+  arrange(rasterid, groupnr, gew_aantal_meetptn, desc(nryears)) %>% 
+  mutate(rankclus_nryears = 
+           floor((cummax(nryears) - nryears)/toelaatbaar_verschil_lengte_tijdreeks) + 1) %>% 
+  ungroup()
+
+# kable(sel_qual_basis_bis %>% 
+#         select(-gew_aantal_meetptn, -aantal_cat1A, -aantal_cat1B) %>% 
+#         rename(GTgroep = groupnr,
+#                rastercelnummer = rasterid,
+#                'recentste jaar' = ser_lastyear,
+#                'lengte tijdreeks (jaar)' = ser_nryears,
+#                '# peilbuizen' =  n,
+#                '# gezochte meetptn' = rest_aantal_meetptn,
+#                'rang cluster spreiding' = rankclus_lastyear,
+#                'rang cluster lengte tijdreeks' = rankclus_nryears
+#                ) %>% 
+#         arrange(rastercelnummer, GTgroep),
+#       caption =  "Indeling van de peilbuizen in clusters o.b.v. twee criteria"
+#       ) %>% 
+#     kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#                 full_width = T, 
+#                 position = "left",
+#                 font_size = 8, 
+#                 fixed_thead = T 
+#                 ) %>% 
+#    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+#    # column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
+#    # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+#     scroll_box(height = "250px") 
+
+
+```
+
+
+
+```{r synthese-clusters-extra-criteria-bis}
+sel_qual_bis <- 
+  sel_qual_basis_bis %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn, rankclus_lastyear, rankclus_nryears) %>% 
+  mutate(rankclus_temp = as.integer(paste0(rankclus_lastyear,rankclus_nryears))) %>% 
+  arrange(rasterid, groupnr,rankclus_temp) %>% 
+  ungroup() %>% 
+  group_by(rasterid, groupnr) %>% 
+  mutate(rankclus = dense_rank(rankclus_temp)) %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn, rankclus, rankclus_lastyear, rankclus_nryears) %>% 
+  summarise(beschikbaar_aantal_cluster = sum(n)) %>% 
+  ungroup 
+
+sel_qual_maxrank_bis <- plyr::ddply(sel_qual_bis, ~rasterid+groupnr, max_rank) %>%
+  rename(maxrank = V1)
+
+sel_qual_bis <- sel_qual_bis %>%
+  inner_join(sel_qual_maxrank_bis, 
+             by = c("rasterid", "groupnr"))
+
+# kable(sel_qual_bis %>%
+#         select(1:3,7,5:6,4,8) %>%
+#         rename(GTgroep = groupnr,
+#                rastercelnummer = rasterid,
+#                'nog gewenst # meetptn' = rest_aantal_meetptn,
+#                '# peilbuizen' =  beschikbaar_aantal_cluster,
+#                'rang combi' = rankclus,
+#                'rang cluster spreiding' = rankclus_lastyear,
+#                'rang cluster lengte tijdreeks' = rankclus_nryears,
+#                'max rang' = maxrank
+#                ) %>%
+#         arrange(rastercelnummer, GTgroep),
+#       caption =  "Overzicht clustering o.b.v. de drie kwaliteitscriteria"
+#       ) %>%
+#     kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#                 full_width = T,
+#                 position = "left",
+#                 font_size = 8,
+#                 fixed_thead = T
+#                 ) %>%
+#    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+#    # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+#    # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+#     scroll_box(height = "250px")
+
+```
+<br/><br/>
+
+### Categorie 2: Rastercellen met een juist voldoend aantal peilbuizen {#cat2}
+
+```{r cat2-table-bis}
+# rastercellen met een juist voldoende aantal evenwaardige meetpunten dat gewenst is voor het meetnet
+sel_cat2_table_bis <- 
+  sel_qual_bis %>% 
+#  filter(rankclus <= maxrank ) %>% 
+  group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
+  ungroup %>% 
+  inner_join(sel_qual_bis,
+             by = c("rasterid", "groupnr", "gew_aantal_meetptn")) %>% 
+  filter(beschikbaar_aantal == gew_aantal_meetptn) %>% 
+  select(-beschikbaar_aantal, -maxrank)
+
+#kable(sel_cat2_table_bis ) %>% 
+      #   select(1:3,7,5:6,4) %>%
+      #   rename(GTgroep = groupnr,
+      #          rastercelnummer = rasterid,
+      #          'nog gewenst # meetptn' = rest_aantal_meetptn,
+      #          '# peilbuizen' =  beschikbaar_aantal_cluster,
+      #          'rang combi' = rankclus,
+      #          'rang cluster spreiding' = rankclus_lastyear,
+      #          'rang cluster lengte tijdreeks' = rankclus_nryears
+      #          ) %>%
+      #   arrange(rastercelnummer, GTgroep),
+      # caption =  "Categorie 2: rastercellen met een juist voldoende aantal peilbuizen"
+      # ) %>%
+    # kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    #             full_width = T,
+    #             position = "left",
+    #             font_size = 8,
+    #             fixed_thead = T
+    #             ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+#    scroll_box(height = "250px")
+```
+
+
+Tabel \@ref(tab:tubes-cat2-bis) toont de `r sum(sel_cat2_table_bis$gew_aantal_meetptn)` peilbuizen die, na de tijdreeksanalyse, nog tot de `r nrow(sel_cat2_table_bis)` rastercellen van deze categorie horen.
+
+Figuur \@ref(fig:cat2-plot-bis) toont de ligging ervan.
+
+```{r cat2-raster-bis}
+sel_cat2_raster_bis <- sel_raster_pb %>% 
+  semi_join(sel_cat2_table_bis,
+            by = c("rasterid", "groupnr")) %>% 
+  arrange(rasterid, groupnr)
+
+```
+
+```{r cat2-plot-bis, fig.cap = "rastercellen met een juist voldoende aantal peilbuizen", warning= FALSE}
+
+sel_cat2_tm_bis <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat2_raster) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.2: rastercellen met een juist voldoende aantal peilbuizen", asp = 0 )
+
+sel_cat2_tm_bis
+```
+
+```{r tubes-cat2-bis, message=FALSE}
+
+# de bijhorende geselecteerde Watina-meetpunten zijn dan
+tubes_cat2_bis <- 
+  tubes_qual_basis_bis %>% 
+    # filter(selectie >= 0) %>% 
+    inner_join(sel_qual_basis_bis) %>% #toevoeging is nodig om onderscheid te maken/behouden tussen de clusters
+    inner_join(sel_cat2_table_bis)
+tubes_cat2_bis <- tubes_cat2_bis %>% inner_join(tubes_in_raster) 
+
+kobj <- kable(tubes_cat2_bis %>% 
+        select(rasterid, groupnr, loc_code) %>% 
+        rename(watinacode = loc_code,
+               rastercelnummer = rasterid,
+               GTgroep = groupnr
+               ) ,
+      caption =  "Geselecteerde peilbuizen die behoren tot rastercellen van cat. 2"
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = NULL, box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
+}
+
+output_vc <- write_vc(tubes_cat2_bis, file.path(".","data","tubes_cat2_bis"), 
+                      sorting = c("loc_code"), strict =  FALSE, root = ".")
+
+rm(output_vc)
+```
+
+### Categorie 3: Rastercellen met een overschot aan peilbuizen {#cat3}
+
+```{r cat3-raster-bis}
+
+# rastercellen met een overschot aan evenwaardige meetpunten in vergelijking met het aantal dat gewenst is voor het meetnet
+sel_cat3_raster_bis <- 
+  sel_raster_meetnet %>% 
+  anti_join(sel_cat1A_raster %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr"))  %>% 
+  anti_join(sel_cat2_raster_bis %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr")) %>% 
+  arrange(rasterid, groupnr)
+
+```
+
+
+```{r cat3-table-bis}
+sel_cat3_table_bis <- 
+  sel_qual_bis %>% 
+      #filter(rankclus <= maxrank ) %>% 
+      group_by(rasterid, groupnr, gew_aantal_meetptn) %>% 
+      summarise(beschikbaar_aantal = sum(beschikbaar_aantal_cluster)) %>% 
+      ungroup %>% 
+      inner_join(sel_qual_bis, by = c("rasterid", "groupnr", "gew_aantal_meetptn") ) %>% 
+      filter(beschikbaar_aantal > gew_aantal_meetptn, rankclus <= maxrank) %>% 
+      select(-beschikbaar_aantal, -maxrank)  
+
+
+# kable(sel_cat3_table_bis %>% 
+#         select(1:3,7,5:6,4) %>% 
+#         rename(GTgroep = groupnr,
+#                rastercelnummer = rasterid,
+#                'nog gewenst # meetptn' = rest_aantal_meetptn,
+#                '# peilbuizen' =  beschikbaar_aantal_cluster,
+#                'rang combi' = rankclus,
+#                'rang cluster spreiding' = rankclus_lastyear,
+#                'rang cluster lengte tijdreeks' = rankclus_nryears
+#                ) %>% 
+#         arrange(rastercelnummer, GTgroep),
+#       caption =  "Categorie 3: rastercellen met een overaanbod van peilbuizen"
+#       ) %>% 
+#     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#                 full_width = T, 
+#                 position = "left",
+#                 font_size = 8, 
+#                 fixed_thead = T 
+#                 ) %>% 
+#    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+#    # column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
+#    # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+#     scroll_box(height = "250px") 
+```
+
+
+De overige `r nrow(sel_cat3_table_bis)` rastercellen, categorie 3, bevatten meer meetlocaties (Watina-peilbuizen) dan er voor het droogtemeetnet gezocht worden. 
+
+Figuur \@ref(fig:cat3-plot-bis) toont de spreiding ervan.
+De rastercellen liggen goed gespreid over Vlaanderen.
+Het is echter opvallend dat de verschillende GT-groepen waartoe ze behoren daarentegen vrij geclusterd voorkomen.
+Groepen 1 en 3 komen vooral in de Kempen voor.
+Rastercellen van groep 4 ligt alle in de (zand)leemstreek [^4] en deze van groep 5 liggen uitsluitend in de duinstreek. 
+
+[^4]: Dit is normaal, omdat alle cellen van deze groep in de (zand)leemstreek liggen.
+
+```{r cat3-plot-bis, fig.cap = "rastercellen met een overschot aan peilbuizen"}
+
+sel_cat3_tm_bis <- raster_meetnet_poly_tm + 
+  tm_shape(sel_cat3_raster) + 
+  tm_polygons(c("groupnr"), title = "GT-groepnr", style = "cat", legend.is.portrait = FALSE, palette = viridisLite::plasma(aantal_strat)) + tm_layout(title = "cat.3: rastercellen met een overschot aan geschikte peilbuizen", asp = 0 )
+
+sel_cat3_tm_bis
+```
+
+
+#### Opzoeken van peilbuizen voor de rastercellen van cat. 3
+
+Tabel \@ref(tab:tubes-cat3-bis) geeft het resultaat van deze analyse.
+
+```{r tubes-cat3-bis, message=FALSE}
+
+#bijhorende Watina-meetpunten ervan opzoeken
+tubes_cat3_bis <- 
+  tubes_qual_basis_bis %>% 
+  # filter(selectie >= 0) %>% 
+  inner_join(sel_qual_basis_bis) %>% 
+  inner_join(sel_cat3_table_bis)
+
+tubes_cat3_bis <- tubes_cat3_bis %>% 
+  rownames_to_column("unieknr") %>% 
+  mutate(unieknr = as.integer(unieknr))
+# sel_qual_lastyear_vb %>% 
+#   count(rasterid, groupnr )
+
+
+kobj <- kable(tubes_cat3_bis %>% 
+        mutate(nryears = ifelse(is.na(nryears), NA, nryears),
+               firstyear = ifelse(is.na(nryears), NA, firstyear),
+               lastyear = ifelse(is.na(nryears), NA, lastyear)
+               ) %>% 
+        select(loc_code, nryears, firstyear, lastyear) %>% 
+        rename(watinacode = loc_code,
+               'aantal jaren met lg3' = nryears,
+               'eerste lg3-jaar' = firstyear,
+               'recentste lg3-jaar' = lastyear
+               ) ,
+      caption =  "Peilbuizen die behoren tot rastercellen van cat. 3"
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T, 
+                position = "left",
+                font_size = 8, 
+                fixed_thead = T) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+  # column_spec(2, width = "30em", background = "yellow")
+    #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+    scroll_box(height = "350px", box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
+}
+
+output_vc <- write_vc(tubes_cat3_bis, file.path(".","data","tubes_cat3_bis"), 
+                      sorting = c("loc_code"), strict =  FALSE, root = ".")
+
+rm(output_vc)
+
+```
+
+Het gaat nog over `r nrow(tubes_cat3_bis)` peilbuizen.
+
+Het effectief toewijzen van een Watina-peilbuis aan een meetlocatie wordt in de volgende sectie behandeld.
+
+## Moeten nog bijkomende meetreeksen geanalyseerd worden?
+
+Door de tijdreeksanalyse kan het zijn dat meetreeksen met relatief veel metingen toch niet weerhouden werden. 
+Doordat niet op alle meetreeksen van categorie 3 een tijdreeksanalyse werd uitgevoerd, kan het zijn dat er hierdoor rastercellen zijn waarbij meetreeksen van een oorspronkelijk lagere rang, nu wel de hoogste rang bekleden.
+De tijdreeks van deze meetreeksen worden dan best eerst geanalyseerd, waarna een nieuwe categorie-indeling volgt.
+
+```{r check-volledigheid-analyse}
+if (nrow(tubes_cat3_bis %>% filter(selectie == 0)) > 0 | nrow(tubes_cat2_bis %>% filter(selectie == 0)) > 0){
+  message("Er zijn nog enkele meetreeksen die best met Menyanthes onderzocht worden.")
+  nognietklaar <- TRUE
+} else{
+  message("Er hoeven geen bijkomende meetreeksen met Menyanthes onderzocht te worden.")
+  nognietklaar <- FALSE  
+}
+
+if (nognietklaar == TRUE) {
+  kobj <- kable( bind_rows(
+          tubes_cat3_bis %>% 
+            select(loc_code, nryears, firstyear, lastyear) , 
+          tubes_cat2_bis %>% 
+            select(loc_code, nryears, firstyear, lastyear) , 
+          ) %>% 
+          filter(selectie == 0) %>% 
+          mutate(nryears = ifelse(is.na(nryears), NA, nryears),
+                 firstyear = ifelse(is.na(nryears), NA, firstyear),
+                 lastyear = ifelse(is.na(nryears), NA, lastyear)
+                 ) %>% 
+  
+          rename(watinacode = loc_code,
+                 'aantal jaren met lg3' = nryears,
+                 'eerste lg3-jaar' = firstyear,
+                 'recentste lg3-jaar' = lastyear
+                 ) ,
+        caption =  "Watina-meetpunten die behoren tot rastercellen van cat. 3"
+        )
+  if (pdfmaken == TRUE) {
+    kobj
+  } else {
+    kobj %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = T, 
+                  position = "left",
+                  font_size = 8, 
+                  fixed_thead = T) %>%
+     # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+    # column_spec(2, width = "30em", background = "yellow")
+      #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
+      scroll_box(height = "250px", box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
+  }
+}
+  
+```
+
+
+## Aanduiden van de meetlocaties
+
+Het ontwerp van het meetnet moet resulteren in de aanduiding van een aantal meetlocaties.
+Tot nog toe kennen we enkel voor de cat. 2 (tabel \@ref(tab:tubes-cat2-bis)) de exacte meetlocaties.
+
+Voor cat. 1 moeten we nog uit alle geschikte habitatvlekken een vlek kiezen en voor cat. 3 is nog een keuze te maken uit de peilbuizen. 
+Binnen categorie 3 wordt nog een onderscheid gemaakt of de peilbuizen onmiddellijk (op vlak van datakwaliteit) in gebruik kunnen genomen worden of niet.
+Deze keuzen worden in dit deel behandeld.
+
+### Het toewijzen van een kandidaat peilbuis aan een meetlocatie
+
+Om uit verschillende gelijkwaardige kandidaat-peilbuizen er willekeurig eentje uit te kiezen, maken we gebruik van het grts-raster (zie \@ref(sel-habvlek)). 
+Een rastercel (8192 m x 8192 m) waarin meerdere kandidaat peilbuizen liggen, wordt opgedeeld in mini-rastercellen van 32 m x 32 m. 
+Elke mini-rastercel heeft een uniek rangnummer.
+De peilbuis (of meerdere, gelijk aan het aantal gewenste meetlocaties) die in rastercel met het/de laagste rangnummer(s) lig(gen), wordt dan effectief geselecteerd. 
+Indien in een rastercel voor meerdere GT-groepen naar een meetlocatie gezocht wordt, herhaalt die procedure voor elke GT-groep afzonderlijk.
+
+Er is een routine geschreven die per rastercel en hierbinnen per GT-groep deze klus klaart. 
+
+Figuur \@ref(fig:tubes-excess-plot) geeft geografisch weer over welke meetpunten en rasters het hier gaat.
+Er is hierbij een verschil gemaakt tussen rasters waar een keuze uit peilbuizen van actueel lage kwaliteit moet gemaakt worden en waar dit uit peilbuizen met modelleerbare tijdreeksen kan. 
+In een rastercel sluiten beide keuzen elkaar uit wanneer er slechts één meetpunt gezocht wordt.
+
+```{r inlezen-grts-rasters}
+#inlezen grts-raster level 1 (hoogste resolutie = kleinste gridcelgrootte)
+# grts_level0 <- read_GRTSmh(brick = TRUE) %>% 
+#   raster::subset(1)
+
+if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | refresh_data >= 1) {
+    drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
+                   path = file.path(".","data","local", "grts_level0.tif"), 
+                   overwrite = TRUE)
+}
+grts_level0 <- raster(file.path(".","data","local", "grts_level0.tif"))
+
+
+#inlezen grts-raster level 9 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 1. 
+# grts_level8 <- read_GRTSmh(brick = TRUE) %>% 
+#   raster::subset(9)
+
+if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | refresh_data >= 1) {
+    drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
+                   path = file.path(".","data","local", "grts_level8.tif"), 
+                   overwrite = TRUE)
+}
+
+grts_level8 <- raster(file.path(".","data","local", "grts_level8.tif"))
+
+
+if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | refresh_data >= 1) {
+    drive_download(drive_get(id = "1pBI9hTIaRpV_qfExYHLdxiFEl81OQPP8"), 
+                   path = file.path(".","data","local", "grts_level5.tif"), 
+                   overwrite = TRUE)
+}
+
+grts_level5 <- raster(file.path(".","data","local", "grts_level5.tif"))
+
+
+```
+
+```{r tubes-excess-spatial}
+tubes_excess <- tubes_in_raster %>% 
+  inner_join(tubes_cat3_bis %>% 
+               select(loc_code, selectie, gew_aantal_meetptn)
+             , by = "loc_code") 
+
+#toevoegen van een uniek rijnummer
+tubes_excess <- rownames_to_column(tubes_excess, "unieknr") %>% 
+  mutate(unieknr = as.integer(unieknr))
+
+tubes_excess_sf <- as_points(tubes_excess)
+```
+
+```{r tubes-excess-plot, fig.cap = "de ligging van de beschikbare peilbuizen"}
+
+tubes_excess_tm <- raster_meetnet_poly_tm + 
+  tm_shape(tubes_excess_sf %>% mutate(cat = factor(if_else(selectie == -1, 1, 3)))) + 
+  tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "cat", clustering = FALSE) + tm_layout(title = "beschikbare peilbuizen voor selectie" , asp = 0)
+
+tubes_excess_tm
+```
+
+```{r grid-excess-table}
+sel_excess <- sel_cat3_table_bis %>% 
+              select(rasterid, groupnr) %>%
+  arrange(rasterid, groupnr) %>% 
+  distinct()
+```
+
+```{r assigning-tubes-grts, cache=TRUE}
+#gecached !
+
+sel_excess <- sel_cat3_table_bis %>% 
+  select(rasterid, groupnr, gew_aantal_meetptn) %>%
+  arrange(rasterid, groupnr, gew_aantal_meetptn) %>% 
+  distinct()
+
+sel_excess_rasterid <- sel_excess %>% 
+  distinct(rasterid)
+
+tubes_excess$geselecteerd <- 0
+tubes_excess$reserve <- 0
+
+for (i in seq(1:nrow(sel_excess_rasterid))) {
+  rasterid_grid <- sel_excess_rasterid[i,] %>% as.integer()
+  clip8 <- grts_level8[grts_level8 == rasterid_grid, drop =  FALSE]
+  clip0 <- grts_level0[clip8, drop =  FALSE]
+  
+  tubes_excess_1grid <- tubes_excess %>% 
+    filter(rasterid == rasterid_grid) %>% 
+    count(groupnr, gew_aantal_meetptn) %>% 
+    rename(aantalpb = n)
+  
+  #print(rasterid_grid)
+  
+  # plot(tubes_excess_level0)
+  for (j in seq(1:nrow(tubes_excess_1grid))) {
+    # ophalen van bijhorend aantal gewenste meetpunten en gw-groep, want een rastercel kan meerdere gw-groepen hebben waar er een overtal is (en het gewenste aantal meetpunten is specifiek per gw-groep)
+    gewenst_aantal_pb <- tubes_excess_1grid %>% 
+      slice(j) %>% 
+      pull(gew_aantal_meetptn) %>% 
+      as.integer()
+    gwgroup <- tubes_excess_1grid %>% 
+      slice(j) %>%
+      pull(groupnr) %>% 
+      as.integer()
+    aantalpb <- tubes_excess_1grid %>% 
+      slice(j) %>%
+      pull(aantalpb) %>% 
+      as.integer()
+    
+
+    #groep pb indien mogelijk beperken tot alleen de geschikte. 
+    aantalgoedepb <- tubes_excess %>% 
+      filter(rasterid == rasterid_grid & selectie == 1 & groupnr == gwgroup) %>% 
+      count(gew_aantal_meetptn) %>% 
+      pull(n) %>% 
+      as.integer()
+    geen_grts_nodig <- FALSE
+    if (purrr::is_empty(aantalgoedepb)) {
+      tubes_toselect <- tubes_excess 
+    } else if (aantalgoedepb >= gewenst_aantal_pb) {
+      if (aantalgoedepb == gewenst_aantal_pb) {
+        geen_grts_nodig <- TRUE
+        tubes_toselect <- tubes_excess %>% 
+          filter(selectie == 1)
+      } else {
+      tubes_toselect <- tubes_excess %>% 
+        filter(selectie == 1)
+      }
+    } else {
+      tubes_toselect <- tubes_excess 
+    }
+    tubes_toselect <- tubes_toselect %>% 
+        filter(rasterid == rasterid_grid & groupnr == gwgroup)
+    
+    if (geen_grts_nodig == FALSE) {
+         
+      #binnen een deelraster (clip0), alleen de rastercellen van level0 selecteren waarbinnen een pb valt. 
+      #De andere rastercellen worden NA
+      tubes_excess_level0 <- 
+        raster::rasterize(tubes_toselect %>% 
+                            select(x, y) %>% 
+                            as.matrix(), 
+                          y = clip0, #raster-object
+                          mask = TRUE)
+      
+      #rangorde bepalen van de grts-nrs van de geselecteerde rastercellen 
+      rank_cells_level0 <- tubes_excess_level0 %>% 
+        raster::getValues() %>% 
+        as.data.frame()
+      names(rank_cells_level0) <- "celwaarde" 
+      rank_cells_level0 <- rank_cells_level0 %>% 
+        filter(!is.na(celwaarde)) %>%  
+        distinct() %>% 
+        mutate(minrank = min_rank(celwaarde)) %>% 
+        arrange(minrank) 
+      
+      # rank_cells_level0
+      
+      # raster met grts-nrs herindexeren. Een 1-waarde stemt overeen met een gewenste peilbuis (voor dat grid), de overige nummer(s) zijn de reservepunt(en).
+      # Hiervoor moet er eerst een n*2 matrix (rcl) gemaakt worden met de oude en nieuwe celwaarde.
+      rcl <- data.frame("grtsnr" = rank_cells_level0 %>% pull(celwaarde), 
+                        "selectie" = 
+                          c(rep(1,gewenst_aantal_pb), seq(from = gewenst_aantal_pb + 1, to = nrow(rank_cells_level0)))) %>% 
+        as.matrix()
+      
+      #herindexeren
+      tubes_excess_level0_rcl <- raster::reclassify(tubes_excess_level0, rcl)
+      
+      #raster maken met de unieke nummers van de pb, maar dat enkel voor het gewenste aantal pb
+      tubes_excess_level0_unieknr <- 
+        raster::rasterize(tubes_excess %>% 
+                            filter(groupnr == gwgroup) %>% 
+                            select(x, y) %>% 
+                            as.matrix(),
+                          tubes_excess_level0_rcl[tubes_excess_level0_rcl == 1, drop = FALSE],
+                          field = tubes_excess %>% 
+                            filter(groupnr == gwgroup) %>%
+                            select(unieknr), 
+                          mask = FALSE)
+      
+      #ophalen van de unieke nummers
+      tubes_excess_selected_unieknr <- tubes_excess_level0_unieknr %>% 
+        raster::getValues() %>% 
+        as.data.frame()
+      names(tubes_excess_selected_unieknr) <- "unieknr" 
+      tubes_excess_selected_unieknr <- tubes_excess_selected_unieknr %>% 
+        filter(!is.na(unieknr)) %>%  
+        distinct() %>% 
+        arrange(unieknr) %>% 
+        pull(unieknr)
+      
+      #peilbuis als geselecteerd markeren
+      tubes_excess[tubes_excess$unieknr %in% tubes_excess_selected_unieknr, "geselecteerd"] <- 1
+    } else {
+      tubes_excess[tubes_excess$unieknr %in% tubes_toselect$unieknr, "geselecteerd"] <- 1      
+    }
+    #idem maar nu voor de reservepunten. Dit kan ik niet in één keer, gelukkig duurt het niet lang.
+    #raster maken met de unieke nummers van de pb, maar dat enkel voor de reservepunten
+    #enkel indien het aantal pb (voldoende in rang) > aantal gewenst
+    if (gewenst_aantal_pb < aantalpb) {
+      for (k in seq(from = (gewenst_aantal_pb + 1), to = nrow(rank_cells_level0))) {
+        tubes_excess_level0_unieknr <- 
+          raster::rasterize(tubes_excess %>% 
+                              filter(groupnr == gwgroup) %>% 
+                              select(x, y) %>% 
+                              as.matrix(),
+                            tubes_excess_level0_rcl[tubes_excess_level0_rcl == k, drop = FALSE],
+                            field = tubes_excess %>% 
+                              filter(groupnr == gwgroup) %>%
+                              select(unieknr), 
+                            mask = FALSE)
+        
+        #ophalen van de unieke nummers
+        tubes_excess_selected_unieknr <- tubes_excess_level0_unieknr %>% 
+          raster::getValues() %>% 
+          as.data.frame()
+        names(tubes_excess_selected_unieknr) <- "unieknr" 
+        tubes_excess_selected_unieknr <- tubes_excess_selected_unieknr %>% 
+          filter(!is.na(unieknr)) %>%  
+          distinct() %>% 
+          arrange(unieknr) %>% 
+          pull(unieknr)
+        
+        #peilbuis als geselecteerd markeren
+        tubes_excess[tubes_excess$unieknr %in% tubes_excess_selected_unieknr, "reserve"] <- k
+      }#loop reservepunten
+    } #controle aantal reservepunten
+  } #loop gw-groepen
+} # loop gridcellen
+#aanduiden welke pb geselecteerd zijn
+tubes_cat3_grts <- tubes_excess %>% 
+  filter(geselecteerd == 1) %>% 
+  arrange(rasterid, groupnr, loc_code)
+
+tubes_cat3_grts_reserve <- tubes_excess %>% 
+  filter(reserve > 0) %>% 
+  arrange(rasterid, groupnr, reserve)
+
+```
+
+```{r write-grts-tubes, message=FALSE}
+#wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
+output_vc <- write_vc(tubes_cat3_grts, file.path(".","data","tubes_cat3_grts"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
+output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
+rm(output_vc)
+
+  
+```
+
+Tabel \@ref(tab:grts-result-3-table) geeft  het overzicht van de `r nrow(tubes_cat3_grts)` geselecteerde meetpunten .
+
+```{r grts-result-1-table, message=FALSE, eval = FALSE}
+kable(tubes_cat1_grts %>%
+        select(rasterid, groupnr, area_name, loc_code, x, y) %>%
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               gebied = area_name,
+               watinacode =  loc_code
+               ) %>%
+        arrange(rastercelnummer, GTgroep),
+      caption =  "Geselecteerde peilbuizen die behoren tot rastercellen van cat. 1B"
+      ) %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T,
+                position = "left",
+                font_size = 8,
+                fixed_thead = T
+                ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+```
+
+<!-- <br/><br/> -->
+
+```{r grts-result-3-table, message=FALSE}
+kobj <- kable(tubes_cat3_grts %>%
+        select(rasterid, groupnr, area_name, loc_code, x, y) %>%
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               gebied = area_name,
+               watinacode =  loc_code
+               ) %>%
+        arrange(rastercelnummer, GTgroep),
+      caption =  "Geselecteerde peilbuizen die behoren tot rastercellen van cat. 3"
+      ) 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T,
+                position = "left",
+                font_size = 8,
+                fixed_thead = T
+                ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+```
+
+###Samenvatting selectie peilbuizen
+```{r synthese-tubes}
+tubes_selected <- bind_rows(tubes_cat1 %>% mutate(cat = "1"), 
+                            tubes_cat2_bis %>% mutate(cat = "2"),
+                            tubes_cat3_grts %>% mutate(cat = "3"))
+
+tubes_selected <- tubes_selected %>% 
+  select(-selectie) %>% 
+  left_join(tubes_eval_namenyanthes %>% 
+              select(loc_code, selectie), by = "loc_code")
+
+tubes_reserve <- bind_rows(tubes_cat3_grts_reserve %>% mutate(cat = "3")
+)
+tubes_reserve <- tubes_reserve %>% 
+  select(-selectie) %>% 
+  left_join(tubes_eval_namenyanthes %>% 
+              select(loc_code, selectie), by = "loc_code")                         
+```
+
+
+Tabel \@ref(tab:synthese-selection-tubes) toont het overzicht van alle `r nrow(tubes_selected)` geselecteerde peilbuizen.
+Hiervan zijn er `r nrow(tubes_selected %>% filter(selectie ==1))` die op basis van hun data nu reeds inzetbaar zijn.
+
+
+Tabel \@ref(tab:synthese-reserve-tubes) geeft alle `r nrow(tubes_reserve)` reservepunten weer.
+
+
+```{r synthese-selection-tubes}
+
+kobj <- kable(tubes_selected %>%
+      select(rasterid, groupnr, area_name, loc_code, x, y, selectie) %>%
+      mutate('direct inzetbaar' = if_else(selectie == 1, 'Ja', 'Nee')) %>% 
+      rename(GTgroep = groupnr,
+             rastercelnummer = rasterid,
+             gebied = area_name,
+             watinacode =  loc_code
+             ) %>%
+      arrange(rastercelnummer, GTgroep),
+      caption =  "Overzicht van de geselecteerde peilbuizen"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T,
+                position = "left",
+                font_size = 8,
+                fixed_thead = T
+                ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+
+```
+
+<br/><br/>
+
+```{r synthese-reserve-tubes}
+
+kobj <- kable(tubes_reserve %>%
+        select(rasterid, groupnr, area_name, loc_code, x, y) %>%
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               gebied = area_name,
+               watinacode =  loc_code
+               ) %>%
+        arrange(rastercelnummer, GTgroep),
+      caption =  "Overzicht van de reserve peilbuizen"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T,
+                position = "left",
+                font_size = 8,
+                fixed_thead = T
+                ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+
+```
+
+<br/><br/>
+
+Figuur \@ref(fig:tubes-selected-plot) toont de geselecteerde peilbuizen op kaart. 
+Er wordt een onderscheid gemaakt tussen de meetpunten die meetpunten die reeds inzetbaar zijn en de meetpunten waarbij er nog extra metingen nodig zijn.
+
+```{r tubes-selected-plot, fig.cap = "de ligging van de geselecteerde peilbuizen"}
+tubes_selected_sf <- as_points(tubes_selected)
+
+tubes_selected_tm <- raster_meetnet_poly_tm + 
+  tm_shape(tubes_selected_sf %>% mutate(Inzetbaarheid = factor(if_else(selectie == -1, "potentieel", "actueel")))) + 
+  tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "Inzetbaarheid", clustering = FALSE) + tm_layout(title = "geselecteerde peilbuizen", asp = 0 )
+
+tubes_selected_tm
+```
+###Selecteren van potentiële geschikte habitatvlekken voor rastercellen van categorie 1.
+Via een desktop-analyse zoals hieronder beschreven wordt, kunnen slechts kandidaat habitatvlekken geselecteerd worden. Opdat deze habitatvlek werkelijk geschikt is om er een pb te plaatsen, vergt meestal nog nader onderzoek en meestal ook een inspectie ter plaatse. Een kandidaat habitatvlek kan dan alsnog geweerd worden. Alternatieve habitatvlekken liggen best in de buurt van de oorspronkelijke kandidaat-habitatvlek, maar als je GRTS-proof werkt en je gridcel heeft een grote oppervlakte, kan het vinden van een geschikt alternatief leiden tot ellenlange zoektochten en veel over en weer gerij. 
+De hier gepresenteerde methode volgt een meer pragmatische benadering. 
+Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseerd obv de grondwatergroepen. Elke cel van 32\*32m wordt zo in een van de vijf groepen ingedeeld. Is er voor een bepaalde grondwatergroep een pb gewenst, dan wordt de bijhorende rastercel met het laagste rangnummer gekozen. Deze cel ligt ingebed in een grotere grid van bijv. 1024\*1024. Hierbinnen worden de rastercellen die tot dezelfde gw-groep behoren geselecteerd en gerangschikt volgens oplopend rangnummer. Dit zijn bij voorkeur de alternatieve plaatsen.
+
+```{r selection-polygon-cat1A, cache=TRUE, message=FALSE, warning= FALSE}
+
+ #wat voorbereidende databewerkingen aan de overlay habitatkaart en het raster (grid8)
+ habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>%
+   rownames_to_column(var = "unieknr") %>%
+   mutate(unieknr = as.integer(unieknr))
+ 
+ habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+   mutate(selecteerbaar = 1, 
+          selecteerbaar_reserve = 1) 
+ 
+ #overzicht van rasterid-GT-groep waarbinnen moet gezocht worden
+ sel_cat1A_raster_gw_df <- sel_cat1A_raster %>% 
+   st_drop_geometry() %>% 
+   select(-opp_gw_cel) %>% 
+   arrange(rasterid, groupnr) %>% 
+   distinct()
+ 
+ #sel_cat1A_raster_gw_df is praktisch hetzelfde als sel_cat1A_table
+ 
+ #overzicht van alleen de rastercellen
+ sel_cat1A_raster_df <- sel_cat1A_raster_gw_df %>% 
+   select(-groupnr) %>% 
+   distinct
+ 
+ # loop per rastercel
+ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
+   
+   rasterid_grid <- sel_cat1A_raster_df[i, "rasterid"] %>% 
+                      as.integer()
+   
+   sel_cat1A_raster_1grid <- sel_cat1A_raster_gw_df %>% 
+     filter(rasterid == rasterid_grid) %>% 
+     mutate(n_tubes = replace_na(n_tubes,0),
+            gewenst_aantal_pb = gew_aantal_meetptn - n_tubes)
+
+   
+   clip8 <- grts_level8[grts_level8 == rasterid_grid, drop =  FALSE] #uitsnede van het 8km-raster
+   clip0 <- grts_level0[clip8, drop =  FALSE] #uitsnede van het 32m raster
+   clip5 <- grts_level5[clip8, drop =  FALSE] #uitsnede van het 1024m-raster
+   
+   #loop per gGT-groep
+   for (j in seq(1:nrow(sel_cat1A_raster_1grid))) {
+
+     gewenst_aantal_pb <- sel_cat1A_raster_1grid %>% 
+       pull(gewenst_aantal_pb) %>% 
+       as.integer()
+     
+     gwgroup <- sel_cat1A_raster_1grid %>% 
+       pull(groupnr) %>% 
+       as.integer()
+     
+     # raster met binnen het grid (level8) de rangnummers (GRTS) van de habitatpolygonen die behoren tot een bep. grondwatergroep
+     habmap_raster_rangnr <- raster::rasterize(habmap_gw_raster_overlay %>% 
+                                                 filter(groupnr == gwgroup & selecteerbaar == 1),
+                                               clip0, 
+                                               mask = TRUE)
+
+     #opzoeken van de laagste rangnummer(s) grid level 0(hoogste resolutie)
+     grid_rangnr <- habmap_raster_rangnr %>% 
+       raster::getValues() %>% 
+       as.data.frame()
+     names(grid_rangnr) <- "celwaarde" 
+     grid_rangnr <- grid_rangnr %>% 
+       filter(!is.na(celwaarde)) %>%  
+       distinct() %>% 
+       arrange(celwaarde) 
+
+     # raster met grts-nrs herindexeren naar 0 en 1 waarden. Het aantal 1 waarden stemt overeen met het gewenst aantal peilbuizen (voor dat grid).
+     # Hiervoor moet er eerst een n*2 matrix (rcl) gemaakt worden met de oude en nieuwe celwaarde.
+     rcl <- data.frame("grtsnr" = grid_rangnr %>% pull(celwaarde), 
+                       "selectie" = 
+                         c(rep(1,gewenst_aantal_pb), rep(0,nrow(grid_rangnr) - gewenst_aantal_pb))) %>% 
+       as.matrix()
+     
+     #herindexeren
+     habmap_raster_rcl <- raster::reclassify(habmap_raster_rangnr, rcl)
+
+     # raster met binnen het grid (level8) alle unieke nrs van de habitatpolygonen die behoren tot een bep. grondwatergroep
+     habmap_raster_unieknr <- raster::rasterize(habmap_gw_raster_overlay %>%
+                                                  filter(groupnr == gwgroup & selecteerbaar == 1),
+                                                clip0,
+                                                field = "unieknr",
+                                                mask = FALSE)
+     # habmap_raster_unieknr[habmap_raster_rangnr[habmap_raster_rangnr == 46054, drop = FALSE], drop= FALSE]
+     
+     #raster maken met de unieke nummers van de pb, maar dat enkel voor het gewenste aantal
+
+     habmap_raster_unieknr_select <- habmap_raster_unieknr * habmap_raster_rcl[habmap_raster_rcl == 1, drop = FALSE]
+     
+     habmap_raster_unieknr_select_df <- habmap_raster_unieknr_select %>% 
+       raster::getValues() %>% 
+       as.data.frame()
+     names(habmap_raster_unieknr_select_df) <- "unieknr"    
+     habmap_raster_unieknr_select_df <- habmap_raster_unieknr_select_df %>% 
+       filter(!is.na(unieknr)) %>%  
+       distinct() %>% 
+       arrange(unieknr) %>% 
+       mutate(geselecteerd = 1)
+     
+     #vind de habmap-polygoon voor die rastercel
+     habmap_gw_raster_overlay <- 
+       habmap_gw_raster_overlay %>% 
+       left_join(habmap_raster_unieknr_select_df, 
+                 by = "unieknr") %>% 
+       mutate(selecteerbaar = ifelse(is.na(geselecteerd), selecteerbaar, 0)) %>% 
+       select(-geselecteerd)
+     
+     
+     #opzoeken reservepunten
+     #ophalen van bijhorende rangnr's van level5 (+/- 1km-hok)
+     clip5_select <- clip5 * habmap_raster_rcl[habmap_raster_rcl == 1, 
+                                               drop = FALSE]
+
+     
+     #selectie van de geselecteerde rangnr(s)
+     clip5_select_df <- clip5_select %>% 
+       raster::getValues() %>% 
+       as.data.frame()
+     names(clip5_select_df) <- "celwaarde"  
+     clip5_select_df <- 
+       clip5_select_df %>% 
+       filter(!is.na(celwaarde)) %>% 
+       distinct %>% 
+       arrange(celwaarde) %>% 
+       mutate(selectie =  1)
+     
+     #opstellen van een clip-raster op basis van de geselecteerde rangnr(s)
+     #dit door een reclassering te doen: alle cellen van grid5 worden 0, behalve die met de geselecteerde celwaarde
+     #alle celwaarden opzoeken binnen grid8
+     clip5_range <- clip5 %>% 
+       raster::getValues() %>% 
+       as.data.frame()
+     names(clip5_range) <- "celwaarde"  
+     clip5_range <- clip5_range %>% distinct %>% arrange(celwaarde)
+     
+     #opbouw van reclas
+     clip5_rcl <- clip5_range %>% 
+       left_join(clip5_select_df) %>% 
+       arrange(desc(selectie), celwaarde)
+     
+     rcl <- data.frame("grtsnr" = clip5_rcl %>% pull(celwaarde), 
+                       "selectie" = 
+                         c(rep(1,gewenst_aantal_pb), 
+                           rep(0,nrow(clip5_rcl) - gewenst_aantal_pb))) %>% 
+       as.matrix()
+     
+     habmap_raster_reserve_rcl <- raster::reclassify(clip5, rcl)
+     habmap_raster_unieknr_reserve <- 
+       habmap_raster_unieknr * habmap_raster_reserve_rcl
+
+     
+     #ophalen van unieke nummers
+     #selectie van de geselecteerde rangnr(s)
+     habmap_raster_unieknr_reserve_df <- habmap_raster_unieknr_reserve %>% 
+       raster::getValues() %>% 
+       as.data.frame()
+     names(habmap_raster_unieknr_reserve_df) <- "unieknr"  
+     habmap_raster_unieknr_reserve_df <- 
+       habmap_raster_unieknr_reserve_df %>% 
+       filter(!is.na(unieknr) & unieknr > 0) %>% 
+       distinct %>% 
+       arrange(unieknr) %>% 
+       mutate(geselecteerd =  1)
+     
+     
+     #markeren en ook zo vermijden dat een polygoon twee keer wordt geselecteerd
+     habmap_gw_raster_overlay <- 
+       habmap_gw_raster_overlay %>% 
+       left_join(habmap_raster_unieknr_reserve_df, 
+                 by = "unieknr") %>% 
+       mutate(selecteerbaar_reserve = ifelse(is.na(geselecteerd), selecteerbaar_reserve, 0)) %>% 
+       select(-geselecteerd)
+   } #loop grondwatergroup
+ } #loop grid
+
+ tubes_cat1_polyg <-
+   habmap_gw_raster_overlay %>% 
+   rename(geselecteerd_basis = selecteerbaar,
+          geselecteerd_reserve = selecteerbaar_reserve) %>% 
+   mutate(geselecteerd_basis = ifelse(geselecteerd_basis == 0,1,0),
+          geselecteerd_reserve = ifelse(geselecteerd_reserve == 0,1,0)
+   ) %>% 
+   filter(geselecteerd_basis == 1 | geselecteerd_reserve == 1) %>% 
+   arrange(rasterid, type, polygon_id) 
+ 
+ habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+   select(-starts_with("selecteerbaar"))
+ 
+ #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
+ output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
+ rm(output_vc)
+```
+
+Figuur \@ref(fig:tubes-cat1-new) toont de verspreiding van de plaatsen waar er bij voorkeur nog een peilbuis wordt geplaatst. 
+
+```{r tubes-cat1-new, fig.cap="Meetpunten waar nog een peilbuis nodig is "}
+tubes_cat1_polyg_tm <- raster_meetnet_poly_tm + 
+  tm_shape(tubes_cat1_polyg %>% filter(geselecteerd_basis == 1)) + 
+  tm_bubbles(size =  0.5, col = "groupnr", style = "cat", palette = "BuGn", title.col = "Grondwatertype" ) +
+  tm_layout(title = "Meetpunten van categorie 1 waar nog een peilbuis nodig is", asp = 0 )
+
+tubes_cat1_polyg_tm
+```
+
+
