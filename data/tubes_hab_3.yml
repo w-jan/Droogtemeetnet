@@ -1,5 +1,5 @@
 ..generic:
-  git2rdata: '0.1'
+  git2rdata: 0.2.0
   optimize: yes
   NA string: NA
   sorting:
@@ -9,7 +9,7 @@
   - patch_id
   - type
   hash: 8db399ca945b2dc081afd45463a05b5c024d1d3b
-  data_hash: b3b76aedf285e0aa2f43271c6d90e2f63015df5c
+  data_hash: fba9c8c289a34ddc251465d4aaa7c777450b1058
 loc_code:
   class: character
 area_code:

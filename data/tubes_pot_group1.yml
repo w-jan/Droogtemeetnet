@@ -1,5 +1,5 @@
 ..generic:
-  git2rdata: '0.1'
+  git2rdata: 0.2.0
   optimize: yes
   NA string: NA
   sorting:
@@ -7,7 +7,7 @@
   - type
   - polygon_id
   hash: e6357104bc2f264930b54dea921c50b53a3f4aa5
-  data_hash: 4d90c47c1cf92564c81ada1da9522d7d524c854b
+  data_hash: 61b8f7a2ab7029bb8faa80600c9bea3a617c3a1b
 unieknr:
   class: numeric
 polygon_id:

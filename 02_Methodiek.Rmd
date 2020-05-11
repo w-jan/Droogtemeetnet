@@ -65,7 +65,7 @@ Figuur \@ref(fig:workflow-rastercellen) geeft een schematisch overzicht van de g
 
 ```{r workflow-rastercellen, fig.cap='(ref:workflow-rastercellen)'}
 if (pdfmaken == TRUE) {
-  include_graphics(path = file.path("figures", "workflow_rasterselectie_portrait.jpg"))  
+  include_graphics(path = file.path("figures", "workflow_rasterselectie_pdf.jpg"))  
 } else {
   include_graphics(path = file.path("figures", "workflow_rasterselectie.png"))
 }
@@ -93,7 +93,7 @@ Figuur \@ref(fig:workflow-selectiepb-part1) geeft een schematisch overzicht van 
 ```{r workflow-selectiepb-part1, fig.cap='(ref:workflow-selectiepb1)'}
 if (pdfmaken == TRUE) {
   include_graphics(path = file.path(".","figures", 
-                                    "workflow_pbselectie_part1_portrait.jpg"))
+                                    "workflow_pbselectie_part1_pdf.jpg"))
 } else {
   include_graphics(path = file.path("figures", "workflow_pbselectie_part1.png"))
 }
@@ -353,7 +353,7 @@ Figuur \@ref(fig:workflow-selectiepb-part2) geeft schematisch het overzicht van 
 ```{r workflow-selectiepb-part2, fig.cap='(ref:workflow-selectiepb2)'}
 if (pdfmaken == TRUE) {
   include_graphics(path = file.path(".","figures", 
-                                    "workflow_pbselectie_part2_portrait.jpg"))
+                                    "workflow_pbselectie_part2_pdf.jpg"))
 } else {
   include_graphics(path = file.path(".","figures", 
                                     "workflow_pbselectie_part2.png"))

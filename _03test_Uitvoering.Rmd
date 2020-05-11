@@ -1,0 +1,61 @@
+
+# Uitvoering
+
+De toepassing van de hiervoor besproken methodiek is volledig gebeurd met R versie 3.6.1 (@citingR), tenzij anders vermeld.
+Meer details hierover is vermeld in bijlage \@ref(gebruikte-werkomgeving).
+
+De code voor analyse en dit rapport is ook te vinden op de GitHub-repository [n2khab-droogtemeetnet](https://github.com/inbo/n2khab-droogtemeetnet).
+
+## Keuze rasterlaag
+
+Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de gaHT kiezen we een opgeschaalde variant van de Vlaamse `GRTSmaster_habitats` databron, meer bepaald op 'level 8' ([bron](https://doi.org/10.5281/zenodo.3354405)), t.t.z. met cellen van 8192 m (figuur \@ref(fig:meetnetontwerp)).
+```{r meetnetontwerp, fig.cap = "Het GRTS-raster voor Vlaanderen, level 8 (8192m)"}
+
+#importeren van GRTS-lagen, voor het meetnet kiezen we level 8: cellen van 8192 m
+#datapath <- "./data/local/n2khab-binaire-databronnen"
+
+
+#level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
+
+#raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh_data >= 1 ){
+    drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
+                   path = file.path(".","data","local", 
+                                    "raster_meetnet_poly.gpkg"), overwrite = 
+                     TRUE)
+}
+
+raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
+
+#oppervlakte van elk hok berekenen
+raster_meetnet_poly_opp <- raster_meetnet_poly %>% 
+  mutate(opp = as.integer(st_area(raster_meetnet_poly))) %>% 
+  st_drop_geometry() %>% 
+  dplyr::select(rasterid, opp) %>% 
+  group_by(rasterid) %>% 
+  summarise(totopp = sum(opp))
+
+#welke crs?
+#st_crs(habmap_polygons_gw) #lambert
+#plot(raster_meetnet_poly, main = "GRTS-raster level 8")
+#st_is_valid(raster_meetnet_poly)
+raster_meetnet_poly <- lwgeom::st_make_valid(raster_meetnet_poly)
+#st_is_valid(raster_meetnet_poly)
+
+raster_meetnet_poly_tm <- tm_shape(raster_meetnet_poly) + 
+  tm_polygons() + tm_layout(title = "GRTS-raster level 8 (8192m)" , asp = 0 )
+
+raster_meetnet_poly_tm
+#st_crs(raster_meetnet_poly) #lambert
+
+
+#check op unieke celwaarden
+check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filter(n > 1)
+#van bepaalde cellen zijn er dus meerdere polygonen, dit zijn rasters die door de gewestgrens verdeeld werden (bijv. streek van Baarle-Nassau) 
+
+
+```
+
+## Selectie rastercellen
+
+Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vijf grondwatergroepen volgens de habitatkaart (figuur \@ref(fig:overlay-habitatkaart-GRTS-plot)). 

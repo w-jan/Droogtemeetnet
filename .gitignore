@@ -40,6 +40,13 @@ rsconnect/
 /figures/local/*
 .Rproj.user
 
+# temporary map, files
+/temp/*
+/src/temp/*
+
+#cache
+/src/cache/*
+
 # Other
 _bookdown_files/
 *.html

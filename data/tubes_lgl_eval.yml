@@ -1,12 +1,12 @@
 ..generic:
-  git2rdata: '0.1'
+  git2rdata: 0.2.1
   optimize: yes
   NA string: NA
   sorting:
   - loc_code
   - ser_firstyear
   hash: 98c452b39edf6c3b5006df72928d30fc4ffbcb76
-  data_hash: a3a91a9a4b47315d909004fee6342b9c69ff7f8a
+  data_hash: d9826049fd1e2ac8ee2700a16131fde0142e41a4
 loc_code:
   class: character
 xg3_variable:

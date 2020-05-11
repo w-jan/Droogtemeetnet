@@ -1,10 +1,10 @@
 ..generic:
-  git2rdata: '0.1'
+  git2rdata: 0.2.1
   optimize: yes
   NA string: NA
   sorting: type
-  hash: 1a25ec4675be4a4f3bf92a56406bab0d557f3dd4
-  data_hash: 3d981a0cf501bf3605c4bb72a203f6fba5c83fe7
+  hash: a320a96260b21d49d8c7249ed92b77183915b027
+  data_hash: 25bb1cc45546542ad679e89a036b5e75d0b4cfcb
 type:
   class: factor
   labels:
@@ -916,3 +916,114 @@ tag_3_name:
   class: character
 tag_3_shortname:
   class: character
+hydr_class:
+  class: factor
+  labels:
+  - HC1
+  - HC12
+  - HC2
+  - HC23
+  - HC3
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  ordered: no
+hydr_class_name:
+  class: factor
+  labels:
+  - Droog tot vochtig
+  - Droog tot vochtig + Tijdelijk tot permanent nat
+  - Tijdelijk tot permanent nat
+  - Tijdelijk tot permanent nat + Oppervlaktewater
+  - Oppervlaktewater
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  ordered: no
+hydr_class_shortname:
+  class: factor
+  labels:
+  - Droog
+  - Droog + Nat
+  - Nat
+  - Nat + Oppervlaktewater
+  - Oppervlaktewater
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  ordered: no
+groundw_dep:
+  class: factor
+  labels:
+  - GD0
+  - GD1
+  - GD2
+  index:
+  - 1
+  - 2
+  - 3
+  ordered: no
+groundw_dep_name:
+  class: factor
+  labels:
+  - niet grondwaterafhankelijk
+  - grondwaterafhankelijk op een deel van de locaties
+  - grondwaterafhankelijk op (bijna) alle locaties
+  index:
+  - 1
+  - 2
+  - 3
+  ordered: no
+groundw_dep_shortname:
+  class: factor
+  labels:
+  - niet grondwaterafhankelijk
+  - plaatselijk grondwaterafhankelijk
+  - (bijna) overal grondwaterafhankelijk
+  index:
+  - 1
+  - 2
+  - 3
+  ordered: no
+flood_dep:
+  class: factor
+  labels:
+  - FD0
+  - FD1
+  - FD2
+  index:
+  - 1
+  - 2
+  - 3
+  ordered: no
+flood_dep_name:
+  class: factor
+  labels:
+  - niet overstromingsafhankelijk
+  - overstromingsafhankelijk op een deel van de locaties
+  - overstromingsafhankelijk op (bijna) alle locaties
+  index:
+  - 1
+  - 2
+  - 3
+  ordered: no
+flood_dep_shortname:
+  class: factor
+  labels:
+  - niet overstromingsafhankelijk
+  - plaatselijk overstromingsafhankelijk
+  - (bijna) overal overstromingsafhankelijk
+  index:
+  - 1
+  - 2
+  - 3
+  ordered: no

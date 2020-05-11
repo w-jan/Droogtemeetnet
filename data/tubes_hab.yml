@@ -1,5 +1,5 @@
 ..generic:
-  git2rdata: '0.1'
+  git2rdata: 0.2.1
   optimize: yes
   NA string: NA
   sorting:
@@ -7,8 +7,8 @@
   - polygon_id
   - rasterid
   - type
-  hash: fec3d68a93a207c1e9d61bd945e5cfb7079ce4fd
-  data_hash: a0bc2360eb3e4a4b0ca66b659621fc18011e9cdf
+  hash: 9a6a93379f34d8cc4f2ee0b99f08baa097d46558
+  data_hash: b6efb0369b1d7af82db87956c58767ff52c080ad
 loc_code:
   class: character
 area_code:
@@ -136877,24 +136877,6 @@ soilsurf_ost:
   class: numeric
 description:
   class: character
-source.x:
-  class: factor
-  labels:
-  - habitatmap_stdized
-  - habitatmap_stdized + interpretation
-  index:
-  - 1
-  - 2
-  ordered: no
-source.y:
-  class: factor
-  labels:
-  - habitatmap_stdized
-  - habitatmap_stdized + interpretation
-  index:
-  - 1
-  - 2
-  ordered: no
 typegroup_name:
   class: factor
   labels:
@@ -136929,4 +136911,13 @@ typegroup_name:
   - 13
   - 14
   - 15
+  ordered: no
+source:
+  class: factor
+  labels:
+  - habitatmap_stdized
+  - habitatmap_stdized + interpretation
+  index:
+  - 1
+  - 2
   ordered: no

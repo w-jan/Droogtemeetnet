@@ -1,12 +1,12 @@
 ..generic:
-  git2rdata: '0.1'
+  git2rdata: 0.2.1
   optimize: yes
   NA string: NA
   sorting:
   - loc_code
   - hydroyear
   hash: 1bfabd4886fcd34b502ee971dd4fd7fd4632bf7c
-  data_hash: a7b6e0c01547d678df34e204a4fab94e863630d3
+  data_hash: ed9f61e28a83fc9947fcecbfa07c3fe1df753731
 loc_code:
   class: character
 hydroyear:

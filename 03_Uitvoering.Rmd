@@ -2504,7 +2504,11 @@ tubes_reserve <- bind_rows(tubes_cat3_grts_reserve %>% mutate(cat = "3")
 tubes_reserve <- tubes_reserve %>% 
   select(-selectie) %>% 
   left_join(tubes_eval_namenyanthes %>% 
-              select(loc_code, selectie), by = "loc_code")                         
+              select(loc_code, selectie), by = "loc_code")      
+
+output_vc <- write_vc(tubes_selected, file.path(".","data","tubes_selected"), sorting = c("loc_code"), strict =  FALSE)
+output_vc <- write_vc(tubes_reserve, file.path(".","data","tubes_reserve"), sorting = c("loc_code"), strict =  FALSE)
+rm(output_vc)
 ```
 
 

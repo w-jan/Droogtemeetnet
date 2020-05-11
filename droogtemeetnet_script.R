@@ -27,7 +27,7 @@ library(RSQLite)
 #keuzen voor het aanmaken van een document
 #welke data verversen
 # 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
-refresh_data <- 0
+refresh_data <- 2
 if (refresh_data == 2) {
   datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
   dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
@@ -35,7 +35,7 @@ if (refresh_data == 2) {
 
 #figuren opnieuw aanmaken of inlezen
 # 2: figuren terug aanmaken (en wegschrijven); 1: enkel de huidige google-drive-bestanden downloaden, 0: figuren inlezen
-refresh_figures <- 0
+refresh_figures <- 2
 if (refresh_figures == 2) {
   figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
 }
@@ -53,6 +53,7 @@ aantal_strat <- 5
 
 #verdeling meetpunten over de stratificatielagen
 minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
+minaantal_tub_group <- c(0,34,33,22,11)
 
 #kwaliteitscriteria meetreeksen
 #minimale lengte van de tijdreeks 
@@ -73,6 +74,7 @@ bufferpb <- 3
 #uitgesloten_tubes <- c("MOSP001", "HALP005", "BUIP027")
 uitgesloten_tubes <- "leeg"
 
+# upgrade_data(path = ".")
 
 #inladen gegevens (niet verplicht, enkel nodig bij updates van de brondata)
 if (refresh_data == 2) {
@@ -112,7 +114,7 @@ if (refresh_data == 2) {
   habmap_polygons_gw <- 
     habmap_polygons %>% 
     inner_join(habmap_types_gw %>% 
-                 dplyr::select(-code_orig), 
+                 dplyr::select(-code_orig, -source), 
                by = "polygon_id")
   
   #wegschrijven als geopackage
@@ -201,6 +203,7 @@ if (refresh_data == 2) {
 
 if (refresh_data == 2) {
   watina <- connect_watina()
+  #debugonce("get_locs")
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                         buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
                         collect = TRUE)
@@ -394,7 +397,8 @@ gw_types_groupen <- gw_types %>%
   rename("GT-groep: nummer" = groupnr,
          "GT-groep: naam" = typegroup_name)
 
-
+# write_csv(gw_types, "lijst_grondwaterafhankelijke_habitattypen_rbbs.csv")
+# write_csv(gw_types_groupen, 'grondwatertypen.csv')
 if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | refresh_data >= 1) {
   drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
                  path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
@@ -402,6 +406,11 @@ if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE |
 
 habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
                               "habitatmap_terr_polygons_gw")
+
+
+# write_sf(habmap_polygons_gw, "habmap_gw.shp")
+
+# st_crs(habmap_polygons_gw)
 
 habmap_polygons_gw <- habmap_polygons_gw %>%
   mutate(polygon_id = factor(.data$polygon_id),
@@ -470,7 +479,7 @@ habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local
 
 habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
 
-
+habmap_gw_raster_overlay
 if (refresh_figures == 2) {
   habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
     tm_shape(habmap_gw_raster_overlay) + 
@@ -1935,9 +1944,9 @@ tubes_cat3_grts_reserve <- tubes_excess %>%
 #   arrange(rasterid, groupnr, reserve)
 
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
-output_vc <- write_vc(tubes_cat3_gtrs, file.path(".","data","tubes_cat3_gtrs"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
+output_vc <- write_vc(tubes_cat3_grts, file.path(".","data","tubes_cat3_grts"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
 # output_vc <- write_vc(tubes_cat1Bb_gtrs, file.path(".","data","tubes_cat1Bb_gtrs"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
-output_vc <- write_vc(tubes_cat3_gtrs_reserve, file.path(".","data","tubes_cat3_gtrs_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
+output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 # output_vc <- write_vc(tubes_cat1Bb_gtrs_reserve, file.path(".","data","tubes_cat1Bb_gtrs_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 rm(output_vc)
 
@@ -1951,12 +1960,17 @@ tubes_selected <- tubes_selected %>%
   left_join(tubes_eval_namenyanthes %>% 
               select(loc_code, selectie), by = "loc_code")
 
+
 tubes_reserve <- bind_rows(tubes_cat3_grts_reserve %>% mutate(cat = "3")
 )
 tubes_reserve <- tubes_reserve %>% 
   select(-selectie) %>% 
   left_join(tubes_eval_namenyanthes %>% 
               select(loc_code, selectie), by = "loc_code")
+
+output_vc <- write_vc(tubes_selected, file.path(".","data","tubes_selected"), sorting = c("loc_code"), strict =  FALSE)
+output_vc <- write_vc(tubes_reserve, file.path(".","data","tubes_reserve"), sorting = c("loc_code"), strict =  FALSE)
+rm(output_vc)
 
 tubes_selected_sf <- as_points(tubes_selected)
 
@@ -1965,6 +1979,8 @@ tubes_selected_tm <- raster_meetnet_poly_tm +
   tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "Inzetbaarheid", clustering = FALSE) + tm_layout(title = "geselecteerde peilbuizen" )
 
 tubes_selected_tm
+write_sf(tubes_selected_sf, file.path("data", "tubes_selected.shp"))
+write_sf(tubes_reserve %>% as_points(), file.path("data", "tubes_reserve.shp" ))
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
 
@@ -2164,12 +2180,17 @@ tubes_cat1_polyg <-
   filter(geselecteerd_basis == 1 | geselecteerd_reserve == 1) %>% 
   arrange(rasterid, type, polygon_id) 
 
+# tubes_cat1_polyg <- tubes_cat1_polyg %>% 
+#   select(-source.y) %>% 
+#   rename(source = source.x)
+
 habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
   select(-starts_with("selecteerbaar"))
 
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
 output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
 rm(output_vc)
+write_sf(tubes_cat1_polyg, file.path("data", "bijkomende_hokken.shp"))
 
 # raster::plot(clip5)
 # raster::plot(clip5_1cel, add= FALSE)

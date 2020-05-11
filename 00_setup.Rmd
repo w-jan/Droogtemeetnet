@@ -33,6 +33,12 @@ library(knitr)
 library(googledrive)
 library(RSQLite) 
 
+output_format <- ifelse(
+  interactive(),
+  "html",
+  opts_knit$get("rmarkdown.pandoc.to")
+)
+
 #keuzen voor het aanmaken van een document
 #welke data verversen
 # 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data

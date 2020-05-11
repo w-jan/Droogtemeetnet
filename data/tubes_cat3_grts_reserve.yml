@@ -1,5 +1,5 @@
 ..generic:
-  git2rdata: '0.1'
+  git2rdata: 0.2.0
   optimize: yes
   NA string: NA
   sorting:
@@ -7,7 +7,7 @@
   - groupnr
   - reserve
   hash: 39d3fe269185c59456ea1c9a24e17d20e98a316f
-  data_hash: 0e7eb64b566689fd405f04ec875ca97702d84ea2
+  data_hash: 51cea51e2201422093802356f361808096f0ca8a
 unieknr:
   class: integer
 loc_code:
