@@ -54,6 +54,7 @@ aantal_strat <- 5
 #verdeling meetpunten over de stratificatielagen
 minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
 minaantal_tub_group <- c(0,34,33,22,11)
+minaantal_tub_group <- c(11,22,33,34,0)
 
 #kwaliteitscriteria meetreeksen
 #minimale lengte van de tijdreeks 
@@ -70,9 +71,9 @@ toelaatbaar_verschil_lengte_tijdreeks <- 5
 #zoekstraal rond peilbuizen (buffer)
 bufferpb <- 3 
 
-#peilbuizen niet zeker niet kunnen opgenomen worden, bijv. geen toelating, omdat het te dicht bij een ander geselecteerd punt ligt
+#peilbuizen die zeker niet kunnen opgenomen worden, bijv. geen toelating, omdat het te dicht bij een ander geselecteerd punt ligt
 #uitgesloten_tubes <- c("MOSP001", "HALP005", "BUIP027")
-uitgesloten_tubes <- "leeg"
+uitgesloten_tubes <- c("HAGP018", "WALP101") #pb van een peilbuiskoppel
 
 # upgrade_data(path = ".")
 
@@ -93,7 +94,7 @@ if (refresh_data == 2) {
 }
 
 if (refresh_data == 2) {
-  habmap_terr <- read_habitatmap_terr()
+  habmap_terr <- read_habitatmap_terr(file = "20_processed/habitatmap_terr/habitatmap_terr_inclbos.gpkg")
   
   habmap_polygons <- habmap_terr$habitatmap_terr_polygons
   
@@ -117,6 +118,7 @@ if (refresh_data == 2) {
                  dplyr::select(-code_orig, -source), 
                by = "polygon_id")
   
+  habmap_polygons_gw <- st_make_valid(habmap_polygons_gw)
   #wegschrijven als geopackage
   
   
@@ -127,7 +129,7 @@ if (refresh_data == 2) {
            driver = "GPKG",
            delete_dsn = TRUE)
   
-  con = dbConnect(SQLite(),
+  con <- dbConnect(SQLite(),
                   dbname = file.path(
                     datapath, 
                     "GIS/VoorR/habmap_terr_gw.gpkg")
@@ -142,6 +144,7 @@ if (refresh_data == 2) {
   raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
   raster_meetnet_poly <- raster_meetnet_poly %>% 
     rename(rasterid =  value)
+  raster_meetnet_poly <- st_make_valid(raster_meetnet_poly) 
   
   #wegschrijven van dit grid
   st_write(raster_meetnet_poly,
@@ -157,6 +160,7 @@ if (refresh_data == 2) {
   #overlay maken hab-kaart en GRTS-rooster
   habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
     st_intersection(raster_meetnet_poly)
+  
   
   habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
@@ -207,8 +211,30 @@ if (refresh_data == 2) {
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                         buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
                         collect = TRUE)
+  tubes_hab_basis <-   tubes_hab
+#toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
+  vmm_pb <- read_csv(file.path(getwd(), "data", "vmm_indc.csv")) %>% 
+    rename (loc_code = FID_stand,
+            polygon_id = plygn_d,
+            typegroup_name = typgrp_) %>% 
+    mutate (area_code = "VMM",
+            area_name = "Grondwaterstandindicator") %>%
+    inner_join(habmap_gw_raster_overlay %>% st_drop_geometry() %>%  
+                select(polygon_id, type, groupnr, rasterid, opp), by = c("polygon_id", "groupnr", "type"))
   
+  tubes_hab <- tubes_hab %>% 
+    full_join(vmm_pb %>% select(loc_code, area_code, area_name, x, y, phab, type, groupnr, typegroup_name, rasterid, opp, polygon_id))
   
+  tubes_hab <- tubes_hab %>% 
+    mutate(polygon_id = as.character(polygon_id),
+           loc_validitycode = factor(loc_validitycode),
+           loc_validity = factor(loc_validity),
+           loc_typecode = factor(loc_typecode),
+           loc_typename = factor(loc_typename),
+           obswell_statecode = factor(obswell_statecode),
+           obswell_state = factor(obswell_state),
+           typegroup_name = factor(typegroup_name)
+           )
   #beperken van peilbuizen tot de rastercel waar ze effectief in liggen. Door het gebruik van een buffer is het immers mogelijk dat een peilbuis in twee of meer cellen komt te liggen.
   tubes_hab_sf <- as_points(tubes_hab)
   
@@ -229,11 +255,30 @@ if (refresh_data == 2) {
                         strict =  FALSE)
   rm(output_vc)
   
-  
-  tubes_xg3 <- tubes_hab %>% 
-    get_xg3(watina, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
+  library(assertthat)
+  #remotes::install_github("inbo/inbodb", build_vignettes = TRUE)
+  #library(inbodb)
+  debugonce("get_xg3_temp")  
+  watina2 <- inbodb::connect_inbo_dbase("W0002_00_Watina")  
+  tubes_xg3_alles <- tubes_hab %>% 
+    get_xg3_temp(watina2, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
             truncated =  TRUE, collect = TRUE)
+  tubes_xg3 <- tubes_xg3_alles  %>% 
+    semi_join(tubes_hab, by = "loc_code")
+
+#toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
+  tubes_xg3_vmm <- data.frame(loc_code = rep(tubes_hab %>% 
+                                       filter(area_code == "VMM") %>% 
+                                       distinct(loc_code) %>% 
+                                       pull(loc_code),times = 31), 
+                              hydroyear = seq(from = 2016 - 30, to = 2016),
+                              lg3_lcl = rep(-1, 31))
   
+  tubes_xg3 <- bind_rows(tubes_xg3, tubes_xg3_vmm)
+ # test <- data.frame(a= "a", b= "b")
+ #  locs <-
+ #    copy_to(watina2,
+ #            test, overwrite = TRUE)
   #oplossen van UTF-probleem: strings worden in inbo-SQL-databanken opgeslagen in UTF-16, terwijl hier gewerkt wordt met UTF-8. Dit geeft een probleem bij de kable-functie
   
   #tubes_xg3 <- mutate_if(tubes_xg3, is.character, iconv, to = "UTF-8")
@@ -246,7 +291,7 @@ if (refresh_data == 2) {
                         strict =  FALSE, root = ".")
   
   
-  DBI::dbDisconnect(watina)
+  DBI::dbDisconnect(watina2)
   
   #volgende watina-functie werkt ook zonder databankconnectie, maar omdat deze op sommige pc's niet stabiel werkt, worden de data hier alvast lokaal weggeschreven.
   debugonce("eval_xg3_series_lok")
@@ -373,6 +418,11 @@ if (refresh_data == 2) {
       )  
     return(xg3_series_props)
   }  
+  # debugonce("extract_xg3_series")
+  # test <- tubes_xg3_basis %>%
+  #   eval_xg3_series_lok(xg3_type = c("L"),
+  #                       max_gap = maxgap,
+  #                       min_dur = minlength)
   
   tubes_lg3_eval <- tubes_xg3 %>%
     eval_xg3_series_lok(xg3_type = c("L"),
@@ -526,11 +576,14 @@ gw_opp <- raster_gw_opp %>%
 ###Berekening gemiddelde benodigde oppervlakte van een GT-groep per meetpunt
 
 #minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
-min_aantal_tub = data.frame("groupnr" = 1:aantal_strat, minaantal = seq(minaantal_tub_group,minaantal_tub_group,length.out = aantal_strat))
+#min_aantal_tub = data.frame("groupnr" = 1:aantal_strat, minaantal = seq(minaantal_tub_group,minaantal_tub_group,length.out = aantal_strat))
+
+#minaantal_tub_group <- c(11,22,33,34,0)
+min_aantal_tub = data.frame("groupnr" = 1:aantal_strat, minaantal = minaantal_tub_group)
 
 for (group in seq(1,aantal_strat)) {
   #group <- 5
-  minaantal_tub_group <- min_aantal_tub[min_aantal_tub$groupnr == group,"minaantal"]
+  minaantal_tub_group_1 <- min_aantal_tub[min_aantal_tub$groupnr == group,"minaantal"]
   aantal_tub_group <- 0
   corrafronding <- 1
   gw_opp <- gw_opp %>% 
@@ -540,16 +593,16 @@ for (group in seq(1,aantal_strat)) {
                 select(groupnr, bewerkt)
               , by = "groupnr")
   
-  while (aantal_tub_group < minaantal_tub_group) {
+  while (aantal_tub_group < minaantal_tub_group_1) {
     if (group == 1){
       gw_opp <- gw_opp %>% 
         mutate(minopp = 
-                 ifelse(bewerkt == TRUE, round(opp_gw/minaantal_tub_group * corrafronding,0), minopp) %>% set_units("ha")
+                 ifelse(bewerkt == TRUE, round(opp_gw/minaantal_tub_group_1 * corrafronding,0), minopp) %>% set_units("ha")
         )
     } else {
       gw_opp <- gw_opp %>% 
         mutate(minopp = 
-                 if_else(bewerkt == TRUE, round(opp_gw/minaantal_tub_group * corrafronding,0), minopp, missing = minopp) %>% set_units("ha")
+                 if_else(bewerkt == TRUE, round(opp_gw/minaantal_tub_group_1 * corrafronding,0), minopp, missing = minopp) %>% set_units("ha")
         )
     }    
     
@@ -587,13 +640,13 @@ for (group in seq(1,aantal_strat)) {
     gw_opp <- gw_opp %>% 
       mutate(correctiefactor = 
                ifelse(bewerkt == TRUE, 
-                      as.numeric(round(minopp*minaantal_tub_group/opp_gw, 2)), 
+                      as.numeric(round(minopp*minaantal_tub_group_1/opp_gw, 2)), 
                       correctiefactor))
   } else {
     gw_opp <- gw_opp %>% 
       mutate(correctiefactor = 
                if_else(bewerkt == TRUE, 
-                       as.numeric(round(minopp*minaantal_tub_group/opp_gw, 2)), 
+                       as.numeric(round(minopp*minaantal_tub_group_1/opp_gw, 2)), 
                        correctiefactor, missing = correctiefactor))
   }
   
@@ -746,6 +799,7 @@ sel_raster_meetnet_tm
 
 # str(tubes_hab)
 
+#tubes_hab_2019 <- read_vc(file.path(".","data","tubes_hab_2019"))
 tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
 
 #peilbuizen uit de lijst verwijderen die niet (meer) mogen meegenomen worden
@@ -777,11 +831,14 @@ tubes_hab_multipolyg <- tubes_hab_groep %>%
               filter(n == 1),
             by = "loc_code")
 
+# tubes_hab_aggr <- tubes_hab %>%
+#   select(-phab, -certain, -type, -source.y, -polygon_id, -starts_with("description"), -opp, -source.x) %>% 
+#   distinct %>% 
+#   semi_join(tubes_hab_multipolyg, by = c("loc_code", "rasterid", "groupnr" ))
 tubes_hab_aggr <- tubes_hab %>%
-  select(-phab, -certain, -type, -source.y, -polygon_id, -starts_with("description"), -opp, -source.x) %>% 
+  select(-phab, -certain, -type, -source, -polygon_id, -starts_with("description"), -opp) %>% 
   distinct %>% 
   semi_join(tubes_hab_multipolyg, by = c("loc_code", "rasterid", "groupnr" ))
-
 
 
 ### Opzoeken van peilbuizen in de geselecteerde rastercellen
@@ -814,6 +871,7 @@ tubes_in_raster <- tubes_hab_aggr %>%
 #             truncated =  TRUE, collect = TRUE)
 
 tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3"))
+tubes_xg3_basis <- tubes_xg3
 tubes_xg3 <- tubes_xg3 %>% 
   inner_join (tubes_in_raster %>% 
                 select(loc_code), by = "loc_code")
@@ -833,9 +891,12 @@ tubes_xg3 <- tubes_xg3 %>%
 
 
 #overzicht per pb hoeveel lg3 er zijn, eerste en laatste jaar 
-tubes_xg3_avail <- tubes_xg3 %>% 
+tubes_xg3_avail <- tubes_xg3 %>%
   eval_xg3_avail( xg3_type = "L")
 
+
+#all.equal(tubes_xg3_avail,test)
+ 
 #beperken tot pb met een lg3
 tubes_lg3_avail <- tubes_xg3_avail %>% 
   filter(nryears > 0)
@@ -863,6 +924,7 @@ tubes_lg3_avail <- tubes_xg3_avail %>%
 # getwd()
 # file.path(".","data","local")
 tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data"))
+tubes_lgl_eval_bu <- tubes_lgl_eval
 tubes_lgl_eval <- tubes_lgl_eval %>% 
   inner_join(tubes_in_raster %>% 
                select(loc_code), by = "loc_code")
@@ -1086,7 +1148,7 @@ sel_qual <- sel_qual %>%
 ### Categorie 2: Rastercellen met juist voldoende of te weinig geschikte peilbuizen {#cat2}
 
 
-# rastercellen met een juist voldoende of een tekort aantal evenwaardige meetpunten dat gewenst is voor het meetnet
+# rastercellen met een juist voldoende evenwaardige meetpunten dat gewenst is voor het meetnet
 sel_cat2_table <- 
   sel_qual %>% 
 #  filter(rankclus <= maxrank ) %>% 
@@ -1131,6 +1193,17 @@ sel_cat3_raster <-
             by = c("rasterid", "groupnr")) %>% 
   arrange(rasterid, groupnr)
 
+test <- 
+  sel_raster_meetnet %>% 
+  anti_join(sel_cat1A_raster %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr"))  %>% 
+  anti_join(sel_cat2_raster %>% 
+              st_drop_geometry(), 
+            by = c("rasterid", "groupnr")) %>% 
+  arrange(rasterid, groupnr)
+
+all.equal(sel_cat3_raster %>% st_drop_geometry(), test %>% st_drop_geometry())
 
 sel_cat3_table <- 
   sel_qual %>% 
@@ -1167,7 +1240,7 @@ tubes_cat1 <-
   inner_join(sel_cat1A_table, 
              by = c("rasterid", "groupnr")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(19:23))
+  select(-c(24:28))
   
 
 #### Opzoeken van peilbuizen voor de rastercellen van cat. 2 {#opzoeken-pb-cat2}
@@ -1189,7 +1262,7 @@ tubes_cat2 <-
                           by =  c("rasterid","groupnr","rankclus_lastyear", "rankclus_nryears" )), 
              by = c("rasterid", "groupnr", "lastyear", "nryears")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(19:24))
+  select(-c(24:29))
 
 output_vc <- write_vc(tubes_cat2, file.path(".","data","tubes_cat2_run1"), 
                       sorting = c("loc_code"), strict =  FALSE, root = ".")
@@ -1211,7 +1284,7 @@ tubes_cat3 <-
                           by = c("rasterid","groupnr","rankclus_lastyear","rankclus_nryears" )), 
              by = c("rasterid","groupnr", "lastyear","nryears")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(19:24))
+  select(-c(24:29))
 
 
 tubes_cat123 <- bind_rows(tubes_cat1, tubes_cat2, tubes_cat3) %>% arrange(loc_code)
@@ -1221,8 +1294,6 @@ tubes_cat3 <- tubes_cat3 %>%
   mutate(unieknr = as.integer(unieknr))
 # sel_qual_lastyear_vb %>% 
 #   count(rasterid, groupnr )
-
-
 
 
 output_vc <- write_vc(tubes_cat3, file.path(".","data","tubes_cat3_run1"), 
@@ -1979,8 +2050,8 @@ tubes_selected_tm <- raster_meetnet_poly_tm +
   tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "Inzetbaarheid", clustering = FALSE) + tm_layout(title = "geselecteerde peilbuizen" )
 
 tubes_selected_tm
-write_sf(tubes_selected_sf, file.path("data", "tubes_selected.shp"))
-write_sf(tubes_reserve %>% as_points(), file.path("data", "tubes_reserve.shp" ))
+write_sf(tubes_selected_sf %>%  select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), driver = "ESRI Shapefile", file.path("data", "tubes_selected_2020_05.shp"))
+write_sf(tubes_reserve %>% as_points() %>%  select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), file.path("data", "tubes_reserve_2020_05.shp" ))
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
 
@@ -1997,6 +2068,7 @@ reserve <- habmap_polygons_gw
 #          selecteerbaar = 1) 
 
 #wat voorbereidende databewerkingen aan de overlay habitatkaart en het raster (grid8)
+# habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% select(-unieknr)
 habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>%
   rownames_to_column(var = "unieknr") %>%
   mutate(unieknr = as.integer(unieknr))
@@ -2038,11 +2110,11 @@ for (i in seq(1:nrow(sel_cat1A_raster_df))) {
   #loop per gGT-groep
   for (j in seq(1:nrow(sel_cat1A_raster_1grid))) {
     
-    gewenst_aantal_pb <- sel_cat1A_raster_1grid %>% 
+    gewenst_aantal_pb <- sel_cat1A_raster_1grid [j,] %>% 
       pull(gewenst_aantal_pb) %>% 
       as.integer()
     
-    gwgroup <- sel_cat1A_raster_1grid %>% 
+    gwgroup <- sel_cat1A_raster_1grid [j,] %>% 
       pull(groupnr) %>% 
       as.integer()
     

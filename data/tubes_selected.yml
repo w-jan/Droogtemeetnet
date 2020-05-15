@@ -1,10 +1,10 @@
 ..generic:
-  git2rdata: 0.2.0
+  git2rdata: 0.2.1
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: e98643235dc123e2372073574caa3971a22e1b8f
-  data_hash: 5d92d3af780343e59f152ed958b44d3f6e4c3a0b
+  hash: 1ee64bbd05753de31ba6959d026b2c3f44a54aaf
+  data_hash: 6a78017ccb1cb3666a0197721b7eea7fe7dbcf82
 loc_code:
   class: character
 area_code:
@@ -16,15 +16,35 @@ x:
 'y':
   class: numeric
 loc_validitycode:
-  class: character
+  class: factor
+  labels:
+  - ENT
+  - VLD
+  index:
+  - 1
+  - 2
+  ordered: no
 loc_validity:
-  class: character
+  class: factor
+  labels:
+  - Gevalideerd
+  - Ingegeven
+  index:
+  - 1
+  - 2
+  ordered: no
 loc_typecode:
-  class: character
+  class: factor
+  labels: P
+  index: 1
+  ordered: no
 loc_typename:
-  class: character
+  class: factor
+  labels: Peilbuis/PiÃ«zometer
+  index: 1
+  ordered: no
 groupnr:
-  class: integer
+  class: numeric
 rasterid:
   class: integer
 filterdepth:
@@ -34,37 +54,17 @@ soilsurf_ost:
 typegroup_name:
   class: factor
   labels:
-  - zeer gevoelige niet-bostypes
-  - gevoelige niet-bostypes
-  - minder tot niet gevoelige niet-bostypes
-  - zeer gevoelige bostypes
-  - gevoelige bostypes
-  - minder tot niet gevoelige bostypes
-  - types van oligotroof milieu
-  - types van mesotroof milieu
-  - types van zwak eutroof milieu
-  - types van matig eutroof tot eutroof milieu
-  - types van zeer nat milieu
-  - types van nat milieu
-  - types van matig nat milieu
-  - types van vochtig milieu
   - types van droog milieu
+  - types van matig nat milieu
+  - types van nat milieu
+  - types van vochtig milieu
+  - types van zeer nat milieu
   index:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  - 7
-  - 8
-  - 9
-  - 10
-  - 11
-  - 12
-  - 13
-  - 14
   - 15
+  - 13
+  - 12
+  - 14
+  - 11
   ordered: no
 firstyear:
   class: integer
@@ -93,4 +93,48 @@ geselecteerd:
 reserve:
   class: numeric
 selectie:
+  class: numeric
+obswell_statecode:
+  class: factor
+  labels:
+  - ADJUS
+  - BROKR
+  - CONFM
+  - CONFN
+  - NOTFO
+  - ONBEK
+  - REMOV
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  ordered: no
+obswell_state:
+  class: factor
+  labels:
+  - OK - bemeten
+  - OK - niet bemeten
+  - Onbekend
+  - Onvindbaar
+  - Stuk - te herstellen
+  - Vervangen door nieuwe peilpuntversie
+  - Verwijderd
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  ordered: no
+measuringref_ost:
+  class: numeric
+tubelength:
+  class: numeric
+filterlength:
   class: numeric

@@ -1,10 +1,10 @@
 ..generic:
-  git2rdata: 0.2.0
+  git2rdata: 0.2.1
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 8d3c10ca9815d4d6bc279eaebd71b5432af40063
-  data_hash: 15a7ca723c8ebf0a9068d405b9eee045e31afb7a
+  hash: 11713d464ac606a88adc933803108903216a108f
+  data_hash: 74a52482b179ccfcf9519e28b6c1f72c7fb282e7
 unieknr:
   class: integer
 loc_code:
@@ -12,7 +12,7 @@ loc_code:
 rasterid:
   class: integer
 groupnr:
-  class: integer
+  class: numeric
 rankclus:
   class: integer
 rankclus_lastyear:
