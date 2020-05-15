@@ -198,7 +198,7 @@ Voor dit laatste wordt een iteratie uitgevoerd, zoals beschreven in \@ref(ruimte
 ```{r gemiddelde-oppervlakte-per-GTgroep, message=FALSE}
 
 #minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
-min_aantal_tub = data.frame("groupnr" = 1:aantal_strat, minaantal = seq(minaantal_tub_group,minaantal_tub_group,length.out = aantal_strat))
+min_aantal_tub = data.frame("groupnr" = 1:aantal_strat, minaantal = minaantal_tub_group)
 
 for (group in seq(1,aantal_strat)) {
   #group <- 5
