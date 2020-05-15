@@ -55,13 +55,14 @@ We veronderstellen hierbij dat er een relatie bestaat tussen het hydrologisch re
 
 We vertrekken hiervoor van de 5-delige indeling in grondwatertypegroepen (GT-groep) die toegepast wordt in het MNM (tabel \@ref(tab:GTgroepen)). In de vorige tabel \@ref(tab:gw-typen)) is weergegeven tot welke GT-groep een gaHT gerekend wordt.
 ```{r GTgroepen}
-gw_types_groupen <- gw_types %>%
-    distinct(groupnr, typegroup_name) %>% 
-    arrange(groupnr) %>% 
-    rename("GT-groep: nummer" = groupnr,
-      "GT-groep: naam" = typegroup_name)
+gw_types_groups <- gw_types %>%
+  distinct(groupnr, typegroup_name) %>% 
+  inner_join(data.frame(groupnr = seq(1:5), gewenst_aantal_locaties = minaantal_tub_group), by = "groupnr") %>% 
+  rename("GT-groep: nummer" = groupnr,
+         "GT-groep: naam" = typegroup_name,
+         "Gewenst aantal meetlocaties" = gewenst_aantal_locaties)
 
-kobj <- kable(gw_types_groupen, 
+kobj <- kable(gw_types_groups %>%  select(1:2), 
       caption = "Grondwatertype-groepen") 
 
 if (pdfmaken == TRUE) {
@@ -81,12 +82,16 @@ if (pdfmaken == TRUE) {
 
 _GT-groep 5 bundelt grondwaterafhankelijke HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms tot meestal niet.
 _**De vraag is of we deze groep meenemen.**_ 
-_**We zijn voorstander om deze wel mee te nemen.**_
+_**We waren eerst voorstander om deze wel mee te nemen.**_
 _**Het voordeel van deze groep is dat ze vermoedelijk het snelst op droogte zal reageren.**_ 
-_**Ze heeft echter ook een nadeel, nl. dat je bij het uitzetten van een nieuw punt niet op voorhand weet of het wel grondwaterafhankelijk is.**_  
+_**Ze hebben echter ook nadelen:**_
+
+    _**dat je bij het uitzetten van een nieuw punt niet op voorhand weet of het wel grondwaterafhankelijk is.**_  
+    _**dat sommige typen heel variabel zijn m.b.t. het grondwaterregime.
+_**Deze nadelen worden nu als belangrijker beoordeeld.**_  
 De GT-groepen lenen zich heel goed om een stratificatie uit te voeren op basis van de verwachte responssnelheid van een locatie op droogte. 
 De permanent gevoede locaties (GT-groep 1) zullen naar verwachting trager reageren dan de tijdelijk of zwak gevoede locaties. 
-Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog af te spreken)_** balans worden verzekerd. 
+Door een stratificatie over de GT-groepen toe te passen kan een balans worden verzekerd. 
 **_Een stratificatie laat toe om een globale uitspraak te doen._**
 **_We raden echter ook aan in de beoordeling elke GT-groep apart mee te nemen, omdat ze verschillende signalen zullen geven._** 
 

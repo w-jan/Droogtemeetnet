@@ -32,13 +32,33 @@ Concreet:
 Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetnet biotische habitatkwaliteit.
     - Voor de ruimtelijke spreiding van meetpunten in het meetnet kiezen we voor rastercellen met resolutie 8 km (8192 m, level 8).
 In totaal zijn er 262 cellen in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
-    - Het gewenst totaal aantal meetpunten **_(nog te beslissen)_** = `r tot_n_tub `  
+    - Het gewenste totaal aantal meetpunten = `r tot_n_tub `  
 
-- We willen daarenboven ook gestratificeerd werken volgens de 5-delige GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden. 
+- We willen daarenboven ook gestratificeerd werken volgens de 5-delige GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden.
+We geven niet alle GT-groepen een even groot gewicht. Vegetatietypen van GT-klasse 5 worden niet meegenomen. 
+Van deze GT-klasse is immers de grondwaterafhankelijkheid plaatsgebonden en (soms heel) variabel.
+De twee natste GT-klassen worden samengevoegd, omdat deze klassen vermoedelijk het traagst een droogte-signaal zullen geven. 
+
 Concreet: 
-    - Het aantal stratificatielagen ***(nog te beslissen)*** = `r aantal_strat `
-    - Het aantal meetpunten is gelijk per laag  **_(nog te beslissen)_** = `r minaantal_tub_group`
+    - Het aantal stratificatielagen  = `r aantal_strat `
+    - De verdeling van het aantal meetpunten per laag is (tabel \@ref(tab:GTgroepen-verdeling-over-strata)): 
+```{r GTgroepen-verdeling-over-strata}
+kobj <- kable(gw_types_groups, 
+      caption = "Verdeling van het gewenst aantal meetlocaties over de grondwatertype-groepen") 
 
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj   %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = TRUE, 
+                  position = "left",
+                  font_size = 9,
+                  fixed_thead = T) 
+    #row_spec(0, angle = -45)  %>% #fixeer veldnamen
+     # scroll_box(height = "200px") 
+}
+```
 - De keuze van een cel wordt mee bepaald door de aanwezigheid van een GT-groep. 
 Niet elke cel is even belangrijk voor de monitoring van een GT-groep, want de oppervlakte van gaHT verschilt van cel tot cel. 
 Het heeft bijvoorbeeld geen zin om voor een GT-groep in een rastercel een meetpunt te voorzien indien die groep daar niet voorkomt.  
@@ -380,8 +400,8 @@ _**De indicator kleurt respectievelijk rood, oranje of geel voor Vlaanderen als 
 _**Een opsplitsing per bekken hadden we tijdens de eerste vergadering niet weerhouden.**_
 
 ### Berekeningswijze voor de geselecteerde punten 
-Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 20 (of meer?) jaren lang_**, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden. 
+Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 30 jaren lang_**, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden. 
 Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecten van deze twee droge zomers heeft gekend (door naijling).
-Voor elke bestaande geselecteerde meetlocatie wordt dan voor elke dag van het jaar (**_vraag: of alleen voor het groeiseizoen: 1 april - 1 oktober? _**) de p10, p20 en p30 percentielwaarde berekend.
+Voor elke bestaande geselecteerde meetlocatie wordt dan voor elke dag van het groeiseizoen (1 april - 1 oktober) de p10, p20 en p30 percentielwaarde berekend.
 
 

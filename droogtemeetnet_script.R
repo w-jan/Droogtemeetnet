@@ -442,13 +442,16 @@ if (refresh_data == 2) {
 
 gw_types <- read_vc("gw_types", file.path(".","data"))
 
-gw_types_groupen <- gw_types %>%
+gw_types_groups <- gw_types %>%
   distinct(groupnr, typegroup_name) %>% 
+  inner_join(data.frame(groupnr = seq(1:5), gewenst_aantal_locaties = minaantal_tub_group), by = "groupnr") %>% 
   rename("GT-groep: nummer" = groupnr,
-         "GT-groep: naam" = typegroup_name)
+         "GT-groep: naam" = typegroup_name,
+         "Gewenst aantal meetlocaties" = gewenst_aantal_locaties)
+
 
 # write_csv(gw_types, "lijst_grondwaterafhankelijke_habitattypen_rbbs.csv")
-# write_csv(gw_types_groupen, 'grondwatertypen.csv')
+# write_csv(gw_types_groups, 'grondwatertypen.csv')
 if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | refresh_data >= 1) {
   drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
                  path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)

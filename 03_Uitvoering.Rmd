@@ -1364,7 +1364,7 @@ tubes_cat1 <-
   inner_join(sel_cat1A_table, 
              by = c("rasterid", "groupnr")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(19:23))
+  select(-c(24:28))
 
 
 
@@ -1383,7 +1383,7 @@ tubes_cat2 <-
                           by =  c("rasterid","groupnr","rankclus_lastyear", "rankclus_nryears" )), 
              by = c("rasterid", "groupnr", "lastyear", "nryears")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(19:24))
+  select(-c(24:29))
 
 tubes_cat3 <- 
   tubes_in_raster %>% 
@@ -1401,7 +1401,7 @@ tubes_cat3 <-
                           by = c("rasterid","groupnr","rankclus_lastyear","rankclus_nryears" )), 
              by = c("rasterid","groupnr", "lastyear","nryears")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(19:24))
+  select(-c(24:29))
 
 tubes_cat123 <- bind_rows(tubes_cat1, tubes_cat2, tubes_cat3) %>% arrange(loc_code)
 
@@ -2182,7 +2182,7 @@ Indien in een rastercel voor meerdere GT-groepen naar een meetlocatie gezocht wo
 Er is een routine geschreven die per rastercel en hierbinnen per GT-groep deze klus klaart. 
 
 Figuur \@ref(fig:tubes-excess-plot) geeft geografisch weer over welke meetpunten en rasters het hier gaat.
-Er is hierbij een verschil gemaakt tussen rasters waar een keuze uit peilbuizen van actueel lage kwaliteit moet gemaakt worden en waar dit uit peilbuizen met modelleerbare tijdreeksen kan. 
+Er is hierbij een verschil gemaakt tussen rasters waar enkel uit peilbuizen van actueel lage kwaliteit kan gekozen worden en waar deze keuze kan gemaakt worden met peilbuizen met modelleerbare tijdreeksen. 
 In een rastercel sluiten beide keuzen elkaar uit wanneer er slechts één meetpunt gezocht wordt.
 
 ```{r inlezen-grts-rasters}
@@ -2645,11 +2645,11 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
    #loop per gGT-groep
    for (j in seq(1:nrow(sel_cat1A_raster_1grid))) {
 
-     gewenst_aantal_pb <- sel_cat1A_raster_1grid %>% 
+     gewenst_aantal_pb <- sel_cat1A_raster_1grid[j,] %>% 
        pull(gewenst_aantal_pb) %>% 
        as.integer()
      
-     gwgroup <- sel_cat1A_raster_1grid %>% 
+     gwgroup <- sel_cat1A_raster_1grid[j,]  %>% 
        pull(groupnr) %>% 
        as.integer()
      
