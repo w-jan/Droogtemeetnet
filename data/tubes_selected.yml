@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 1ee64bbd05753de31ba6959d026b2c3f44a54aaf
-  data_hash: 6a78017ccb1cb3666a0197721b7eea7fe7dbcf82
+  hash: 5244af3ea8e416ab48207e26e0c66474ce118be2
+  data_hash: af075192807fe42284f7011fbd8a66768195afb0
 loc_code:
   class: character
 area_code:
@@ -60,11 +60,11 @@ typegroup_name:
   - types van vochtig milieu
   - types van zeer nat milieu
   index:
-  - 15
-  - 13
-  - 12
-  - 14
-  - 11
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
   ordered: no
 firstyear:
   class: integer
