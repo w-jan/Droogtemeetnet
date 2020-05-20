@@ -8,9 +8,8 @@ bestand <- normalizePath(file.path("..", "..", "Repositories", "habnorm", "data"
 brondata <- normalizePath(file.path("..","Watina", "data","tbl_opnamen6230.csv" ))
 tubes_alles <- read_csv(brondata)
 
-tubes_alles <- tubes_cat3_bis %>% 
-  filter(selectie == 0)
-peilen <- hydromonitor_peilmeting_csv_formaat(lijstmeetpunten =  tubes_alles %>% select(loc_code), 
+
+peilen <- hydromonitor_peilmeting_csv_formaat(lijstmeetpunten =  tubes_alles %>% select(loc_code) %>% filter(loc_code == "KBRP040"), 
                                               ookdefinities = TRUE,
                                               oppervlaktewater = FALSE
 )
@@ -31,7 +30,7 @@ write_delim(as.data.frame(peilen),
 
 #voor een meetpuntenlijst
 write_delim(as.data.frame(peilen), 
-            normalizePath(file.path("..","..","repositories",  "droogtemeetnet", "data","local","tijdreeksen","importbestanden_menyanthes", "Hydromonitor_peilmetingen_202005_4extrapb.csv" )), 
+            normalizePath(file.path("..","..","repositories",  "droogtemeetnet", "data","local","tijdreeksen","importbestanden_menyanthes", "Hydromonitor_peilmetingen_202005_kbrp040.csv" )), 
             col_names = FALSE, quote_escape = FALSE, delim = "µ", na = "")
 
 

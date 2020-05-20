@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 	eval = TRUE,
 	include = TRUE,
 	echo = FALSE,
-	cache = FALSE,
+	cache = TRUE,
   cache.path = "cache/",
 	dpi = 300
 )
@@ -139,7 +139,7 @@ if (refresh_data == 2) {
   habmap_polygons_gw <- 
     habmap_polygons %>% 
     inner_join(habmap_types_gw %>% 
-                 dplyr::select(-code_orig), 
+                 dplyr::select(-code_orig, -source), 
                by = "polygon_id")
   
   #wegschrijven als geopackage

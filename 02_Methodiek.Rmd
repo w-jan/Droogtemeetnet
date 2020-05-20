@@ -37,13 +37,14 @@ In totaal zijn er 262 cellen in Vlaanderen, waarvan 149 volledig in Vlaanderen l
 - We willen daarenboven ook gestratificeerd werken volgens de 5-delige GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden.
 We geven niet alle GT-groepen een even groot gewicht. Vegetatietypen van GT-klasse 5 worden niet meegenomen. 
 Van deze GT-klasse is immers de grondwaterafhankelijkheid plaatsgebonden en (soms heel) variabel.
-De twee natste GT-klassen worden samengevoegd, omdat deze klassen vermoedelijk het traagst een droogte-signaal zullen geven. 
+De twee natste GT-klassen krijgen een lager gewicht toegemeten, omdat deze klassen vermoedelijk het traagst een droogte-signaal zullen geven. 
 
-Concreet: 
-    - Het aantal stratificatielagen  = `r aantal_strat `
-    - De verdeling van het aantal meetpunten per laag is (tabel \@ref(tab:GTgroepen-verdeling-over-strata)): 
+Concreet:
+
+- Het aantal stratificatielagen  = `r aantal_strat `
+- De verdeling van het aantal meetpunten per laag is gegeven in tabel \@ref(tab:GTgroepen-verdeling-over-strata): 
 ```{r GTgroepen-verdeling-over-strata}
-kobj <- kable(gw_types_groups, 
+kobj <- kable(gw_types_groups %>% arrange(`GT-groep: nummer`), 
       caption = "Verdeling van het gewenst aantal meetlocaties over de grondwatertype-groepen") 
 
 if (pdfmaken == TRUE) {
@@ -157,10 +158,6 @@ Voor de uitwerking van deze selectie van potentiële geschikte habitatvlekken: z
 
 Alle meetpunten die reeds een peilbuis hebben, worden zonder verdere analyse geselecteerd.
 
-_**Bovenstaande is een voorstel. Je zou ook kunnen beslissen dat enkel meetpunten met een peilbuis in aanmerking komen voor het meetnet.**_
-_**Of het tegenovergestelde is ook een alternatief: dat voor de ruimtelijke balancering we geen voorkeur geven aan meetpunten met een peilbuis en enkel rekening houden met het voorkomen van geschikte (ttz behoren tot de gewenste GT-groep) habitatvlekken.**_
-_**We vinden dat het huidige voorstel een goede balans vertoont tussen beide.**_
-
 Het gaat hier vooral over een tijdsinvestering: dergelijke meetpunten zullen pas na enkele jaren effectief kunnen meedraaien in het meetnet. 
 In afwachting daarvan zal het meetnet dus met een kleiner aantal meetpunten moeten functioneren.
 
@@ -233,8 +230,6 @@ lg3 =  het gemiddelde van de drie laagste waterpeilen binnen een hydrologisch ja
 <!-- Nemen we ook het kwaliteitsaspect mee in de beoordeling, dan wordt de categorie-indeling van rastercellen complexer.  -->
 <!-- Op basis van de kwaliteit van de tijdreeksen kunnen dan per GT-groep de rastercellen in één of meer van de volgende categorieën opgedeeld worden. Deze categorieën sluiten elkaar niet mutueel uit (zie onder). -->
 
-
-**_vraag: wat te doen met bestaande meetlocaties die actueel niet geschikt zijn? Worden deze weer geactiveerd (gevolgd in deze versie) of geven we voorrang aan de ruimtelijke balans ?_**
 
 ```{r voorbeeld-selectie-part1, fig.cap="Cijfervoorbeeld van de gevolgde workflow bij de selectie", , fig.width=8, fig.height=8, eval = FALSE}
   include_graphics(path = file.path(".","figures", 
@@ -331,6 +326,7 @@ Afhankelijk van de verhouding tussen gewenste aantal en het aantal geschikte pei
 - Is het aantal geschikte peilbuizen groter dan het gewenste aantal, dan wordt enkel binnen deze groep een GRTS-analyse uitgevoerd om het gewenste aantal te selecteren.
 
 - Is het aantal kleiner dan het gewenste aantal, dan wordt er uit alle beschikbare peilbuizen via een GRTS-analyse het gewenste aantal geselecteerd.
+Alle geschikte peilbuizen worden hierbij geselecteerd.
 
 - Is het aantal gelijk aan het gewenste aantal, dan hoeft er geen verdere analyse te gebeuren. Alle meetpunten kunnen in het meetnet worden opgenomen.
 
@@ -397,7 +393,6 @@ Zo kunnen ook relatief lage grondwaterstanden in het voorjaar als droogte aanged
 
 De indicator kleurt respectievelijk rood, oranje of geel op een bepaalde plaats en dag zodra de grondwaterstand er minstens 14 dagen onder de p10, p20 of p30 (situatie met overschrijdingskans van 10, 20 of 30%) is gebleven. 
 _**De indicator kleurt respectievelijk rood, oranje of geel voor Vlaanderen als minstens de helft van de putten kleurcode rood, oranje of geel heeft. (vraag: is dit ook aangewezen voor dit meetnet ?). **_
-_**Een opsplitsing per bekken hadden we tijdens de eerste vergadering niet weerhouden.**_
 
 ### Berekeningswijze voor de geselecteerde punten 
 Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 30 jaren lang_**, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden. 
