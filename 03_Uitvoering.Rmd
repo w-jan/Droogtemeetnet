@@ -19,7 +19,7 @@ Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de 
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
-if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh_data >= 1 ){
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | params$refresh_data >= 1 ){
     drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
                    path = file.path(".","data","local", 
                                     "raster_meetnet_poly.gpkg"), overwrite = 
@@ -70,7 +70,7 @@ Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vij
 #     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
 
 if (file.exists(file.path(".","data","local", 
-                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh_data >= 1) {
+                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | params$refresh_data >= 1) {
     drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
                    path = file.path(".","data","local", 
                                     "habmap_gw_raster_overlay.gpkg"), 
@@ -85,7 +85,7 @@ habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
 ```
 
 ```{r overlay-habitatkaart-GRTS-plot, fig.cap="verspreiding-GT-groepen", message=FALSE, warning=TRUE}
-if (refresh_figures == 2) {
+if (params$refresh_figures == 2) {
   habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
     tm_shape(habmap_gw_raster_overlay) + 
     tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
@@ -99,14 +99,14 @@ if (refresh_figures == 2) {
 
 }
 if (file.exists(file.path(".","figures","local", 
-                          "habmap_gw_raster_overlay.png")) == FALSE | refresh_figures == 1) {
+                          "habmap_gw_raster_overlay.png")) == FALSE | params$refresh_figures == 1) {
   drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
                  path = file.path(".","figures","local", 
                                   "habmap_gw_raster_overlay.png"), 
                  overwrite = TRUE)
 }
 
-if (refresh_figures < 2) {
+if (params$refresh_figures < 2) {
   include_graphics(path = file.path(".","figures","local", 
                                     "habmap_gw_raster_overlay.png"))  
 }
@@ -2045,7 +2045,7 @@ Er is hierbij een verschil gemaakt tussen peilbuizen van actueel lage kwaliteit 
 # grts_level0 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(1)
 
-if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | refresh_data >= 1) {
+if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | params$refresh_data >= 1) {
     drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
                    path = file.path(".","data","local", "grts_level0.tif"), 
                    overwrite = TRUE)
@@ -2057,7 +2057,7 @@ grts_level0 <- raster(file.path(".","data","local", "grts_level0.tif"))
 # grts_level8 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(9)
 
-if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | refresh_data >= 1) {
+if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | params$refresh_data >= 1) {
     drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
                    path = file.path(".","data","local", "grts_level8.tif"), 
                    overwrite = TRUE)
@@ -2066,7 +2066,7 @@ if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | ref
 grts_level8 <- raster(file.path(".","data","local", "grts_level8.tif"))
 
 
-if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | refresh_data >= 1) {
+if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | params$refresh_data >= 1) {
     drive_download(drive_get(id = "1pBI9hTIaRpV_qfExYHLdxiFEl81OQPP8"), 
                    path = file.path(".","data","local", "grts_level5.tif"), 
                    overwrite = TRUE)

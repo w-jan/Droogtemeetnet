@@ -18,7 +18,7 @@ Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de 
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
-if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh_data >= 1 ){
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | params$refresh_data >= 1 ){
     drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
                    path = file.path(".","data","local", 
                                     "raster_meetnet_poly.gpkg"), overwrite = 

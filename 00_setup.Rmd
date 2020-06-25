@@ -42,16 +42,14 @@ output_format <- ifelse(
 #keuzen voor het aanmaken van een document
 #welke data verversen
 # 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
-refresh_data <- 0
-if (refresh_data == 2) {
+if (params$refresh_data == 2) {
   datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
   dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
 }
 
 #figuren opnieuw aanmaken of inlezen
 # 2: figuren terug aanmaken (en wegschrijven); 1: de huidige figuren van google-drive downloaden, 0: alleen lokale figuren inlezen
-refresh_figures <- 0
-if (refresh_figures == 2) {
+if (params$refresh_figures == 2) {
   figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
 }
 
@@ -100,7 +98,7 @@ uitgesloten_tubes <- c("HAGP018", "WALP101") #pb van een peilbuiskoppel
 ```
 
 ```{r read-databases, include= FALSE}
-if (refresh_data == 2) {
+if (params$refresh_data == 2) {
   gw_types <- read_scheme_types(lang = "nl") %>%
       filter(scheme == "GW_05.1_terr") %>%
       arrange(typegroup) %>%
@@ -117,7 +115,7 @@ if (refresh_data == 2) {
 ```
 
 ```{r read-gisdata, include= FALSE}
-if (refresh_data == 2) {
+if (params$refresh_data == 2) {
   habmap_terr <- read_habitatmap_terr()
   
   habmap_polygons <- habmap_terr$habitatmap_terr_polygons
@@ -228,7 +226,7 @@ if (refresh_data == 2) {
 
 
 ```{r read-watina-data, include= FALSE}
-if (refresh_data == 2) {
+if (params$refresh_data == 2) {
   watina <- connect_watina()
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                         buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
