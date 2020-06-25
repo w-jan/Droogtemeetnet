@@ -498,7 +498,7 @@ raster_meetnet_poly_opp <- raster_meetnet_poly %>%
 #st_crs(habmap_polygons_gw) #lambert
 #plot(raster_meetnet_poly, main = "GRTS-raster level 8")
 #st_is_valid(raster_meetnet_poly)
-raster_meetnet_poly <- lwgeom::st_make_valid(raster_meetnet_poly)
+raster_meetnet_poly <- st_make_valid(raster_meetnet_poly)
 #st_is_valid(raster_meetnet_poly)
 
 raster_meetnet_poly_tm <- tm_shape(raster_meetnet_poly) + 
@@ -530,7 +530,7 @@ if (file.exists(file.path(".","data","local",
 
 habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
 
-habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
+habmap_gw_raster_overlay <- st_make_valid(habmap_gw_raster_overlay)
 
 habmap_gw_raster_overlay
 if (params$refresh_figures == 2) {
@@ -713,7 +713,7 @@ sel_raster_meetnet <-
              by =  c("rasterid", "groupnr")) %>% 
   rename(gew_aantal_meetptn = gew_aantal_meetptn_afgerond)
 
-sel_raster_meetnet <- lwgeom::st_make_valid(sel_raster_meetnet)
+sel_raster_meetnet <- st_make_valid(sel_raster_meetnet)
 
 #groeperen van gefragmenteerde rastercellen
 sel_raster_meetnet <- 
@@ -724,7 +724,7 @@ sel_raster_meetnet <-
   select(-temp)
 
 #uit voorzorg nog eens de geometrie checken
-sel_raster_meetnet <- lwgeom::st_make_valid(sel_raster_meetnet)
+sel_raster_meetnet <- st_make_valid(sel_raster_meetnet)
 #st_is_valid(raster_meetnet_poly)
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
