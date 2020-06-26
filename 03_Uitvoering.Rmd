@@ -2387,8 +2387,9 @@ Tabel \@ref(tab:synthese-reserve-tubes) geeft alle `r nrow(tubes_reserve)` reser
 ```{r synthese-selection-tubes}
 
 kobj <- kable(tubes_selected %>%
-      select(rasterid, groupnr, area_name, loc_code, x, y, selectie) %>%
       mutate('direct inzetbaar' = if_else(selectie == 1, 'Ja', 'Nee')) %>% 
+      select(rasterid, groupnr, area_name, loc_code, x, y, 
+             'direct inzetbaar') %>%
       rename(GTgroep = groupnr,
              rastercelnummer = rasterid,
              gebied = area_name,
