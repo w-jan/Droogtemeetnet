@@ -2,7 +2,7 @@
 # Uitvoering
 
 De toepassing van de hiervoor besproken methodiek is volledig gebeurd met R versie 3.6.1 (@citingR), tenzij anders vermeld.
-Meer details hierover is vermeld in bijlage \@ref(gebruikte-werkomgeving).
+Meer details hierover zijn vermeld in bijlage \@ref(gebruikte-werkomgeving).
 
 De code voor analyse en dit rapport is ook te vinden op de GitHub-repository [n2khab-droogtemeetnet](https://github.com/inbo/n2khab-droogtemeetnet).
 
