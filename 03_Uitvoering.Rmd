@@ -2460,6 +2460,20 @@ tubes_selected_tm <- raster_meetnet_poly_tm +
 
 tubes_selected_tm
 ```
+```{r tubes-as-shape}
+
+write_sf(tubes_selected_sf %>%  
+           select(-obswell_statecode, -loc_validitycode) %>% 
+           rename(watinac = "loc_code"), 
+         driver = "ESRI Shapefile", file.path("data","GIS", "tubes_selected_2020_05.shp"))
+
+write_sf(tubes_reserve %>% 
+           as_points() %>%  
+           select(-obswell_statecode, -loc_validitycode) %>% 
+           rename(watinac = "loc_code"), 
+         file.path("data","GIS", "tubes_reserve_2020_05.shp" ))
+```
+
 ###Selecteren van potentiële geschikte habitatvlekken voor rastercellen van categorie 1.
 Via een desktop-analyse zoals hieronder beschreven wordt, kunnen slechts kandidaat habitatvlekken geselecteerd worden. Opdat deze habitatvlek werkelijk geschikt is om er een pb te plaatsen, vergt meestal nog nader onderzoek en meestal ook een inspectie ter plaatse. Een kandidaat habitatvlek kan dan alsnog geweerd worden. Alternatieve habitatvlekken liggen best in de buurt van de oorspronkelijke kandidaat-habitatvlek, maar als je GRTS-proof werkt en je gridcel heeft een grote oppervlakte, kan het vinden van een geschikt alternatief leiden tot ellenlange zoektochten en veel over en weer gerij. 
 De hier gepresenteerde methode volgt een meer pragmatische benadering. 

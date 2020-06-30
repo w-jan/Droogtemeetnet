@@ -2053,8 +2053,8 @@ tubes_selected_tm <- raster_meetnet_poly_tm +
   tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "Inzetbaarheid", clustering = FALSE) + tm_layout(title = "geselecteerde peilbuizen" )
 
 tubes_selected_tm
-write_sf(tubes_selected_sf %>%  select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), driver = "ESRI Shapefile", file.path("data", "tubes_selected_2020_05.shp"))
-write_sf(tubes_reserve %>% as_points() %>%  select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), file.path("data", "tubes_reserve_2020_05.shp" ))
+write_sf(tubes_selected_sf %>%  select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), driver = "ESRI Shapefile", file.path("data", "GIS","tubes_selected_2020_05.shp"))
+write_sf(tubes_reserve %>% as_points() %>%  select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), file.path("data", "GIS","tubes_reserve_2020_05.shp" ))
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
 
@@ -2265,7 +2265,7 @@ habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>%
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
 output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
 rm(output_vc)
-write_sf(tubes_cat1_polyg, file.path("data", "bijkomende_hokken.shp"))
+write_sf(tubes_cat1_polyg, file.path("data", "GIS", "bijkomende_hokken.shp"))
 
 # raster::plot(clip5)
 # raster::plot(clip5_1cel, add= FALSE)

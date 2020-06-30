@@ -37,7 +37,9 @@ rsconnect/
 
 # local, large binary data
 /data/local/*
+/data/GIS/*
 /figures/local/*
+/local/*
 .Rproj.user
 
 # temporary map, files
