@@ -18,7 +18,7 @@ Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de 
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
-if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh_data >= 1 ){
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | params$refresh_data >= 1 ){
     drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
                    path = file.path(".","data","local", 
                                     "raster_meetnet_poly.gpkg"), overwrite = 
@@ -39,7 +39,7 @@ raster_meetnet_poly_opp <- raster_meetnet_poly %>%
 #st_crs(habmap_polygons_gw) #lambert
 #plot(raster_meetnet_poly, main = "GRTS-raster level 8")
 #st_is_valid(raster_meetnet_poly)
-raster_meetnet_poly <- lwgeom::st_make_valid(raster_meetnet_poly)
+raster_meetnet_poly <- st_make_valid(raster_meetnet_poly)
 #st_is_valid(raster_meetnet_poly)
 
 raster_meetnet_poly_tm <- tm_shape(raster_meetnet_poly) + 

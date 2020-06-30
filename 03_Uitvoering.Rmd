@@ -2,7 +2,7 @@
 # Uitvoering
 
 De toepassing van de hiervoor besproken methodiek is volledig gebeurd met R versie 3.6.1 (@citingR), tenzij anders vermeld.
-Meer details hierover is vermeld in bijlage \@ref(gebruikte-werkomgeving).
+Meer details hierover zijn vermeld in bijlage \@ref(gebruikte-werkomgeving).
 
 De code voor analyse en dit rapport is ook te vinden op de GitHub-repository [n2khab-droogtemeetnet](https://github.com/inbo/n2khab-droogtemeetnet).
 
@@ -19,7 +19,7 @@ Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de 
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
-if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | refresh_data >= 1 ){
+if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | params$refresh_data >= 1 ){
     drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
                    path = file.path(".","data","local", 
                                     "raster_meetnet_poly.gpkg"), overwrite = 
@@ -40,7 +40,7 @@ raster_meetnet_poly_opp <- raster_meetnet_poly %>%
 #st_crs(habmap_polygons_gw) #lambert
 #plot(raster_meetnet_poly, main = "GRTS-raster level 8")
 #st_is_valid(raster_meetnet_poly)
-raster_meetnet_poly <- lwgeom::st_make_valid(raster_meetnet_poly)
+raster_meetnet_poly <- st_make_valid(raster_meetnet_poly)
 #st_is_valid(raster_meetnet_poly)
 
 raster_meetnet_poly_tm <- tm_shape(raster_meetnet_poly) + 
@@ -70,7 +70,7 @@ Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vij
 #     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
 
 if (file.exists(file.path(".","data","local", 
-                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | refresh_data >= 1) {
+                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | params$refresh_data >= 1) {
     drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
                    path = file.path(".","data","local", 
                                     "habmap_gw_raster_overlay.gpkg"), 
@@ -79,13 +79,13 @@ if (file.exists(file.path(".","data","local",
 
 habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
 
-habmap_gw_raster_overlay <- lwgeom::st_make_valid(habmap_gw_raster_overlay)
+habmap_gw_raster_overlay <- st_make_valid(habmap_gw_raster_overlay)
 #plot(habmap_gw_raster_overlay, main = "Voorkomen van ")
 
 ```
 
 ```{r overlay-habitatkaart-GRTS-plot, fig.cap="verspreiding-GT-groepen", message=FALSE, warning=TRUE}
-if (refresh_figures == 2) {
+if (params$refresh_figures == 2) {
   habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
     tm_shape(habmap_gw_raster_overlay) + 
     tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
@@ -99,14 +99,14 @@ if (refresh_figures == 2) {
 
 }
 if (file.exists(file.path(".","figures","local", 
-                          "habmap_gw_raster_overlay.png")) == FALSE | refresh_figures == 1) {
+                          "habmap_gw_raster_overlay.png")) == FALSE | params$refresh_figures == 1) {
   drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
                  path = file.path(".","figures","local", 
                                   "habmap_gw_raster_overlay.png"), 
                  overwrite = TRUE)
 }
 
-if (refresh_figures < 2) {
+if (params$refresh_figures < 2) {
   include_graphics(path = file.path(".","figures","local", 
                                     "habmap_gw_raster_overlay.png"))  
 }
@@ -419,7 +419,7 @@ sel_raster_meetnet <-
                by =  c("rasterid", "groupnr")) %>% 
     rename(gew_aantal_meetptn = gew_aantal_meetptn_afgerond)
 
-sel_raster_meetnet <- lwgeom::st_make_valid(sel_raster_meetnet)
+sel_raster_meetnet <- st_make_valid(sel_raster_meetnet)
 
 #groeperen van gefragmenteerde rastercellen
 sel_raster_meetnet <- 
@@ -430,7 +430,7 @@ sel_raster_meetnet <-
   select(-temp)
 
 #uit voorzorg nog eens de geometrie checken
-sel_raster_meetnet <- lwgeom::st_make_valid(sel_raster_meetnet)
+sel_raster_meetnet <- st_make_valid(sel_raster_meetnet)
 #st_is_valid(raster_meetnet_poly)
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
@@ -2045,7 +2045,7 @@ Er is hierbij een verschil gemaakt tussen peilbuizen van actueel lage kwaliteit 
 # grts_level0 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(1)
 
-if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | refresh_data >= 1) {
+if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | params$refresh_data >= 1) {
     drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
                    path = file.path(".","data","local", "grts_level0.tif"), 
                    overwrite = TRUE)
@@ -2057,7 +2057,7 @@ grts_level0 <- raster(file.path(".","data","local", "grts_level0.tif"))
 # grts_level8 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(9)
 
-if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | refresh_data >= 1) {
+if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | params$refresh_data >= 1) {
     drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
                    path = file.path(".","data","local", "grts_level8.tif"), 
                    overwrite = TRUE)
@@ -2066,7 +2066,7 @@ if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | ref
 grts_level8 <- raster(file.path(".","data","local", "grts_level8.tif"))
 
 
-if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | refresh_data >= 1) {
+if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | params$refresh_data >= 1) {
     drive_download(drive_get(id = "1pBI9hTIaRpV_qfExYHLdxiFEl81OQPP8"), 
                    path = file.path(".","data","local", "grts_level5.tif"), 
                    overwrite = TRUE)
@@ -2352,7 +2352,8 @@ if (pdfmaken == TRUE) {
 }
 ```
 
-###Samenvatting selectie peilbuizen
+### Samenvatting selectie peilbuizen
+
 ```{r synthese-tubes}
 tubes_selected <- bind_rows(tubes_cat1 %>% mutate(cat = "1"), 
                             tubes_cat2_bis %>% mutate(cat = "2"),
@@ -2386,8 +2387,9 @@ Tabel \@ref(tab:synthese-reserve-tubes) geeft alle `r nrow(tubes_reserve)` reser
 ```{r synthese-selection-tubes}
 
 kobj <- kable(tubes_selected %>%
-      select(rasterid, groupnr, area_name, loc_code, x, y, selectie) %>%
       mutate('direct inzetbaar' = if_else(selectie == 1, 'Ja', 'Nee')) %>% 
+      select(rasterid, groupnr, area_name, loc_code, x, y, 
+             'direct inzetbaar') %>%
       rename(GTgroep = groupnr,
              rastercelnummer = rasterid,
              gebied = area_name,
@@ -2460,6 +2462,8 @@ tubes_selected_tm <- raster_meetnet_poly_tm +
 
 tubes_selected_tm
 ```
+
+
 ```{r tubes-as-shape}
 
 write_sf(tubes_selected_sf %>%  
@@ -2474,7 +2478,9 @@ write_sf(tubes_reserve %>%
          file.path("data","GIS", "tubes_reserve_2020_05.shp" ))
 ```
 
-###Selecteren van potentiële geschikte habitatvlekken voor rastercellen van categorie 1.
+### Selecteren van potentiële geschikte habitatvlekken voor rastercellen van categorie 1.
+
+
 Via een desktop-analyse zoals hieronder beschreven wordt, kunnen slechts kandidaat habitatvlekken geselecteerd worden. Opdat deze habitatvlek werkelijk geschikt is om er een pb te plaatsen, vergt meestal nog nader onderzoek en meestal ook een inspectie ter plaatse. Een kandidaat habitatvlek kan dan alsnog geweerd worden. Alternatieve habitatvlekken liggen best in de buurt van de oorspronkelijke kandidaat-habitatvlek, maar als je GRTS-proof werkt en je gridcel heeft een grote oppervlakte, kan het vinden van een geschikt alternatief leiden tot ellenlange zoektochten en veel over en weer gerij. 
 De hier gepresenteerde methode volgt een meer pragmatische benadering. 
 Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseerd obv de grondwatergroepen. Elke cel van 32\*32m wordt zo in een van de vijf groepen ingedeeld. Is er voor een bepaalde grondwatergroep een pb gewenst, dan wordt de bijhorende rastercel met het laagste rangnummer gekozen. Deze cel ligt ingebed in een grotere grid van bijv. 1024\*1024. Hierbinnen worden de rastercellen die tot dezelfde gw-groep behoren geselecteerd en gerangschikt volgens oplopend rangnummer. Dit zijn bij voorkeur de alternatieve plaatsen.
