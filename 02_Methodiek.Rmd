@@ -41,7 +41,7 @@ De twee natste GT-klassen krijgen een lager gewicht toegemeten, omdat deze klass
 
 Concreet:
 
-- Het aantal stratificatielagen  = `r aantal_strat `
+- Het aantal stratificatielagen  = `r aantal_strat - 1`
 - De verdeling van het aantal meetpunten per laag is gegeven in tabel \@ref(tab:GTgroepen-verdeling-over-strata): 
 ```{r GTgroepen-verdeling-over-strata}
 kobj <- kable(gw_types_groups %>% arrange(`GT-groep: nummer`), 
@@ -199,7 +199,7 @@ De kans wordt uiteraard kleiner dat met deze beperkte data een betrouwbaar model
 
 We delen de meetpunten daarom op in een aantal kwaliteitsklassen op basis van volgende **[basiskwaliteitscriteria]{#basiskwaliteitscriteria}** :
 
-(@) De meetpunten hebben vanaf 2000 voor minstens één jaar een goede tijdreeks[^3], die een toelaat een zogenaamde lg3-waarde[^3] te berekenen.
+(@) De meetpunten hebben vanaf 2000 voor minstens één jaar een goede tijdreeks[^3], die toelaat een zogenaamde lg3-waarde[^4] te berekenen.
 
 (@) Meetpunten met een _recente_ kwalitatief goede tijdreeks primeren boven meetpunten met een oudere tijdreeks. 
 
@@ -223,7 +223,7 @@ Het gebruik van deze criteria leidt er ook toe dat in een rastercel bij de toewi
 
 
 [^3]: Een kwalitatief goed meetjaar wordt hier gedefinieerd als een hydrologisch jaar waarvoor een lg3 kan berekend worden. Dit houdt in dat er minstens 20 goed gespreide metingen per jaar zijn. Het verschil tussen twee metingen mag niet groter zijn dan 30 dagen en de eerste en laatste meting moet resp. in april en maart (van het daaropvolgende kalenderjaar) vallen. 
-lg3 =  het gemiddelde van de drie laagste waterpeilen binnen een hydrologisch jaar (1 april - 31 maart), waarbij er tussen deze drie metingen minstens 14 dagen verschil ligt. -->
+[^4]: lg3 =  het gemiddelde van de drie laagste waterpeilen binnen een hydrologisch jaar (1 april - 31 maart), waarbij er tussen deze drie metingen minstens 14 dagen verschil ligt. -->
 
 <!-- De extreem droge zomers van 2017 en 2018 worden niet meegenomen in de berekening. Het is namelijk nu nog onduidelijk (door mogelijke naijling) of de actuele vegetatie geen nadelige effecten van deze twee zomers heeft ondervonden. -->
 
