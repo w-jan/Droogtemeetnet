@@ -116,7 +116,7 @@ if (params$refresh_data == 2) {
 
 ```{r read-gisdata, include= FALSE}
 if (params$refresh_data == 2) {
-  habmap_terr <- read_habitatmap_terr()
+  habmap_terr <- read_habitatmap_terr(file = "20_processed/habitatmap_terr/habitatmap_terr_inclbos.gpkg")
   
   habmap_polygons <- habmap_terr$habitatmap_terr_polygons
   

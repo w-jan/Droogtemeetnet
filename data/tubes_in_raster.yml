@@ -2,13 +2,9 @@
   git2rdata: 0.2.1
   optimize: yes
   NA string: NA
-  sorting:
-  - loc_code
-  - polygon_id
-  - rasterid
-  - type
-  hash: 5b9881e4835ab1b60c77f18f04c7c86f695679ad
-  data_hash: 6b8aa334a8641028d22917263abd3f4240754666
+  sorting: loc_code
+  hash: 43b2ee2293e216b8f6099dd004a284614f60caa0
+  data_hash: 9e67250029ee9c3236f2253149fbf6de0d2274dc
 loc_code:
   class: character
 area_code:
@@ -47,28 +43,14 @@ loc_typename:
   labels: Peilbuis/Piëzometer
   index: 2
   ordered: no
-polygon_id:
-  class: character
-description_orig:
-  class: character
-phab:
-  class: numeric
-certain:
-  class: logical
-type:
-  class: character
 groupnr:
   class: numeric
 rasterid:
-  class: integer
-opp:
   class: integer
 filterdepth:
   class: numeric
 soilsurf_ost:
   class: numeric
-description:
-  class: character
 typegroup_name:
   class: factor
   labels:
@@ -83,15 +65,6 @@ typegroup_name:
   - 3
   - 4
   - 5
-  ordered: no
-source:
-  class: factor
-  labels:
-  - habitatmap_stdized
-  - habitatmap_stdized + interpretation
-  index:
-  - 1
-  - 2
   ordered: no
 obswell_statecode:
   class: factor

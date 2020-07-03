@@ -16,8 +16,8 @@ always_allow_html: yes #mogelijk slechts een tijdelijke verplichting
 site: bookdown::bookdown_site
 documentclass: book
 params:
-  refresh_data: 0
-  refresh_figures: 0
+  refresh_data: 2
+  refresh_figures: 2
 output: 
   # bookdown::gitbook: default
     #bookdown::pdf_book: default

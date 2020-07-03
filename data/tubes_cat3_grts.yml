@@ -7,7 +7,7 @@
   - groupnr
   - loc_code
   hash: 4c38e4ad10b2cab93e5b38cda7b5ca937662454b
-  data_hash: a43b035cac08d74fdea1f95b70fc69f3889202c9
+  data_hash: 288486bf7699feb15bcf241a424da7193a919f63
 unieknr:
   class: integer
 loc_code:

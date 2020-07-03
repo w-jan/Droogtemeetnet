@@ -119,7 +119,7 @@ if (params$refresh_data == 2) {
                  dplyr::select(-code_orig, -source), 
                by = "polygon_id")
   
-  habmap_polygons_gw <- st_make_valid(habmap_polygons_gw)
+  habmap_polygons_gw <- sf::st_make_valid(habmap_polygons_gw)
   #wegschrijven als geopackage
   
   
@@ -145,7 +145,7 @@ if (params$refresh_data == 2) {
   raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
   raster_meetnet_poly <- raster_meetnet_poly %>% 
     rename(rasterid =  value)
-  raster_meetnet_poly <- st_make_valid(raster_meetnet_poly) 
+  raster_meetnet_poly <- sf::st_make_valid(raster_meetnet_poly) 
   
   #wegschrijven van dit grid
   st_write(raster_meetnet_poly,
@@ -944,7 +944,12 @@ tubes_in_raster <- tubes_hab_aggr %>%
   distinct()
 
 
+#wegschrijven van deze dataset
+output_vc <- write_vc(tubes_in_raster, file.path(".","data","tubes_in_raster"), 
+                      sorting = c("loc_code"), 
+                      strict =  FALSE, root = ".")
 
+rm(output_vc)
 
 ### Opzoeken van peilbuizen met een goede tijdreeks binnen de geselecteerde cellen
 
@@ -1420,6 +1425,13 @@ tubes_menyanthes <- tubes_menyanthes %>%
 #wegfilteren van meetreeksen die niet in een raster vallen (is mogelijk wanneer een peilbuis van een oude selectie in de resultaattabel van Menyanthes is verzeild)
 tubes_menyanthes <- tubes_menyanthes %>% 
   semi_join(tubes_in_raster, by = c("watinacode" = "loc_code"))
+
+# tubes_menyanthes_test <- tubes_menyanthes %>% 
+#   inner_join(tubes_in_raster, by = c("watinacode" = "loc_code"))
+# 
+# check_meny <- tubes_menyanthes_test %>% 
+#   group_by(rasterid, groupnr, selectie) %>% 
+#   count(selectie)
 
 tubes_menyanthes_synthese <- tubes_menyanthes %>% 
   count(uitspraak) %>% 
@@ -1971,11 +1983,17 @@ for (i in seq(1:nrow(sel_excess_rasterid))) {
       dplyr::pull(aantalpb) %>% 
       as.integer()
     
-    check <- tubes_excess %>% 
-      group_by(rasterid, groupnr) %>% 
-      filter(selectie == 1) %>% 
-      count(gew_aantal_meetptn)
-    
+    # check <- tubes_excess %>% 
+    #   group_by(rasterid, groupnr) %>% 
+    #   filter(selectie == 1) %>% 
+    #   summarise( goeieptn = n())
+    # 
+    # check_alleptn <- tubes_excess %>% 
+    #   group_by(rasterid, groupnr) %>% 
+    #   summarise( alleptn = n())   
+    # 
+    # check_alleptn <- check_alleptn %>% 
+    #   left_join(check)
     #groep pb indien mogelijk beperken tot alleen de geschikte. 
     aantalgoedepb <- tubes_excess %>% 
       filter(rasterid == rasterid_grid & selectie == 1 & groupnr == gwgroup) %>% 
@@ -2119,6 +2137,8 @@ output_vc <- write_vc(tubes_cat3_grts, file.path(".","data","tubes_cat3_grts"), 
 output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 # output_vc <- write_vc(tubes_cat1Bb_gtrs_reserve, file.path(".","data","tubes_cat1Bb_gtrs_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 rm(output_vc)
+
+#check_cat3_grts <- read_vc(file.path(".","data","tubes_cat3_grts"))
 
 
 ###Samenvatting selectie

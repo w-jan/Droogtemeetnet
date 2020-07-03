@@ -626,8 +626,18 @@ tubes_in_raster <- tubes_hab_aggr %>%
   distinct()
 
 
+
+```
+```{r write-tubes-in-raster, message=FALSE, warning=FALSE}
+#wegschrijven van deze dataset
+output_vc <- write_vc(tubes_in_raster, file.path(".","data","tubes_in_raster"), 
+                      sorting = c("loc_code"), 
+                      strict =  FALSE, root = ".")
+
+rm(output_vc)
 ```
 Het zijn in totaal **`r nrow(tubes_in_raster)`** peilbuizen. 
+
 
 ```{r tubes-in-selected-cells-table}
 kobj <- kable(tubes_in_raster %>% 
@@ -2551,6 +2561,9 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
  habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
    select(-starts_with("selecteerbaar"))
  
+
+```
+```{r write-tubes-cat1-polyg, message=FALSE, warning=FALSE}
  #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
  output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
  rm(output_vc)
