@@ -34,7 +34,7 @@ Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetne
 In totaal zijn er 262 cellen in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
     - Het gewenste totaal aantal meetpunten = `r tot_n_tub `  
 
-- We willen daarenboven ook gestratificeerd werken volgens de 5-delige GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden.
+- We willen daarenboven ook gestratificeerd werken volgens de GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden.
 We geven niet alle GT-groepen een even groot gewicht. Vegetatietypen van GT-klasse 5 worden niet meegenomen. 
 Van deze GT-klasse is immers de grondwaterafhankelijkheid plaatsgebonden en (soms heel) variabel.
 De twee natste GT-klassen krijgen een lager gewicht toegemeten, omdat deze klassen vermoedelijk het traagst een droogte-signaal zullen geven. 
@@ -398,5 +398,4 @@ _**De indicator kleurt respectievelijk rood, oranje of geel voor Vlaanderen als 
 Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 30 jaren lang_**, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden. 
 Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecten van deze twee droge zomers heeft gekend (door naijling).
 Voor elke bestaande geselecteerde meetlocatie wordt dan voor elke dag van het groeiseizoen (1 april - 1 oktober) de p10, p20 en p30 percentielwaarde berekend.
-
 
