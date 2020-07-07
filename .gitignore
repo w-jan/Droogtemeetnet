@@ -51,7 +51,10 @@ rsconnect/
 
 # Other
 _bookdown_files/
+_book/
 *.html
+*.pdf
+*.tex
 !header.html
 .Rproj.user
 droogtemeetnet_ontwerp.md
