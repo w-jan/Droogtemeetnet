@@ -185,7 +185,7 @@ if (pdfmaken == TRUE) {
 
 ### Berekening gemiddelde benodigde oppervlakte van een GT-groep per meetpunt
 
-We gaan hier uit van de ongelijke verdeling van de meetpunten over de strata (= GT-groepen), waarbij meer de drogere groepen relatief meer gewicht krijgen: voor de verdeling zi tabel \@ref(tab:GTgroepen-verdeling-over-strata).
+We gaan hier uit van de ongelijke verdeling van de meetpunten over de strata (= GT-groepen), waarbij de drogere groepen relatief meer gewicht krijgen: voor de verdeling zie tabel \@ref(tab:GTgroepen-verdeling-over-strata).
 We kennen de totale oppervlakte van een GT-groep, de oppervlakte van een GT-groep in elke rastercel en hoeveel meetpunten er per GT-groep gewenst zijn. 
 Deze gegevens maken volgende berekeningen mogelijk : 
 
@@ -2759,4 +2759,3 @@ if (pdfmaken == TRUE) {
     scroll_box(height = "350px", box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
 }
 ```
-
