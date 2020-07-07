@@ -402,10 +402,7 @@ if (pdfmaken == TRUE) {
 <br/><br/>
 
 ### De eigenlijke selectie van rastercellen
-
-We kunnen nu de rastercellen weergeven die een meetpunt dienen te bevatten.
-Figuur \@ref(fig:selectie-rastercel-met-meetpunt-fig1) toont de selectie voor GT-groep 1, de groep habitattypen van zeer natte bodems. Er werden 11 cellen geselecteerd die allemaal in het oosten gelegen zijn.
-```{r selectie-rastercel-met-meetpunt-fig1, fig.cap = "Geselecteerde rastercellen voor GT-groep 1 (= zeer nat)"}
+```{r raster-meetnet, message=FALSE, warning=FALSE}
 
 #cellen selecteren met een gewenst meetpunt, een cel kan voor meerdere GT-groepen geselecteerd zijn
 sel_raster_meetnet <- 
@@ -429,6 +426,12 @@ sel_raster_meetnet <-
 #uit voorzorg nog eens de geometrie checken
 sel_raster_meetnet <- st_make_valid(sel_raster_meetnet)
 #st_is_valid(raster_meetnet_poly)
+```
+
+We kunnen nu de rastercellen weergeven die een meetpunt dienen te bevatten.
+Figuur \@ref(fig:selectie-rastercel-met-meetpunt-fig1) toont de selectie voor GT-groep 1, de groep habitattypen van zeer natte bodems. 
+Er werden `r nrow(sel_raster_meetnet %>% filter(groupnr == 1))` cellen geselecteerd die allemaal in het oosten gelegen zijn.
+```{r selectie-rastercel-met-meetpunt-fig1, fig.cap = "Geselecteerde rastercellen voor GT-groep 1 (= zeer nat)"}
 
 sel_raster_meetnet_tm <- raster_meetnet_poly_tm + 
   tm_shape(sel_raster_meetnet %>% filter(groupnr == 1)) + 
