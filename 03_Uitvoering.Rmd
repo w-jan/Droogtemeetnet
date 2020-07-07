@@ -404,7 +404,7 @@ if (pdfmaken == TRUE) {
 ### De eigenlijke selectie van rastercellen
 
 We kunnen nu de rastercellen weergeven die een meetpunt dienen te bevatten.
-Figuur \@ref(fig:selectie-rastercel-met-meetpunt-fig1) geeft toont de selectie voor GT-groep 1, de groep habitattypen van zeer natte bodems. Er werden 11 cellen geselecteerd die allemaal in het oosten gelegen zijn.
+Figuur \@ref(fig:selectie-rastercel-met-meetpunt-fig1) toont de selectie voor GT-groep 1, de groep habitattypen van zeer natte bodems. Er werden 11 cellen geselecteerd die allemaal in het oosten gelegen zijn.
 ```{r selectie-rastercel-met-meetpunt-fig1, fig.cap = "Geselecteerde rastercellen voor GT-groep 1 (= zeer nat)"}
 
 #cellen selecteren met een gewenst meetpunt, een cel kan voor meerdere GT-groepen geselecteerd zijn
