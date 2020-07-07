@@ -836,7 +836,7 @@ if (pdfmaken == TRUE) {
 ### Categorie 1: Zijn er rastercellen met onvoldoende peilbuizen?
 
 Tabel \@ref(tab:cat1A-table) geeft een overzicht per GT-groep van het aantal geselecteerde rastercellen met een onvoldoende aantal peilbuizen.
-Ongeacht of er peilbuizen in deze rastercellen staan, zullen er in deze cellen nog meetpunten met een peilbuis moeten uitgerust worden.
+Ongeacht of er peilbuizen in deze rastercellen staan, zullen er in deze cellen nog meetpunten met een peilbuis uitgerust moeten worden.
 
 Figuur \@ref(fig:cat1A-plot) toont deze rastercellen op een kaart.
 
