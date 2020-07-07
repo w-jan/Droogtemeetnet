@@ -277,104 +277,11 @@ if (params$refresh_data == 2) {
                         strict =  FALSE)
   rm(output_vc)
   
-#workaround voor slecht functionerende odbc-driver (= alle meetpunten importeren)
-  get_xg3_temp <- function(locs,
-                           con,
-                           startyear,
-                           endyear = year(now()) - 1,
-                           vert_crs = c("local",
-                                        "ostend",
-                                        "both"),
-                           truncated = TRUE,
-                           with_estimated = TRUE,
-                           collect = FALSE) {
-    
-    vert_crs <- match.arg(vert_crs)
-    assert_that(is.number(startyear))
-    assert_that(is.number(endyear))
-    assert_that(endyear >= startyear,
-                msg = "startyear must not be larger than endyear.")
-    assert_that("loc_code" %in% colnames(locs),
-                msg = "locs does not have a column name 'loc_code'.")
-    assert_that(is.flag(truncated), noNA(truncated))
-    assert_that(is.flag(collect), noNA(collect))
-    
-    if (inherits(locs, "data.frame")) {
-      locs <-
-        locs %>%
-        distinct(.data$loc_code)
-      
-      try(db_drop_table(con, "#locs"),
-          silent = TRUE)
-      
-      
-      # locs_oud <-
-      #   copy_to(con,
-      #           locs) %>%
-      #   inner_join(tbl(con, "vwDimMeetpunt") %>%
-      #                dplyr::select(loc_wid = .data$MeetpuntWID,
-      #                       loc_code = .data$MeetpuntCode),
-      #              .,
-      #              by = "loc_code")
-      locs <-
-        tbl(con, "vwDimMeetpunt") %>%
-        dplyr::select(loc_wid = .data$MeetpuntWID,
-               loc_code = .data$MeetpuntCode)
-      
-    }
-    
-    xg3 <-
-      tbl(con, "ssrs_Precalc") %>%
-      # left_join(tbl(con, "DimMetingType"),
-      #           by = "MetingTypeWID") %>%
-      dplyr::select(loc_wid = .data$MeetpuntWID,
-             hydroyear = .data$HydroJaar,
-             # method_code = .data$MetingTypeCode,
-             # method_name = .data$MetingTypeNaam,
-             lg3_lcl = .data$GLG_2,
-             hg3_lcl = .data$GHG_2,
-             vg3_lcl = .data$GVG_2,
-             lg3_ost = .data$GLG_1,
-             hg3_ost = .data$GHG_1,
-             vg3_ost = .data$GVG_1
-      ) %>%
-      filter(.data$hydroyear >= startyear,
-             .data$hydroyear <= endyear) %>%
-      inner_join(locs %>%
-                   dplyr::select(.data$loc_wid,
-                          .data$loc_code) %>%
-                   distinct,
-                 .,
-                 by = "loc_wid") %>%
-      dplyr::select(-.data$loc_wid)
-    
-    xg3 <-
-      switch(vert_crs,
-             local = xg3 %>% dplyr::select(-contains("ost")),
-             ostend = xg3 %>% dplyr::select(-contains("lcl")),
-             both = xg3
-      ) %>%
-      arrange(.data$loc_code,
-              .data$hydroyear)
-    
-    if (collect) {
-      xg3 <-
-        xg3 %>%
-        collect
-    }
-    
-    return(xg3)
-    
-  }    
-  #debugonce("get_xg3_temp")  
   watina2 <- inbodb::connect_inbo_dbase("W0002_00_Watina")  
-  tubes_xg3_alles <- tubes_hab %>% 
-    get_xg3_temp(watina2, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
+  tubes_xg3 <- tubes_hab %>% 
+    get_xg3(watina2, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
             truncated =  TRUE, collect = TRUE)
-  
-  tubes_xg3 <- tubes_xg3_alles  %>% 
-    semi_join(tubes_hab, by = "loc_code")
-  
+
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
   tubes_xg3_vmm <- data.frame(loc_code = rep(tubes_hab %>% 
                                        filter(area_code == "VMM") %>% 

@@ -268,8 +268,9 @@ Het is, door het hoge aantal beschikbare meetpunten, echter niet doenbaar om een
 Wel werden alle meetreeksen van de meetpunten die behoren tot rastercellen van cat. 1 en cat. 2 geanalyseerd. 
 Voor categorie 3 bleef dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
 
-Een meetreeks werd weerhouden als er een tijdsmodel kon voor samengesteld worden dat minstens 66% van de variatie in de waargenomen peilen (cfr. EVP, explained variance percentage, in de Menyanthes-software) kon verklaren en ook geen significante lineaire trend vertoont. 
-Bij het tijdsmodel werden uitsluitend neerslag- en evapotranspiratiedata als verklarende reeksen gebruikt. 
+Een meetreeks werd weerhouden onder twee voorwaarden: 
+1. Er kan een tijdsmodel met uitsluitend neerslag- en evapotranspiratiedata als verklarende reeksen voor samengesteld worden dat minstens 66% van de variatie in de waargenomen peilen (cfr. EVP, explained variance percentage, in de Menyanthes-software) kon verklaren.
+2. De tijdreeks vertoont geen significante lineaire trend. 
 
 Minstens twee derden van het peilverloop dient dus verklaard te kunnen worden door het weer.
 Eén derde kan/mag door andere factoren beïnvloed worden (bijv. het naburige peil van een waterloop).

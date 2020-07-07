@@ -1377,7 +1377,7 @@ tubes_cat1 <-
   inner_join(sel_cat1A_table, 
              by = c("rasterid", "groupnr")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(24:28))
+  dplyr::select(-c(opp_gw_cel:aantal_cat1A))
 
 
 
@@ -1392,11 +1392,11 @@ tubes_cat2 <-
          cat = 2) %>% 
   inner_join(sel_cat2_table  %>% 
                inner_join(sel_qual_basis %>% 
-                            select(-gew_aantal_meetptn), 
+                            dplyr::select(-gew_aantal_meetptn), 
                           by =  c("rasterid","groupnr","rankclus_lastyear", "rankclus_nryears" )), 
              by = c("rasterid", "groupnr", "lastyear", "nryears")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(24:29))
+  dplyr::select(-c(gew_aantal_meetptn:n))
 
 tubes_cat3 <- 
   tubes_in_raster %>% 
@@ -1410,11 +1410,11 @@ tubes_cat3 <-
          cat = 3) %>%   
   inner_join(sel_cat3_table  %>% 
                inner_join(sel_qual_basis %>% 
-                            select(-gew_aantal_meetptn), 
+                            dplyr::select(-gew_aantal_meetptn), 
                           by = c("rasterid","groupnr","rankclus_lastyear","rankclus_nryears" )), 
              by = c("rasterid","groupnr", "lastyear","nryears")) %>% 
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
-  select(-c(24:29))
+  dplyr::select(-c(gew_aantal_meetptn:n))
 
 tubes_cat123 <- bind_rows(tubes_cat1, tubes_cat2, tubes_cat3) %>% arrange(loc_code)
 
@@ -1450,14 +1450,14 @@ if (pdfmaken == TRUE) {
     scroll_box(height = "350px", box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
 }
 
+```
 
+```{r write-tubes-cat123}
 output_vc <- write_vc(tubes_cat123, file.path(".","data","tubes_cat123_run1"), 
                       sorting = c("loc_code"), strict =  FALSE, root = ".")
 
 rm(output_vc)
-
 ```
-
 
 
 <br/><br/>
@@ -1769,7 +1769,7 @@ sel_cat2_raster_bis <- sel_raster_pb %>%
 
 ```
 
-```{r cat2-plot-bis, fig.cap="rastercellen met een juist voldoende aantal peilbuizen", warning= FALSE, include=FALSE}
+```{r cat2-plot-bis, fig.cap="rastercellen met een juist voldoende aantal peilbuizen", warning=FALSE, include=FALSE, eval=FALSE}
 
 sel_cat2_tm_bis <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat2_raster_bis) + 
@@ -1887,7 +1887,7 @@ Rastercellen van groep 4 ligt alle in de (zand)leemstreek [^4] en deze van groep
 
 [^4]: Dit is normaal, omdat alle cellen van deze groep in de (zand)leemstreek liggen.-->
 
-```{r cat3-plot-bis, fig.cap = "rastercellen met een overschot aan peilbuizen", warning= FALSE, include=FALSE}
+```{r cat3-plot-bis, fig.cap = "rastercellen met een overschot aan peilbuizen", warning= FALSE, include=FALSE, eval= FALSE}
 
 sel_cat3_tm_bis <- raster_meetnet_poly_tm + 
   tm_shape(sel_cat3_raster) + 
@@ -2567,7 +2567,8 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
  #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
  output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
  rm(output_vc)
-write_sf(tubes_cat1_polyg, file.path("data","GIS", "bijkomende_hokken.shp")) 
+write_sf(tubes_cat1_polyg, file.path("data","GIS", "bijkomende_hokken.shp"))
+write_sf(tubes_cat1_polyg, file.path("data","GIS", "bijkomende_hokken.gpkg")) 
 ```
 
 Figuur \@ref(fig:tubes-cat1-new) toont de verspreiding van de plaatsen waar er bij voorkeur nog een peilbuis wordt geplaatst. 
