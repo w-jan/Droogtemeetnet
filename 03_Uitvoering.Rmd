@@ -1534,7 +1534,7 @@ Van de `r nrow(tubes_menyanthes)` onderzochte meetreeksen werden in totaal `r we
 
 Het grootste deel (`r as.integer(nrow(tubes_menyanthes %>% filter(str_detect(uitspraak, pattern = "te korte tijdreeks"))) / nrow(tubes_menyanthes %>% filter(str_detect(uitspraak, pattern = "expertoordeel")|str_detect(uitspraak, pattern = "te korte tijdreeks")))*100)`%) van meetpunten die beoordeeld werden met expertoordeel (zijnde `r as.integer(nrow(tubes_menyanthes %>% filter(str_detect(uitspraak, pattern = "expertoordeel")|str_detect(uitspraak, pattern = "te korte tijdreeks"))) / nrow(tubes_menyanthes)*100)`%) werd afgekeurd door een te gering aantal beschikbare peilmetingen. 
 
-Voor peilbuizen van rastercellen van categorie 2 betekent het niet weerhouden van de tijdreeks dat de tijdreeks van de peilbuis niet onmiddellijk kan gebruikt worden in het meetnet / de indicator.
+Voor peilbuizen van rastercellen van categorie 2 betekent het niet weerhouden van de tijdreeks dat de tijdreeks van de peilbuis niet zonder verdere bewerking gebruikt kan worden in het meetnet / de indicator.
 De peilbuis zelf blijft wel opgenomen in het meetnet, bij gebrek aan beter.
 Aangezien er geen andere peilbuizen zijn om in vervanging te voorzien, is het uitbreiden van de tijdreeks de beste kans om voor deze rastercel ooit aan een voldoend aantal geschikte tijdreeksen te komen. 
 
