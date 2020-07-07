@@ -353,9 +353,6 @@ Hieruit kunnen we afleiden dat de grootte van de rastercellen niet te groot geko
 Tabel \@ref(tab:overzicht-perGT-gewenst-aantal-meetpunten) geeft een overzicht van het totaal aantal gewenste meetpunten. 
 Door de uitgevoerde iteratie en afronding kan dit aantal hoger zijn dan het vooropgestelde aantal. 
 Dit was bij deze toepassing niet het geval.
-<!--Enkel bij GT-groep 1 is het oppervlaktegerelateerd aantal meetpunten hoger dan het vereiste aantal. 
-Dit kan nog in een latere fase worden bijgesteld.
-Voor de overige GT-groepen stemmen de aantallen overeen met het vooropgestelde aantal.-->
 
 ```{r overzicht-perGT-gewenst-aantal-meetpunten}
 
