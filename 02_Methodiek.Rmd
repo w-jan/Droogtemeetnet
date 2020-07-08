@@ -254,7 +254,7 @@ Het eerste doel is ook al hoger ter sprake gekomen.
 Slagen we er in om op een betrouwbare wijze de waterstandsreeksen te verlengen/vervolledigen, dan kan een meetpunt geschikt worden om in het droogtemeetnet opgenomen te worden. 
 De tijdreeksen krijgen ook een uniforme lengte, waardoor het opvolgen van de evolutie van de droogte-indicator over de jaren heen meer betekenis krijgt.
 
-Het tweede doel is in feite een bijkomende selectiecriterium. Indien uit een tijdreeksanalyse blijkt dat, na het in rekening brengen met zoveel mogelijk factoren (maar in de praktijk enkel met het weer), de waterstanden van een meetpunt geleidelijkaan dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
+Het tweede doel is in feite een bijkomend selectiecriterium. Indien uit een tijdreeksanalyse blijkt dat, na rekening te houden met zoveel mogelijk factoren (maar in de praktijk enkel met het weer), de waterstanden van een meetpunt geleidelijk aan dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
 Het is immers in dergelijke gevallen moeilijk om nieuwe metingen te interpreteren, omdat we niet weten in welke mate de oorzaak van de lineaire trend (zelfs als is de oorzaak bekend) de peilen nog beïnvloedt. 
 Indien een tijdreeks een lineaire trend vertoont, wordt het meetpunt daarom als momenteel ongeschikt beschouwd.
 Een tijdreeks mag daarentegen wel een sprong in de tijd vertonen, omdat een tijdreeks voor een eenmalige gebeurtenis met een kortstondig effect kan gecorrigeerd worden. 
