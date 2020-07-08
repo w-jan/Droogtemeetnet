@@ -37,9 +37,13 @@ rsconnect/
 
 # local, large binary data
 /data/local/*
-/data/GIS/*
 /figures/local/*
 /local/*
+
+#gis data
+data/result/meetnet/GIS/*
+data/result/indicator_nara/GIS/*
+data/result/indicator_meetnet/GIS/*
 
 # temporary map, files
 /temp/*

@@ -104,10 +104,10 @@ if (params$refresh_data == 2) {
       arrange(typegroup) %>%
       mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
       dplyr::select(type, groupnr, typegroup_name)
-  output_vc <- write_vc(gw_types, file.path(".","data","gw_types"), sorting = c("type"), strict =  FALSE)
+  output_vc <- write_vc(gw_types, file.path(".","data","processed", "meetnet","gw_types"), sorting = c("type"), strict =  FALSE)
   
   types <- read_types(lang = "nl")
-  output_vc <- write_vc(types, file.path(".","data","types"), sorting = c("type"), strict =  FALSE)
+  output_vc <- write_vc(types, file.path(".","data","processed", "meetnet","types"), sorting = c("type"), strict =  FALSE)
   
   
   rm(output_vc)
@@ -235,7 +235,7 @@ if (params$refresh_data == 2) {
                         collect = TRUE) %>% as_tibble()
   tubes_hab_basis <-   tubes_hab #interne backup
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
-  vmm_pb <- read_csv(file.path(getwd(), "data", "vmm_indc.csv")) %>% 
+  vmm_pb <- read_csv(file.path(getwd(), "data","interim","meetnet","vmm_indc.csv")) %>% 
     rename (loc_code = FID_stand,
             polygon_id = plygn_d,
             typegroup_name = typgrp_) %>% 
@@ -297,7 +297,7 @@ if (params$refresh_data == 2) {
   tubes_xg3 <- tubes_xg3 %>% 
     arrange(loc_code, hydroyear)
   
-  output_vc <- write_vc(tubes_xg3, file.path(".","data","tubes_xg3"), 
+  output_vc <- write_vc(tubes_xg3, file.path(".","data","processed", "meetnet","tubes_xg3"), 
                         sorting = c("loc_code", "hydroyear"),
                         strict =  FALSE, root = ".")
   
@@ -441,7 +441,7 @@ if (params$refresh_data == 2) {
   tubes_lgl_eval <- tubes_lg3_eval %>%
     filter(ser_nryears >= minnryears)
   
-  output_vc <- write_vc(tubes_lgl_eval, file.path(".","data","tubes_lgl_eval"), 
+  output_vc <- write_vc(tubes_lgl_eval, file.path(".","data","processed", "meetnet","tubes_lgl_eval"), 
                         sorting = c("loc_code", "ser_firstyear"), 
                         strict =  FALSE, root = ".")
   

@@ -85,10 +85,10 @@ if (params$refresh_data == 2) {
     arrange(typegroup) %>%
     mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
     dplyr::select(type, groupnr, typegroup_name)
-  output_vc <- write_vc(gw_types, file.path(".","data","gw_types"), sorting = c("type"), strict =  FALSE)
+  output_vc <- write_vc(gw_types, file.path(".","data","processed", "meetnet","gw_types"), sorting = c("type"), strict =  FALSE)
   
   types <- read_types(lang = "nl")
-  output_vc <- write_vc(types, file.path(".","data","types"), sorting = c("type"), strict =  FALSE)
+  output_vc <- write_vc(types, file.path(".","data","processed", "meetnet","types"), sorting = c("type"), strict =  FALSE)
   
   
   rm(output_vc)
@@ -215,7 +215,7 @@ if (params$refresh_data == 2) {
               
   tubes_hab_basis <-   tubes_hab
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
-  vmm_pb <- read_csv(file.path(getwd(), "data", "vmm_indc.csv")) %>% 
+  vmm_pb <- read_csv(file.path(getwd(), "data","interim", "meetnet", "vmm_indc.csv")) %>% 
     rename (loc_code = FID_stand,
             polygon_id = plygn_d,
             typegroup_name = typgrp_) %>% 
@@ -252,7 +252,7 @@ if (params$refresh_data == 2) {
   tubes_hab <- tubes_hab %>% 
     arrange(loc_code, polygon_id, rasterid, type)
   
-  output_vc <- write_vc(tubes_hab, file.path(".","data","tubes_hab"), 
+  output_vc <- write_vc(tubes_hab, file.path(".","data","processed", "meetnet","tubes_hab"), 
                         sorting = c("loc_code", "polygon_id", "rasterid", "type" ),
                         strict =  FALSE)
   rm(output_vc)
@@ -384,7 +384,7 @@ if (params$refresh_data == 2) {
   tubes_xg3 <- tubes_xg3 %>% 
     arrange(loc_code, hydroyear)
   
-  output_vc <- write_vc(tubes_xg3, file.path(".","data","tubes_xg3"), 
+  output_vc <- write_vc(tubes_xg3, file.path(".","data","processed", "meetnet","tubes_xg3"), 
                         sorting = c("loc_code", "hydroyear"),
                         strict =  FALSE, root = ".")
   
@@ -530,7 +530,7 @@ if (params$refresh_data == 2) {
   tubes_lgl_eval <- tubes_lg3_eval %>%
     filter(ser_nryears >= minnryears)
   
-  output_vc <- write_vc(tubes_lgl_eval, file.path(".","data","tubes_lgl_eval"), 
+  output_vc <- write_vc(tubes_lgl_eval, file.path(".","data","processed", "meetnet","tubes_lgl_eval"), 
                         sorting = c("loc_code", "ser_firstyear"), 
                         strict =  FALSE, root = ".")
   
@@ -953,7 +953,7 @@ tubes_in_raster <- tubes_hab_aggr %>%
 
 
 #wegschrijven van deze dataset
-output_vc <- write_vc(tubes_in_raster, file.path(".","data","tubes_in_raster"), 
+output_vc <- write_vc(tubes_in_raster, file.path(".","data","processed", "meetnet","tubes_in_raster"), 
                       sorting = c("loc_code"), 
                       strict =  FALSE, root = ".")
 
@@ -1370,7 +1370,7 @@ tubes_cat2 <-
   mutate(lastyear = ifelse(lastyear == 0, NA, lastyear)) %>% 
   dplyr::select(-c(gew_aantal_meetptn:n))
 
-output_vc <- write_vc(tubes_cat2, file.path(".","data","tubes_cat2_run1"), 
+output_vc <- write_vc(tubes_cat2, file.path(".","data","processed", "meetnet","tubes_cat2_run1"), 
                       sorting = c("loc_code"), strict =  FALSE, root = ".")
 
 rm(output_vc)
@@ -1402,7 +1402,7 @@ tubes_cat3 <- tubes_cat3 %>%
 #   count(rasterid, groupnr )
 
 
-output_vc <- write_vc(tubes_cat3, file.path(".","data","tubes_cat3_run1"), 
+output_vc <- write_vc(tubes_cat3, file.path(".","data","processed", "meetnet","tubes_cat3_run1"), 
                       sorting = c("loc_code"), strict =  FALSE, root = ".")
 
 rm(output_vc)
@@ -1411,7 +1411,7 @@ rm(output_vc)
 
 ##Tijdreeksanalyse {#tijdreeksanalyse_uitvoering}
 
-tubes_menyanthes <- read_csv(file.path(getwd(),"data", "tblTubes_Menyanthes_report.csv"))
+tubes_menyanthes <- read_csv(file.path(getwd(),"data","interim", "meetnet", "tblTubes_Menyanthes_report.csv"))
 
 #veldnamen aanpassen
 tubes_menyanthes <- janitor::clean_names(tubes_menyanthes, case = "snake")
@@ -1738,7 +1738,7 @@ tubes_cat2_bis <-
 
 tubes_cat2_bis <- tubes_cat2_bis %>% inner_join(tubes_in_raster) 
 
-output_vc <- write_vc(tubes_cat2_bis, file.path(".","data","tubes_cat2_bis"), 
+output_vc <- write_vc(tubes_cat2_bis, file.path(".","data","processed", "meetnet","tubes_cat2_bis"), 
                       sorting = c("loc_code"), strict =  FALSE, root = ".")
 
 rm(output_vc)
@@ -1819,7 +1819,7 @@ tubes_cat3_bis <- tubes_cat3_bis %>%
 
 
 
-output_vc <- write_vc(tubes_cat3_bis, file.path(".","data","tubes_cat3_bis"), 
+output_vc <- write_vc(tubes_cat3_bis, file.path(".","data","processed", "meetnet","tubes_cat3_bis"), 
                       sorting = c("loc_code"), strict =  FALSE, root = ".")
 
 rm(output_vc)
@@ -2140,9 +2140,9 @@ tubes_cat3_grts_reserve <- tubes_excess %>%
 #   arrange(rasterid, groupnr, reserve)
 
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
-output_vc <- write_vc(tubes_cat3_grts, file.path(".","data","tubes_cat3_grts"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
+output_vc <- write_vc(tubes_cat3_grts, file.path(".","data","processed", "meetnet","tubes_cat3_grts"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
 # output_vc <- write_vc(tubes_cat1Bb_gtrs, file.path(".","data","tubes_cat1Bb_gtrs"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
-output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
+output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","processed", "meetnet","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 # output_vc <- write_vc(tubes_cat1Bb_gtrs_reserve, file.path(".","data","tubes_cat1Bb_gtrs_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 rm(output_vc)
 
@@ -2167,8 +2167,8 @@ tubes_reserve <- tubes_reserve %>%
   left_join(tubes_eval_namenyanthes %>% 
               dplyr::select(loc_code, selectie), by = "loc_code")
 
-output_vc <- write_vc(tubes_selected, file.path(".","data","tubes_selected"), sorting = c("loc_code"), strict =  FALSE)
-output_vc <- write_vc(tubes_reserve, file.path(".","data","tubes_reserve"), sorting = c("loc_code"), strict =  FALSE)
+output_vc <- write_vc(tubes_selected, file.path(".","data","result", "meetnet","tubes_selected"), sorting = c("loc_code"), strict =  FALSE)
+output_vc <- write_vc(tubes_reserve, file.path(".","data","result", "meetnet","tubes_reserve"), sorting = c("loc_code"), strict =  FALSE)
 rm(output_vc)
 
 tubes_selected_sf <- as_points(tubes_selected)
@@ -2178,8 +2178,8 @@ tubes_selected_tm <- raster_meetnet_poly_tm +
   tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "Inzetbaarheid", clustering = FALSE) + tm_layout(title = "geselecteerde peilbuizen" )
 
 tubes_selected_tm
-write_sf(tubes_selected_sf %>%  dplyr::select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), driver = "ESRI Shapefile", file.path("data", "GIS","tubes_selected_2020_05.shp"))
-write_sf(tubes_reserve %>% as_points() %>%  dplyr::select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), file.path("data", "GIS","tubes_reserve_2020_05.shp" ))
+write_sf(tubes_selected_sf %>%  dplyr::select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), driver = "ESRI Shapefile", file.path("data", "result", "meetnet", "GIS","tubes_selected_2020_05.shp"))
+write_sf(tubes_reserve %>% as_points() %>%  dplyr::select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), file.path("data", "result", "meetnet", "GIS","tubes_reserve_2020_05.shp" ))
 
 
 #overzicht tot welke habitattypen of habitattype-groepen de geselecteerde punten behoren
@@ -2216,7 +2216,7 @@ tubes_selected_types <-
   left_join(types, by = "type") %>% 
   distinct()
 
-write_vc(tubes_selected_types, file.path(".","data","tubes_selected_types"), sorting = c("loc_code", "type", "phab", "description"), strict =  FALSE)
+write_vc(tubes_selected_types, file.path(".","data","processed", "meetnet","tubes_selected_types"), sorting = c("loc_code", "type", "phab", "description"), strict =  FALSE)
 
 tubes_selected_types_stats_present <- tubes_selected_types %>% 
   filter(selectie == 1) %>% 
@@ -2235,7 +2235,7 @@ tubes_selected_types_stats_present <- tubes_selected_types %>%
   summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
   ungroup()
 
-write_vc(tubes_selected_types_stats_present, file.path(".","data","tubes_selected_types_stats_present"), sorting = c("target_groupnr","type"), strict =  FALSE)
+write_vc(tubes_selected_types_stats_present, file.path(".","data","processed", "meetnet","tubes_selected_types_stats_present"), sorting = c("target_groupnr","type"), strict =  FALSE)
 
 tubes_selected_types_stats_future <- tubes_selected_types %>% 
   inner_join(tubes_selected_types %>% 
@@ -2253,7 +2253,7 @@ tubes_selected_types_stats_future <- tubes_selected_types %>%
   summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
   ungroup()
 
-write_vc(tubes_selected_types_stats_future, file.path(".","data","tubes_selected_types_stats_future"), sorting = c("target_groupnr","type"), strict =  FALSE)
+write_vc(tubes_selected_types_stats_future, file.path(".","data","processed", "meetnet","tubes_selected_types_stats_future"), sorting = c("target_groupnr","type"), strict =  FALSE)
 
 tubes_selected_typeclasses_stats_present <- tubes_selected_types %>% 
   filter(selectie == 1) %>% 
@@ -2274,7 +2274,7 @@ tubes_selected_typeclasses_stats_present <- tubes_selected_types %>%
   arrange(target_groupnr, desc(aandeel))
 
 
-write_vc(tubes_selected_typeclasses_stats_present, file.path(".","data","tubes_selected_typeclasses_stats_present"), sorting = c("target_groupnr","habitatgroep"), strict =  FALSE)
+write_vc(tubes_selected_typeclasses_stats_present, file.path(".","data","processed", "meetnet","tubes_selected_typeclasses_stats_present"), sorting = c("target_groupnr","habitatgroep"), strict =  FALSE)
 
 tubes_selected_typeclasses_stats_future <- tubes_selected_types %>% 
   inner_join(tubes_selected_types %>% 
@@ -2294,7 +2294,7 @@ tubes_selected_typeclasses_stats_future <- tubes_selected_types %>%
   arrange(target_groupnr, desc(aandeel))
 
 
-write_vc(tubes_selected_typeclasses_stats_future, file.path(".","data","tubes_selected_typeclasses_stats_future"), sorting = c("target_groupnr","habitatgroep"), strict =  FALSE)
+write_vc(tubes_selected_typeclasses_stats_future, file.path(".","data","processed", "meetnet","tubes_selected_typeclasses_stats_future"), sorting = c("target_groupnr","habitatgroep"), strict =  FALSE)
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
 
@@ -2503,9 +2503,9 @@ habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>%
   dplyr::select(-starts_with("selecteerbaar"))
 
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
-output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
+output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","processed", "meetnet","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
 rm(output_vc)
-write_sf(tubes_cat1_polyg, file.path("data", "GIS", "bijkomende_hokken.shp"))
+write_sf(tubes_cat1_polyg, file.path("data", "result", "meetnet", "GIS", "bijkomende_hokken.shp"))
 
 # raster::plot(clip5)
 # raster::plot(clip5_1cel, add= FALSE)

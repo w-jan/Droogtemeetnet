@@ -86,9 +86,9 @@ Figuur \@ref(fig:workflow-rastercellen) geeft een schematisch overzicht van de g
 
 ```{r workflow-rastercellen, fig.cap='(ref:workflow-rastercellen)'}
 if (pdfmaken == TRUE) {
-  include_graphics(path = file.path("figures", "workflow_rasterselectie_pdf.jpg"))  
+  include_graphics(path = file.path("figures", "meetnet", "workflow_rasterselectie_pdf.jpg"))  
 } else {
-  include_graphics(path = file.path("figures", "workflow_rasterselectie.png"))
+  include_graphics(path = file.path("figures", "meetnet", "workflow_rasterselectie.png"))
 }
 ```
 
@@ -113,10 +113,10 @@ Figuur \@ref(fig:workflow-selectiepb-part1) geeft een schematisch overzicht van 
 
 ```{r workflow-selectiepb-part1, fig.cap='(ref:workflow-selectiepb1)'}
 if (pdfmaken == TRUE) {
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet", 
                                     "workflow_pbselectie_part1_pdf.jpg"))
 } else {
-  include_graphics(path = file.path("figures", "workflow_pbselectie_part1.png"))
+  include_graphics(path = file.path("figures", "meetnet", "workflow_pbselectie_part1.png"))
 }
 ```
 
@@ -232,11 +232,11 @@ Het gebruik van deze criteria leidt er ook toe dat in een rastercel bij de toewi
 
 
 ```{r voorbeeld-selectie-part1, fig.cap="Cijfervoorbeeld van de gevolgde workflow bij de selectie", , fig.width=8, fig.height=8, eval = FALSE}
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet", 
                                     "voorbeeld_selectie_part1.png")) 
 ```
 ```{r voorbeeld-selectie-part2, fig.cap="Cijfervoorbeeld van de gevolgde workflow bij de selectie (vervolg)", fig.width=8, fig.height=8, eval = FALSE}
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet", 
                                     "voorbeeld_selectie_part2.png")) 
 ```
 
@@ -376,10 +376,10 @@ Figuur \@ref(fig:workflow-selectiepb-part2) geeft schematisch het overzicht van 
 
 ```{r workflow-selectiepb-part2, fig.cap='(ref:workflow-selectiepb2)'}
 if (pdfmaken == TRUE) {
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet",
                                     "workflow_pbselectie_part2_pdf.jpg"))
 } else {
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet", 
                                     "workflow_pbselectie_part2.png"))
 }
 ```
