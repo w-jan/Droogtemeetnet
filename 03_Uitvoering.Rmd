@@ -60,7 +60,11 @@ check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filt
 ## Selectie rastercellen
 
 Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vijf grondwatergroepen volgens de habitatkaart (figuur \@ref(fig:overlay-habitatkaart-GRTS-plot)). 
-
+We deden hiervoor een beroep op de gestandaardiseerde versie van de habitatkaart ([bron](https://zenodo.org/record/3355193)). 
+In deze versie werden de habitatvlekken geïnterpreteerd: uitsluitend vlekken met een terrestrisch habitattype of een rbb werden behouden. 
+Hierbij werd een werkwijze gevolgd zoals beschreven in @RN5966. 
+Er werd echter een uitzondering gemaakt voor de vlekken van een habitattype of rbb van een open milieu met een bosaanplant. 
+In de gepubliceerde versie werden deze vlekken uitgesloten, terwijl ze voor het droogtemeetnet wel in aanmerking komen.
 ```{r overlay-habitatkaart-GRTS-raster, message=FALSE, warning=FALSE}
 # overlay maken van de habitatkaart (enkel van GT-groepen) en het GRTS-raster (level8)
 # habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
@@ -116,7 +120,7 @@ if (params$refresh_figures < 2) {
 
 Tabel \@ref(tab:totopp-gw-groep) geeft weer hoeveel de totale oppervlakte van een GT-groep bedraagt.
 
-```{r totopp-gw-groep}
+```{r totopp-gw-groep, message= FALSE, warning=FALSE}
 
 #oppervlakte gw-groep per rastercel
 raster_gw_opp <- habmap_gw_raster_overlay %>% 
@@ -337,7 +341,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -354,7 +358,7 @@ Tabel \@ref(tab:overzicht-perGT-gewenst-aantal-meetpunten) geeft een overzicht v
 Door de uitgevoerde iteratie en afronding kan dit aantal hoger zijn dan het vooropgestelde aantal. 
 Dit was bij deze toepassing niet het geval.
 
-```{r overzicht-perGT-gewenst-aantal-meetpunten}
+```{r overzicht-perGT-gewenst-aantal-meetpunten, message= FALSE, warning= FALSE}
 
 aantal_meetpunten_cel_overzicht <- aantal_meetpunten_cel %>% 
   group_by(groupnr) %>% 
@@ -551,7 +555,7 @@ We selecteren dan de peilbuizen die met juist één GT-groep kunnen geassocieerd
 
 # str(tubes_hab)
 
-tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
+tubes_hab <- read_vc(file.path(".","data","tubes_hab")) %>% as_tibble()
 
 #peilbuizen uit de lijst verwijderen die niet (meer) mogen meegenomen worden
 if (uitgesloten_tubes != "leeg"){
@@ -604,7 +608,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -657,7 +661,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -700,7 +704,7 @@ if (pdfmaken == TRUE) {
 ```
 
 ```{r table-tubes-with-good-time-series-in-selected-cells}
-tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3"))
+tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3")) %>% as_tibble()
 tubes_xg3 <- tubes_xg3 %>% 
   inner_join (tubes_in_raster %>% 
                 dplyr::select(loc_code), by = "loc_code")
@@ -740,7 +744,7 @@ tubes_lg3_avail <- tubes_xg3_avail %>%
 
 # getwd()
 # file.path(".","data","local")
-tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data"))
+tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data")) %>% as_tibble()
 tubes_lgl_eval <- tubes_lgl_eval %>% 
   inner_join(tubes_in_raster %>% 
                dplyr::select(loc_code), by = "loc_code")
@@ -769,7 +773,7 @@ if (pdfmaken == TRUE) {
                                         "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -791,7 +795,7 @@ Tabel \@ref(tab:join-tubes-on-raster) geeft het overzicht per rastercel van het 
 Opgelet: het bezit van een goede tijdreeks is een nodige, maar nog niet voldoende voorwaarde om *onmiddellijk* in het meetnet te kunnen worden opgenomen. 
 Dat kan pas beoordeeld worden na een tijdreeksanalyse.
 
-```{r join-tubes-on-raster}
+```{r join-tubes-on-raster, message= FALSE, warning= FALSE}
 
 #rastercellen met een pb
 sel_raster_pb <- 
@@ -823,7 +827,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%  
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -889,7 +893,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) 
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -958,7 +962,7 @@ kable(sel_cat1B_table %>%
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) 
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -1020,7 +1024,7 @@ kable(tubes_cat1B %>%
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = list(enabled = T, background = "red")) %>% 
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
     column_spec(c(3,5:7, 9:10), width = "1cm") %>% 
@@ -1111,7 +1115,7 @@ if (pdfmaken == TRUE) {
     kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T 
                 ) %>% 
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1130,7 +1134,7 @@ Peilbuizen in clusters met een lagere rang combi-waarde zullen voorrang krijgen.
 
 We berekenen ook het hoogste rangnummer dat nodig is om in het resterend gewenste aantal peilbuizen te kunnen voorzien (= max rang).
 
-```{r synthese-clusters-extra-criteria}
+```{r synthese-clusters-extra-criteria, message= FALSE, warning= FALSE}
 sel_qual <- 
   sel_qual_basis %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn, rankclus_lastyear, rankclus_nryears) %>% 
@@ -1170,7 +1174,7 @@ max_rank <-  function(x) {
 }
 
 sel_qual_maxrank <- plyr::ddply(sel_qual, ~rasterid+groupnr, max_rank) %>%
-  rename(maxrank = V1)
+  rename(maxrank = V1) %>% as_tibble()
 
 sel_qual <- sel_qual %>%
   inner_join(sel_qual_maxrank, 
@@ -1197,7 +1201,7 @@ if (pdfmaken == TRUE) {
     kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T 
                 ) %>% 
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1213,7 +1217,7 @@ if (pdfmaken == TRUE) {
 Wanneer voor een rastercel en een GTgroep het gewenste aantal meetpunten gelijk is aan een som van het aantal beschikbare peilbuizen in een cluster dan rekenen we die rastercel tot categorie 2.
 Tabel \@ref(tab:cat2-table) geeft hiervan het overzicht.
 
-```{r cat2-table}
+```{r cat2-table, message= FALSE, warning= FALSE}
 # rastercellen met een juist voldoende evenwaardige meetpunten dat gewenst is voor het meetnet
 sel_cat2_table <- 
   sel_qual %>% 
@@ -1246,7 +1250,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T 
                 ) %>% 
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1284,7 +1288,7 @@ De rastercellen van categorie 3 bevatten meer meetlocaties (Watina-peilbuizen) d
 
 Hier geven we een overzicht over welke rastercellen het gaat (tabel \@ref(tab:cat3-table)) 
 
-```{r cat3-raster}
+```{r cat3-raster, message= FALSE, warning= FALSE}
 
 # rastercellen met een overschot aan evenwaardige meetpunten in vergelijking met het aantal dat gewenst is voor het meetnet
 sel_cat3_raster <- 
@@ -1301,7 +1305,7 @@ sel_cat3_raster <-
 
 
 
-```{r cat3-table}
+```{r cat3-table, message= FALSE, warning= FALSE}
 sel_cat3_table <- 
   sel_qual %>% 
       #filter(rankclus <= maxrank ) %>% 
@@ -1333,7 +1337,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T 
                 ) %>% 
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1442,7 +1446,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -1452,7 +1456,7 @@ if (pdfmaken == TRUE) {
 
 ```
 
-```{r write-tubes-cat123}
+```{r write-tubes-cat123, message= FALSE, warning= FALSE}
 output_vc <- write_vc(tubes_cat123, file.path(".","data","tubes_cat123_run1"), 
                       sorting = c("loc_code"), strict =  FALSE, root = ".")
 
@@ -1517,7 +1521,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = F, 
                 position = "left",
-                font_size = 9, 
+                font_size = 12, 
                 fixed_thead = T 
                 ) %>% 
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1549,7 +1553,7 @@ Indien er hiervan onvoldoende zijn, zal ook gekozen worden uit peilbuizen zonder
 De resultaten van de tijdreeksanalysen dienen om de peilbuizen te herevalueren. 
 Het kan ook een doorwerking op de categorie-indeling van de rastercellen hebben.-->
 
-```{r join-tubes-on-raster-bis}
+```{r join-tubes-on-raster-bis, message= FALSE, warning= FALSE}
 #peilbuizen miv evaluatie Menyanthes
 tubes_eval_namenyanthes <- tubes_in_raster %>% 
   left_join(tubes_menyanthes %>% 
@@ -1576,7 +1580,7 @@ tubes_eval_namenyanthes <- tubes_in_raster %>%
 #     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
 #                 full_width = T, 
 #                 position = "left",
-#                 font_size = 8, 
+#                 font_size = 12, 
 #                 fixed_thead = T) %>%  
 #    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
 #   # column_spec(2, width = "30em", background = "yellow")
@@ -1591,7 +1595,7 @@ Deze categorie bleef onveranderd. -->
 
 
 
-```{r berekenen-clusters-extra-criteria-bis}
+```{r berekenen-clusters-extra-criteria-bis, message= FALSE, warning= FALSE}
 
 tubes_qual_basis_bis <- 
   sel_raster_pb %>% 
@@ -1612,7 +1616,7 @@ tubes_qual_basis_bis <-
 #     kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
 #                 full_width = T,
 #                 position = "left",
-#                 font_size = 8,
+#                 font_size = 12,
 #                 fixed_thead = T
 #                 ) %>%
 #    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1654,7 +1658,7 @@ sel_qual_basis_bis <-
 #     kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
 #                 full_width = T, 
 #                 position = "left",
-#                 font_size = 8, 
+#                 font_size = 12, 
 #                 fixed_thead = T 
 #                 ) %>% 
 #    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1667,7 +1671,7 @@ sel_qual_basis_bis <-
 
 
 
-```{r synthese-clusters-extra-criteria-bis}
+```{r synthese-clusters-extra-criteria-bis, message= FALSE, warning= FALSE}
 sel_qual_bis <- 
   sel_qual_basis_bis %>% 
   group_by(rasterid, groupnr, gew_aantal_meetptn, rankclus_lastyear, rankclus_nryears) %>% 
@@ -1681,7 +1685,7 @@ sel_qual_bis <-
   ungroup 
 
 sel_qual_maxrank_bis <- plyr::ddply(sel_qual_bis, ~rasterid+groupnr, max_rank) %>%
-  rename(maxrank = V1)
+  rename(maxrank = V1) %>% as_tibble()
 
 sel_qual_bis <- sel_qual_bis %>%
   inner_join(sel_qual_maxrank_bis, 
@@ -1704,7 +1708,7 @@ sel_qual_bis <- sel_qual_bis %>%
 #     kable_styling (bootstrap_options = c("striped", "hover", "condensed", "responsive"),
 #                 full_width = T,
 #                 position = "left",
-#                 font_size = 8,
+#                 font_size = 12,
 #                 fixed_thead = T
 #                 ) %>%
 #    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1718,7 +1722,7 @@ sel_qual_bis <- sel_qual_bis %>%
 
 ### Categorie 2: Rastercellen met een juist voldoend aantal peilbuizen {#cat2}-->
 
-```{r cat2-table-bis}
+```{r cat2-table-bis, message= FALSE, warning= FALSE}
 # rastercellen met een juist voldoende aantal evenwaardige meetpunten dat gewenst is voor het meetnet
 sel_cat2_table_bis <- 
   sel_qual_bis %>% 
@@ -1747,7 +1751,7 @@ sel_cat2_table_bis <-
     # kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
     #             full_width = T,
     #             position = "left",
-    #             font_size = 8,
+    #             font_size = 12,
     #             fixed_thead = T
     #             ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1761,7 +1765,7 @@ Tabel \@ref(tab:tubes-cat2-bis) toont de `r sum(sel_cat2_table_bis$gew_aantal_me
 
 Figuur \@ref(fig:cat2-plot-bis) toont de ligging ervan.-->
 
-```{r cat2-raster-bis}
+```{r cat2-raster-bis, message= FALSE, warning= FALSE}
 sel_cat2_raster_bis <- sel_raster_pb %>% 
   semi_join(sel_cat2_table_bis,
             by = c("rasterid", "groupnr")) %>% 
@@ -1807,7 +1811,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -1823,7 +1827,7 @@ rm(output_vc)
 <!--
 ### Categorie 3: Rastercellen met een overschot aan peilbuizen {#cat3}
 -->
-```{r cat3-raster-bis}
+```{r cat3-raster-bis, message= FALSE, warning= FALSE}
 
 # rastercellen met een overschot aan evenwaardige meetpunten in vergelijking met het aantal dat gewenst is voor het meetnet
 sel_cat3_raster_bis <- 
@@ -1839,7 +1843,7 @@ sel_cat3_raster_bis <-
 ```
 
 
-```{r cat3-table-bis}
+```{r cat3-table-bis, message= FALSE, warning= FALSE}
 sel_cat3_table_bis <- 
   sel_qual_bis %>% 
       #filter(rankclus <= maxrank ) %>% 
@@ -1867,7 +1871,7 @@ sel_cat3_table_bis <-
 #     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
 #                 full_width = T, 
 #                 position = "left",
-#                 font_size = 8, 
+#                 font_size = 12, 
 #                 fixed_thead = T 
 #                 ) %>% 
 #    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -1945,7 +1949,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -2015,7 +2019,7 @@ if (nognietklaar == TRUE) {
       kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                   full_width = T, 
                   position = "left",
-                  font_size = 8, 
+                  font_size = 12, 
                   fixed_thead = T) %>%
      # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
     # column_spec(2, width = "30em", background = "yellow")
@@ -2089,7 +2093,7 @@ grts_level5 <- raster(file.path(".","data","local", "grts_level5.tif"))
 
 ```
 
-```{r tubes-excess-spatial}
+```{r tubes-excess-spatial, message= FALSE, warning= FALSE}
 tubes_excess <- tubes_in_raster %>% 
   inner_join(tubes_cat3_bis %>% 
                dplyr::select(loc_code, selectie, gew_aantal_meetptn)
@@ -2321,7 +2325,7 @@ kable(tubes_cat1_grts %>%
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T,
                 position = "left",
-                font_size = 8,
+                font_size = 12,
                 fixed_thead = T
                 ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -2354,7 +2358,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T,
                 position = "left",
-                font_size = 8,
+                font_size = 12,
                 fixed_thead = T
                 ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -2614,7 +2618,7 @@ rm(output_vc)
 ```{r division-tubes-into-habitattype, warning=FALSE, message=FALSE, include= FALSE  }
 tubes_selected_types <- 
   tubes_selected %>% 
-  as_tibble %>% 
+  #as_tibble %>% 
   # filter(selectie == 1) %>% 
   select(loc_code, x, y, selectie, 
          target_groupnr = groupnr) %>% 
@@ -2737,7 +2741,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T,
                 position = "left",
-                font_size = 8,
+                font_size = 12,
                 fixed_thead = T
                 ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -2775,7 +2779,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T,
                 position = "left",
-                font_size = 8,
+                font_size = 12,
                 fixed_thead = T
                 ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -2803,7 +2807,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T,
                 position = "left",
-                font_size = 8,
+                font_size = 12,
                 fixed_thead = T
                 ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -2828,7 +2832,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T,
                 position = "left",
-                font_size = 8,
+                font_size = 12,
                 fixed_thead = T
                 ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -2853,7 +2857,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T,
                 position = "left",
-                font_size = 8,
+                font_size = 12,
                 fixed_thead = T
                 ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
@@ -2891,9 +2895,19 @@ write_sf(tubes_reserve %>%
            select(-obswell_statecode, -loc_validitycode) %>% 
            rename(watinac = "loc_code"), 
          file.path("data","GIS", "tubes_reserve_2020_05.shp" ))
+
+write_sf(tubes_selected_sf %>%  
+           select(-obswell_statecode, -loc_validitycode) %>% 
+           rename(watinac = "loc_code"), file.path("data","GIS", "tubes_selected_2020_05.gpkg"))
+
+write_sf(tubes_reserve %>% 
+           as_points() %>%  
+           select(-obswell_statecode, -loc_validitycode) %>% 
+           rename(watinac = "loc_code"), 
+         file.path("data","GIS", "tubes_reserve_2020_05.gpkg" ))
 ```
 
-```{r tubes_currently_applicable}
+```{r tubes_currently_applicable, message= FALSE, warning= FALSE}
 tubes_current <- tubes_selected %>% group_by (groupnr) %>% filter(selectie == 1) %>% count (groupnr) %>% ungroup
 
 tubes_current_GT <- gw_types_groups %>% 
@@ -2932,7 +2946,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T, 
                 position = "left",
-                font_size = 8, 
+                font_size = 12, 
                 fixed_thead = T) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
   # column_spec(2, width = "30em", background = "yellow")
@@ -2964,7 +2978,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = T,
                 position = "left",
-                font_size = 8,
+                font_size = 12,
                 fixed_thead = T
                 ) %>%
    # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%

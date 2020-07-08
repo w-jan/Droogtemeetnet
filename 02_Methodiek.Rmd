@@ -54,7 +54,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
                   full_width = TRUE, 
                   position = "left",
-                  font_size = 9,
+                  font_size = 12,
                   fixed_thead = T) 
     #row_spec(0, angle = -45)  %>% #fixeer veldnamen
      # scroll_box(height = "200px") 
@@ -250,11 +250,13 @@ In dit project willen we deze analysetechniek toepassen op grondwatermeetreeksen
 * het verlengen of invullen van te korte of onregelmatige grondwaterstandsreeksen
 * het opsporen van lineaire trends
 
-Het eerste doel is ook al hoger ter sprake gekomen. 
-Slagen we er in om op een betrouwbare wijze de waterstandsreeksen te verlengen/vervolledigen, dan kan een meetpunt geschikt worden om in het droogtemeetnet opgenomen te worden. 
+Het eerste doel is ook al hoger ter sprake gekomen: voor het berekenen en evalueren van indicatoren is het nodig te kunnen beschikken over relatief lange meetreeksen. 
+We zoeken meetreeksen die aanvangen in 1985 of eerder.
+Slagen we er in om op een betrouwbare wijze de reeksen vanaf 1985 te verlengen/vervolledigen, dan kan een meetpunt geschikt worden om in het droogtemeetnet opgenomen te worden. 
 De tijdreeksen krijgen ook een uniforme lengte, waardoor het opvolgen van de evolutie van de droogte-indicator over de jaren heen meer betekenis krijgt.
 
-Het tweede doel is in feite een bijkomend selectiecriterium. Indien uit een tijdreeksanalyse blijkt dat, na rekening te houden met zoveel mogelijk factoren (maar in de praktijk enkel met het weer), de waterstanden van een meetpunt geleidelijk aan dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
+Het tweede doel is in feite een bijkomend selectiecriterium. 
+Indien uit een tijdreeksanalyse blijkt dat, na rekening te houden met zoveel mogelijk factoren (maar in de praktijk enkel met het weer), de niet door het weer verklaarde component van de waterstanden van een meetpunt geleidelijk aan dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
 Het is immers in dergelijke gevallen moeilijk om nieuwe metingen te interpreteren, omdat we niet weten in welke mate de oorzaak van de lineaire trend (zelfs als is de oorzaak bekend) de peilen nog beïnvloedt. 
 Indien een tijdreeks een lineaire trend vertoont, wordt het meetpunt daarom als momenteel ongeschikt beschouwd.
 Een tijdreeks mag daarentegen wel een sprong in de tijd vertonen, omdat een tijdreeks voor een eenmalige gebeurtenis met een kortstondig effect kan gecorrigeerd worden. 
@@ -401,6 +403,6 @@ De indicator kleurt respectievelijk rood, oranje of geel op een bepaalde plaats 
 _**De indicator kleurt respectievelijk rood, oranje of geel voor Vlaanderen als minstens de helft van de putten kleurcode rood, oranje of geel heeft. (vraag: is dit ook aangewezen voor dit meetnet ?). **_
 
 ### Berekeningswijze voor de geselecteerde punten 
-Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 30 jaren lang_**, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden. 
-Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecten van deze twee droge zomers heeft gekend (door naijling).
+Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van 1985 tot en met 2015, met al dan niet gemodelleerde, metingen. 
+De recentste jaren (2016-2020) worden niet meegenomen, omdat het nu nog onduidelijk is hoe de actuele vegetatie hierop reageert (door naijling).
 Voor elke bestaande geselecteerde meetlocatie wordt dan voor elke dag van het groeiseizoen (1 april - 1 oktober) de p10, p20 en p30 percentielwaarde berekend.

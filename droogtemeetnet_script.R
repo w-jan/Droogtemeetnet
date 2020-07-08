@@ -211,7 +211,8 @@ if (params$refresh_data == 2) {
   #debugonce("get_locs")
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                         buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
-                        collect = TRUE)
+                        collect = TRUE) %>% as_tibble()
+              
   tubes_hab_basis <-   tubes_hab
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
   vmm_pb <- read_csv(file.path(getwd(), "data", "vmm_indc.csv")) %>% 
@@ -221,7 +222,7 @@ if (params$refresh_data == 2) {
     mutate (area_code = "VMM",
             area_name = "Grondwaterstandindicator") %>%
     inner_join(habmap_gw_raster_overlay %>% st_drop_geometry() %>%  
-                dplyr::select(polygon_id, type, groupnr, rasterid, opp), by = c("polygon_id", "groupnr", "type"))
+                dplyr::select(polygon_id, type, groupnr, rasterid, opp), by = c("polygon_id", "groupnr", "type")) %>% as_tibble()
   
   tubes_hab <- tubes_hab %>% 
     full_join(vmm_pb %>% dplyr::select(loc_code, area_code, area_name, x, y, phab, type, groupnr, typegroup_name, rasterid, opp, polygon_id))
@@ -351,7 +352,8 @@ if (params$refresh_data == 2) {
   # }    
   # debugonce("get_xg3_temp")  
   library(assertthat)
-  watina2 <- inbodb::connect_inbo_dbase("W0002_00_Watina")  
+  #watina2 <- inbodb::connect_inbo_dbase("W0002_00_Watina") 
+  
 #   tubes_xg3_alles <- tubes_hab %>% 
 #     get_xg3(watina2, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
 #             truncated =  TRUE, collect = TRUE)
@@ -360,7 +362,7 @@ if (params$refresh_data == 2) {
 # all.equal(tubes_xg3, tubes_xg32)
   #debugonce(copy_to)
   tubes_xg3 <- tubes_hab %>% 
-        get_xg3(watina2, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
+        get_xg3(watina, startyear = year(now()) - 20, endyear = year(now()), vert_crs = "local",
                 truncated =  TRUE, collect = TRUE)
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
   tubes_xg3_vmm <- data.frame(loc_code = rep(tubes_hab %>% 
@@ -368,7 +370,7 @@ if (params$refresh_data == 2) {
                                        distinct(loc_code) %>% 
                                        dplyr::pull(loc_code),times = 31), 
                               hydroyear = seq(from = 2016 - 30, to = 2016),
-                              lg3_lcl = rep(-1, 31))
+                              lg3_lcl = rep(-1, 31)) %>% as_tibble()
   
   tubes_xg3 <- bind_rows(tubes_xg3, tubes_xg3_vmm)
  # test <- data.frame(a= "a", b= "b")
@@ -387,7 +389,7 @@ if (params$refresh_data == 2) {
                         strict =  FALSE, root = ".")
   
   
-  DBI::dbDisconnect(watina2)
+  DBI::dbDisconnect(watina)
   
   #volgende watina-functie werkt ook zonder databankconnectie, maar omdat deze op sommige pc's niet stabiel werkt, worden de data hier alvast lokaal weggeschreven.
   debugonce("eval_xg3_series_lok")
@@ -523,7 +525,7 @@ if (params$refresh_data == 2) {
   tubes_lg3_eval <- tubes_xg3 %>%
     eval_xg3_series_lok(xg3_type = c("L"),
                         max_gap = maxgap,
-                        min_dur = minlength)
+                        min_dur = minlength) %>% as_tibble()
   
   tubes_lgl_eval <- tubes_lg3_eval %>%
     filter(ser_nryears >= minnryears)
@@ -899,7 +901,7 @@ sel_raster_meetnet_tm
 # str(tubes_hab)
 
 #tubes_hab_2019 <- read_vc(file.path(".","data","tubes_hab_2019"))
-tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
+tubes_hab <- read_vc(file.path(".","data","tubes_hab"))  %>% as_tibble()
 
 #peilbuizen uit de lijst verwijderen die niet (meer) mogen meegenomen worden
 if (uitgesloten_tubes != "leeg"){
@@ -974,7 +976,7 @@ rm(output_vc)
 #     get_xg3(watina, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
 #             truncated =  TRUE, collect = TRUE)
 
-tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3"))
+tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3")) %>% as_tibble()
 tubes_xg3_basis <- tubes_xg3
 tubes_xg3 <- tubes_xg3 %>% 
   inner_join (tubes_in_raster %>% 
@@ -1027,7 +1029,7 @@ tubes_lg3_avail <- tubes_xg3_avail %>%
 
 # getwd()
 # file.path(".","data","local")
-tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data"))
+tubes_lgl_eval <- read_vc("tubes_lgl_eval", file.path(getwd(),"data")) %>% as_tibble()
 tubes_lgl_eval_bu <- tubes_lgl_eval
 tubes_lgl_eval <- tubes_lgl_eval %>% 
   inner_join(tubes_in_raster %>% 
@@ -1241,7 +1243,7 @@ max_rank <-  function(x) {
 }
 
 sel_qual_maxrank <- plyr::ddply(sel_qual, ~rasterid+groupnr, max_rank) %>%
-  rename(maxrank = V1)
+  rename(maxrank = V1) %>% as_tibble()
 
 sel_qual <- sel_qual %>%
   inner_join(sel_qual_maxrank, 
@@ -1644,7 +1646,7 @@ sel_qual_bis <-
   ungroup 
 
 sel_qual_maxrank_bis <- plyr::ddply(sel_qual_bis, ~rasterid+groupnr, max_rank) %>%
-  rename(maxrank = V1)
+  rename(maxrank = V1) %>% as_tibble()
 
 sel_qual_bis <- sel_qual_bis %>%
   inner_join(sel_qual_maxrank_bis, 
@@ -2144,7 +2146,8 @@ output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","tubes_cat3_
 # output_vc <- write_vc(tubes_cat1Bb_gtrs_reserve, file.path(".","data","tubes_cat1Bb_gtrs_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 rm(output_vc)
 
-#check_cat3_grts <- read_vc(file.path(".","data","tubes_cat3_grts"))
+#tubes_cat3_grts <- read_vc(file.path(".","data","tubes_cat3_grts")) %>% as_tibble()
+#tubes_cat3_grts_reserve <- read_vc(file.path(".","data","tubes_cat3_grts_reserve"))
 
 
 ###Samenvatting selectie
@@ -2184,7 +2187,15 @@ types <-
   read_types(lang = "nl") %>% 
   select(type, type_name, type_shortname, typeclass_name)
 
-tubes_selected <- read_vc(file.path(".","data","tubes_selected"))
+# tubes_selected_old <- read_vc(file.path(".","data","tubes_selected_old"))
+# all.equal(tubes_selected, tubes_selected_old)
+# 
+# check <- tubes_selected %>% 
+#   select(loc_code, nieuwesel = selectie) %>% 
+#   full_join(tubes_selected_old %>% 
+#               select(loc_code, oudesel = selectie), by = "loc_code" ) %>% 
+#   mutate (vergelijking= ifelse(nieuwesel == oudesel, "ok", "verschil"))
+
 tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
 
 tubes_selected_types <- 

@@ -55,6 +55,7 @@ _book/
 *.html
 *.pdf
 *.tex
+*.log
 !header.html
 .Rproj.user
 droogtemeetnet_ontwerp.md

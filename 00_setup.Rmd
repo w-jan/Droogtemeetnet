@@ -232,7 +232,7 @@ if (params$refresh_data == 2) {
   watina <- connect_watina()
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                         buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
-                        collect = TRUE)
+                        collect = TRUE) %>% as_tibble()
   tubes_hab_basis <-   tubes_hab #interne backup
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
   vmm_pb <- read_csv(file.path(getwd(), "data", "vmm_indc.csv")) %>% 
@@ -242,7 +242,7 @@ if (params$refresh_data == 2) {
     mutate (area_code = "VMM",
             area_name = "Grondwaterstandindicator") %>%
     inner_join(habmap_gw_raster_overlay %>% st_drop_geometry() %>%  
-                dplyr::select(polygon_id, type, groupnr, rasterid, opp), by = c("polygon_id", "groupnr", "type"))
+                dplyr::select(polygon_id, type, groupnr, rasterid, opp), by = c("polygon_id", "groupnr", "type")) %>% as_tibble()
 
   tubes_hab <- tubes_hab %>% 
     full_join(vmm_pb %>% dplyr::select(loc_code, area_code, area_name, x, y, phab, type, groupnr, typegroup_name, rasterid, opp, polygon_id))
@@ -256,7 +256,7 @@ if (params$refresh_data == 2) {
            obswell_statecode = factor(obswell_statecode),
            obswell_state = factor(obswell_state),
            typegroup_name = factor(typegroup_name)
-           )
+           ) 
   #beperken van peilbuizen tot de rastercel waar ze effectief in liggen. Door het gebruik van een buffer is het immers mogelijk dat een peilbuis in twee of meer cellen komt te liggen.
   tubes_hab_sf <- as_points(tubes_hab)
   
@@ -277,10 +277,9 @@ if (params$refresh_data == 2) {
                         strict =  FALSE)
   rm(output_vc)
   
-  watina2 <- inbodb::connect_inbo_dbase("W0002_00_Watina")  
   tubes_xg3 <- tubes_hab %>% 
-    get_xg3(watina2, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
-            truncated =  TRUE, collect = TRUE)
+    get_xg3(watina, startyear = year(now()) - 20, endyear = year(now()), 
+            vert_crs = "local", truncated =  TRUE, collect = TRUE)
 
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
   tubes_xg3_vmm <- data.frame(loc_code = rep(tubes_hab %>% 
@@ -288,7 +287,7 @@ if (params$refresh_data == 2) {
                                        distinct(loc_code) %>% 
                                        dplyr::pull(loc_code),times = 31), 
                               hydroyear = seq(from = 2016 - 30, to = 2016),
-                              lg3_lcl = rep(-1, 31))
+                              lg3_lcl = rep(-1, 31)) %>% as_tibble() 
   
   tubes_xg3 <- bind_rows(tubes_xg3, tubes_xg3_vmm)  
   #oplossen van UTF-probleem: strings worden in inbo-SQL-databanken opgeslagen in UTF-16, terwijl hier gewerkt wordt met UTF-8. Dit geeft een probleem bij de kable-functie
@@ -304,7 +303,6 @@ if (params$refresh_data == 2) {
   
   
   DBI::dbDisconnect(watina)
-  DBI::dbDisconnect(watina2)
   #volgende watina-functie werkt ook zonder databankconnectie, maar omdat deze op sommige pc's niet stabiel werkt, worden de data hier alvast lokaal weggeschreven.
     
   filter_xg3_lok <- function(data,
@@ -438,7 +436,7 @@ if (params$refresh_data == 2) {
   tubes_lg3_eval <- tubes_xg3 %>%
     eval_xg3_series_lok(xg3_type = c("L"),
                         max_gap = maxgap,
-                        min_dur = minlength)
+                        min_dur = minlength) %>% as_tibble()
   
   tubes_lgl_eval <- tubes_lg3_eval %>%
     filter(ser_nryears >= minnryears)

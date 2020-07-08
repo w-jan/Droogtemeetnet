@@ -38,7 +38,7 @@ if (pdfmaken == TRUE) {
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = F,
                 position = "left",
-                font_size = 9,
+                font_size = 12,
                 fixed_thead = T) %>%
   #row_spec(0, angle = -45)  %>% #fixeer veldnamen
   scroll_box(height = "200px")
@@ -73,7 +73,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
                   full_width = TRUE, 
                   position = "left",
-                  font_size = 9,
+                  font_size = 12,
                   fixed_thead = T) 
     #row_spec(0, angle = -45)  %>% #fixeer veldnamen
      # scroll_box(height = "200px") 
