@@ -1542,7 +1542,7 @@ Voor peilbuizen van rastercellen van categorie 2 betekent het niet weerhouden va
 De peilbuis zelf blijft wel opgenomen in het meetnet, bij gebrek aan beter.
 Aangezien er geen andere peilbuizen zijn om in vervanging te voorzien, is het uitbreiden van de tijdreeks de beste kans om voor deze rastercel ooit aan een voldoend aantal geschikte tijdreeksen te komen. 
 
-Voor peilbuizen van rastercellen van categorie 3 betekent het weerhouden van de tijdreeks nog niet automatisch tot een selectie. 
+Voor peilbuizen van rastercellen van categorie 3 leidt het weerhouden van de tijdreeks nog niet automatisch tot een selectie. 
 Voor de selectie zal wel in eerste instantie gekozen worden uit de peilbuizen met een weerhouden tijdreeks. 
 Indien er hiervan onvoldoende zijn, zal ook gekozen worden uit peilbuizen zonder weerhouden tijdreeks.
 
