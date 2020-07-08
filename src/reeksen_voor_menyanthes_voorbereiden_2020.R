@@ -1,4 +1,4 @@
-source("C:/R/Projecten/Watina/src/invoerMenyanthes_gauge.R")
+source(file.path("C:", "R", "Projecten", "Watina", "src", "invoerMenyanthes_gauge.R"))
 library(tidyverse)
 # getwd()
 
@@ -34,7 +34,6 @@ write_delim(as.data.frame(peilen),
             col_names = FALSE, quote_escape = FALSE, delim = "µ", na = "")
 
 
-C:\R\Repositories\droogtemeetnet\data\local\tijdreeksen\importbestanden_menyanthes
 peilen_opp <- hydromonitor_peilmeting_csv_formaat(gebiedscode,
                                                   ookdefinities = TRUE,
                                               oppervlaktewater = TRUE
