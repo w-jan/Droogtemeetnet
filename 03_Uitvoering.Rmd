@@ -2611,12 +2611,109 @@ output_vc <- write_vc(tubes_reserve, file.path(".","data","tubes_reserve"), sort
 rm(output_vc)
 ```
 
+```{r division-tubes-into-habitattype, warning=FALSE, message=FALSE, include= FALSE  }
+tubes_selected_types <- 
+  tubes_selected %>% 
+  as_tibble %>% 
+  # filter(selectie == 1) %>% 
+  select(loc_code, x, y, selectie, 
+         target_groupnr = groupnr) %>% 
+  left_join(tubes_hab %>% 
+              select(loc_code, 
+                     description,
+                     type, 
+                     certain, 
+                     phab, 
+                     groupnr,
+                     group_name = typegroup_name), 
+            by = "loc_code") %>% 
+  left_join(types, by = "type") %>% 
+  distinct()
+
+write_vc(tubes_selected_types, file.path(".","data","tubes_selected_types"), sorting = c("loc_code", "type", "phab", "description"), strict =  FALSE)
+
+tubes_selected_types_stats_present <- tubes_selected_types %>% 
+  filter(selectie == 1) %>% 
+  inner_join(tubes_selected_types %>% 
+               distinct(loc_code, description) %>% 
+               group_by(loc_code) %>% 
+               summarise(tubes_herh = n()), by = "loc_code") %>% 
+  inner_join(tubes_selected_types %>% 
+               inner_join(tubes_selected_types %>% 
+                            distinct(loc_code, description) %>% 
+                            group_by(loc_code) %>% 
+                            summarise(tubes_herh = n()), by = "loc_code") %>% 
+               group_by(target_groupnr) %>% 
+               summarise(somaandeel_groep = sum(phab/tubes_herh)) %>% ungroup(), by = "target_groupnr") %>%   
+  group_by(target_groupnr, groupnr, type, type_shortname) %>% 
+  summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
+  ungroup()
+
+write_vc(tubes_selected_types_stats_present, file.path(".","data","tubes_selected_types_stats_present"), sorting = c("target_groupnr","type"), strict =  FALSE)
+
+tubes_selected_types_stats_future <- tubes_selected_types %>% 
+  inner_join(tubes_selected_types %>% 
+               distinct(loc_code, description) %>% 
+               group_by(loc_code) %>% 
+               summarise(tubes_herh = n()), by = "loc_code") %>% 
+  inner_join(tubes_selected_types %>% 
+               inner_join(tubes_selected_types %>% 
+                            distinct(loc_code, description) %>% 
+                            group_by(loc_code) %>% 
+                            summarise(tubes_herh = n()), by = "loc_code") %>% 
+               group_by(target_groupnr) %>% 
+               summarise(somaandeel_groep = sum(phab/tubes_herh)) %>% ungroup(), by = "target_groupnr") %>%   
+  group_by(target_groupnr, groupnr, type, type_shortname) %>% 
+  summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
+  ungroup()
+
+write_vc(tubes_selected_types_stats_future, file.path(".","data","tubes_selected_types_stats_future"), sorting = c("target_groupnr","type"), strict =  FALSE)
+
+tubes_selected_typeclasses_stats_present <- tubes_selected_types %>% 
+  filter(selectie == 1) %>% 
+  inner_join(tubes_selected_types %>% 
+               distinct(loc_code, description) %>% 
+               group_by(loc_code) %>% 
+               summarise(tubes_herh = n()), by = "loc_code") %>% 
+  inner_join(tubes_selected_types %>% 
+               inner_join(tubes_selected_types %>% 
+                            distinct(loc_code, description) %>% 
+                            group_by(loc_code) %>% 
+                            summarise(tubes_herh = n()), by = "loc_code") %>% 
+               group_by(target_groupnr) %>% 
+               summarise(somaandeel_groep = sum(phab/tubes_herh)) %>% ungroup(), by = "target_groupnr") %>%   
+  group_by(target_groupnr, habitatgroep = typeclass_name) %>% 
+  summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
+  ungroup() %>% 
+  arrange(target_groupnr, desc(aandeel))
+
+
+write_vc(tubes_selected_typeclasses_stats_present, file.path(".","data","tubes_selected_typeclasses_stats_present"), sorting = c("target_groupnr","habitatgroep"), strict =  FALSE)
+
+tubes_selected_typeclasses_stats_future <- tubes_selected_types %>% 
+  inner_join(tubes_selected_types %>% 
+               distinct(loc_code, description) %>% 
+               group_by(loc_code) %>% 
+               summarise(tubes_herh = n()), by = "loc_code") %>% 
+  inner_join(tubes_selected_types %>% 
+               inner_join(tubes_selected_types %>% 
+                            distinct(loc_code, description) %>% 
+                            group_by(loc_code) %>% 
+                            summarise(tubes_herh = n()), by = "loc_code") %>% 
+               group_by(target_groupnr) %>% 
+               summarise(somaandeel_groep = sum(phab/tubes_herh)) %>% ungroup(), by = "target_groupnr") %>%   
+  group_by(target_groupnr, habitatgroep = typeclass_name) %>% 
+  summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
+  ungroup() %>% 
+  arrange(target_groupnr, desc(aandeel))
+
+
+write_vc(tubes_selected_typeclasses_stats_future, file.path(".","data","tubes_selected_typeclasses_stats_future"), sorting = c("target_groupnr","habitatgroep"), strict =  FALSE)
+
+```
 
 Tabel \@ref(tab:synthese-selection-tubes) toont het overzicht van alle `r nrow(tubes_selected)` geselecteerde peilbuizen.
 Hiervan zijn er `r nrow(tubes_selected %>% filter(selectie ==1))` die op basis van hun data nu reeds inzetbaar zijn.
-
-
-Tabel \@ref(tab:synthese-reserve-tubes) geeft alle `r nrow(tubes_reserve)` reservepunten weer.
 
 
 ```{r synthese-selection-tubes}
@@ -2650,20 +2747,26 @@ if (pdfmaken == TRUE) {
 }
 
 ```
-
 <br/><br/>
 
-```{r synthese-reserve-tubes}
+Tabel \@ref(tab:division-tubes-tab-types-future) geeft de verdeling van de `r nrow(tubes_selected)` geselecteerde peilbuizen over de habitattypen en rbb's.
 
-kobj <- kable(tubes_reserve %>%
-        dplyr::select(rasterid, groupnr, area_name, loc_code, x, y) %>%
-        rename(GTgroep = groupnr,
-               rastercelnummer = rasterid,
-               gebied = area_name,
-               watinacode =  loc_code
-               ) %>%
-        arrange(rastercelnummer, GTgroep),
-      caption =  "Overzicht van de reserve peilbuizen"
+Tabel \@ref(tab:division-tubes-tab-types-present) geeft de verdeling van de `r nrow(tubes_selected %>% filter(selectie ==1))` huidig inzetbare peilbuizen over de habitattypen en rbb's.
+
+Tabel \@ref(tab:division-tubes-tab-typegroup-future) geeft de verdeling van de `r nrow(tubes_selected)` geselecteerde peilbuizen over de habitatgroepen.
+
+Tabel \@ref(tab:division-tubes-tab-typegroup-present) geeft de verdeling van de `r nrow(tubes_selected %>% filter(selectie ==1))` huidig inzetbare peilbuizen over de habitatgroepen..
+
+
+```{r division-tubes-tab-types-future, warning=FALSE, message=FALSE}
+kobj <- kable(tubes_selected_types_stats_future %>%
+      dplyr::select(-type_shortname) %>%
+      rename(DoelGTgroep = target_groupnr,
+             GTgroep = groupnr,
+             type = type,
+             opp_aandeel =  aandeel
+             ),
+      caption =  "Verdeling van de geselecteerde beschikbare peilbuizen over de habitattype en rbb's"
       )
 if (pdfmaken == TRUE) {
   kobj
@@ -2680,7 +2783,84 @@ if (pdfmaken == TRUE) {
    # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
     scroll_box(height = "250px")
 }
+```
+<br/><br/>
 
+```{r division-tubes-tab-types-present, warning=FALSE, message=FALSE}
+kobj <- kable(tubes_selected_types_stats_present %>%
+      dplyr::select(-type_shortname) %>%
+      rename(DoelGTgroep = target_groupnr,
+             GTgroep = groupnr,
+             type = type,
+             opp_aandeel =  aandeel
+             ),
+      caption =  "Verdeling van de geselecteerde direct inzetbare peilbuizen over de habitattypen en rbb's"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T,
+                position = "left",
+                font_size = 8,
+                fixed_thead = T
+                ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+```
+<br/><br/>
+
+```{r division-tubes-tab-typegroup-future, warning=FALSE, message=FALSE}
+kobj <- kable(tubes_selected_typeclasses_stats_future %>%
+      rename(DoelGTgroep = target_groupnr,
+             opp_aandeel =  aandeel
+             ),
+      caption =  "Verdeling van de geselecteerde beschikbare peilbuizen over de habitatgroepen"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T,
+                position = "left",
+                font_size = 8,
+                fixed_thead = T
+                ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+```
+<br/><br/>
+
+```{r division-tubes-tab-typegroup-present, warning=FALSE, message=FALSE}
+kobj <- kable(tubes_selected_typeclasses_stats_present %>%
+      rename(DoelGTgroep = target_groupnr,
+             opp_aandeel =  aandeel
+             ), 
+      caption =  "Verdeling van de geselecteerde direct inzetbare peilbuizen over de habitatgroepen"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T,
+                position = "left",
+                font_size = 8,
+                fixed_thead = T
+                ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
 ```
 
 <br/><br/>
@@ -2759,4 +2939,38 @@ if (pdfmaken == TRUE) {
     #¬row_spec(0, angle = -90)  %>% #fixeer veldnamen
     scroll_box(height = "350px", box_css = "border: 1px solid #ddd; padding: 5px; margin: 5px;") 
 }
+```
+<br/><br/>
+
+
+Tabel \@ref(tab:synthese-reserve-tubes) geeft alle `r nrow(tubes_reserve)` reservepunten weer.
+
+```{r synthese-reserve-tubes}
+
+kobj <- kable(tubes_reserve %>%
+        dplyr::select(rasterid, groupnr, area_name, loc_code, x, y) %>%
+        rename(GTgroep = groupnr,
+               rastercelnummer = rasterid,
+               gebied = area_name,
+               watinacode =  loc_code
+               ) %>%
+        arrange(rastercelnummer, GTgroep),
+      caption =  "Overzicht van de reserve peilbuizen"
+      )
+if (pdfmaken == TRUE) {
+  kobj
+} else {
+  kobj %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = T,
+                position = "left",
+                font_size = 8,
+                fixed_thead = T
+                ) %>%
+   # column_spec(1:3, bold = F, border_right = F, width = "35em") %>%
+   # column_spec(c(3,5:7, 9:10), width = "1cm") %>%
+   # row_spec(0, angle = -90, align = "c")  %>% #fixeer veldnamen
+    scroll_box(height = "250px")
+}
+
 ```

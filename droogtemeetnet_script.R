@@ -358,6 +358,7 @@ if (params$refresh_data == 2) {
 #   tubes_xg3 <- tubes_xg3_alles  %>% 
 #     semi_join(tubes_hab, by = "loc_code")
 # all.equal(tubes_xg3, tubes_xg32)
+  #debugonce(copy_to)
   tubes_xg3 <- tubes_hab %>% 
         get_xg3(watina2, startyear = year(now()) - 18, endyear = 2016, vert_crs = "local",
                 truncated =  TRUE, collect = TRUE)
@@ -2176,6 +2177,113 @@ tubes_selected_tm <- raster_meetnet_poly_tm +
 tubes_selected_tm
 write_sf(tubes_selected_sf %>%  dplyr::select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), driver = "ESRI Shapefile", file.path("data", "GIS","tubes_selected_2020_05.shp"))
 write_sf(tubes_reserve %>% as_points() %>%  dplyr::select(-obswell_statecode, -loc_validitycode) %>% rename (watinac = "loc_code"), file.path("data", "GIS","tubes_reserve_2020_05.shp" ))
+
+
+#overzicht tot welke habitattypen of habitattype-groepen de geselecteerde punten behoren
+types <- 
+  read_types(lang = "nl") %>% 
+  select(type, type_name, type_shortname, typeclass_name)
+
+tubes_selected <- read_vc(file.path(".","data","tubes_selected"))
+tubes_hab <- read_vc(file.path(".","data","tubes_hab"))
+
+tubes_selected_types <- 
+  tubes_selected %>% 
+  as_tibble %>% 
+  # filter(selectie == 1) %>% 
+  select(loc_code, x, y, selectie, 
+         target_groupnr = groupnr) %>% 
+  left_join(tubes_hab %>% 
+              select(loc_code, 
+                     description,
+                     type, 
+                     certain, 
+                     phab, 
+                     groupnr,
+                     group_name = typegroup_name), 
+            by = "loc_code") %>% 
+  left_join(types, by = "type") %>% 
+  distinct()
+
+write_vc(tubes_selected_types, file.path(".","data","tubes_selected_types"), sorting = c("loc_code", "type", "phab", "description"), strict =  FALSE)
+
+tubes_selected_types_stats_present <- tubes_selected_types %>% 
+  filter(selectie == 1) %>% 
+  inner_join(tubes_selected_types %>% 
+               distinct(loc_code, description) %>% 
+               group_by(loc_code) %>% 
+               summarise(tubes_herh = n()), by = "loc_code") %>% 
+  inner_join(tubes_selected_types %>% 
+               inner_join(tubes_selected_types %>% 
+                            distinct(loc_code, description) %>% 
+                            group_by(loc_code) %>% 
+                            summarise(tubes_herh = n()), by = "loc_code") %>% 
+               group_by(target_groupnr) %>% 
+               summarise(somaandeel_groep = sum(phab/tubes_herh)) %>% ungroup(), by = "target_groupnr") %>%   
+  group_by(target_groupnr, groupnr, type, type_shortname) %>% 
+  summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
+  ungroup()
+
+write_vc(tubes_selected_types_stats_present, file.path(".","data","tubes_selected_types_stats_present"), sorting = c("target_groupnr","type"), strict =  FALSE)
+
+tubes_selected_types_stats_future <- tubes_selected_types %>% 
+  inner_join(tubes_selected_types %>% 
+               distinct(loc_code, description) %>% 
+               group_by(loc_code) %>% 
+               summarise(tubes_herh = n()), by = "loc_code") %>% 
+  inner_join(tubes_selected_types %>% 
+               inner_join(tubes_selected_types %>% 
+                            distinct(loc_code, description) %>% 
+                            group_by(loc_code) %>% 
+                            summarise(tubes_herh = n()), by = "loc_code") %>% 
+               group_by(target_groupnr) %>% 
+               summarise(somaandeel_groep = sum(phab/tubes_herh)) %>% ungroup(), by = "target_groupnr") %>%   
+  group_by(target_groupnr, groupnr, type, type_shortname) %>% 
+  summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
+  ungroup()
+
+write_vc(tubes_selected_types_stats_future, file.path(".","data","tubes_selected_types_stats_future"), sorting = c("target_groupnr","type"), strict =  FALSE)
+
+tubes_selected_typeclasses_stats_present <- tubes_selected_types %>% 
+  filter(selectie == 1) %>% 
+  inner_join(tubes_selected_types %>% 
+               distinct(loc_code, description) %>% 
+               group_by(loc_code) %>% 
+               summarise(tubes_herh = n()), by = "loc_code") %>% 
+  inner_join(tubes_selected_types %>% 
+               inner_join(tubes_selected_types %>% 
+                            distinct(loc_code, description) %>% 
+                            group_by(loc_code) %>% 
+                            summarise(tubes_herh = n()), by = "loc_code") %>% 
+               group_by(target_groupnr) %>% 
+               summarise(somaandeel_groep = sum(phab/tubes_herh)) %>% ungroup(), by = "target_groupnr") %>%   
+  group_by(target_groupnr, habitatgroep = typeclass_name) %>% 
+  summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
+  ungroup() %>% 
+  arrange(target_groupnr, desc(aandeel))
+
+
+write_vc(tubes_selected_typeclasses_stats_present, file.path(".","data","tubes_selected_typeclasses_stats_present"), sorting = c("target_groupnr","habitatgroep"), strict =  FALSE)
+
+tubes_selected_typeclasses_stats_future <- tubes_selected_types %>% 
+  inner_join(tubes_selected_types %>% 
+               distinct(loc_code, description) %>% 
+               group_by(loc_code) %>% 
+               summarise(tubes_herh = n()), by = "loc_code") %>% 
+  inner_join(tubes_selected_types %>% 
+               inner_join(tubes_selected_types %>% 
+                            distinct(loc_code, description) %>% 
+                            group_by(loc_code) %>% 
+                            summarise(tubes_herh = n()), by = "loc_code") %>% 
+               group_by(target_groupnr) %>% 
+               summarise(somaandeel_groep = sum(phab/tubes_herh)) %>% ungroup(), by = "target_groupnr") %>%   
+  group_by(target_groupnr, habitatgroep = typeclass_name) %>% 
+  summarise(aandeel = round(sum(phab/somaandeel_groep/tubes_herh)*100)) %>% 
+  ungroup() %>% 
+  arrange(target_groupnr, desc(aandeel))
+
+
+write_vc(tubes_selected_typeclasses_stats_future, file.path(".","data","tubes_selected_typeclasses_stats_future"), sorting = c("target_groupnr","habitatgroep"), strict =  FALSE)
 
 ###Selecteren van potentiële geschikte habitatvlekken voor gridcellen waarvoor nu geen pb'en bestaan.
 

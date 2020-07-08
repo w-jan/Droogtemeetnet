@@ -252,11 +252,12 @@ In dit project willen we deze analysetechniek toepassen op grondwatermeetreeksen
 
 Het eerste doel is ook al hoger ter sprake gekomen. 
 Slagen we er in om op een betrouwbare wijze de waterstandsreeksen te verlengen/vervolledigen, dan kan een meetpunt geschikt worden om in het droogtemeetnet opgenomen te worden. 
-De tijdreeksen krijgen ook een meer uniforme lengte, waardoor het afleiden van een droogte-indicator meer gestandaardiseerd wordt.
+De tijdreeksen krijgen ook een uniforme lengte, waardoor het opvolgen van de evolutie van de droogte-indicator over de jaren heen meer betekenis krijgt.
 
-Het tweede doel is in feite een bijkomende selectiecriterium. Indien uit een tijdreeksanalyse blijkt dat de waterstanden van een meetpunt systematisch dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
-Met een systematische daling of stijging bedoelen we een lineaire trend die niet door externe factoren (opstuwen of graven greppels, waterwinning) kan verklaard worden. 
-Indien een tijdreeks een lineaire trend vertoont, wordt het meetpunt als momenteel ongeschikt beschouwd.
+Het tweede doel is in feite een bijkomende selectiecriterium. Indien uit een tijdreeksanalyse blijkt dat, na het in rekening brengen met zoveel mogelijk factoren (maar in de praktijk enkel met het weer), de waterstanden van een meetpunt geleidelijkaan dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
+Het is immers in dergelijke gevallen moeilijk om nieuwe metingen te interpreteren, omdat we niet weten in welke mate de oorzaak van de lineaire trend (zelfs als is de oorzaak bekend) de peilen nog beïnvloedt. 
+Indien een tijdreeks een lineaire trend vertoont, wordt het meetpunt daarom als momenteel ongeschikt beschouwd.
+Een tijdreeks mag daarentegen wel een sprong in de tijd vertonen, omdat een tijdreeks voor een eenmalige gebeurtenis met een kortstondig effect kan gecorrigeerd worden. 
 
 Voor de tijdreeksanalyse doen we beroep op het computerprogramma Menyanthes [@RN5899]. 
 Voor het samenstellen van de verklarende reeksen (neerslag en evapotranspiratie) werd beroep gedaan op de data van de meetstations beheerd door KMI, VMM, HIC en KNMI. 
@@ -269,11 +270,15 @@ Wel werden alle meetreeksen van de meetpunten die behoren tot rastercellen van c
 Voor categorie 3 bleef dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
 
 Een meetreeks werd weerhouden onder twee voorwaarden: 
-1. Er kan een tijdsmodel met uitsluitend neerslag- en evapotranspiratiedata als verklarende reeksen voor samengesteld worden dat minstens 66% van de variatie in de waargenomen peilen (cfr. EVP, explained variance percentage, in de Menyanthes-software) kon verklaren.
-2. De tijdreeks vertoont geen significante lineaire trend. 
 
-Minstens twee derden van het peilverloop dient dus verklaard te kunnen worden door het weer.
-Eén derde kan/mag door andere factoren beïnvloed worden (bijv. het naburige peil van een waterloop).
+1. Een tijdsmodel met uitsluitend neerslag- en evapotranspiratiedata als verklarende reeksen kan minstens 66% van de variatie in de waargenomen peilen (cfr. EVP, explained variance percentage, in de Menyanthes-software) verklaren.
+2. De tijdreeks, na rekening te houden met neerslag en evapotranspiratie of eventueel andere factoren (bijv. het peil van een naburige waterloop), vertoont geen significante lineaire trend. 
+
+Minstens twee derde van het peilverloop dient dus verklaard te kunnen worden door het weer.
+Een derde kan/mag door andere factoren beïnvloed worden (bijv. het peil van een naburige waterloop, bemaling, ...).
+Deze voorwaarde is veeleer uit pragmatisch oogpunt opgelegd. 
+We beschikten immers voor de kandidaat-peilbuizen voor de externe factoren nooit over voldoende gegevens, zijnde dagelijkse metingen voor een periode van meer dan 30 jaar (1985 - 2018).
+Hierdoor was het niet mogelijk een tijdsmodel voor die periode samen te stellen.
 
 Een [lineaire trend]{#lintrend} werd als significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `se`), voldoet één van de volgende twee regels:
 
@@ -283,7 +288,7 @@ $$trend + 1.96* se < -1(cm/jaar)$$
 Er is dan 2.5% kans een trendwaarde die groter resp. kleiner is ten onrechte als een significante trend te bestempelen.
 
 De kwaliteit van een tijdreeks kan na een tijdreeksanalyse anders beoordeeld worden. 
-Bijvoorbeeld een meetpunt met veel peilmetingen, die echter een duidelijke lineaire trend vertonen, is weinig geschikt om onmiddellijk in het meetnet te worden opgenomen.
+Bijvoorbeeld een meetpunt met veel peilmetingen, die echter een duidelijke lineaire trend vertonen, is niet geschikt om onmiddellijk in het meetnet te worden opgenomen.
 Anderzijds komt een meetpunt met minder metingen, maar waarvoor een goed model kan gebouwd worden (zonder lineaire trend), wel in aanmerking om nu reeds in het meetnet te worden opgenomen.
 
 Bij de modelselectie kwam toch ook nog expertoordeel bij kijken. 
