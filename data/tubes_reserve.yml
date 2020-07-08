@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: ba74b2f593b4864467d93075a3a9a6e44e6c1444
-  data_hash: 15700ec7ce5c184ff289ff5a74851fb55d7961d0
+  hash: 52928c9c9c6a3cbb06fc2009a97eec9e698bc546
+  data_hash: 076619c9e1d11a15553a00e9b873e487dfa3fcec
 unieknr:
   class: integer
 loc_code:
@@ -42,8 +42,8 @@ loc_typecode:
   ordered: no
 loc_typename:
   class: factor
-  labels: Peilbuis/Piëzometer
-  index: 2
+  labels: Peilbuis/PiÃ«zometer
+  index: 1
   ordered: no
 groupnr:
   class: numeric

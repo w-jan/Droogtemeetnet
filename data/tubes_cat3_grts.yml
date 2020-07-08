@@ -6,8 +6,8 @@
   - rasterid
   - groupnr
   - loc_code
-  hash: 4c38e4ad10b2cab93e5b38cda7b5ca937662454b
-  data_hash: 288486bf7699feb15bcf241a424da7193a919f63
+  hash: c94591b929b7f5cd60d09e9c1da78408e7ccbc47
+  data_hash: cc0180f87f34d908208f92061319b66bb1e27cb3
 unieknr:
   class: integer
 loc_code:
@@ -45,8 +45,8 @@ loc_typecode:
   ordered: no
 loc_typename:
   class: factor
-  labels: Peilbuis/Piëzometer
-  index: 2
+  labels: Peilbuis/PiÃ«zometer
+  index: 1
   ordered: no
 groupnr:
   class: numeric

@@ -7,8 +7,8 @@
   - polygon_id
   - rasterid
   - type
-  hash: 5b9881e4835ab1b60c77f18f04c7c86f695679ad
-  data_hash: 6b8aa334a8641028d22917263abd3f4240754666
+  hash: e17d6793c248bf2ceaeda6d82d8c093355aa304f
+  data_hash: 77598db66f1d6aaa1d8fcf40eef3a7737cf889c5
 loc_code:
   class: character
 area_code:
@@ -44,8 +44,8 @@ loc_typecode:
   ordered: no
 loc_typename:
   class: factor
-  labels: Peilbuis/Piëzometer
-  index: 2
+  labels: Peilbuis/PiÃ«zometer
+  index: 1
   ordered: no
 polygon_id:
   class: character

@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 0d319d6e4e42d26b363ccdfaa20a4cb4168062ea
-  data_hash: d62c86568d8c725a106fd52cc4e500eebb9e999d
+  hash: fc2b2db206a6098d7b98981c87d4a4eeeec4e6d8
+  data_hash: 3f2e31cdc29f433499126928f986b4b6305293ad
 loc_code:
   class: character
 area_code:
@@ -40,8 +40,8 @@ loc_typecode:
   ordered: no
 loc_typename:
   class: factor
-  labels: Peilbuis/Piëzometer
-  index: 2
+  labels: Peilbuis/PiÃ«zometer
+  index: 1
   ordered: no
 groupnr:
   class: numeric
@@ -66,34 +66,6 @@ typegroup_name:
   - 4
   - 5
   ordered: no
-firstyear:
-  class: integer
-lastyear:
-  class: numeric
-nryears:
-  class: numeric
-cat:
-  class: character
-gew_aantal_meetptn:
-  class: numeric
-'n':
-  class: integer
-rankclus_lastyear:
-  class: numeric
-rankclus_nryears:
-  class: numeric
-rankclus:
-  class: integer
-beschikbaar_aantal_cluster:
-  class: integer
-unieknr:
-  class: integer
-geselecteerd:
-  class: numeric
-reserve:
-  class: numeric
-selectie:
-  class: numeric
 obswell_statecode:
   class: factor
   labels:
@@ -137,4 +109,32 @@ measuringref_ost:
 tubelength:
   class: numeric
 filterlength:
+  class: numeric
+firstyear:
+  class: integer
+lastyear:
+  class: numeric
+nryears:
+  class: numeric
+cat:
+  class: character
+gew_aantal_meetptn:
+  class: numeric
+'n':
+  class: integer
+rankclus_lastyear:
+  class: numeric
+rankclus_nryears:
+  class: numeric
+rankclus:
+  class: integer
+beschikbaar_aantal_cluster:
+  class: integer
+unieknr:
+  class: integer
+geselecteerd:
+  class: numeric
+reserve:
+  class: numeric
+selectie:
   class: numeric

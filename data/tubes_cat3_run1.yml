@@ -3,24 +3,20 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 9ad9ef936303975342b5f6516f55cd541e2c3ae0
-  data_hash: 29fd64f19de177978fe88e604e206fb814cdd849
+  hash: b9743739afe866aadc66e723323826a4dd6ec9ff
+  data_hash: 26fb0370c2612db9368491e7a021ed61118b3e5d
 unieknr:
   class: integer
 loc_code:
+  class: character
+area_code:
+  class: character
+area_name:
   class: character
 x:
   class: numeric
 'y':
   class: numeric
-rasterid:
-  class: integer
-groupnr:
-  class: numeric
-area_code:
-  class: character
-area_name:
-  class: character
 loc_validitycode:
   class: factor
   labels:
@@ -48,6 +44,29 @@ loc_typename:
   class: factor
   labels: Peilbuis/PiÃ«zometer
   index: 1
+  ordered: no
+groupnr:
+  class: numeric
+rasterid:
+  class: integer
+filterdepth:
+  class: numeric
+soilsurf_ost:
+  class: numeric
+typegroup_name:
+  class: factor
+  labels:
+  - types van droog milieu
+  - types van matig nat milieu
+  - types van nat milieu
+  - types van vochtig milieu
+  - types van zeer nat milieu
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
   ordered: no
 obswell_statecode:
   class: factor
@@ -87,31 +106,12 @@ obswell_state:
   - 6
   - 7
   ordered: no
-soilsurf_ost:
-  class: numeric
 measuringref_ost:
   class: numeric
 tubelength:
   class: numeric
 filterlength:
   class: numeric
-filterdepth:
-  class: numeric
-typegroup_name:
-  class: factor
-  labels:
-  - types van droog milieu
-  - types van matig nat milieu
-  - types van nat milieu
-  - types van vochtig milieu
-  - types van zeer nat milieu
-  index:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  ordered: no
 firstyear:
   class: integer
 lastyear:

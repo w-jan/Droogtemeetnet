@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: loc_code
-  hash: 5ac90c80e3a313ef906d77d44462d1a7c9539453
-  data_hash: e96e6f4248b153c451c3c6c822e4a51129333d8f
+  hash: b1b7437104162440f1f2de47a16daa2f5a863365
+  data_hash: d55233d7e6246a282cca03012555cfe7222cb357
 loc_code:
   class: character
 area_code:
@@ -45,6 +45,8 @@ loc_typename:
   ordered: no
 groupnr:
   class: numeric
+rasterid:
+  class: integer
 filterdepth:
   class: numeric
 soilsurf_ost:
@@ -58,11 +60,11 @@ typegroup_name:
   - types van vochtig milieu
   - types van zeer nat milieu
   index:
-  - 15
-  - 13
-  - 12
-  - 14
-  - 11
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
   ordered: no
 obswell_statecode:
   class: factor
@@ -108,8 +110,6 @@ tubelength:
   class: numeric
 filterlength:
   class: numeric
-rasterid:
-  class: integer
 firstyear:
   class: integer
 lastyear:

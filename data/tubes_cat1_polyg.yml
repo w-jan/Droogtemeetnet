@@ -6,8 +6,8 @@
   - rasterid
   - type
   - polygon_id
-  hash: dbff19a49d7b55404cb9daf703fc76e82d73cb6c
-  data_hash: d98360c0c58ac78e3cb3994e86054ea6b1ec799a
+  hash: f2c48808ccacbd9cc4a5d0a1ad9abd035e7afa5d
+  data_hash: f3c097a7f8ffac89105b8dcdff66f5692fffa62b
 unieknr:
   class: numeric
 polygon_id:
@@ -15,6 +15,8 @@ polygon_id:
 description_orig:
   class: character
 description:
+  class: character
+source:
   class: character
 phab:
   class: numeric
@@ -34,5 +36,3 @@ geselecteerd_basis:
   class: numeric
 geselecteerd_reserve:
   class: numeric
-source:
-  class: character
