@@ -8,7 +8,7 @@ De code voor analyse en dit rapport is ook te vinden op de GitHub-repository [n2
 
 ## Keuze rasterlaag
 
-Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de gaHT kiezen we een opgeschaalde variant van de Vlaamse `GRTSmaster_habitats` databron, meer bepaald op 'level 8' ([bron](https://doi.org/10.5281/zenodo.3354405)), t.t.z. met cellen van 8192 m (figuur \@ref(fig:meetnetontwerp)).
+Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de gaHT kiezen we een opgeschaalde variant van de Vlaamse `GRTSmaster_habitats` databron, meer bepaald op 'level 8' ([bron](https://doi.org/10.5281/zenodo.3354406))[@vanderhaeghe_grtsmh_diffres_2019], t.t.z. met cellen van 8192 m (figuur \@ref(fig:meetnetontwerp)).
 
 ```{r meetnetontwerp, fig.cap="Het GRTS-raster voor Vlaanderen, level 8 (8192m)", message=FALSE, warning=FALSE}
 
@@ -59,7 +59,7 @@ check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filt
 ## Selectie rastercellen
 
 Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vijf grondwatergroepen volgens de habitatkaart (figuur \@ref(fig:overlay-habitatkaart-GRTS-plot)). 
-We deden hiervoor een beroep op de gestandaardiseerde versie van de habitatkaart ([bron](https://zenodo.org/record/3355193)). 
+We deden hiervoor een beroep op de gestandaardiseerde versie van de habitatkaart ([bron](https://doi.org/10.5281/zenodo.3540576) )[@RN5967]. 
 In deze versie werden de habitatvlekken geïnterpreteerd: uitsluitend vlekken met een terrestrisch habitattype of een rbb werden behouden. 
 Hierbij werd een werkwijze gevolgd zoals beschreven in @RN5966. 
 Er werd echter een uitzondering gemaakt voor de vlekken van een habitattype of rbb van een open milieu met een bosaanplant. 
