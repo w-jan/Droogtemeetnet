@@ -2187,7 +2187,7 @@ types <-
   read_types(lang = "nl") %>% 
   select(type, type_name, type_shortname, typeclass_name)
 
-# tubes_selected_old <- read_vc(file.path(".","data","tubes_selected_old"))
+ tubes_selected <- git2rdata::read_vc(file.path(".","data","result","meetnet","tubes_selected"))
 # all.equal(tubes_selected, tubes_selected_old)
 # 
 # check <- tubes_selected %>% 
@@ -2598,3 +2598,22 @@ tubes_cat1_polyg_tm <- raster_meetnet_poly_tm +
   tm_layout(title = "Meetpunten van categorie 1 waar nog een peilbuis nodig is", outer.margins = outermargins_tm )
 
 tubes_cat1_polyg_tm
+str(tubes_selected)
+tubes_current <- tubes_selected %>% 
+  as_tibble() %>% 
+  select(-n) %>% #n uitsluiten, want de count-functie loopt hierdoor mis
+  filter(selectie == 1) %>% 
+  count(groupnr) 
+
+tubes_current
+tubes_current_GT <- gw_types_groups %>% 
+  rename(gew_aantal = 'Gewenst aantal meetlocaties',
+         groupnr = 'GT-groep: nummer') %>% 
+  left_join(tubes_current, by = c("groupnr")) %>% 
+  mutate (act_inzetbaar = ifelse(gew_aantal > 0, round(n/gew_aantal*100), NA)) %>% 
+  mutate(group2 = ifelse(groupnr ==1,2,groupnr)) %>% 
+  group_by(group2) %>% 
+  mutate(gew_aantal2 = sum(gew_aantal),
+         n2 = sum(n)) %>% 
+  ungroup %>% 
+  mutate (act_inzetbaar2 = ifelse(gew_aantal2 > 0, round(n2/gew_aantal2*100), NA))

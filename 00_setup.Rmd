@@ -272,7 +272,7 @@ if (params$refresh_data == 2) {
   tubes_hab <- tubes_hab %>% 
     arrange(loc_code, polygon_id, rasterid, type)
   
-  output_vc <- write_vc(tubes_hab, file.path(".","data","tubes_hab"), 
+  output_vc <- write_vc(tubes_hab, file.path(".","data","processed","meetnet","tubes_hab"), 
                         sorting = c("loc_code", "polygon_id", "rasterid", "type" ),
                         strict =  FALSE)
   rm(output_vc)

@@ -501,7 +501,7 @@ Alleen de GT-groep met een (gesommeerd) opp-aandeel van minstens 50% (in de aan 
 We selecteren dan de peilbuizen die met juist één GT-groep kunnen geassocieerd worden.
 
 ```{r loading-selecting-tubes-watina, message=FALSE, warning=FALSE}
-tubes_hab <- read_vc(file.path(".","data","tubes_hab")) %>% as_tibble()
+tubes_hab <- read_vc(file.path(".","data","processed","meetnet","tubes_hab")) %>% as_tibble()
 
 #peilbuizen uit de lijst verwijderen die niet (meer) mogen meegenomen worden
 if (uitgesloten_tubes != "leeg"){
@@ -615,7 +615,7 @@ if (pdfmaken == TRUE) {
 ```
 
 ```{r table-tubes-with-good-time-series-in-selected-cells}
-tubes_xg3 <- read_vc(file.path(".","data","tubes_xg3")) %>% as_tibble()
+tubes_xg3 <- read_vc(file.path(".","data","processed", "meetnet","tubes_xg3")) %>% as_tibble()
 tubes_xg3 <- tubes_xg3 %>% 
   inner_join (tubes_in_raster %>% 
                 dplyr::select(loc_code), by = "loc_code")
@@ -1866,7 +1866,7 @@ tubes_cat3_grts_reserve <- tubes_excess %>%
 ```{r write-grts-tubes, message=FALSE, warning=FALSE}
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
 output_vc <- write_vc(tubes_cat3_grts, file.path(".","data","processed", "meetnet","tubes_cat3_grts"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
-output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
+output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","processed","meetnet","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 rm(output_vc)
 
   
@@ -2473,7 +2473,11 @@ write_sf(tubes_reserve %>%
 ```
 
 ```{r tubes_currently_applicable, message= FALSE, warning= FALSE}
-tubes_current <- tubes_selected %>% group_by (groupnr) %>% filter(selectie == 1) %>% count (groupnr) %>% ungroup
+tubes_current <- tubes_selected %>% 
+  as_tibble() %>% 
+  select(-n) %>% #n uitsluiten, want de count-functie loopt hierdoor mis
+  filter(selectie == 1) %>% 
+  count(groupnr) 
 
 tubes_current_GT <- gw_types_groups %>% 
   rename(gew_aantal = 'Gewenst aantal meetlocaties',
@@ -2489,7 +2493,7 @@ tubes_current_GT <- gw_types_groups %>%
 ```
 
 Kijken we naar de verdeling van de actueel inzetbare meetlocaties (tabel \@ref(tab:tubes-currently-applicable-table) ), dan is minstens de helft van de punten actueel inzetbaar, uitgezonderd GT-groep 2. 
-Slechts `r tubes_current_GT %>% filter(groupnr == 2) %>% dplyr::pull(act_inzetbaar)`% van de punten zijn actueel inzetbaar.
+Slechts `r tubes_current_GT %>% filter(groupnr == 2) %>% dplyr::pull(act_inzetbaar)`% van de punten van deze GT-groep zijn actueel inzetbaar.
 Dit wordt wel grotendeels gecompenseerd door de meetpunten van GT-groep 1. 
 Als we beide GT-groepen samennemen, is het percentage `r tubes_current_GT %>% filter(group2 == 2) %>% slice(1) %>% dplyr::pull(act_inzetbaar2)`%
 
