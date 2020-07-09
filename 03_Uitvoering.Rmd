@@ -60,7 +60,7 @@ check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filt
 
 Op basis van deze rasterlaag maken we een overlay met de verspreiding van de vijf grondwatergroepen volgens de habitatkaart (figuur \@ref(fig:overlay-habitatkaart-GRTS-plot)). 
 We deden hiervoor een beroep op de gestandaardiseerde versie van de habitatkaart ([bron](https://zenodo.org/record/3355193)). 
-In deze versie werden de habitatvlekken geïnterpreteerd: uitsluitend vlekken met een terrestrisch habitattype of een rbb werden behouden. 
+We maakten hiervan een afgeleide databron waarin de habitatvlekken werden geïnterpreteerd: uitsluitend vlekken met een terrestrisch habitattype of een rbb werden behouden. 
 Hierbij werd een werkwijze gevolgd zoals beschreven in @RN5966. 
 Er werd echter een uitzondering gemaakt voor de vlekken van een habitattype of rbb van een open milieu met een bosaanplant. 
 In de gepubliceerde versie werden deze vlekken uitgesloten, terwijl ze voor het droogtemeetnet wel in aanmerking komen.
