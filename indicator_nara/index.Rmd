@@ -1,6 +1,6 @@
 ---
-title: "Ontwerp van een early-warning meetnet voor droogte in natuurgebieden"
-author: "Jan Wouters, Floris Vanderhaeghe"
+title: "Kiezen van een droogte-indicator voor het NARA"
+author: "Jan Wouters, Katrijn Alaerts, Floris Vanderhaeghe"
 date: '`r paste("Versie",lubridate::now())`'
 link-citations: true
 bibliography: lit_droogtemeetnet.bib
