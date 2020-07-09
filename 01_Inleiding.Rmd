@@ -38,7 +38,7 @@ if (pdfmaken == TRUE) {
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = F,
                 position = "left",
-                font_size = 9,
+                font_size = 12,
                 fixed_thead = T) %>%
   #row_spec(0, angle = -45)  %>% #fixeer veldnamen
   scroll_box(height = "200px")
@@ -73,7 +73,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
                   full_width = TRUE, 
                   position = "left",
-                  font_size = 9,
+                  font_size = 12,
                   fixed_thead = T) 
     #row_spec(0, angle = -45)  %>% #fixeer veldnamen
      # scroll_box(height = "200px") 
@@ -87,7 +87,7 @@ GT-groep 5 bundelt grondwaterafhankelijke HT die zodanig breed gedefinieerd zijn
 Het voordeel van deze groep is dat ze vermoedelijk het snelst op droogte zal reageren.
 Ze houdt echter ook nadelen in, nl. dat je bij het uitzetten van een nieuw punt niet op voorhand weet of het wel grondwaterafhankelijk is en dat sommige typen heel variabel zijn m.b.t. het grondwaterregime.
 We oordelen dat deze nadelen groter zijn dan het mogelijke voordeel van een snelle signalering.
-Deze GT-groep wordt daarom niet meegenomen in de verdere analyse.
+De GT-groep 5 wordt daarom niet meegenomen in de verdere analyse.
 
 Door een stratificatie over de GT-groepen toe te passen kan een balans worden verzekerd. 
 Een stratificatie laat toe om een globale uitspraak te doen.

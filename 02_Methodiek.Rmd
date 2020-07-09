@@ -34,9 +34,9 @@ Deze rasters worden gebruikt in de meetnetten natuurlijk milieu en in het meetne
 In totaal zijn er 262 cellen in Vlaanderen, waarvan 149 volledig in Vlaanderen liggen.
     - Het gewenste totaal aantal meetpunten = `r tot_n_tub `  
 
-- We willen daarenboven ook gestratificeerd werken volgens de 5-delige GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden.
+- We willen daarenboven ook gestratificeerd werken volgens de GT-groepsindeling, om zo te verzekeren dat elke GT-groep voldoende gemonitord zal worden.
 We geven niet alle GT-groepen een even groot gewicht. Vegetatietypen van GT-klasse 5 worden niet meegenomen. 
-Van deze GT-klasse is immers de grondwaterafhankelijkheid plaatsgebonden en (soms heel) variabel.
+Van deze GT-klasse is immers de grondwaterafhankelijkheid plaatsgebonden en (soms heel) variabel (zie hoofdstuk \@ref(inleiding)).
 De twee natste GT-klassen krijgen een lager gewicht toegemeten, omdat deze klassen vermoedelijk het traagst een droogte-signaal zullen geven. 
 
 Concreet:
@@ -54,7 +54,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
                   full_width = TRUE, 
                   position = "left",
-                  font_size = 9,
+                  font_size = 12,
                   fixed_thead = T) 
     #row_spec(0, angle = -45)  %>% #fixeer veldnamen
      # scroll_box(height = "200px") 
@@ -86,9 +86,9 @@ Figuur \@ref(fig:workflow-rastercellen) geeft een schematisch overzicht van de g
 
 ```{r workflow-rastercellen, fig.cap='(ref:workflow-rastercellen)'}
 if (pdfmaken == TRUE) {
-  include_graphics(path = file.path("figures", "workflow_rasterselectie_pdf.jpg"))  
+  include_graphics(path = file.path("figures", "meetnet", "workflow_rasterselectie_pdf.jpg"))  
 } else {
-  include_graphics(path = file.path("figures", "workflow_rasterselectie.png"))
+  include_graphics(path = file.path("figures", "meetnet", "workflow_rasterselectie.png"))
 }
 ```
 
@@ -113,10 +113,10 @@ Figuur \@ref(fig:workflow-selectiepb-part1) geeft een schematisch overzicht van 
 
 ```{r workflow-selectiepb-part1, fig.cap='(ref:workflow-selectiepb1)'}
 if (pdfmaken == TRUE) {
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet", 
                                     "workflow_pbselectie_part1_pdf.jpg"))
 } else {
-  include_graphics(path = file.path("figures", "workflow_pbselectie_part1.png"))
+  include_graphics(path = file.path("figures", "meetnet", "workflow_pbselectie_part1.png"))
 }
 ```
 
@@ -232,11 +232,11 @@ Het gebruik van deze criteria leidt er ook toe dat in een rastercel bij de toewi
 
 
 ```{r voorbeeld-selectie-part1, fig.cap="Cijfervoorbeeld van de gevolgde workflow bij de selectie", , fig.width=8, fig.height=8, eval = FALSE}
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet", 
                                     "voorbeeld_selectie_part1.png")) 
 ```
 ```{r voorbeeld-selectie-part2, fig.cap="Cijfervoorbeeld van de gevolgde workflow bij de selectie (vervolg)", fig.width=8, fig.height=8, eval = FALSE}
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet", 
                                     "voorbeeld_selectie_part2.png")) 
 ```
 
@@ -250,13 +250,16 @@ In dit project willen we deze analysetechniek toepassen op grondwatermeetreeksen
 * het verlengen of invullen van te korte of onregelmatige grondwaterstandsreeksen
 * het opsporen van lineaire trends
 
-Het eerste doel is ook al hoger ter sprake gekomen. 
-Slagen we er in om op een betrouwbare wijze de waterstandsreeksen te verlengen/vervolledigen, dan kan een meetpunt geschikt worden om in het droogtemeetnet opgenomen te worden. 
-De tijdreeksen krijgen ook een meer uniforme lengte, waardoor het afleiden van een droogte-indicator meer gestandaardiseerd wordt.
+Het eerste doel is ook al hoger ter sprake gekomen: voor het berekenen en evalueren van indicatoren is het nodig te kunnen beschikken over relatief lange meetreeksen. 
+We zoeken meetreeksen die aanvangen in 1985 of eerder.
+Slagen we er in om op een betrouwbare wijze de reeksen vanaf 1985 te verlengen/vervolledigen, dan kan een meetpunt geschikt worden om in het droogtemeetnet opgenomen te worden. 
+De tijdreeksen krijgen ook een uniforme lengte, waardoor het opvolgen van de evolutie van de droogte-indicator over de jaren heen meer betekenis krijgt.
 
-Het tweede doel is in feite een bijkomende selectiecriterium. Indien uit een tijdreeksanalyse blijkt dat de waterstanden van een meetpunt systematisch dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
-Met een systematische daling of stijging bedoelen we een lineaire trend die niet door externe factoren (opstuwen of graven greppels, waterwinning) kan verklaard worden. 
-Indien een tijdreeks een lineaire trend vertoont, wordt het meetpunt als momenteel ongeschikt beschouwd.
+Het tweede doel is in feite een bijkomend selectiecriterium. 
+Indien uit een tijdreeksanalyse blijkt dat, na rekening te houden met zoveel mogelijk factoren (maar in de praktijk enkel met het weer), de niet door het weer verklaarde component van de waterstanden van een meetpunt geleidelijk aan dalen of stijgen, leent dat meetpunt zich niet goed voor het berekenen van een droogte-indicator. 
+Het is immers in dergelijke gevallen moeilijk om nieuwe metingen te interpreteren, omdat we niet weten in welke mate de oorzaak van de lineaire trend (zelfs als is de oorzaak bekend) de peilen nog beïnvloedt. 
+Indien een tijdreeks een lineaire trend vertoont, wordt het meetpunt daarom als momenteel ongeschikt beschouwd.
+Een tijdreeks mag daarentegen wel een sprong in de tijd vertonen, omdat een tijdreeks voor een eenmalige gebeurtenis met een kortstondig effect kan gecorrigeerd worden. 
 
 Voor de tijdreeksanalyse doen we beroep op het computerprogramma Menyanthes [@RN5899]. 
 Voor het samenstellen van de verklarende reeksen (neerslag en evapotranspiratie) werd beroep gedaan op de data van de meetstations beheerd door KMI, VMM, HIC en KNMI. 
@@ -268,11 +271,16 @@ Het is, door het hoge aantal beschikbare meetpunten, echter niet doenbaar om een
 Wel werden alle meetreeksen van de meetpunten die behoren tot rastercellen van cat. 1 en cat. 2 geanalyseerd. 
 Voor categorie 3 bleef dat beperkt tot die meetpunten die behoren tot de hoogste kwaliteitsklassen die nodig zijn om tot het gewenst aantal meetpunten te komen.
 
-Een meetreeks werd weerhouden als er een tijdsmodel kon voor samengesteld worden dat minstens 66% van de variatie in de waargenomen peilen (cfr. EVP, explained variance percentage, in de Menyanthes-software) kon verklaren en ook geen significante lineaire trend vertoont. 
-Bij het tijdsmodel werden uitsluitend neerslag- en evapotranspiratiedata als verklarende reeksen gebruikt. 
+Een meetreeks werd weerhouden onder twee voorwaarden: 
 
-Minstens twee derden van het peilverloop dient dus verklaard te kunnen worden door het weer.
-Eén derde kan/mag door andere factoren beïnvloed worden (bijv. het naburige peil van een waterloop).
+1. Een tijdsmodel met uitsluitend neerslag- en evapotranspiratiedata als verklarende reeksen kan minstens 66% van de variatie in de waargenomen peilen (cfr. EVP, explained variance percentage, in de Menyanthes-software) verklaren.
+2. De tijdreeks, na rekening te houden met neerslag en evapotranspiratie of eventueel andere factoren (bijv. het peil van een naburige waterloop), vertoont geen significante lineaire trend. 
+
+Minstens twee derde van het peilverloop dient dus verklaard te kunnen worden door het weer.
+Een derde kan/mag door andere factoren beïnvloed worden (bijv. het peil van een naburige waterloop, bemaling, ...).
+Deze voorwaarde is veeleer uit pragmatisch oogpunt opgelegd. 
+We beschikten immers voor de kandidaat-peilbuizen voor de externe factoren nooit over voldoende gegevens, zijnde dagelijkse metingen voor een periode van meer dan 30 jaar (1985 - 2018).
+Hierdoor was het niet mogelijk een tijdsmodel voor die periode samen te stellen.
 
 Een [lineaire trend]{#lintrend} werd als significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `se`), voldoet één van de volgende twee regels:
 
@@ -282,7 +290,7 @@ $$trend + 1.96* se < -1(cm/jaar)$$
 Er is dan 2.5% kans een trendwaarde die groter resp. kleiner is ten onrechte als een significante trend te bestempelen.
 
 De kwaliteit van een tijdreeks kan na een tijdreeksanalyse anders beoordeeld worden. 
-Bijvoorbeeld een meetpunt met veel peilmetingen, die echter een duidelijke lineaire trend vertonen, is weinig geschikt om onmiddellijk in het meetnet te worden opgenomen.
+Bijvoorbeeld een meetpunt met veel peilmetingen, die echter een duidelijke lineaire trend vertonen, is niet geschikt om onmiddellijk in het meetnet te worden opgenomen.
 Anderzijds komt een meetpunt met minder metingen, maar waarvoor een goed model kan gebouwd worden (zonder lineaire trend), wel in aanmerking om nu reeds in het meetnet te worden opgenomen.
 
 Bij de modelselectie kwam toch ook nog expertoordeel bij kijken. 
@@ -368,10 +376,10 @@ Figuur \@ref(fig:workflow-selectiepb-part2) geeft schematisch het overzicht van 
 
 ```{r workflow-selectiepb-part2, fig.cap='(ref:workflow-selectiepb2)'}
 if (pdfmaken == TRUE) {
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet",
                                     "workflow_pbselectie_part2_pdf.jpg"))
 } else {
-  include_graphics(path = file.path(".","figures", 
+  include_graphics(path = file.path(".","figures", "meetnet", 
                                     "workflow_pbselectie_part2.png"))
 }
 ```
@@ -395,8 +403,6 @@ De indicator kleurt respectievelijk rood, oranje of geel op een bepaalde plaats 
 _**De indicator kleurt respectievelijk rood, oranje of geel voor Vlaanderen als minstens de helft van de putten kleurcode rood, oranje of geel heeft. (vraag: is dit ook aangewezen voor dit meetnet ?). **_
 
 ### Berekeningswijze voor de geselecteerde punten 
-Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van **_minimaal 30 jaren lang_**, al dan niet gemodelleerde, metingen en waarbij metingen van 2017 en 2018 uitgesloten werden. 
-Het is namelijk nu nog onduidelijk of de actuele vegetatie geen nadelige effecten van deze twee droge zomers heeft gekend (door naijling).
+Voor het berekenen van de droogte-indicator doen we beroep op tijdreeksen van 1985 tot en met 2015, met al dan niet gemodelleerde, metingen. 
+De recentste jaren (2016-2020) worden niet meegenomen, omdat het nu nog onduidelijk is hoe de actuele vegetatie hierop reageert (door naijling).
 Voor elke bestaande geselecteerde meetlocatie wordt dan voor elke dag van het groeiseizoen (1 april - 1 oktober) de p10, p20 en p30 percentielwaarde berekend.
-
-

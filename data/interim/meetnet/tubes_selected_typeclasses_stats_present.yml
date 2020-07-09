@@ -1,0 +1,38 @@
+..generic:
+  git2rdata: 0.2.1
+  optimize: yes
+  NA string: NA
+  sorting:
+  - target_groupnr
+  - habitatgroep
+  hash: 6ac59bf1c6e40dce8d578d45be816e2ff4cb6c1d
+  data_hash: c3e5d5e896c10c99a4b3aaa02c642c4b1984c80f
+target_groupnr:
+  class: numeric
+habitatgroep:
+  class: factor
+  labels:
+  - Kust- en zilte habitats
+  - Kustduinen
+  - Binnenlandse duinen
+  - Zoete en brakke wateren
+  - Heiden
+  - Thermofiel struikgewas
+  - (Half-)natuurlijke graslanden
+  - Moerassen
+  - Rotsachtige habitats en grotten
+  - Bossen en struwelen
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  ordered: no
+aandeel:
+  class: numeric

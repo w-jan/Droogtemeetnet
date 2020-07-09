@@ -1,8 +1,0 @@
-loc_code	groupnr	rasterid	rankclus	rankclus_lastyear	rankclus_nryears	beschikbaar_aantal_cluster	gew_aantal_meetptn	n	selectie	area_code	area_name	x	y	loc_validitycode	loc_validity	loc_typecode	loc_typename	filterdepth	soilsurf_ost	typegroup_name	lastyear	nryears	firstyear	obswell_statecode	obswell_state	measuringref_ost	tubelength	filterlength
-BTRP001	4	25	1	1	1	1	1	1	1	BTR	Bos ter Rijst	101924	164018	2	1	1	2	2.02	68.02	14	2019	100	2003	4	2	68.17	2.32	0.3
-BUCP010	3	818	1	1	1	1	1	1	-1	BUC	Buckenslinde	229690	170679	2	1	1	2	1.33	0	13	0	0	2003	4	2	0.57	3.8	3.8
-COOP001	1	233	1	1	1	1	1	1	1	COO	Coolhembos	146113	196127	2	1	1	2	1.25	1.96	11	2019	100	2006	3	1	2.56	2	0.3
-DPBP007	2	306	1	1	1	1	1	1	-1	DPB	Diepenbeek	221649	179772	2	1	1	2	2.01	-0.55	12	0	0	NA	3	1	0	2.76	0.4
-KBRP060	2	233	1	1	1	1	1	1	1	KBR	Polders van Kruibeke	145448	202168	2	1	1	2	1.89	1.693	12	2019	100	2003	3	1	2.233	2.68	0.5
-KEVP015	3	114	1	1	1	1	1	1	-1	KEV	De Kevie	229074	163350	2	1	1	2	2.2	86.13	13	0	0	NA	4	2	86.84	2.91	0
-SWPP032	4	537	1	1	1	1	1	1	1	SWP	Scheldemeersen Wortegem-Petege	94675	169402	2	1	1	2	1.53	10.09	14	2019	100	2010	3	1	10.47	2.06	0.3

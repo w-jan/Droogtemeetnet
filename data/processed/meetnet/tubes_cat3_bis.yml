@@ -1,0 +1,35 @@
+..generic:
+  git2rdata: 0.2.1
+  optimize: yes
+  NA string: NA
+  sorting: loc_code
+  hash: 11713d464ac606a88adc933803108903216a108f
+  data_hash: 8f5ce52c0874e66b605c28f1504765f17f717331
+unieknr:
+  class: integer
+loc_code:
+  class: character
+rasterid:
+  class: integer
+groupnr:
+  class: numeric
+rankclus:
+  class: integer
+rankclus_lastyear:
+  class: numeric
+rankclus_nryears:
+  class: numeric
+beschikbaar_aantal_cluster:
+  class: integer
+gew_aantal_meetptn:
+  class: numeric
+'n':
+  class: integer
+selectie:
+  class: numeric
+lastyear:
+  class: numeric
+nryears:
+  class: numeric
+firstyear:
+  class: integer

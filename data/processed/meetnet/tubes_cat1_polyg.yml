@@ -1,0 +1,38 @@
+..generic:
+  git2rdata: 0.2.1
+  optimize: yes
+  NA string: NA
+  sorting:
+  - rasterid
+  - type
+  - polygon_id
+  hash: f2c48808ccacbd9cc4a5d0a1ad9abd035e7afa5d
+  data_hash: f3c097a7f8ffac89105b8dcdff66f5692fffa62b
+unieknr:
+  class: numeric
+polygon_id:
+  class: character
+description_orig:
+  class: character
+description:
+  class: character
+source:
+  class: character
+phab:
+  class: numeric
+certain:
+  class: logical
+type:
+  class: character
+groupnr:
+  class: integer
+typegroup_name:
+  class: character
+rasterid:
+  class: integer
+opp:
+  class: integer
+geselecteerd_basis:
+  class: numeric
+geselecteerd_reserve:
+  class: numeric
