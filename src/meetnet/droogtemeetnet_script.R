@@ -94,6 +94,12 @@ if (params$refresh_data == 2) {
   rm(output_vc)
 }
 
+if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data >= 1 ) {
+  drive_download(drive_get(id = "13mon4WXdWVIAOjGLBts_S2Jl4lqzrCG5"), 
+                 path = normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg")), overwrite = 
+                   TRUE)
+}
+
 if (params$refresh_data == 2) {
   habmap_terr <- read_habitatmap_terr(file = "20_processed/habitatmap_terr/habitatmap_terr_inclbos.gpkg")
   
@@ -2617,3 +2623,5 @@ tubes_current_GT <- gw_types_groups %>%
          n2 = sum(n)) %>% 
   ungroup %>% 
   mutate (act_inzetbaar2 = ifelse(gew_aantal2 > 0, round(n2/gew_aantal2*100), NA))
+
+
