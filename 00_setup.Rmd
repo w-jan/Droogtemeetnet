@@ -98,7 +98,7 @@ uitgesloten_tubes <- c("HAGP018", "WALP101") #pb van een peilbuiskoppel
 ```
 
 ```{r read-databases, include= FALSE}
-if (params$refresh_data == 2) {
+if (params$refresh_data >= 1) {
   gw_types <- read_scheme_types(lang = "nl") %>%
       filter(scheme == "GW_05.1_terr") %>%
       arrange(typegroup) %>%
@@ -149,9 +149,6 @@ if (params$refresh_data == 2) {
   habmap_polygons_gw <- sf::st_make_valid(habmap_polygons_gw)
   
   #wegschrijven als geopackage
-  datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
-  dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
-  
   st_write(habmap_polygons_gw,
            file.path(datapath, 
                      "GIS/VoorR/habmap_terr_gw.gpkg"), 
