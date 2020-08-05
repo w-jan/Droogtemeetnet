@@ -72,32 +72,32 @@ for (i in seq (from = 1, to = 23)){
 }
 
 # check <- ruwedata %>% filter(meetpunt == "LAVP080")
-tubes_selected <- read_vc(file.path(".","data","tubes_selected"))
+tubes_selected <- read_vc(file.path(".","data","result","meetnet", "tubes_selected"))
 
 tubes_indicator <- tubes_selected %>% 
   filter(selectie == 1) %>% 
   dplyr::select(loc_code, groupnr)
 
 #linken van de metingen aan een gw-groep
-tubes_in_raster <- read_vc(file.path(".","data","tubes_in_raster"))
+tubes_in_raster <- read_vc(file.path(".","data","processed","meetnet","tubes_in_raster"))
 tubes_gw <- tubes_in_raster %>% 
   dplyr::select(loc_code, groupnr)
-ruwedata <- ruwedata %>% 
-  left_join(tubes_gw, by = c("meetpunt" = "loc_code")) #left_join om te testen
-
-check <- ruwedata %>% 
-  filter(is.na(groupnr))
-summary(ruwedata)
-checkpb <- ruwedata_test %>% 
-  distinct(meetpunt)
-checkpb <- checkpb %>% 
-  mutate(in_indicator = 1)
-
-check_cross <- tubes_selected %>% 
-  full_join(checkpb, by= c("loc_code" = "meetpunt"))
-
-check_cross_nieuwepb <- check_cross %>% 
-  filter(selectie == 1 & is.na(in_indicator))
+# ruwedata <- ruwedata %>% 
+#   left_join(tubes_gw, by = c("meetpunt" = "loc_code")) #left_join om te testen
+# 
+# check <- ruwedata %>% 
+#   filter(is.na(groupnr))
+# summary(ruwedata)
+# checkpb <- ruwedata_test %>% 
+#   distinct(meetpunt)
+# checkpb <- checkpb %>% 
+#   mutate(in_indicator = 1)
+# 
+# check_cross <- tubes_selected %>% 
+#   full_join(checkpb, by= c("loc_code" = "meetpunt"))
+# 
+# check_cross_nieuwepb <- check_cross %>% 
+#   filter(selectie == 1 & is.na(in_indicator))
 
 #verwijderen van oude geselecteerde pb uit de ruwe data
 ruwedata <- ruwedata %>% 
@@ -108,7 +108,7 @@ ruwedata <- ruwedata %>%
 rm(list = sprintf("ruwedata%02d", seq(from = 1, to = 21)))
 
 
-ruwedate <-  ruwedata %>% 
+ruwedata <-  ruwedata %>% 
   mutate(jaar = year(dag),
          meetpunt = factor(meetpunt)) %>% 
   filter(meetpunt_import != meetreeks, jaar >= 1985) %>%  #uitsluiten van niet gesimuleerde meetreeksen (veldmetingen zitten namelijk in de simuleerde reeksen)
@@ -160,7 +160,7 @@ absperc_gw <- absperc %>%
          meetpunt = factor(meetpunt)
          )
 
-write_vc(absperc_gw, file.path("data", "result", "percentielen_1985_2015"), sorting = c("meetpunt"), strict = FALSE)
+write_vc(absperc_gw, file.path("data", "result", "indicator_nara", "percentielen_1985_2015"), sorting = c("meetpunt"), strict = FALSE)
 
 schrikkeljaar <- ruwedata %>% 
   filter(meetpunt == 
@@ -582,7 +582,7 @@ indic_cum_function <- function(modeldata, respons, percentile, indicatorname, st
   resultname_stat <- paste0("indic_cum_p", percentile,"_jaar_stat", if (standardised == TRUE) ("_std"))
   resultname_fitted <- paste0("indic_cum_p", percentile,"_fitted", if (standardised == TRUE) ("_std"))
   if (percentile == "01") {
-    reeks <- c(1, 3, 7:8, 11:12, 17:18) #12 modellen wilde maar niet convergeren
+    reeks <- c(1:3, 5:8, 11:14) #9 modellen wilde maar niet convergeren
   } else {
     reeks <- c(1:20)    
   }
@@ -883,7 +883,7 @@ indic_cum_basis<- indic_cum_basis %>%
   left_join(indic_cum_basis_01 %>% dplyr::select(1:3, starts_with("p01")), by = c("meetpunt", "simulatienr", "jaar"))
 
 #bewaren resultaat
-write_vc(indic_cum_basis, file.path("data", "result", "indic_cum_basis"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
+write_vc(indic_cum_basis, file.path("data", "result", "indicator_nara", "indic_cum_basis"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
 
 # Toepassen van formule Rubin 1987 voor de multiple imputaties door het Menyanthes-model
 
@@ -904,8 +904,8 @@ indic_cum_p01_finaal <- indic_cum_p01_jaar_stat %>%
             # sd_jaar = sd_jaar_biased + (20 + 1)/20 * sum((gem_jaar - mean)^2)/(20 - 1),
             # og_jaar = gem_jaar - 1.96 * sd_jaar,
             # bg_jaar = gem_jaar + 1.96 * sd_jaar
-            og_jaar = gem_og - 1.96 * (12 + 1)/12 * sum((gem_og - p02.5)^2) / (12 - 1), #7 simulatieruns convergeerden niet
-            bg_jaar = gem_bg + 1.96 * (12 + 1)/12 * sum((gem_bg - p97.5)^2) / (12 - 1)            
+            og_jaar = gem_og - 1.96 * (11 + 1)/11 * sum((gem_og - p02.5)^2) / (11 - 1), #7 simulatieruns convergeerden niet
+            bg_jaar = gem_bg + 1.96 * (11 + 1)/11 * sum((gem_bg - p97.5)^2) / (11 - 1)            
   ) %>% 
   ungroup() %>% 
   inner_join(indic_cum_gem, by = "jaar")
@@ -913,19 +913,19 @@ indic_cum_p01_finaal <- indic_cum_p01_jaar_stat %>%
 #plot van de trend
 #debugonce(plottrend)
 gplot <- plottrend(indic_cum_p01_finaal,"lengte_onder_p01_mean", 0)
-png(paste0(file.path("figures", "indicator", "lengte_onder_p01"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara", "lengte_onder_p01"),"_trend",".png"))
 gplot
 dev.off()
 
 # debugonce("plotfitting")
 fig <- plotfitting(indic_basis = indic_cum_basis, respons = "lengte_onder_p01", gemid = "p01_mean_fitted", og = p01_p02.5_fitted, bg = p01_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","lengte_onder_p01"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","lengte_onder_p01"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_cum_p01_finaal, file.path("data", "result", "indic_cum_p01_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_cum_p01_jaar_stat, file.path("data", "result", "indic_cum_p01_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_cum_p01_finaal, file.path("data", "result", "indicator_nara", "indic_cum_p01_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_cum_p01_jaar_stat, file.path("data", "result", "indicator_nara", "indic_cum_p01_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 indic_cum_p05_finaal <- indic_cum_p05_jaar_stat %>% 
   group_by(jaar) %>% 
@@ -944,20 +944,20 @@ indic_cum_p05_finaal <- indic_cum_p05_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_cum_p05_finaal,"lengte_onder_p05_mean",0)
-png(paste0(file.path("figures", "indicator","lengte_onder_p05"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","lengte_onder_p05"),"_trend",".png"))
 gplot
 dev.off()
 
 
 fig <- plotfitting(indic_basis = indic_cum_basis, respons = "lengte_onder_p05", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","lengte_onder_p05"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","lengte_onder_p05"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 
 #bewaren resultaten
-write_vc(indic_cum_p05_finaal, file.path("data", "result", "indic_cum_p05_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_cum_p05_jaar_stat, file.path("data", "result", "indic_cum_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_cum_p05_finaal, file.path("data", "result", "indicator_nara", "indic_cum_p05_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_cum_p05_jaar_stat, file.path("data", "result", "indicator_nara", "indic_cum_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 
 indic_cum_p10_finaal <- indic_cum_p10_jaar_stat %>% 
@@ -977,20 +977,20 @@ indic_cum_p10_finaal <- indic_cum_p10_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_cum_p10_finaal,"lengte_onder_p10_mean",0)
-png(paste0(file.path("figures", "indicator","lengte_onder_p10"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","lengte_onder_p10"),"_trend",".png"))
 gplot
 dev.off()
 
 
 fig <- plotfitting(indic_basis = indic_cum_basis, respons = "lengte_onder_p10", gemid = "p10_mean_fitted", og = p10_p02.5_fitted, bg = p10_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","lengte_onder_p10"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","lengte_onder_p10"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 
 #bewaren resultaten
-write_vc(indic_cum_p10_finaal, file.path("data", "result", "indic_cum_p10_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_cum_p10_jaar_stat, file.path("data", "result", "indic_cum_p10_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_cum_p10_finaal, file.path("data", "result",  "indicator_nara", "indic_cum_p10_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_cum_p10_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_cum_p10_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 
 indic_cum_p30_finaal <- indic_cum_p30_jaar_stat %>% 
@@ -1010,19 +1010,19 @@ indic_cum_p30_finaal <- indic_cum_p30_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_cum_p30_finaal,"lengte_onder_p30_mean",0)
-png(paste0(file.path("figures", "indicator","lengte_onder_p30"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","lengte_onder_p30"),"_trend",".png"))
 gplot
 dev.off()
 
 
 fig <- plotfitting(indic_basis = indic_cum_basis, respons = "lengte_onder_p30", gemid = "p30_mean_fitted", og = p30_p02.5_fitted, bg = p30_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","lengte_onder_p30"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","lengte_onder_p30"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_cum_p30_finaal, file.path("data", "result", "indic_cum_p30_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_cum_p30_jaar_stat, file.path("data", "result", "indic_cum_p30_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_cum_p30_finaal, file.path("data", "result",  "indicator_nara", "indic_cum_p30_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_cum_p30_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_cum_p30_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 
 
@@ -1481,7 +1481,7 @@ respons <- paste0(indicatorname, if (standardised == TRUE) ("_std"))
 indic_abs_basis <- indic_abs_function(modeldata = modeldata, respons = respons, percentile = percentile, indicatorname = indicatorname, standardised = standardised)
 
 #bewaren resultaat
-write_vc(indic_abs_basis, file.path("data", "result", "indic_abs_basis"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
+write_vc(indic_abs_basis, file.path("data", "result",  "indicator_nara", "indic_abs_basis"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
 
 #berekenen van indicator
 indic_abs_gem <- indic_abs_basis %>% 
@@ -1521,18 +1521,18 @@ indic_abs_p01_finaal <- indic_abs_p01_jaar_stat %>%
 #   labs(x = "Jaar", y = "trend")
 
 gplot <- plottrend(indic_abs_p01_finaal,"dag_onder_p01_mean",4)
-png(paste0(file.path("figures", "indicator","dag_onder_p01"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p01"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis, respons = "dag_onder_p01", gemid = "p01_mean_fitted", og = p01_p02.5_fitted, bg = p01_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p01"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p01"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p01_finaal, file.path("data", "result", "indic_abs_p01_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_abs_p01_jaar_stat, file.path("data", "result", "indic_abs_p01_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_abs_p01_finaal, file.path("data", "result",  "indicator_nara", "indic_abs_p01_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_abs_p01_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_abs_p01_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 # check <- indic_abs_basis %>% 
 #   filter(jaar == 1988)
@@ -1558,18 +1558,18 @@ indic_abs_p05_finaal <- indic_abs_p05_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_abs_p05_finaal,"dag_onder_p05_mean", 18)
-png(paste0(file.path("figures", "indicator","dag_onder_p05"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p05"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis, respons = "dag_onder_p05", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p05"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p05"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p05_finaal, file.path("data", "result", "indic_abs_p05_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_abs_p05_jaar_stat, file.path("data", "result", "indic_abs_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_abs_p05_finaal, file.path("data", "result",  "indicator_nara", "indic_abs_p05_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_abs_p05_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_abs_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 indic_abs_p10_finaal <- indic_abs_p10_jaar_stat %>% 
   group_by(jaar) %>% 
@@ -1588,18 +1588,18 @@ indic_abs_p10_finaal <- indic_abs_p10_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_abs_p10_finaal,"dag_onder_p10_mean", 36)
-png(paste0(file.path("figures", "indicator","dag_onder_p10"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p10"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis, respons = "dag_onder_p10", gemid = "p10_mean_fitted", og = p10_p02.5_fitted, bg = p10_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p10"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p10"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p10_finaal, file.path("data", "result", "indic_abs_p10_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_abs_p10_jaar_stat, file.path("data", "result", "indic_abs_p10_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_abs_p10_finaal, file.path("data", "result",  "indicator_nara", "indic_abs_p10_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_abs_p10_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_abs_p10_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 indic_abs_p30_finaal <- indic_abs_p30_jaar_stat %>% 
   group_by(jaar) %>% 
@@ -1619,18 +1619,18 @@ indic_abs_p30_finaal <- indic_abs_p30_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_abs_p30_finaal,"dag_onder_p30_mean",110)
-png(paste0(file.path("figures", "indicator","dag_onder_p30"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p30"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis, respons = "dag_onder_p30", gemid = "p30_mean_fitted", og = p30_p02.5_fitted, bg = p30_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p30"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p30"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p30_finaal, file.path("data", "result", "indic_abs_p30_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_abs_p30_jaar_stat, file.path("data", "result", "indic_abs_p30_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_abs_p30_finaal, file.path("data", "result",  "indicator_nara", "indic_abs_p30_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_abs_p30_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_abs_p30_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 bladwijzer_rel <- function(x){x}
 
@@ -1653,7 +1653,7 @@ indic_rel_percentiel <- indic_rel_basis %>%
             ) %>% 
   ungroup
 
-write_vc(indic_rel_percentiel, file.path("data", "result", "indic_rel_percentiel"), sorting = c("meetpunt","simulatienr", "daginjaar_corr"), strict = FALSE)
+write_vc(indic_rel_percentiel, file.path("data", "result",  "indicator_nara", "indic_rel_percentiel"), sorting = c("meetpunt","simulatienr", "daginjaar_corr"), strict = FALSE)
 
 indic_rel <- indic_rel_basis %>% 
   inner_join(indic_rel_percentiel %>% dplyr::select(-aantal), by = c("meetpunt", "simulatienr", "daginjaar_corr")) %>% 
@@ -1675,7 +1675,7 @@ indic_rel <- indic_rel_basis %>%
 
 indic_rel <- indic_rel %>% filter (jaar < 2019)
 
-write_vc(indic_rel, file.path("data", "result", "indic_rel"), sorting = c("jaar", "meetpunt","simulatienr"), strict = FALSE)
+write_vc(indic_rel, file.path("data", "result",  "indicator_nara", "indic_rel"), sorting = c("jaar", "meetpunt","simulatienr"), strict = FALSE)
 
 checkdistributie <- indic_rel %>% 
   filter(jaar <= 2000, meetpunt == "ASBP003") %>% 
@@ -2033,7 +2033,7 @@ respons <- paste0(indicatorname, if (standardised == TRUE) ("_std"))
 indic_rel <- indic_rel_function(modeldata = modeldata, respons = respons, percentile = percentile, indicatorname = indicatorname, standardised = standardised)
 
 #wegschrijven resultaat
-write_vc(indic_rel, file.path("data", "result", "indic_rel"), sorting = c("jaar", "meetpunt","simulatienr"), strict = FALSE)
+write_vc(indic_rel, file.path("data", "result",  "indicator_nara", "indic_rel"), sorting = c("jaar", "meetpunt","simulatienr"), strict = FALSE)
 
 #berekenen van indicator
 indic_rel_gem <- indic_rel %>% 
@@ -2072,19 +2072,19 @@ indic_rel_p01_finaal <- indic_rel_p01_jaar_stat %>%
 #   labs(x = "Jaar", y = "trend")
 
 gplot <- plottrend(indic_rel_p01_finaal,"rdag_onder_p01_mean",4)
-png(paste0(file.path("figures", "indicator","rdag_onder_p01"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","rdag_onder_p01"),"_trend",".png"))
 gplot
 dev.off()
 
 
 fig <- plotfitting(indic_basis = indic_rel, respons = "rdag_onder_p01", gemid = "p01_mean_fitted", og = p01_p02.5_fitted, bg = p01_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","rdag_onder_p01"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","rdag_onder_p01"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_rel_p01_finaal, file.path("data", "result", "indic_rel_p01_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_rel_p01_jaar_stat, file.path("data", "result", "indic_rel_p01_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_rel_p01_finaal, file.path("data", "result",  "indicator_nara", "indic_rel_p01_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_rel_p01_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_rel_p01_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 
 indic_rel_p05_finaal <- indic_rel_p05_jaar_stat %>% 
@@ -2104,18 +2104,18 @@ indic_rel_p05_finaal <- indic_rel_p05_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_rel_p05_finaal,"rdag_onder_p05_mean",18)
-png(paste0(file.path("figures", "indicator","rdag_onder_p05"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","rdag_onder_p05"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_rel, respons = "rdag_onder_p05", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","rdag_onder_p05"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","rdag_onder_p05"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_rel_p05_finaal, file.path("data", "result", "indic_rel_p05_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_rel_p05_jaar_stat, file.path("data", "result", "indic_rel_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_rel_p05_finaal, file.path("data", "result",  "indicator_nara", "indic_rel_p05_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_rel_p05_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_rel_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 
 indic_rel_p10_finaal <- indic_rel_p10_jaar_stat %>% 
@@ -2136,18 +2136,18 @@ indic_rel_p10_finaal <- indic_rel_p10_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_rel_p10_finaal,"rdag_onder_p10_mean",36)
-png(paste0(file.path("figures", "indicator","rdag_onder_p10"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","rdag_onder_p10"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_rel, respons = "rdag_onder_p10", gemid = "p10_mean_fitted", og = p10_p02.5_fitted, bg = p10_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","rdag_onder_p10"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","rdag_onder_p10"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_rel_p10_finaal, file.path("data", "result", "indic_rel_p10_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_rel_p10_jaar_stat, file.path("data", "result", "indic_rel_p10_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_rel_p10_finaal, file.path("data", "result",  "indicator_nara", "indic_rel_p10_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_rel_p10_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_rel_p10_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 
 indic_rel_p30_finaal <- indic_rel_p30_jaar_stat %>% 
@@ -2167,18 +2167,18 @@ indic_rel_p30_finaal <- indic_rel_p30_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_rel_p30_finaal,"rdag_onder_p30_mean", 110)
-png(paste0(file.path("figures", "indicator","rdag_onder_p30"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","rdag_onder_p30"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_rel, respons = "rdag_onder_p30", gemid = "p30_mean_fitted", og = p30_p02.5_fitted, bg = p30_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","rdag_onder_p30"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","rdag_onder_p30"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_rel_p30_finaal, file.path("data", "result", "indic_rel_p30_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_rel_p30_jaar_stat, file.path("data", "result", "indic_rel_p30_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_rel_p30_finaal, file.path("data", "result",  "indicator_nara", "indic_rel_p30_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_rel_p30_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_rel_p30_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
 
 
 #opsplitsen per gw-groep
@@ -2368,18 +2368,18 @@ gplot <- ggplot(data = plotdata, aes(x = jaar, y = dag_onder_p05_mean, color = G
   geom_hline(aes(yintercept = 18), linetype = "dotted") +
   scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +  
   labs(x = "Jaar", y = "trend")
-png(paste0(file.path("figures", "indicator","dag_onder_p05"),"_trend_groep",".png"), width = 800)
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p05"),"_trend_groep",".png"), width = 800)
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis_gw, respons = "dag_onder_p05", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p05"),"_tijdreeks_groep",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p05"),"_tijdreeks_groep",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p05_finaal_gw, file.path("data", "result", "indic_abs_p05_finaal_groep"), sorting = c("jaar", "groep3n"), strict = FALSE)
-write_vc(indic_abs_p05_jaar_stat_gw, file.path("data", "result", "indic_abs_p05_jaar_stat_groep"), sorting = c("jaar", "simulatienr", "groep3n"), strict = FALSE)
+write_vc(indic_abs_p05_finaal_gw, file.path("data", "result",  "indicator_nara", "indic_abs_p05_finaal_groep"), sorting = c("jaar", "groep3n"), strict = FALSE)
+write_vc(indic_abs_p05_jaar_stat_gw, file.path("data", "result",  "indicator_nara", "indic_abs_p05_jaar_stat_groep"), sorting = c("jaar", "simulatienr", "groep3n"), strict = FALSE)
 
 indic_abs_p30_finaal_gw <- indic_abs_p30_jaar_stat_gw %>% 
   mutate(groep3n = factor(groep3n)) %>% 
@@ -2410,18 +2410,18 @@ gplot <- ggplot(data = plotdata, aes(x = jaar, y = dag_onder_p30_mean, color = G
   geom_hline(aes(yintercept = 110), linetype = "dotted") +
   scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +  
   labs(x = "Jaar", y = "trend")
-png(paste0(file.path("figures", "indicator","dag_onder_p30"),"_trend_groep",".png"), width = 800)
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p30"),"_trend_groep",".png"), width = 800)
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis_gw, respons = "dag_onder_p30", gemid = "p30_mean_fitted", og = p30_p02.5_fitted, bg = p30_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p30"),"_tijdreeks_groep",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p30"),"_tijdreeks_groep",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p30_finaal_gw, file.path("data", "result", "indic_abs_p30_finaal_groep"), sorting = c("jaar", "groep3n"), strict = FALSE)
-write_vc(indic_abs_p30_jaar_stat_gw, file.path("data", "result", "indic_abs_p30_jaar_stat_groep"), sorting = c("jaar", "simulatienr", "groep3n"), strict = FALSE)
+write_vc(indic_abs_p30_finaal_gw, file.path("data", "result",  "indicator_nara", "indic_abs_p30_finaal_groep"), sorting = c("jaar", "groep3n"), strict = FALSE)
+write_vc(indic_abs_p30_jaar_stat_gw, file.path("data", "result",  "indicator_nara", "indic_abs_p30_jaar_stat_groep"), sorting = c("jaar", "simulatienr", "groep3n"), strict = FALSE)
 
 #enkel voor zeer droge jaren
 modeldata <- indic_abs_basis %>%
@@ -2456,15 +2456,15 @@ indic_abs_p05_droog_finaal <- indic_abs_p05_droog_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_abs_p05_droog_finaal,"dag_onder_p05_mean", 18)
-png(paste0(file.path("figures", "indicator","dag_onder_p05_droog"),"_trend",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p05_droog"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis_droog, respons = "dag_onder_p05", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p05_droog"),"_tijdreeks",".png"))
+png(paste0(file.path("figures", "indicator_nara","dag_onder_p05_droog"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p05_finaal, file.path("data", "result", "indic_abs_p05_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_abs_p05_jaar_stat, file.path("data", "result", "indic_abs_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_abs_p05_finaal, file.path("data", "result",  "indicator_nara", "indic_abs_p05_droog_finaal"), sorting = c("jaar"), strict = FALSE)
+write_vc(indic_abs_p05_jaar_stat, file.path("data", "result",  "indicator_nara", "indic_abs_p05_droog_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
