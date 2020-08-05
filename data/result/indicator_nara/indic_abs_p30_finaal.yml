@@ -1,0 +1,35 @@
+..generic:
+  git2rdata: 0.2.1
+  optimize: yes
+  NA string: NA
+  sorting: jaar
+  hash: 49c079ee44b6ac33e88ba50581235cd3ab84ce81
+  data_hash: cbae72c29524f730e9a2215c3d5719c6b7fe85b3
+jaar:
+  class: numeric
+gem_jaar:
+  class: numeric
+gem_og:
+  class: numeric
+gem_bg:
+  class: numeric
+og_jaar:
+  class: numeric
+bg_jaar:
+  class: numeric
+dag_onder_p01_mean:
+  class: numeric
+dag_onder_p05_mean:
+  class: numeric
+dag_onder_p10_mean:
+  class: numeric
+dag_onder_p30_mean:
+  class: numeric
+dag_onder_p01_median:
+  class: numeric
+dag_onder_p05_median:
+  class: numeric
+dag_onder_p10_median:
+  class: numeric
+dag_onder_p30_median:
+  class: numeric
