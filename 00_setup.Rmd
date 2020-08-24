@@ -57,6 +57,7 @@ if (params$refresh_figures == 2) {
 # lokale gitignored paden aanmaken
 if (!dir.exists("data/local")) dir.create("data/local", recursive = TRUE)
 if (!dir.exists("figures/local")) dir.create("figures/local", recursive = TRUE)
+if (!dir.exists("data/result/meetnet/GIS")) dir.create("data/result/meetnet/GIS", recursive = TRUE)
 
 pdfmaken <- FALSE
 
