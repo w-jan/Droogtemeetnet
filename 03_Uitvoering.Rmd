@@ -1690,7 +1690,7 @@ sel_excess <- sel_cat3_table_bis %>%
   distinct()
 ```
 
-```{r assigning-tubes-grts, cache=TRUE}
+```{r assigning-tubes-grts, cache=params$cache_assigning_tubes_grts}
 #gecached !
 
 sel_excess <- sel_cat3_table_bis %>% 
@@ -1941,7 +1941,7 @@ Via een desktop-analyse zoals hieronder beschreven wordt, kunnen slechts kandida
 De hier gepresenteerde methode volgt een meer pragmatische benadering. 
 Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseerd obv de grondwatergroepen. Elke cel van 32\*32m wordt zo in een van de vijf groepen ingedeeld. Is er voor een bepaalde grondwatergroep een pb gewenst, dan wordt de bijhorende rastercel met het laagste rangnummer gekozen. Deze cel ligt ingebed in een grotere grid van bijv. 1024\*1024. Hierbinnen worden de rastercellen die tot dezelfde gw-groep behoren geselecteerd en gerangschikt volgens oplopend rangnummer. Dit zijn bij voorkeur de alternatieve plaatsen.
 
-```{r selection-polygon-cat1A, cache=TRUE, message=FALSE, warning= FALSE}
+```{r selection-polygon-cat1A, cache=params$cache_selection_polygon_cat1A, message=FALSE, warning= FALSE}
 
  #wat voorbereidende databewerkingen aan de overlay habitatkaart en het raster (grid8)
  habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>%

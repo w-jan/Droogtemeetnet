@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 	eval = TRUE,
 	include = TRUE,
 	echo = FALSE,
-	cache = TRUE,
+	cache = params$cache,
   cache.path = "cache/",
 	dpi = 300
 )
