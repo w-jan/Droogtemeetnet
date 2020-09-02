@@ -1,3 +1,5 @@
+## NOTE ALSO THE EXISTENCE OF CACHE PARAMETERS WHICH CAN BE PASSED (see YAML header)!!
+
 # With both params at their default value defined in the YAML header:
     # Render html_document2 :
 bookdown::render_book("index.Rmd", 

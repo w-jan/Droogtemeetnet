@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 	eval = TRUE,
 	include = TRUE,
 	echo = FALSE,
-	cache = TRUE,
+	cache = params$cache,
   cache.path = "cache/",
 	dpi = 300
 )
@@ -31,6 +31,7 @@ library(tidyverse)
 library(kableExtra)
 library(knitr)
 library(googledrive)
+options(gargle_oauth_email = TRUE)
 library(RSQLite) 
 
 output_format <- ifelse(
@@ -56,6 +57,7 @@ if (params$refresh_figures == 2) {
 # lokale gitignored paden aanmaken
 if (!dir.exists("data/local")) dir.create("data/local", recursive = TRUE)
 if (!dir.exists("figures/local")) dir.create("figures/local", recursive = TRUE)
+if (!dir.exists("data/result/meetnet/GIS")) dir.create("data/result/meetnet/GIS", recursive = TRUE)
 
 pdfmaken <- FALSE
 

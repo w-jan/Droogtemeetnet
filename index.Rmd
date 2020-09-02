@@ -18,6 +18,9 @@ documentclass: book
 params:
   refresh_data: 2
   refresh_figures: 2
+  cache: FALSE
+  cache_assigning_tubes_grts: FALSE
+  cache_selection_polygon_cat1A: FALSE
 output: 
   # bookdown::gitbook: default
     #bookdown::pdf_book: default
