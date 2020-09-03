@@ -26,16 +26,16 @@ library(RSQLite)
 
 #keuzen voor het aanmaken van een document
 #welke data verversen
-# 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
+# 2: alle data worden herberekend, er worden hierbij bestanden gemaakt die in een Google Drive-map worden bewaard ; 1: een herberekening met de data op Google-Drive ; 0: een herberekening met lokale data (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of 2)
 params <- data.frame(refresh_data = 0, refresh_figures = 0)
 params$refresh_data <- 0
 if (params$refresh_data == 2) {
   datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
-  dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+  #dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
 }
 
 #figuren opnieuw aanmaken of inlezen
-# 2: figuren terug aanmaken (en wegschrijven); 1: enkel de huidige google-drive-bestanden downloaden, 0: figuren inlezen
+# 2: figuren terug aanmaken (en wegschrijven); 1:  de figuren worden gedownload van Google-Drive ; 0: gebruik van figuren uit een lokale map (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of 2)
 params$refresh_figures <- 0
 if (params$refresh_figures == 2) {
   figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
@@ -79,7 +79,7 @@ uitgesloten_tubes <- c("HAGP018", "WALP101") #pb van een peilbuiskoppel
 # upgrade_data(path = ".")
 
 #inladen gegevens (niet verplicht, enkel nodig bij updates van de brondata)
-if (params$refresh_data == 2) {
+if (params$refresh_data >= 1) {
   gw_types <- read_scheme_types(lang = "nl") %>%
     filter(scheme == "GW_05.1_terr") %>%
     arrange(typegroup) %>%
@@ -94,13 +94,14 @@ if (params$refresh_data == 2) {
   rm(output_vc)
 }
 
-if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data >= 1 ) {
+#habitatmap_terr_inclbos.gpkg importeren en opslaan in een (lokale) subdirectory van n2khab. Indien het bestand daar niet gevonden wordt, wordt het gedownload van GD. Bij refresh_data-optie=2 wordt het sowieso gedownload (bijv. bij een nieuwere versie)
+if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data = 2 ) {
   drive_download(drive_get(id = "13mon4WXdWVIAOjGLBts_S2Jl4lqzrCG5"), 
                  path = normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg")), overwrite = 
                    TRUE)
 }
 
-if (params$refresh_data == 2) {
+if (params$refresh_data >= 1) {
   habmap_terr <- read_habitatmap_terr(file = "20_processed/habitatmap_terr/habitatmap_terr_inclbos.gpkg")
   
   habmap_polygons <- habmap_terr$habitatmap_terr_polygons
@@ -130,16 +131,13 @@ if (params$refresh_data == 2) {
   
   
   st_write(habmap_polygons_gw,
-           file.path(datapath, 
-                     "GIS/VoorR/habmap_terr_gw.gpkg"), 
+           dsn = file.path(".","data","local", "habmap_terr_gw.gpkg"),
            layer = "habitatmap_terr_polygons_gw", 
            driver = "GPKG",
            delete_dsn = TRUE)
   
   con <- dbConnect(SQLite(),
-                  dbname = file.path(
-                    datapath, 
-                    "GIS/VoorR/habmap_terr_gw.gpkg")
+                  dbname = file.path(".","data","local", "habmap_terr_gw.gpkg")
   )
   
   dbWriteTable(con, "habitatmap_terr_types_gw", habmap_types_gw)
@@ -155,14 +153,10 @@ if (params$refresh_data == 2) {
   
   #wegschrijven van dit grid
   st_write(raster_meetnet_poly,
-           file.path(datapath, 
-                     "GIS/VoorR/raster_meetnet_poly.gpkg"), 
+           dsn = file.path(".","data","local", "raster_meetnet_poly.gpkg"),
            layer = "raster_meetnet_poly", 
            driver = "GPKG",
            delete_dsn = TRUE)
-  
-  
-  
   
   #overlay maken hab-kaart en GRTS-rooster
   habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
@@ -174,8 +168,7 @@ if (params$refresh_data == 2) {
   
   #wegschrijven van deze intersectie
   st_write(habmap_gw_raster_overlay,
-           file.path(datapath, 
-                     "GIS/VoorR/habmap_gw_raster_overlay.gpkg"), 
+           dsn = file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"),
            layer = "habmap_gw_raster_overlay", 
            driver = "GPKG",
            delete_dsn = TRUE)
@@ -194,25 +187,26 @@ if (params$refresh_data == 2) {
     raster::subset(6)
   
   writeRaster(grts_level8,
-              filename = file.path(datapath, "GIS/VoorR/grts_level8.tif"), 
+              filename = file.path(".","data","local", "grts_level8.tif"),
+             # filename = file.path(datapath, "GIS/VoorR/grts_level8.tif"),
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)
   
   writeRaster(grts_level0,
-              filename = file.path(datapath, "GIS/VoorR/grts_level0.tif"), 
+              filename = file.path(".","data","local", "grts_level0.tif"),
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)
   
   writeRaster(grts_level5,
-              filename = file.path(datapath, "GIS/VoorR/grts_level5.tif"), 
+              filename = file.path(".","data","local", "grts_level5.tif"),
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)  
 }
 
-if (params$refresh_data == 2) {
+if (params$refresh_data >= 1) {
   watina <- connect_watina()
   #debugonce("get_locs")
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
@@ -222,10 +216,10 @@ if (params$refresh_data == 2) {
   tubes_hab_basis <-   tubes_hab
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
   vmm_pb <- read_csv(file.path(getwd(), "data","interim", "meetnet", "vmm_indc.csv")) %>% 
-    rename (loc_code = FID_stand,
+    rename(loc_code = FID_stand,
             polygon_id = plygn_d,
             typegroup_name = typgrp_) %>% 
-    mutate (area_code = "VMM",
+    mutate(area_code = "VMM",
             area_name = "Grondwaterstandindicator") %>%
     inner_join(habmap_gw_raster_overlay %>% st_drop_geometry() %>%  
                 dplyr::select(polygon_id, type, groupnr, rasterid, opp), by = c("polygon_id", "groupnr", "type")) %>% as_tibble()
@@ -544,7 +538,20 @@ if (params$refresh_data == 2) {
 }
 #einde inladen
 
+#inlezen van lokale data (alleen van toepassing bij params$refresh_data-optie = 0)
+if (params$refresh_data < 1) {
 gw_types <- read_vc("gw_types", file.path(".","data"))
+
+habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+                              "habitatmap_terr_polygons_gw")
+
+habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+                                            "habitatmap_terr_types_gw"))
+
+raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
+
+habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
+}
 
 gw_types_groups <- gw_types %>%
   distinct(groupnr, typegroup_name) %>% 
@@ -556,13 +563,12 @@ gw_types_groups <- gw_types %>%
 
 # write_csv(gw_types, "lijst_grondwaterafhankelijke_habitattypen_rbbs.csv")
 # write_csv(gw_types_groups, 'grondwatertypen.csv')
-if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | params$refresh_data >= 1) {
-  drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
-                 path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
-}
+# if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | params$refresh_data == 2) {
+#   drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
+#                  path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
+# }
 
-habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
-                              "habitatmap_terr_polygons_gw")
+
 
 
 # write_sf(habmap_polygons_gw, "habmap_gw.shp")
@@ -574,21 +580,19 @@ habmap_polygons_gw <- habmap_polygons_gw %>%
          type = factor(.data$type),
          typegroup_name = factor(.data$typegroup_name)
   )
-habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
-                                            "habitatmap_terr_types_gw"))
+
 
 
 #raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
 
+# 
+# if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | params$refresh_data >= 1 ){
+#   drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
+#                  path = file.path(".","data","local", 
+#                                   "raster_meetnet_poly.gpkg"), overwrite = 
+#                    TRUE)
+# }
 
-if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | params$refresh_data >= 1 ){
-  drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
-                 path = file.path(".","data","local", 
-                                  "raster_meetnet_poly.gpkg"), overwrite = 
-                   TRUE)
-}
-
-raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
 
 #oppervlakte van elk hok berekenen
 raster_meetnet_poly_opp <- raster_meetnet_poly %>% 
@@ -624,42 +628,44 @@ check <- raster_meetnet_poly %>% st_drop_geometry() %>% count(rasterid) %>% filt
 # habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
 #     mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
 
-if (file.exists(file.path(".","data","local", 
-                          "habmap_gw_raster_overlay.gpkg")) == FALSE | params$refresh_data >= 1) {
-  drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
-                 path = file.path(".","data","local", 
-                                  "habmap_gw_raster_overlay.gpkg"), 
-                 overwrite = TRUE)
-}
+# if (file.exists(file.path(".","data","local", 
+#                           "habmap_gw_raster_overlay.gpkg")) == FALSE | params$refresh_data >= 1) {
+#   drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
+#                  path = file.path(".","data","local", 
+#                                   "habmap_gw_raster_overlay.gpkg"), 
+#                  overwrite = TRUE)
+# }
 
-habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
+
 
 habmap_gw_raster_overlay <- st_make_valid(habmap_gw_raster_overlay)
 
 habmap_gw_raster_overlay
-if (params$refresh_figures == 2) {
+if (params$refresh_figures >= 1) {
   habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
     tm_shape(habmap_gw_raster_overlay) + 
     tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
     tm_layout(title = "Verspreiding van de GT-groepen" )
   
   tmap_save(habmap_gw_raster_overlay_tm, 
-            filename = file.path(figpath, "habmap_gw_raster_overlay.png"),
+            filename = file.path(".","figures","local", 
+                                 "habmap_gw_raster_overlay.png"),
             dpi = 250
   )
-  include_graphics(path = file.path(figpath, "habmap_gw_raster_overlay.png")) 
+  include_graphics(path = file.path(".","figures","local", 
+                                    "habmap_gw_raster_overlay.png")) 
   
 }
-if (file.exists(file.path(".","figures","local", 
-                          "habmap_gw_raster_overlay.png")) == FALSE | params$refresh_figures >= 1) {
-  drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
-                 path = file.path(".","data","local", 
-                                  "habmap_gw_raster_overlay.png"), 
-                 overwrite = TRUE)
-}
+# if (file.exists(file.path(".","figures","local", 
+#                           "habmap_gw_raster_overlay.png")) == FALSE | params$refresh_figures >= 1) {
+#   drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
+#                  path = file.path(".","figures","local", 
+#                                   "habmap_gw_raster_overlay.png"), 
+#                  overwrite = TRUE)
+# }
 
-if (params$refresh_figures < 2) {
-  include_graphics(path = file.path(".","data","local", 
+if (params$refresh_figures < 1) {
+  include_graphics(path = file.path(".","figures","local", 
                                     "habmap_gw_raster_overlay.png"))  
 }
 
@@ -910,10 +916,10 @@ sel_raster_meetnet_tm
 tubes_hab <- read_vc(file.path(".","data","tubes_hab"))  %>% as_tibble()
 
 #peilbuizen uit de lijst verwijderen die niet (meer) mogen meegenomen worden
-if (uitgesloten_tubes != "leeg"){
+
+if (length((find("uitgesloten_tubes"))) > 0){
   tubes_hab <- tubes_hab[!(tubes_hab$loc_code %in% uitgesloten_tubes),]
 }
-
 # een peilbuis kan meerdere keren voorkomen, namelijk wanneer de pb in een habitat-complex ligt en wanneer de bufferopp meerdere polygonen doorsnijdt. We kunnen ze groeperen als de verschillende eenheden tot eenzelfde gw-groep behoren.
 # Alleen de gw-groep met een opp-aandeel van minstens 50% wordt weerhouden. Dit om te vermijden dat indien een rastercel gekozen werd voor een bep. gw-groep, een pb geselecteerd wordt waarvan de kans klein is dat ze die gw-groep representeert.
 
@@ -1880,34 +1886,37 @@ if (nognietklaar == TRUE) {
 # grts_level0 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(1)
 
-if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | params$refresh_data >= 1) {
-  drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
-                 path = file.path(".","data","local", "grts_level0.tif"), 
-                 overwrite = TRUE)
+# if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | params$refresh_data >= 1) {
+#   drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
+#                  path = file.path(".","data","local", "grts_level0.tif"), 
+#                  overwrite = TRUE)
+# }
+if (params$refresh_data < 1) {
+  grts_level0 <- raster(file.path(".","data","local", "grts_level0.tif"))
+  grts_level5 <- raster(file.path(".","data","local", "grts_level5.tif"))
+  grts_level8 <- raster(file.path(".","data","local", "grts_level8.tif"))
 }
-grts_level0 <- raster(file.path(".","data","local", "grts_level0.tif"))
-
 
 #inlezen grts-raster level 9 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 1. 
 # grts_level8 <- read_GRTSmh(brick = TRUE) %>% 
 #   raster::subset(9)
 
-if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | params$refresh_data >= 1) {
-  drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
-                 path = file.path(".","data","local", "grts_level8.tif"), 
-                 overwrite = TRUE)
-}
-
-grts_level8 <- raster(file.path(".","data","local", "grts_level8.tif"))
-
-
-if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | params$refresh_data >= 1) {
-  drive_download(drive_get(id = "1pBI9hTIaRpV_qfExYHLdxiFEl81OQPP8"), 
-                 path = file.path(".","data","local", "grts_level5.tif"), 
-                 overwrite = TRUE)
-}
-
-grts_level5 <- raster(file.path(".","data","local", "grts_level5.tif"))
+# if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | params$refresh_data >= 1) {
+#   drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
+#                  path = file.path(".","data","local", "grts_level8.tif"), 
+#                  overwrite = TRUE)
+# }
+# 
+# grts_level8 <- raster(file.path(".","data","local", "grts_level8.tif"))
+# 
+# 
+# if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | params$refresh_data >= 1) {
+#   drive_download(drive_get(id = "1pBI9hTIaRpV_qfExYHLdxiFEl81OQPP8"), 
+#                  path = file.path(".","data","local", "grts_level5.tif"), 
+#                  overwrite = TRUE)
+# }
+# 
+# grts_level5 <- raster(file.path(".","data","local", "grts_level5.tif"))
 
 
 tubes_excess <- tubes_in_raster %>% 
@@ -1934,7 +1943,8 @@ tubes_excess_sf <- as_points(tubes_excess)
 
 
 tubes_excess_tm <- raster_meetnet_poly_tm + 
-  tm_shape(tubes_excess_sf %>% mutate (cat = factor(if_else(selectie == -1, 1, 3)))) + 
+  tm_shape(tubes_excess_sf %>% 
+             mutate(cat = factor(if_else(selectie == -1, 1, 3)))) + 
   tm_symbols(size = 0.25, shapes.labels = "loc_code", col = "cat", clustering = FALSE) + tm_layout(title = "beschikbare peilbuizen voor selectie" )
 
 tubes_excess_tm
@@ -2306,8 +2316,8 @@ write_vc(tubes_selected_typeclasses_stats_future, file.path(".","data","processe
 
 
 #verrasteren van de habitatkaart met de grondwatergroep als waarde
-grts_level5 <- read_GRTSmh(brick = TRUE) %>% 
-  raster::subset(6)
+# grts_level5 <- read_GRTSmh(brick = TRUE) %>% 
+#   raster::subset(6)
 
 reserve <- habmap_polygons_gw
 

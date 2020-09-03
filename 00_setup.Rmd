@@ -41,16 +41,19 @@ output_format <- ifelse(
 )
 
 #keuzen voor het aanmaken van een document
-#welke data verversen
-# 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
-if (params$refresh_data == 2) {
+if (params$refresh_data <= 1) {
+  params$cache_assigning_tubes_grts: TRUE
+  params$cache_selection_polygon_cat1A: TRUE
+}
+
+if (params$refresh_data == 3) {
   datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
-  dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+  #dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
 }
 
 #figuren opnieuw aanmaken of inlezen
-# 2: figuren terug aanmaken (en wegschrijven); 1: de huidige figuren van google-drive downloaden, 0: alleen lokale figuren inlezen
-if (params$refresh_figures == 2) {
+# 2: figuren worden gedownload van Google Drive-map (niet toegepast) ; 1:  de figuren (terug) aangemaakt ; 0: gebruik van figuren uit een lokale map (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of 2)
+if (params$refresh_figures == 3) {
   figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
 }
 
@@ -117,14 +120,15 @@ if (params$refresh_data >= 1) {
 ```
 
 ```{r read-gisdata, include= FALSE}
-if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data >= 1 ) {
+#habitatmap_terr_inclbos.gpkg importeren en opslaan in een (lokale) subdirectory van n2khab. Indien het bestand daar niet gevonden wordt, wordt het gedownload van GD. Bij refresh_data-optie=2 wordt het sowieso gedownload (bijv. bij een nieuwere versie)
+if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data == 3 ) {
   drive_download(drive_get(id = "13mon4WXdWVIAOjGLBts_S2Jl4lqzrCG5"), 
                  path = normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg")), 
                  overwrite = TRUE)
 }
 
 
-if (params$refresh_data == 2) {
+if (params$refresh_data >= 1) {
   habmap_terr <- read_habitatmap_terr(file = "20_processed/habitatmap_terr/habitatmap_terr_inclbos.gpkg")
   
   habmap_polygons <- habmap_terr$habitatmap_terr_polygons
@@ -152,16 +156,13 @@ if (params$refresh_data == 2) {
   
   #wegschrijven als geopackage
   st_write(habmap_polygons_gw,
-           file.path(datapath, 
-                     "GIS/VoorR/habmap_terr_gw.gpkg"), 
+           dsn = file.path(".","data","local", "habmap_terr_gw.gpkg"),
            layer = "habitatmap_terr_polygons_gw", 
            driver = "GPKG",
            delete_dsn = TRUE)
   
   con = dbConnect(SQLite(),
-                  dbname = file.path(
-                    datapath, 
-                    "GIS/VoorR/habmap_terr_gw.gpkg")
+                  dbname = file.path(".","data","local", "habmap_terr_gw.gpkg")
                   )
   
   dbWriteTable(con, "habitatmap_terr_types_gw", habmap_types_gw)
@@ -177,8 +178,7 @@ if (params$refresh_data == 2) {
   
   #wegschrijven van dit grid
   st_write(raster_meetnet_poly,
-           file.path(datapath, 
-                     "GIS/VoorR/raster_meetnet_poly.gpkg"), 
+           dsn = file.path(".","data","local", "raster_meetnet_poly.gpkg"),
            layer = "raster_meetnet_poly", 
            driver = "GPKG",
            delete_dsn = TRUE)
@@ -193,8 +193,7 @@ if (params$refresh_data == 2) {
   
   #wegschrijven van deze intersectie
   st_write(habmap_gw_raster_overlay,
-           file.path(datapath, 
-                     "GIS/VoorR/habmap_gw_raster_overlay.gpkg"), 
+           dsn = file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"),
            layer = "habmap_gw_raster_overlay", 
            driver = "GPKG",
            delete_dsn = TRUE)
@@ -213,19 +212,19 @@ if (params$refresh_data == 2) {
     raster::subset(6)
   
   writeRaster(grts_level8,
-              filename = file.path(datapath, "GIS/VoorR/grts_level8.tif"), 
+              filename = file.path(".","data","local", "grts_level8.tif"),
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)
   
-  writeRaster(grts_level0,
-              filename = file.path(datapath, "GIS/VoorR/grts_level0.tif"), 
+  writeRaster(grts_level5,
+              filename = file.path(".","data","local", "grts_level5.tif"),
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)
 
-    writeRaster(grts_level5,
-              filename = file.path(datapath, "GIS/VoorR/grts_level5.tif"), 
+    writeRaster(grts_level0,
+              filename = file.path(".","data","local", "grts_level0.tif"),
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)  
@@ -234,7 +233,7 @@ if (params$refresh_data == 2) {
 
 
 ```{r read-watina-data, include= FALSE}
-if (params$refresh_data == 2) {
+if (params$refresh_data >= 1) {
   watina <- connect_watina()
   tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
                         buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
@@ -242,10 +241,10 @@ if (params$refresh_data == 2) {
   tubes_hab_basis <-   tubes_hab #interne backup
 #toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
   vmm_pb <- read_csv(file.path(getwd(), "data","interim","meetnet","vmm_indc.csv")) %>% 
-    rename (loc_code = FID_stand,
+    rename(loc_code = FID_stand,
             polygon_id = plygn_d,
             typegroup_name = typgrp_) %>% 
-    mutate (area_code = "VMM",
+    mutate(area_code = "VMM",
             area_name = "Grondwaterstandindicator") %>%
     inner_join(habmap_gw_raster_overlay %>% st_drop_geometry() %>%  
                 dplyr::select(polygon_id, type, groupnr, rasterid, opp), by = c("polygon_id", "groupnr", "type")) %>% as_tibble()
@@ -359,7 +358,7 @@ if (params$refresh_data == 2) {
     # summarize series properties:
     tmpf <- tempfile()
     file.create(tmpf)
-    capture.output({ # to suppress the many disc_ks_test() messages
+    capture.output({# to suppress the many disc_ks_test() messages
       xg3_series_props <-
         series_memberyrs %>%
         group_by(.data$loc_code,
@@ -455,3 +454,19 @@ if (params$refresh_data == 2) {
 }
 ```
 
+```{r inlezen-lokaledata, eval=TRUE, include = TRUE, echo=FALSE, warning=FALSE}
+#inlezen van lokale data (alleen van toepassing bij params$refresh_data-optie = 0)
+if (params$refresh_data < 1) {
+  gw_types <- read_vc("gw_types", file.path(".","data"))
+  habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+                                 "habitatmap_terr_polygons_gw")
+  
+  habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+  
+                                              "habitatmap_terr_types_gw"))
+   
+  raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
+   
+  habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
+}
+```

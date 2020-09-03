@@ -18,14 +18,12 @@ Voor de ruimtelijk gebalanceerde selectie in functie van de verspreiding van de 
 
 #level 4 : resolutie = 512m, level 5 :  1024m, level 6 = 2048, level 7= 4096, level 8 = 8192)
 
-if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | params$refresh_data >= 1 ){
-    drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
-                   path = file.path(".","data","local", 
-                                    "raster_meetnet_poly.gpkg"), overwrite = 
-                     TRUE)
-}
-
-raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
+# if (file.exists(file.path(".","data","local", "raster_meetnet_poly.gpkg")) == FALSE | params$refresh_data >= 1 ){
+#     drive_download(drive_get(id = "1oHdlUEEZmCDvXDCSXELgtgKNDgLn4E_0"), 
+#                    path = file.path(".","data","local", 
+#                                     "raster_meetnet_poly.gpkg"), overwrite = 
+#                      TRUE)
+# }
 
 #oppervlakte van elk hok berekenen
 raster_meetnet_poly_opp <- raster_meetnet_poly %>% 
@@ -67,15 +65,14 @@ In de gepubliceerde versie werden deze vlekken uitgesloten, terwijl ze voor het 
 ```{r overlay-habitatkaart-GRTS-raster, message=FALSE, warning=FALSE}
 # overlay maken van de habitatkaart (enkel van GT-groepen) en het GRTS-raster (level8)
 
-if (file.exists(file.path(".","data","local", 
-                                    "habmap_gw_raster_overlay.gpkg")) == FALSE | params$refresh_data >= 1) {
-    drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
-                   path = file.path(".","data","local", 
-                                    "habmap_gw_raster_overlay.gpkg"), 
-                   overwrite = TRUE)
-}
+# if (file.exists(file.path(".","data","local", 
+#                                     "habmap_gw_raster_overlay.gpkg")) == FALSE | params$refresh_data >= 1) {
+#     drive_download(drive_get(id = "1oY7fXj7Kd59w1LFHhu88E9cLLkC5cPJS"), 
+#                    path = file.path(".","data","local", 
+#                                     "habmap_gw_raster_overlay.gpkg"), 
+#                    overwrite = TRUE)
+# }
 
-habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
 
 habmap_gw_raster_overlay <- st_make_valid(habmap_gw_raster_overlay)
 #plot(habmap_gw_raster_overlay, main = "Voorkomen van ")
@@ -83,28 +80,30 @@ habmap_gw_raster_overlay <- st_make_valid(habmap_gw_raster_overlay)
 ```
 
 ```{r overlay-habitatkaart-GRTS-plot, fig.cap="verspreiding-GT-groepen", message=FALSE, warning=FALSE}
-if (params$refresh_figures == 2) {
+if (params$refresh_figures >= 1) {
   habmap_gw_raster_overlay_tm <- raster_meetnet_poly_tm + 
     tm_shape(habmap_gw_raster_overlay) + 
     tm_fill(col = "groupnr", style = "cat", palette = "BuGn", title = "Grondwatertype") + 
     tm_layout(title = "Verspreiding van de GT-groepen", asp = 0 )
   
   tmap_save(habmap_gw_raster_overlay_tm, 
-            filename = file.path(figpath, "habmap_gw_raster_overlay.png"),
+            filename = file.path(".","figures","local", 
+                                 "habmap_gw_raster_overlay.png"),
             dpi = 250
             )
-  include_graphics(path = file.path(figpath, "habmap_gw_raster_overlay.png")) 
+  include_graphics(path = file.path(".","figures","local", 
+                                 "habmap_gw_raster_overlay.png")) 
 
 }
-if (file.exists(file.path(".","figures","local", 
-                          "habmap_gw_raster_overlay.png")) == FALSE | params$refresh_figures == 1) {
-  drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
-                 path = file.path(".","figures","local", 
-                                  "habmap_gw_raster_overlay.png"), 
-                 overwrite = TRUE)
-}
+# if (file.exists(file.path(".","figures","local", 
+#                           "habmap_gw_raster_overlay.png")) == FALSE | params$refresh_figures == 1) {
+#   drive_download(drive_get(id = "1hLSIyTT-yk1wY0qtqhD0Qh6Ps_KnI211"), 
+#                  path = file.path(".","figures","local", 
+#                                   "habmap_gw_raster_overlay.png"), 
+#                  overwrite = TRUE)
+# }
 
-if (params$refresh_figures < 2) {
+if (params$refresh_figures < 1) {
   include_graphics(path = file.path(".","figures","local", 
                                     "habmap_gw_raster_overlay.png"))  
 }
@@ -504,7 +503,7 @@ We selecteren dan de peilbuizen die met juist één GT-groep kunnen geassocieerd
 tubes_hab <- read_vc(file.path(".","data","processed","meetnet","tubes_hab")) %>% as_tibble()
 
 #peilbuizen uit de lijst verwijderen die niet (meer) mogen meegenomen worden
-if (uitgesloten_tubes != "leeg"){
+if (length((find("uitgesloten_tubes"))) > 0){
   tubes_hab <- tubes_hab[!(tubes_hab$loc_code %in% uitgesloten_tubes),]
 }
 
@@ -1628,32 +1627,35 @@ Er is hierbij tussen de peilbuizen een onderscheid gemaakt of ze al dan niet act
 ```{r inlezen-grts-rasters, message=FALSE, warning=FALSE}
 #inlezen grts-raster level 1 (hoogste resolutie = kleinste gridcelgrootte)
 
-if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | params$refresh_data >= 1) {
-    drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
-                   path = file.path(".","data","local", "grts_level0.tif"), 
-                   overwrite = TRUE)
-}
-grts_level0 <- raster(file.path(".","data","local", "grts_level0.tif"))
-
-
-#inlezen grts-raster level 9 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 1. 
-
-if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | params$refresh_data >= 1) {
-    drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
-                   path = file.path(".","data","local", "grts_level8.tif"), 
-                   overwrite = TRUE)
+# if (file.exists(file.path(".","data","local", "grts_level0.tif")) == FALSE | params$refresh_data >= 1) {
+#     drive_download(drive_get(id = "1oNxe-MITpIVF2BFczLGLXcr0jT-LIWVB"), 
+#                    path = file.path(".","data","local", "grts_level0.tif"), 
+#                    overwrite = TRUE)
+# }
+if (params$refresh_data < 1) {
+  grts_level0 <- raster(file.path(".","data","local", "grts_level0.tif"))
+  grts_level5 <- raster(file.path(".","data","local", "grts_level5.tif"))
+#inlezen grts-raster level 9 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 1.   
+  grts_level8 <- raster(file.path(".","data","local", "grts_level8.tif"))
 }
 
-grts_level8 <- raster(file.path(".","data","local", "grts_level8.tif"))
 
 
-if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | params$refresh_data >= 1) {
-    drive_download(drive_get(id = "1pBI9hTIaRpV_qfExYHLdxiFEl81OQPP8"), 
-                   path = file.path(".","data","local", "grts_level5.tif"), 
-                   overwrite = TRUE)
-}
+# if (file.exists(file.path(".","data","local", "grts_level8.tif")) == FALSE | params$refresh_data >= 1) {
+#     drive_download(drive_get(id = "1oJpmNqlYoN3z8ICOlZZSlV0JXoUlcU5n"), 
+#                    path = file.path(".","data","local", "grts_level8.tif"), 
+#                    overwrite = TRUE)
+# }
 
-grts_level5 <- raster(file.path(".","data","local", "grts_level5.tif"))
+
+
+# if (file.exists(file.path(".","data","local", "grts_level5.tif")) == FALSE | params$refresh_data >= 1) {
+#     drive_download(drive_get(id = "1pBI9hTIaRpV_qfExYHLdxiFEl81OQPP8"), 
+#                    path = file.path(".","data","local", "grts_level5.tif"), 
+#                    overwrite = TRUE)
+# }
+
+
 
 
 ```

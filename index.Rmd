@@ -15,9 +15,16 @@ always_allow_html: yes #mogelijk slechts een tijdelijke verplichting
 # documentclass: "article"
 site: bookdown::bookdown_site
 documentclass: book
+
+#welke data verversen
+# refresh_data of refresh_figures :
+# 3: alle data worden herberekend, er wordt hierbij ook beroep gedaan op bestanden van een Google Drive-map ;  
+# 2: een volledige herberekening zonder data van Google-Drive (indien data ontbreken worden ze daar wel gedownload) 
+# 1: een volledige herberekening zonder data van Google-Drive (indien data ontbreken, worden ze daar wel gedownload), echter voor twee tijdslopende berekeningen wordt de cache gebruikt; 
+# 0: een herberekening met lokale data, soms van een intermediaire oorsprong (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of hoger), voor twee tijdslopende berekeningen wordt ook de cache gebruikt 
 params:
-  refresh_data: 2
-  refresh_figures: 2
+  refresh_data: 3
+  refresh_figures: 3
   cache: FALSE
   cache_assigning_tubes_grts: FALSE
   cache_selection_polygon_cat1A: FALSE

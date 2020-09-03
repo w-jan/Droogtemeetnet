@@ -10,14 +10,6 @@ Het project omhelst :
 Met natuurgebieden worden hier alle locaties met grondwaterafhankelijke habitattypes en rbb's bedoeld, gelegen binnen of buiten het Natura 2000 netwerk. In overeenstemming met het meetnet natuurlijk milieu (MNM) voor de milieudruk 'verdroging via grondwater' worden volgende habitattypen en rbb's als grondwaterafhankelijk beschouwd (tabel \@ref(tab:gw-typen)). Hierna worden deze typen afgekort tot gaHT. 
 
 ```{r gw-typen, eval=TRUE, include = TRUE, echo=FALSE, warning=FALSE}
-# read_schemes_local(path = "../../n2khab/inst/textdata")
-# gw_types <- read_scheme_types(lang = "nl") %>%
-#     filter(scheme == "GW_05.1_terr") %>%
-#     arrange(typegroup) %>%
-#     mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
-#     dplyr::select(type, groupnr, typegroup_name)
-gw_types <- read_vc("gw_types", file.path(".","data/processed/meetnet"))
-
 kobj <- kable(gw_types %>% 
         dplyr::select(type, groupnr) %>% 
         inner_join(read_namelist(lang = "nl") %>% 
@@ -96,19 +88,14 @@ We raden echter ook aan in de beoordeling elke GT-groep apart mee te nemen, omda
 ```{r habitat selection, include=FALSE}
 
 ## Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
-if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | params$refresh_data >= 1) {
-    drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
-                   path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
-}
-
-habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
-                "habitatmap_terr_polygons_gw")
+# if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | params$refresh_data == 2) {
+#     drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
+#                    path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
+# }
 
 habmap_polygons_gw <- habmap_polygons_gw %>%
   mutate(polygon_id = factor(.data$polygon_id),
          type = factor(.data$type),
          typegroup_name = factor(.data$typegroup_name)
          )
-habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
-                                              "habitatmap_terr_types_gw"))
 ```
