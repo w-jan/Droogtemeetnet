@@ -41,9 +41,12 @@ output_format <- ifelse(
 )
 
 #keuzen voor het aanmaken van een document
-if (params$refresh_data <= 1) {
-  params$cache_assigning_tubes_grts: TRUE
-  params$cache_selection_polygon_cat1A: TRUE
+if (params$refresh_data == 1) {
+  cache_selection_polygon_cat1A <- TRUE
+  cache_assigning_tubes_grts <- TRUE
+  }else{
+  cache_selection_polygon_cat1A <- params$cache_selection_polygon_cat1A
+  cache_assigning_tubes_grts <- params$cache_assigning_tubes_grts
 }
 
 if (params$refresh_data == 3) {
@@ -457,8 +460,9 @@ if (params$refresh_data >= 1) {
 ```{r inlezen-lokaledata, eval=TRUE, include = TRUE, echo=FALSE, warning=FALSE}
 #inlezen van lokale data (alleen van toepassing bij params$refresh_data-optie = 0)
 if (params$refresh_data < 1) {
-  gw_types <- read_vc("gw_types", file.path(".","data"))
-  habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+  gw_types <- read_vc("gw_types", file.path(".","data","processed", "meetnet"))
+  types <- read_vc("types", file.path(".","data","processed", "meetnet"))
+    habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
                                  "habitatmap_terr_polygons_gw")
   
   habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
