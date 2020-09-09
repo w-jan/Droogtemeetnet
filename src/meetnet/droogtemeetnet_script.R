@@ -95,7 +95,7 @@ if (params$refresh_data >= 1) {
 }
 
 #habitatmap_terr_inclbos.gpkg importeren en opslaan in een (lokale) subdirectory van n2khab. Indien het bestand daar niet gevonden wordt, wordt het gedownload van GD. Bij refresh_data-optie=2 wordt het sowieso gedownload (bijv. bij een nieuwere versie)
-if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data = 2 ) {
+if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data ==3 ) {
   drive_download(drive_get(id = "13mon4WXdWVIAOjGLBts_S2Jl4lqzrCG5"), 
                  path = normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg")), overwrite = 
                    TRUE)
