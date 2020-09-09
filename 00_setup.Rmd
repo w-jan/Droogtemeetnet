@@ -41,7 +41,7 @@ output_format <- ifelse(
 )
 
 #keuzen voor het aanmaken van een document
-if (params$refresh_data == 1) {
+if (params$refresh_data <= 1) {
   cache_selection_polygon_cat1A <- TRUE
   cache_assigning_tubes_grts <- TRUE
   }else{
