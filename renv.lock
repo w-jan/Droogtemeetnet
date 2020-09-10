@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "3.6.1",
+    "Version": "4.0.2",
     "Repositories": [
       {
         "Name": "RStudio",
@@ -50,10 +50,10 @@
     },
     "MASS": {
       "Package": "MASS",
-      "Version": "7.3-51.6",
+      "Version": "7.3-52",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "1dad32ac9dbd8057167b2979fb932ff7"
+      "Hash": "095c8b0dd20f5d9c2a75cf72fdd74dab"
     },
     "Matrix": {
       "Package": "Matrix",
@@ -737,10 +737,10 @@
     },
     "mgcv": {
       "Package": "mgcv",
-      "Version": "1.8-31",
+      "Version": "1.8-33",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4bb7e0c4f3557583e1e8d3c9ffb8ba5c"
+      "Hash": "eb7b6439bc6d812eed2cddba5edc6be3"
     },
     "mime": {
       "Package": "mime",
@@ -774,7 +774,7 @@
       "RemoteUsername": "inbo",
       "RemoteRef": "master",
       "RemoteSha": "c252e078f2ed5df1f0a6e95a7fd68ae9e68ecdda",
-      "Hash": "88d590461e0b1b57b6c8b8f5019f3dc5"
+      "Hash": "2a758af2ef0e0c63463eeafbb5d8f46e"
     },
     "nlme": {
       "Package": "nlme",
