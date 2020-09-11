@@ -462,7 +462,7 @@ if (params$refresh_data >= 1) {
 if (params$refresh_data < 1) {
   gw_types <- read_vc("gw_types", file.path(".","data","processed", "meetnet"))
   types <- read_vc("types", file.path(".","data","processed", "meetnet"))
-    habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+  habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
                                  "habitatmap_terr_polygons_gw")
   
   habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),

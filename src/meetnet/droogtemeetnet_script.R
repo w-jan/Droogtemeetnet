@@ -25,19 +25,22 @@ library(googledrive)
 library(RSQLite) 
 
 #keuzen voor het aanmaken van een document
-#welke data verversen
-# 2: alle data worden herberekend, er worden hierbij bestanden gemaakt die in een Google Drive-map worden bewaard ; 1: een herberekening met de data op Google-Drive ; 0: een herberekening met lokale data (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of 2)
-params <- data.frame(refresh_data = 0, refresh_figures = 0)
-params$refresh_data <- 0
-if (params$refresh_data == 2) {
+if (params$refresh_data <= 1) {
+  cache_selection_polygon_cat1A <- TRUE
+  cache_assigning_tubes_grts <- TRUE
+}else{
+  cache_selection_polygon_cat1A <- params$cache_selection_polygon_cat1A
+  cache_assigning_tubes_grts <- params$cache_assigning_tubes_grts
+}
+
+if (params$refresh_data == 3) {
   datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
   #dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
 }
 
 #figuren opnieuw aanmaken of inlezen
-# 2: figuren terug aanmaken (en wegschrijven); 1:  de figuren worden gedownload van Google-Drive ; 0: gebruik van figuren uit een lokale map (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of 2)
-params$refresh_figures <- 0
-if (params$refresh_figures == 2) {
+# 2: figuren worden gedownload van Google Drive-map (niet toegepast) ; 1:  de figuren (terug) aangemaakt ; 0: gebruik van figuren uit een lokale map (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of 2)
+if (params$refresh_figures == 3) {
   figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
 }
 # interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
@@ -95,7 +98,7 @@ if (params$refresh_data >= 1) {
 }
 
 #habitatmap_terr_inclbos.gpkg importeren en opslaan in een (lokale) subdirectory van n2khab. Indien het bestand daar niet gevonden wordt, wordt het gedownload van GD. Bij refresh_data-optie=2 wordt het sowieso gedownload (bijv. bij een nieuwere versie)
-if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data ==3 ) {
+if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data == 3 ) {
   drive_download(drive_get(id = "13mon4WXdWVIAOjGLBts_S2Jl4lqzrCG5"), 
                  path = normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg")), overwrite = 
                    TRUE)
@@ -541,6 +544,7 @@ if (params$refresh_data >= 1) {
 #inlezen van lokale data (alleen van toepassing bij params$refresh_data-optie = 0)
 if (params$refresh_data < 1) {
 gw_types <- read_vc("gw_types", file.path(".","data"))
+types <- read_vc("types", file.path(".","data","processed", "meetnet"))
 
 habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
                               "habitatmap_terr_polygons_gw")
