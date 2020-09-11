@@ -1,0 +1,8 @@
+loc_code	area_code	area_name	x	y	loc_validitycode	loc_validity	loc_typecode	loc_typename	groupnr	rasterid	filterdepth	soilsurf_ost	typegroup_name	obswell_statecode	obswell_state	measuringref_ost	tubelength	filterlength	firstyear	lastyear	nryears	cat
+BTRP001	BTR	Bos ter Rijst	101924	164018	2	1	1	1	4	25	2.02	68.02	4	4	2	68.17	2.32	0.3	2003	2003	1	2
+BUCP010	BUC	Buckenslinde	229690	170679	2	1	1	1	3	818	1.33	0	2	4	2	0.57	3.8	3.8	2003	2003	1	2
+COOP001	COO	Coolhembos	146113	196127	2	1	1	1	1	233	1.25	1.96	5	3	1	2.56	2	0.3	2006	2015	8	2
+DPBP007	DPB	Diepenbeek	221649	179772	2	1	1	1	2	306	2.01	-0.55	3	3	1	0	2.76	0.4	NA	NA	0	2
+KBRP060	KBR	Polders van Kruibeke	145448	202168	2	1	1	1	2	233	1.89	1.693	3	3	1	2.233	2.68	0.5	2001	2012	11	2
+KEVP015	KEV	De Kevie	229074	163350	2	1	1	1	3	114	2.2	86.13	2	4	2	86.84	2.91	0	2001	2001	1	2
+SWPP032	SWP	Scheldemeersen Wortegem-Petege	94675	169402	2	1	1	1	4	537	1.53	10.09	4	3	1	10.47	2.06	0.3	2010	2010	1	2

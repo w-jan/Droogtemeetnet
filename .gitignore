@@ -38,11 +38,28 @@ rsconnect/
 # local, large binary data
 /data/local/*
 /figures/local/*
-.Rproj.user
+/local/*
+
+#gis data
+data/result/meetnet/GIS/*
+data/result/indicator_nara/GIS/*
+data/result/indicator_meetnet/GIS/*
+
+# temporary map, files
+/temp/*
+/src/temp/*
+
+#cache
+/src/cache/*
 
 # Other
 _bookdown_files/
+_book/
 *.html
+*.pdf
+*.tex
+*.log
 !header.html
 .Rproj.user
 droogtemeetnet_ontwerp.md
+G:/

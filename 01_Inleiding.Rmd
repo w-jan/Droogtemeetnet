@@ -10,14 +10,6 @@ Het project omhelst :
 Met natuurgebieden worden hier alle locaties met grondwaterafhankelijke habitattypes en rbb's bedoeld, gelegen binnen of buiten het Natura 2000 netwerk. In overeenstemming met het meetnet natuurlijk milieu (MNM) voor de milieudruk 'verdroging via grondwater' worden volgende habitattypen en rbb's als grondwaterafhankelijk beschouwd (tabel \@ref(tab:gw-typen)). Hierna worden deze typen afgekort tot gaHT. 
 
 ```{r gw-typen, eval=TRUE, include = TRUE, echo=FALSE, warning=FALSE}
-# read_schemes_local(path = "../../n2khab/inst/textdata")
-# gw_types <- read_scheme_types(lang = "nl") %>%
-#     filter(scheme == "GW_05.1_terr") %>%
-#     arrange(typegroup) %>%
-#     mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
-#     dplyr::select(type, groupnr, typegroup_name)
-gw_types <- read_vc("gw_types", file.path(".","data"))
-
 kobj <- kable(gw_types %>% 
         dplyr::select(type, groupnr) %>% 
         inner_join(read_namelist(lang = "nl") %>% 
@@ -38,7 +30,7 @@ if (pdfmaken == TRUE) {
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = F,
                 position = "left",
-                font_size = 9,
+                font_size = 12,
                 fixed_thead = T) %>%
   #row_spec(0, angle = -45)  %>% #fixeer veldnamen
   scroll_box(height = "200px")
@@ -55,13 +47,15 @@ We veronderstellen hierbij dat er een relatie bestaat tussen het hydrologisch re
 
 We vertrekken hiervoor van de 5-delige indeling in grondwatertypegroepen (GT-groep) die toegepast wordt in het MNM (tabel \@ref(tab:GTgroepen)). In de vorige tabel \@ref(tab:gw-typen)) is weergegeven tot welke GT-groep een gaHT gerekend wordt.
 ```{r GTgroepen}
-gw_types_groupen <- gw_types %>%
-    distinct(groupnr, typegroup_name) %>% 
-    arrange(groupnr) %>% 
-    rename("GT-groep: nummer" = groupnr,
-      "GT-groep: naam" = typegroup_name)
+gw_types_groups <- gw_types %>%
+  distinct(groupnr, typegroup_name) %>% 
+  inner_join(data.frame(groupnr = seq(1:5), gewenst_aantal_locaties = minaantal_tub_group), by = "groupnr") %>% 
+  arrange(groupnr) %>% 
+  rename("GT-groep: nummer" = groupnr,
+         "GT-groep: naam" = typegroup_name,
+         "Gewenst aantal meetlocaties" = gewenst_aantal_locaties)
 
-kobj <- kable(gw_types_groupen, 
+kobj <- kable(gw_types_groups %>%  select(1:2), 
       caption = "Grondwatertype-groepen") 
 
 if (pdfmaken == TRUE) {
@@ -71,7 +65,7 @@ if (pdfmaken == TRUE) {
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
                   full_width = TRUE, 
                   position = "left",
-                  font_size = 9,
+                  font_size = 12,
                   fixed_thead = T) 
     #row_spec(0, angle = -45)  %>% #fixeer veldnamen
      # scroll_box(height = "200px") 
@@ -79,33 +73,29 @@ if (pdfmaken == TRUE) {
 ```
     
 
-_GT-groep 5 bundelt grondwaterafhankelijke HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms tot meestal niet.
-_**De vraag is of we deze groep meenemen.**_ 
-_**We zijn voorstander om deze wel mee te nemen.**_
-_**Het voordeel van deze groep is dat ze vermoedelijk het snelst op droogte zal reageren.**_ 
-_**Ze heeft echter ook een nadeel, nl. dat je bij het uitzetten van een nieuw punt niet op voorhand weet of het wel grondwaterafhankelijk is.**_  
 De GT-groepen lenen zich heel goed om een stratificatie uit te voeren op basis van de verwachte responssnelheid van een locatie op droogte. 
 De permanent gevoede locaties (GT-groep 1) zullen naar verwachting trager reageren dan de tijdelijk of zwak gevoede locaties. 
-Door een stratificatie over de GT-groepen toe te passen kan een _zekere_ **_(nog af te spreken)_** balans worden verzekerd. 
-**_Een stratificatie laat toe om een globale uitspraak te doen._**
-**_We raden echter ook aan in de beoordeling elke GT-groep apart mee te nemen, omdat ze verschillende signalen zullen geven._** 
+GT-groep 5 bundelt grondwaterafhankelijke HT die zodanig breed gedefinieerd zijn dat ze op sommige locaties grondwatergevoed zijn, maar soms tot meestal niet.
+Het voordeel van deze groep is dat ze vermoedelijk het snelst op droogte zal reageren.
+Ze houdt echter ook nadelen in, nl. dat je bij het uitzetten van een nieuw punt niet op voorhand weet of het wel grondwaterafhankelijk is en dat sommige typen heel variabel zijn m.b.t. het grondwaterregime.
+We oordelen dat deze nadelen groter zijn dan het mogelijke voordeel van een snelle signalering.
+De GT-groep 5 wordt daarom niet meegenomen in de verdere analyse.
+
+Door een stratificatie over de GT-groepen toe te passen kan een balans worden verzekerd. 
+Een stratificatie laat toe om een globale uitspraak te doen.
+We raden echter ook aan in de beoordeling elke GT-groep apart mee te nemen, omdat ze verschillende signalen zullen geven. 
 
 ```{r habitat selection, include=FALSE}
 
 ## Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
-if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | refresh_data >= 1) {
-    drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
-                   path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
-}
-
-habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
-                "habitatmap_terr_polygons_gw")
+# if (file.exists(file.path(".","data","local", "habmap_terr_gw.gpkg")) == FALSE | params$refresh_data == 2) {
+#     drive_download(drive_get(id = "1nxnpfE3Eh4eCiM2VinGYMJE55qD4Az1c"), 
+#                    path = file.path(".","data","local", "habmap_terr_gw.gpkg"), overwrite = TRUE)
+# }
 
 habmap_polygons_gw <- habmap_polygons_gw %>%
   mutate(polygon_id = factor(.data$polygon_id),
          type = factor(.data$type),
          typegroup_name = factor(.data$typegroup_name)
          )
-habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
-                                              "habitatmap_terr_types_gw"))
 ```

@@ -1,0 +1,303 @@
+unieknr	polygon_id	description_orig	description	source	phab	certain	type	groupnr	typegroup_name	rasterid	opp	geselecteerd_basis	geselecteerd_reserve
+57576	607114_v2014	70% gh; 30% 9160	70% gh; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	114	3409	0	1
+57495	631330_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	3815	0	1
+57730	638284_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	2488	0	1
+57490	642511_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	14672	0	1
+58370	642902_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	941	0	1
+57463	643248_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	1738	0	1
+57479	643483_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	12155	1	1
+57719	648811_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	968	0	1
+57720	648812_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	462	0	1
+57723	648903_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	987	0	1
+57728	649186_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	1865	0	1
+57713	654891_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	114	6535	0	1
+39493	570302_v2018	90% gh; 10% 9130; 0% 7220	90% gh; 10% 9130_end; 0% 7220	habitatmap_stdized + interpretation	10	1	9130_end	4	types van vochtig milieu	121	908243	1	1
+20860	504100_v2014	100% 1130; 100% 6430_hw	100% 1130; 100% 6430_hw	habitatmap_stdized	100	1	6430_hw	3	types van matig nat milieu	233	1581	0	1
+20813	504183_v2014	100% 1130; 100% 6430_hw	100% 1130; 100% 6430_hw	habitatmap_stdized	100	1	6430_hw	3	types van matig nat milieu	233	7742	0	1
+20776	621718_v2014	100% 1130; 30% 91E0_sf; 70% rbbmr	100% 1130; 30% 91E0_sf; 70% rbbmr	habitatmap_stdized	30	1	91E0_sf	3	types van matig nat milieu	233	28	0	1
+20852	621978_v2014	100% 1130; 30% 91E0_sf; 70% rbbmr	100% 1130; 30% 91E0_sf; 70% rbbmr	habitatmap_stdized	30	1	91E0_sf	3	types van matig nat milieu	233	8232	0	1
+20750	596526_v2014	60% gh; 20% rbbmr; 20% rbbsf	60% gh; 20% rbbmr; 20% rbbsf	habitatmap_stdized	20	1	rbbsf	3	types van matig nat milieu	233	160022	0	1
+20787	671609_v2014	60% rbbmr; 30% rbbsf; 10% gh	60% rbbmr; 30% rbbsf; 10% gh	habitatmap_stdized	30	1	rbbsf	3	types van matig nat milieu	233	352939	1	1
+39381	642245_v2014	70% 91E0_va; 30% 9130	70% 91E0_va; 30% 9130_end	habitatmap_stdized + interpretation	30	1	9130_end	4	types van vochtig milieu	249	79189	1	1
+39206	642280_v2014	70% 91E0_va; 30% 9130	70% 91E0_va; 30% 9130_end	habitatmap_stdized + interpretation	30	1	9130_end	4	types van vochtig milieu	249	26894	0	1
+62526	528648_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	34418	0	1
+62538	530094_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	27825	0	1
+62552	539386_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	92351	0	1
+62555	539398_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	109273	1	1
+62557	539400_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	65621	0	1
+62562	539555_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	58870	0	1
+62563	539556_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	34208	0	1
+62570	555279_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	13703	0	1
+62577	570020_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	75094	0	1
+62580	580962_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	313	151255	0	1
+62544	531285_v2018	90% 91E0_va; 10% 91E0_vc	90% 91E0_va; 10% 91E0_vc	habitatmap_stdized	90	1	91E0_va	4	types van vochtig milieu	313	9746	0	1
+62546	531289_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	313	15267	0	1
+50768	636164_v2014	70% 9120; 30% 9160	70% 9120; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	422	9799	0	1
+50986	636165_v2014	70% 9120; 30% 9160	70% 9120; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	422	58457	0	1
+50781	636712_v2014	70% 9120; 30% 9160	70% 9120; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	422	23715	0	1
+50764	636790_v2014	70% 9120; 30% 9160	70% 9120; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	422	2815	0	1
+50771	636839_v2014	70% 9120; 30% 9160	70% 9120; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	422	12004	0	1
+50775	636980_v2014	70% 9120; 30% 9160	70% 9120; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	422	4841	0	1
+50933	637025_v2014	70% 9120; 30% 9160	70% 9120; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	422	17500	0	1
+50735	645318_v2014	70% 9160; 30% 9120	70% 9160; 30% 9120	habitatmap_stdized	70	1	9160	4	types van vochtig milieu	422	40205	1	1
+50734	645382_v2014	70% 9160; 30% 9120	70% 9160; 30% 9120	habitatmap_stdized	70	1	9160	4	types van vochtig milieu	422	8830	0	1
+50706	609073_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	422	2300	0	1
+19932	113864_v2014	100% 1130; 100% rbbmr	100% 1130; 100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	425	295	0	1
+19803	559288_v2018	60% 91E0_sf; 100% 1130; 20% rbbmr	60% 91E0_sf; 100% 1130; 20% rbbmr	habitatmap_stdized	20	1	rbbmr	2	types van nat milieu	425	22530	0	1
+19857	593632_v2014	70% rbbmr; 30% gh	70% rbbmr; 30% gh	habitatmap_stdized	70	1	rbbmr	2	types van nat milieu	425	15838	0	1
+19871	632900_v2014	70% rbbmr; 30% 6430,rbbhf	70% rbbmr; 30% 6430_hf,rbbhf	habitatmap_stdized + interpretation	70	1	rbbmr	2	types van nat milieu	425	4996	1	1
+20018	642667_v2014	70% 91E0_sf; 100% 1130; 30% rbbmr	70% 91E0_sf; 100% 1130; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	425	9894	0	1
+19951	666167_v2014	70% 91E0_sf; 100% 1130; 30% rbbmr	70% 91E0_sf; 100% 1130; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	425	2122	0	1
+19939	666299_v2014	100% 1130; 20% 91E0_sf; 80% rbbmr	100% 1130; 20% 91E0_sf; 80% rbbmr	habitatmap_stdized	80	1	rbbmr	2	types van nat milieu	425	7518	0	1
+20006	666669_v2014	100% 1130; 30% rbbmr	100% 1130; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	425	3649	0	1
+6864	553318_v2018	100% 1130; 100% rbbmr	100% 1130; 100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	445	906	0	1
+6956	553648_v2018	100% 1130; 100% rbbmr	100% 1130; 100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	445	1173	0	1
+6961	553672_v2018	100% 1130; 100% rbbmr	100% 1130; 100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	445	79	0	1
+7038	562027_v2018	100% 1130; 100% rbbmr	100% 1130; 100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	445	19860	0	1
+7043	562265_v2018	100% 1130; 100% rbbmr	100% 1130; 100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	445	215013	1	1
+48331	537993_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	505	1113	0	1
+48737	627921_v2014	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	505	2314	0	1
+48660	648598_v2014	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	505	780	0	1
+48319	537973_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	3020	0	1
+48320	537975_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	2188	0	1
+48321	537976_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	5686	0	1
+48327	537982_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	2464	0	1
+48329	537990_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	1285	0	1
+48330	537991_v2018	70% gh; 30% 91E0_va	70% gh; 30% 91E0_va	habitatmap_stdized	30	1	91E0_va	4	types van vochtig milieu	505	1728	0	1
+48340	538028_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	549	0	1
+48341	538030_v2018	95% 91E0_va; 5% rbbhf	95% 91E0_va; 5% rbbhf	habitatmap_stdized	95	1	91E0_va	4	types van vochtig milieu	505	4099	0	1
+48367	562637_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	2525	0	1
+48371	580846_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	3335	0	1
+48751	611196_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	5365	0	1
+48710	616411_v2014	70% gh; 30% 91E0_va	70% gh; 30% 91E0_va	habitatmap_stdized	30	1	91E0_va	4	types van vochtig milieu	505	4879	0	1
+48708	616440_v2014	60% gh; 20% 6430,rbbhf,bos; 20% 91E0_va	60% gh; 20% 6430_hf,rbbhf,bos; 20% 91E0_va	habitatmap_stdized + interpretation	20	1	91E0_va	4	types van vochtig milieu	505	6294	0	1
+48833	624641_v2014	70% 6430,rbbhf,bos; 30% 91E0_va	70% 6430_hf,rbbhf,bos; 30% 91E0_va	habitatmap_stdized + interpretation	30	1	91E0_va	4	types van vochtig milieu	505	3289	0	1
+48732	624685_v2014	70% 6430,rbbhf,bos; 30% 91E0_va	70% 6430_hf,rbbhf,bos; 30% 91E0_va	habitatmap_stdized + interpretation	30	1	91E0_va	4	types van vochtig milieu	505	2489	0	1
+48786	624864_v2014	70% 6430,rbbhf,bos; 30% 91E0_va	70% 6430_hf,rbbhf,bos; 30% 91E0_va	habitatmap_stdized + interpretation	30	1	91E0_va	4	types van vochtig milieu	505	25905	0	1
+48746	625006_v2014	70% 6430,rbbhf,bos; 30% 91E0_va	70% 6430_hf,rbbhf,bos; 30% 91E0_va	habitatmap_stdized + interpretation	30	1	91E0_va	4	types van vochtig milieu	505	6455	0	1
+48729	630226_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	3930	0	1
+48750	630374_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	9201	0	1
+48752	630400_v2014	70% 91E0_va; 30% rbbsf	70% 91E0_va; 30% rbbsf	habitatmap_stdized	70	1	91E0_va	4	types van vochtig milieu	505	3405	0	1
+48734	630435_v2014	70% 91E0_va; 30% 91E0_vn	70% 91E0_va; 30% 91E0_vn	habitatmap_stdized	70	1	91E0_va	4	types van vochtig milieu	505	2135	0	1
+48736	630452_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	6583	0	1
+48773	651657_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	2417	0	1
+48772	651814_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	5107	0	1
+48777	651909_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	13775	1	1
+48774	661676_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	2736	0	1
+48468	662040_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	505	9502	0	1
+11580	611780_v2014	100% 91E0_vn	100% 91E0_vn	habitatmap_stdized	100	1	91E0_vn	3	types van matig nat milieu	530	98772	1	1
+11648	655898_v2014	100% 91E0_vn	100% 91E0_vn	habitatmap_stdized	100	1	91E0_vn	3	types van matig nat milieu	530	15669	0	1
+11641	655955_v2014	100% 91E0_vn	100% 91E0_vn	habitatmap_stdized	100	1	91E0_vn	3	types van matig nat milieu	530	62197	0	1
+11542	604215_v2014	100% 6430,rbbhf	100% 6430_hf,rbbhf	habitatmap_stdized + interpretation	100	0	rbbhf	3	types van matig nat milieu	530	3648	0	1
+11556	608104_v2014	70% 6430,rbbhf; 30% rbbmc	70% 6430_hf,rbbhf; 30% rbbmc	habitatmap_stdized + interpretation	70	0	rbbhf	3	types van matig nat milieu	530	7687	0	1
+11546	628360_v2014	70% rbbhc; 30% rbbmc	70% rbbhc; 30% rbbmc	habitatmap_stdized	30	1	rbbmc	2	types van nat milieu	530	8888	0	1
+11664	595069_v2014	70% gh; 30% rbbmr	70% gh; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	530	26364	0	1
+11540	597608_v2014	70% gh; 30% rbbmr	70% gh; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	530	80389	0	1
+11539	598060_v2014	70% 3130; 30% rbbmr	70% 3130; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	530	5839	0	1
+11532	604129_v2014	70% gh; 30% rbbmr	70% gh; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	530	36423	1	1
+11585	631425_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	530	2952	0	1
+11666	631761_v2014	70% rbbmr; 30% gh	70% rbbmr; 30% gh	habitatmap_stdized	70	1	rbbmr	2	types van nat milieu	530	7917	0	1
+11565	643337_v2014	100% rbbmr,bos	100% rbbmr,bos	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	530	34061	0	1
+11679	643430_v2014	100% rbbmr,bos	100% rbbmr,bos	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	530	13141	0	1
+11594	623518_v2014	60% rbbmr; 20% rbbsf; 20% gh	60% rbbmr; 20% rbbsf; 20% gh	habitatmap_stdized	20	1	rbbsf	3	types van matig nat milieu	530	3460	0	1
+11605	641022_v2014	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	530	5397	0	1
+11617	641258_v2014	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	530	26353	0	1
+11684	642197_v2014	70% 9120; 30% rbbsf	70% 9120; 30% rbbsf	habitatmap_stdized	30	1	rbbsf	3	types van matig nat milieu	530	31072	0	1
+11609	643088_v2014	70% rbbsf; 30% rbbmr	70% rbbsf; 30% rbbmr	habitatmap_stdized	70	1	rbbsf	3	types van matig nat milieu	530	14321	0	1
+8478	553287_v2018	100% 1130; 100% rbbmr	100% 1130; 100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	553	44588	1	1
+57241	303534_v2016	70% gh; 30% rbbhc	70% gh; 30% rbbhc	habitatmap_stdized	30	1	rbbhc	3	types van matig nat milieu	626	2649	0	1
+57290	663170_v2014	70% 6510_hu; 20% rbbhc; 10% rbbsp	70% 6510_hu; 20% rbbhc; 10% rbbsp	habitatmap_stdized	20	1	rbbhc	3	types van matig nat milieu	626	6337	0	1
+57272	672082_v2014	60% rbbhc; 30% 6510_hu; 10% gh	60% rbbhc; 30% 6510_hu; 10% gh	habitatmap_stdized	60	1	rbbhc	3	types van matig nat milieu	626	6042	0	1
+57106	292020_v2016	70% gh; 30% 6430,rbbhf	70% gh; 30% 6430_hf,rbbhf	habitatmap_stdized + interpretation	30	0	rbbhf	3	types van matig nat milieu	626	5853	0	1
+57081	293936_v2016	100% 6430,rbbhf	100% 6430_hf,rbbhf	habitatmap_stdized + interpretation	100	0	rbbhf	3	types van matig nat milieu	626	2137	0	1
+57259	593831_v2014	60% gh; 20% 6430,rbbhf; 20% 9160	60% gh; 20% 6430_hf,rbbhf; 20% 9160	habitatmap_stdized + interpretation	20	0	rbbhf	3	types van matig nat milieu	626	6482	0	1
+57275	606145_v2014	100% 6430,rbbhf	100% 6430_hf,rbbhf	habitatmap_stdized + interpretation	100	0	rbbhf	3	types van matig nat milieu	626	3015	0	1
+57318	614020_v2014	70% 6430,rbbhf,bos; 30% 9160	70% 6430_hf,rbbhf,bos; 30% 9160	habitatmap_stdized + interpretation	70	0	rbbhf	3	types van matig nat milieu	626	8148	0	1
+57282	619458_v2014	100% 6430,rbbhf,bos	100% 6430_hf,rbbhf,bos	habitatmap_stdized + interpretation	100	0	rbbhf	3	types van matig nat milieu	626	4109	0	1
+57328	624936_v2014	60% rbbmc; 20% 6430,rbbhf; 20% gh	60% rbbmc; 20% 6430_hf,rbbhf; 20% gh	habitatmap_stdized + interpretation	20	0	rbbhf	3	types van matig nat milieu	626	8985	1	1
+57313	640525_v2014	100% 6430,rbbhf,bos	100% 6430_hf,rbbhf,bos	habitatmap_stdized + interpretation	100	0	rbbhf	3	types van matig nat milieu	626	4831	0	1
+48913	399849_v2014	80% gh; 20% 9130	80% gh; 20% 9130_end	habitatmap_stdized + interpretation	20	1	9130_end	4	types van vochtig milieu	633	113524	0	1
+49039	571000_v2014	70% gh; 30% 9130_end	70% gh; 30% 9130_end	habitatmap_stdized	30	1	9130_end	4	types van vochtig milieu	633	62796	0	1
+49061	571155_v2014	60% gh; 20% 9120; 10% 9130_end; 10% rbbmr	60% gh; 20% 9120; 10% 9130_end; 10% rbbmr	habitatmap_stdized	10	1	9130_end	4	types van vochtig milieu	633	20871	0	1
+49063	596171_v2014	90% 9130_end; 10% gh	90% 9130_end; 10% gh	habitatmap_stdized	90	1	9130_end	4	types van vochtig milieu	633	171610	1	1
+48990	634050_v2014	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	633	5999	0	1
+33710	516108_v2018	40% rbbsf; 20% rbbmc; 40% gh	40% rbbsf; 20% rbbmc; 40% gh	habitatmap_stdized	20	1	rbbmc	2	types van nat milieu	694	783	0	1
+33739	516175_v2018	70% 7140_meso; 20% rbbmr; 10% rbbmc	70% 7140_meso; 20% rbbmr; 10% rbbmc	habitatmap_stdized	10	1	rbbmc	2	types van nat milieu	694	11577	0	1
+33741	516176_v2018	50% rbbmr; 50% rbbmc	50% rbbmr; 50% rbbmc	habitatmap_stdized	50	1	rbbmc	2	types van nat milieu	694	1158	0	1
+33574	506680_v2018	50% gh; 50% rbbmr	50% gh; 50% rbbmr	habitatmap_stdized	50	1	rbbmr	2	types van nat milieu	694	1771	0	1
+33575	506771_v2018	95% gh; 5% rbbmr	95% gh; 5% rbbmr	habitatmap_stdized	5	1	rbbmr	2	types van nat milieu	694	2806	0	1
+33577	506799_v2018	80% gh; 20% rbbmr	80% gh; 20% rbbmr	habitatmap_stdized	20	1	rbbmr	2	types van nat milieu	694	2478	0	1
+33579	506974_v2018	95% gh; 5% rbbmr	95% gh; 5% rbbmr	habitatmap_stdized	5	1	rbbmr	2	types van nat milieu	694	1720	0	1
+33581	506979_v2018	90% gh; 10% rbbmr	90% gh; 10% rbbmr	habitatmap_stdized	10	1	rbbmr	2	types van nat milieu	694	21028	0	1
+33600	507788_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	7079	0	1
+33617	508853_v2018	60% gh; 40% rbbmr	60% gh; 40% rbbmr	habitatmap_stdized	40	1	rbbmr	2	types van nat milieu	694	23146	0	1
+33618	508854_v2018	90% 3130_na; 10% 3130_rbbmr	90% 3130_na; 10% 3130_rbbmr	habitatmap_stdized	10	0	rbbmr	2	types van nat milieu	694	2049	0	1
+33619	508857_v2018	80% 3150; 20% 3150_rbbmr	80% 3150; 20% 3150_rbbmr	habitatmap_stdized	20	0	rbbmr	2	types van nat milieu	694	8703	0	1
+33620	508859_v2018	50% 3150_rbbmr; 25% 3150; 25% 3140	50% 3150_rbbmr; 25% 3150; 25% 3140	habitatmap_stdized	50	0	rbbmr	2	types van nat milieu	694	5009	0	1
+33621	508860_v2018	40% 3130_aom; 25% 3130_na; 25% 3140; 10% 3130_rbbmr	40% 3130_aom; 25% 3130_na; 25% 3140; 10% 3130_rbbmr	habitatmap_stdized	10	0	rbbmr	2	types van nat milieu	694	4687	0	1
+33622	508861_v2018	70% 3150_rbbmr; 15% 3150; 15% 3140	70% 3150_rbbmr; 15% 3150; 15% 3140	habitatmap_stdized	70	0	rbbmr	2	types van nat milieu	694	2371	0	1
+33660	515920_v2018	60% 3130_aom; 30% 3130_rbbmr; 10% rbbhf	60% 3130_aom; 30% 3130_rbbmr; 10% rbbhfl	habitatmap_stdized + interpretation	30	0	rbbmr	2	types van nat milieu	694	8443	0	1
+33666	515992_v2018	70% 3130_na; 30% 3130_rbbmr	70% 3130_na; 30% 3130_rbbmr	habitatmap_stdized	30	0	rbbmr	2	types van nat milieu	694	26311	0	1
+33668	515998_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	572	0	1
+33679	516027_v2018	50% gh; 40% rbbhf; 10% rbbmr	50% gh; 40% rbbhfl; 10% rbbmr	habitatmap_stdized + interpretation	10	1	rbbmr	2	types van nat milieu	694	1344	0	1
+33681	516031_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	446	0	1
+33684	516039_v2018	50% 3130_aom; 25% 3130_na; 25% 3130_rbbmr	50% 3130_aom; 25% 3130_na; 25% 3130_rbbmr	habitatmap_stdized	25	0	rbbmr	2	types van nat milieu	694	9332	0	1
+33685	516040_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	1366	0	1
+33686	516045_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	5194	0	1
+33687	516047_v2018	80% gh; 20% rbbmr	80% gh; 20% rbbmr	habitatmap_stdized	20	1	rbbmr	2	types van nat milieu	694	3902	0	1
+33694	516067_v2018	70% 3130_na; 30% 3130_rbbmr	70% 3130_na; 30% 3130_rbbmr	habitatmap_stdized	30	0	rbbmr	2	types van nat milieu	694	10104	0	1
+33695	516068_v2018	100% 3150_rbbmr	100% 3150_rbbmr	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	694	1722	0	1
+33698	516072_v2018	70% 3150_rbbmr; 30% 3130_rbbmr	70% 3150_rbbmr; 30% 3130_rbbmr	habitatmap_stdized	30	0	rbbmr	2	types van nat milieu	694	9082	0	1
+33700	516073_v2018	70% rbbmr; 30% 3130_rbbmr	70% rbbmr; 30% 3130_rbbmr	habitatmap_stdized	30	0	rbbmr	2	types van nat milieu	694	6267	0	1
+33702	516074_v2018	70% 3130_rbbmr; 30% rbbmr	70% 3130_rbbmr; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	694	4181	0	1
+33705	516095_v2018	50% rbbmr; 50% gh	50% rbbmr; 50% gh	habitatmap_stdized	50	1	rbbmr	2	types van nat milieu	694	2213	0	1
+33706	516098_v2018	90% gh; 10% rbbmr	90% gh; 10% rbbmr	habitatmap_stdized	10	1	rbbmr	2	types van nat milieu	694	1271	0	1
+33712	516113_v2018	70% gh; 30% rbbmr	70% gh; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	694	566	0	1
+33716	516130_v2018	60% gh; 40% rbbmr	60% gh; 40% rbbmr	habitatmap_stdized	40	1	rbbmr	2	types van nat milieu	694	1638	0	1
+33717	516135_v2018	80% gh; 20% rbbmr	80% gh; 20% rbbmr	habitatmap_stdized	20	1	rbbmr	2	types van nat milieu	694	1468	0	1
+33718	516137_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	3773	0	1
+33719	516139_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	567	0	1
+33724	516151_v2018	80% gh; 20% rbbmr	80% gh; 20% rbbmr	habitatmap_stdized	20	1	rbbmr	2	types van nat milieu	694	2418	0	1
+33726	516156_v2018	100% 3150_rbbmr	100% 3150_rbbmr	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	694	1350	0	1
+33727	516158_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	972	0	1
+33729	516160_v2018	40% 3150; 40% 3150_rbbmr; 20% 3130_rbbmr	40% 3150; 40% 3150_rbbmr; 20% 3130_rbbmr	habitatmap_stdized	20	0	rbbmr	2	types van nat milieu	694	3595	0	1
+33732	516168_v2018	80% 3130_na; 20% 3130_rbbmr	80% 3130_na; 20% 3130_rbbmr	habitatmap_stdized	20	0	rbbmr	2	types van nat milieu	694	4281	1	1
+33734	516173_v2018	25% 3130_na; 25% 3130_aom; 50% rbbmr	25% 3130_na; 25% 3130_aom; 50% rbbmr	habitatmap_stdized	50	1	rbbmr	2	types van nat milieu	694	5099	0	1
+33736	516174_v2018	70% rbbmr; 30% 3150_rbbmr	70% rbbmr; 30% 3150_rbbmr	habitatmap_stdized	30	0	rbbmr	2	types van nat milieu	694	11739	0	1
+33742	516204_v2018	70% gh; 30% rbbmr	70% gh; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	694	898	0	1
+33743	516229_v2018	90% gh; 10% rbbmr	90% gh; 10% rbbmr	habitatmap_stdized	10	1	rbbmr	2	types van nat milieu	694	24799	0	1
+33744	516232_v2018	97% gh; 3% rbbmr	97% gh; 3% rbbmr	habitatmap_stdized	3	1	rbbmr	2	types van nat milieu	694	51661	0	1
+33745	516234_v2018	70% gh; 30% rbbmr	70% gh; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	694	891	0	1
+33747	516247_v2018	60% 3150; 40% 3150_rbbmr	60% 3150; 40% 3150_rbbmr	habitatmap_stdized	40	0	rbbmr	2	types van nat milieu	694	7542	0	1
+33750	516255_v2018	80% gh; 20% rbbmr	80% gh; 20% rbbmr	habitatmap_stdized	20	1	rbbmr	2	types van nat milieu	694	6317	0	1
+33752	516264_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	3818	0	1
+33753	516267_v2018	100% 3150_rbbmr	100% 3150_rbbmr	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	694	3580	0	1
+33755	516270_v2018	80% gh; 20% rbbmr	80% gh; 20% rbbmr	habitatmap_stdized	20	1	rbbmr	2	types van nat milieu	694	490	0	1
+33762	516285_v2018	50% rbbmr; 50% gh	50% rbbmr; 50% gh	habitatmap_stdized	50	1	rbbmr	2	types van nat milieu	694	2756	0	1
+33763	516286_v2018	98% 3150; 2% rbbmr	98% 3150; 2% rbbmr	habitatmap_stdized	2	1	rbbmr	2	types van nat milieu	694	12026	0	1
+33798	517491_v2018	100% 3150_rbbmr	100% 3150_rbbmr	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	694	373	0	1
+33799	517493_v2018	70% 3150; 30% 3150_rbbmr	70% 3150; 30% 3150_rbbmr	habitatmap_stdized	30	0	rbbmr	2	types van nat milieu	694	2992	0	1
+33800	517494_v2018	70% 3150; 30% 3150_rbbmr	70% 3150; 30% 3150_rbbmr	habitatmap_stdized	30	0	rbbmr	2	types van nat milieu	694	2213	0	1
+33801	518722_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	3534	0	1
+33806	518762_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	371	0	1
+33810	518776_v2018	30% rbbmr; 60% gh; 10% rbbsf	30% rbbmr; 60% gh; 10% rbbsf	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	694	1190	0	1
+33817	552592_v2018	100% 3150_rbbmr	100% 3150_rbbmr	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	694	3124	0	1
+33842	571685_v2018	35% 3140; 30% 3150; 15% 3130_na; 10% 3130_aom; 10% 3150_rbbmr	35% 3140; 30% 3150; 15% 3130_na; 10% 3130_aom; 10% 3150_rbbmr	habitatmap_stdized	10	0	rbbmr	2	types van nat milieu	694	2165	0	1
+33843	571686_v2018	100% 3150_rbbmr	100% 3150_rbbmr	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	694	2003	0	1
+33845	571690_v2018	50% rbbmr; 50% 3150_rbbmr	50% rbbmr; 50% 3150_rbbmr	habitatmap_stdized	50	0	rbbmr	2	types van nat milieu	694	2495	0	1
+33853	581260_v2018	70% 6230_ha; 30% rbbmr	70% 6230_ha; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	694	1976	0	1
+33887	600048_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	1361	0	1
+33897	609574_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	694	600	0	1
+33899	609732_v2018	80% 3130_na; 20% 3130_rbbmr	80% 3130_na; 20% 3130_rbbmr	habitatmap_stdized	20	0	rbbmr	2	types van nat milieu	694	3731	0	1
+33683	516034_v2018	70% rbbmr; 30% rbbms	70% rbbmr; 30% rbbms	habitatmap_stdized	30	1	rbbms	2	types van nat milieu	694	2782	0	1
+43566	507236_v2018	99% 6410_mo; 1% 7140_meso	99% 6410_mo; 1% 7140_meso	habitatmap_stdized	99	1	6410_mo	3	types van matig nat milieu	742	2819	0	1
+43579	507353_v2018	45% 6510_hu; 40% rbbhc; 15% 6410_mo	45% 6510_hu; 40% rbbhc; 15% 6410_mo	habitatmap_stdized	15	1	6410_mo	3	types van matig nat milieu	742	2066	0	1
+43525	502659_v2018	80% gh; 20% rbbhc	80% gh; 20% rbbhc	habitatmap_stdized	20	1	rbbhc	3	types van matig nat milieu	742	9975	0	1
+43534	505875_v2018	50% gh; 50% rbbhc	50% gh; 50% rbbhc	habitatmap_stdized	50	1	rbbhc	3	types van matig nat milieu	742	4337	0	1
+43535	505890_v2018	60% gh; 30% rbbhc; 10% 6230_hn	60% gh; 30% rbbhc; 10% 6230_hn	habitatmap_stdized	30	1	rbbhc	3	types van matig nat milieu	742	2148	0	1
+43541	505916_v2018	80% gh; 20% rbbhc	80% gh; 20% rbbhc	habitatmap_stdized	20	1	rbbhc	3	types van matig nat milieu	742	13240	0	1
+43543	505919_v2018	60% rbbhc; 40% gh	60% rbbhc; 40% gh	habitatmap_stdized	60	1	rbbhc	3	types van matig nat milieu	742	7953	0	1
+43544	506068_v2018	60% gh; 40% rbbhc; 0% rbbms	60% gh; 40% rbbhc; 0% rbbms	habitatmap_stdized	40	1	rbbhc	3	types van matig nat milieu	742	11360	0	1
+43547	506121_v2018	75% gh; 15% rbbms; 10% rbbhc; 0% gh	75% gh; 15% rbbms; 10% rbbhc; 0% gh	habitatmap_stdized	10	1	rbbhc	3	types van matig nat milieu	742	35325	1	1
+43550	506329_v2018	70% gh; 30% rbbhc	70% gh; 30% rbbhc	habitatmap_stdized	30	1	rbbhc	3	types van matig nat milieu	742	10049	0	1
+43565	507233_v2018	95% gh; 5% rbbhc	95% gh; 5% rbbhc	habitatmap_stdized	5	1	rbbhc	3	types van matig nat milieu	742	8637	0	1
+43569	507241_v2018	60% rbbhc; 40% 6230_hmo	60% rbbhc; 40% 6230_hmo	habitatmap_stdized	60	1	rbbhc	3	types van matig nat milieu	742	5178	0	1
+43622	508917_v2018	40% 6230_ha; 40% gh; 20% rbbhc	40% 6230_ha; 40% gh; 20% rbbhc	habitatmap_stdized	20	1	rbbhc	3	types van matig nat milieu	742	3651	0	1
+43704	516423_v2018	100% rbbhc	100% rbbhc	habitatmap_stdized	100	1	rbbhc	3	types van matig nat milieu	742	2904	0	1
+43725	516484_v2018	60% gh; 30% rbbhc; 10% rbbha	60% gh; 30% rbbhc; 10% rbbha	habitatmap_stdized	30	1	rbbhc	3	types van matig nat milieu	742	631	0	1
+43792	527831_v2018	70% gh; 30% rbbhc; 0% 6230_hmo	70% gh; 30% rbbhc; 0% 6230_hmo	habitatmap_stdized	30	1	rbbhc	3	types van matig nat milieu	742	11286	0	1
+43809	559273_v2018	70% gh; 30% rbbhc	70% gh; 30% rbbhc	habitatmap_stdized	30	1	rbbhc	3	types van matig nat milieu	742	3487	0	1
+43821	562328_v2018	60% 6230_ha; 20% 6230_hmo; 20% rbbhc	60% 6230_ha; 20% 6230_hmo; 20% rbbhc	habitatmap_stdized	20	1	rbbhc	3	types van matig nat milieu	742	8779	0	1
+43549	506151_v2018	90% gh; 10% rbbhf	90% gh; 10% rbbhf	habitatmap_stdized	10	1	rbbhf	3	types van matig nat milieu	742	11854	0	1
+43741	517351_v2018	70% gh; 30% rbbhf	70% gh; 30% rbbhf	habitatmap_stdized	30	1	rbbhf	3	types van matig nat milieu	742	4488	0	1
+43528	503840_v2018	50% rbbhf; 50% gh	50% rbbhfl; 50% gh	habitatmap_stdized + interpretation	50	1	rbbhfl	3	types van matig nat milieu	742	5024	0	1
+43689	516354_v2018	40% rbbmr; 40% gh; 20% rbbhf	40% rbbmr; 40% gh; 20% rbbhfl	habitatmap_stdized + interpretation	20	1	rbbhfl	3	types van matig nat milieu	742	991	0	1
+43718	516469_v2018	80% gh; 20% rbbhf	80% gh; 20% rbbhfl	habitatmap_stdized + interpretation	20	1	rbbhfl	3	types van matig nat milieu	742	1622	0	1
+43724	516481_v2018	90% gh; 10% rbbhf	90% gh; 10% rbbhfl	habitatmap_stdized + interpretation	10	1	rbbhfl	3	types van matig nat milieu	742	965	0	1
+43590	507759_v2018	70% gh; 30% rbbsf	70% gh; 30% rbbsf	habitatmap_stdized	30	1	rbbsf	3	types van matig nat milieu	742	817	0	1
+43606	508316_v2018	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	742	2289	0	1
+43695	516394_v2018	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	742	1074	0	1
+43698	516401_v2018	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	742	5039	0	1
+43699	516402_v2018	80% gh; 20% rbbsf	80% gh; 20% rbbsf	habitatmap_stdized	20	1	rbbsf	3	types van matig nat milieu	742	1653	0	1
+43706	516429_v2018	70% gh; 30% rbbsf	70% gh; 30% rbbsf	habitatmap_stdized	30	1	rbbsf	3	types van matig nat milieu	742	3854	0	1
+43714	516453_v2018	90% gh; 10% rbbsf	90% gh; 10% rbbsf	habitatmap_stdized	10	1	rbbsf	3	types van matig nat milieu	742	2513	0	1
+43733	517331_v2018	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	742	2584	0	1
+43738	517347_v2018	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	742	1085	0	1
+43788	518782_v2018	80% rbbsf; 20% rbbmr	80% rbbsf; 20% rbbmr	habitatmap_stdized	80	1	rbbsf	3	types van matig nat milieu	742	658	0	1
+43790	518784_v2018	70% gh; 30% rbbsf	70% gh; 30% rbbsf	habitatmap_stdized	30	1	rbbsf	3	types van matig nat milieu	742	311	0	1
+43816	560684_v2018	80% gh; 20% rbbsf	80% gh; 20% rbbsf	habitatmap_stdized	20	1	rbbsf	3	types van matig nat milieu	742	3928	0	1
+43835	581378_v2018	50% rbbsf; 50% gh	50% rbbsf; 50% gh	habitatmap_stdized	50	1	rbbsf	3	types van matig nat milieu	742	5404	0	1
+43848	609580_v2018	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	742	3013	0	1
+44175	636382_v2014	100% rbbsf	100% rbbsf	habitatmap_stdized	100	1	rbbsf	3	types van matig nat milieu	742	15283	0	1
+43819	561524_v2018	60% gh; 20% 91E0_vo; 20% rbbsm	60% gh; 20% 91E0_vo; 20% rbbsm	habitatmap_stdized	20	1	rbbsm	3	types van matig nat milieu	742	49506	0	1
+44174	643815_v2014	70% rbbsf; 30% rbbsm	70% rbbsf; 30% rbbsm	habitatmap_stdized	30	1	rbbsm	3	types van matig nat milieu	742	8973	0	1
+43602	508252_v2018	95% gh; 5% rbbso	95% gh; 5% rbbso	habitatmap_stdized	5	1	rbbso	3	types van matig nat milieu	742	11159	0	1
+43734	517332_v2018	100% rbbso	100% rbbso	habitatmap_stdized	100	1	rbbso	3	types van matig nat milieu	742	931	0	1
+43846	599877_v2018	100% rbbso	100% rbbso	habitatmap_stdized	100	1	rbbso	3	types van matig nat milieu	742	239	0	1
+20537	609696_v2014	90% gh; 10% rbbmc,bos	90% gh; 10% rbbmc,bos	habitatmap_stdized	10	0	rbbmc	2	types van nat milieu	745	99422	1	1
+20250	609678_v2014	60% rbbmr,bos; 20% 91E0; 20% gh	60% rbbmr,bos; 20% 91E0; 20% gh	habitatmap_stdized	60	0	rbbmr	2	types van nat milieu	745	28952	0	1
+20370	627574_v2014	100% rbbmr,bos	100% rbbmr,bos	habitatmap_stdized	100	0	rbbmr	2	types van nat milieu	745	5690	0	1
+11735	104062_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	777	6014	0	1
+11731	111369_v2014	90% rbbah; 10% 6430_mr,rbbmr	90% rbbah; 10% 6430_mr,rbbmr	habitatmap_stdized	10	0	rbbmr	2	types van nat milieu	777	4785	0	1
+11733	111434_v2014	90% rbbah; 10% 6430_mr,rbbmr	90% rbbah; 10% 6430_mr,rbbmr	habitatmap_stdized	10	0	rbbmr	2	types van nat milieu	777	13546	0	1
+11800	439139_v2016	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	777	19112	0	1
+11808	444846_v2016	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	777	7804	1	1
+11704	450878_v2018	90% gh; 10% 6430_mr,rbbmr	90% gh; 10% 6430_mr,rbbmr	habitatmap_stdized	10	0	rbbmr	2	types van nat milieu	777	11551	0	1
+11719	561116_v2018	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	777	7530	0	1
+11838	647853_v2014	60% rbbsp; 20% 6430,rbbhf; 20% 6430_mr,rbbmr	60% rbbsp; 20% 6430_hf,rbbhf; 20% 6430_mr,rbbmr	habitatmap_stdized + interpretation	20	0	rbbmr	2	types van nat milieu	777	3478	0	1
+52167	634013_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	818	2594	0	1
+52186	634094_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	818	1720	0	1
+52527	643307_v2014	100% 9160	100% 9160	habitatmap_stdized	100	1	9160	4	types van vochtig milieu	818	7340	0	1
+53167	646770_v2014	70% 9160; 30% 91E0,9160	70% 9160; 30% 91E0,9160	habitatmap_stdized	30	0	9160	4	types van vochtig milieu	818	21809	1	1
+53244	652543_v2014	70% 91E0_vc; 30% 9160	70% 91E0_vc; 30% 9160	habitatmap_stdized	30	1	9160	4	types van vochtig milieu	818	2402	0	1
+52497	604131_v2014	70% gh; 30% 91E0_va	70% gh; 30% 91E0_va	habitatmap_stdized	30	1	91E0_va	4	types van vochtig milieu	818	827	0	1
+38002	545101_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	857	9325	0	1
+38459	628087_v2014	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	857	7634	0	1
+38458	628088_v2014	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	857	29641	1	1
+38495	642441_v2014	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	857	4594	0	1
+38479	649057_v2014	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	857	3193	0	1
+38296	654254_v2014	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	857	11885	0	1
+38000	530089_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	1467	0	1
+38001	530090_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	9707	0	1
+38003	545489_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	18953	0	1
+38468	643137_v2014	70% 91E0_va; 30% 91E0_vn	70% 91E0_va; 30% 91E0_vn	habitatmap_stdized	70	1	91E0_va	4	types van vochtig milieu	857	28785	0	1
+38512	643467_v2014	70% 91E0_va; 30% 91E0_vn	70% 91E0_va; 30% 91E0_vn	habitatmap_stdized	70	1	91E0_va	4	types van vochtig milieu	857	7955	0	1
+38036	643672_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	30435	0	1
+38360	645506_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	2461	0	1
+38465	651601_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	7895	0	1
+38033	651810_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	2700	0	1
+38034	651882_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	7979	0	1
+38467	652876_v2014	70% 91E0_vn; 30% 91E0_va	70% 91E0_vn; 30% 91E0_va	habitatmap_stdized	30	1	91E0_va	4	types van vochtig milieu	857	10303	0	1
+38483	667363_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	857	8986	0	1
+41172	619849_v2014	70% 91E0_va; 30% 91E0_vn	70% 91E0_va; 30% 91E0_vn	habitatmap_stdized	30	1	91E0_vn	3	types van matig nat milieu	902	99002	1	1
+41180	621427_v2014	100% 91E0_vn	100% 91E0_vn	habitatmap_stdized	100	1	91E0_vn	3	types van matig nat milieu	902	10768	0	1
+41199	630119_v2014	70% 91E0,9160; 30% 91E0_vn	70% 91E0,9160; 30% 91E0_vn	habitatmap_stdized	30	1	91E0_vn	3	types van matig nat milieu	902	40122	0	1
+41176	630205_v2014	70% 91E0_va; 30% 91E0_vn	70% 91E0_va; 30% 91E0_vn	habitatmap_stdized	30	1	91E0_vn	3	types van matig nat milieu	902	84059	0	1
+41138	653180_v2014	100% 91E0_vn	100% 91E0_vn	habitatmap_stdized	100	1	91E0_vn	3	types van matig nat milieu	902	4452	0	1
+41195	619830_v2014	100% rbbhc	100% rbbhc	habitatmap_stdized	100	1	rbbhc	3	types van matig nat milieu	902	2942	0	1
+41177	627400_v2014	70% gh; 20% 91E0; 10% rbbsf	70% gh; 20% 91E0; 10% rbbsf	habitatmap_stdized	10	1	rbbsf	3	types van matig nat milieu	902	515682	0	1
+62669	526694_v2018	50% 9130_end; 50% gh	50% 9130_end; 50% gh	habitatmap_stdized	50	1	9130_end	4	types van vochtig milieu	953	10219	0	1
+62680	529102_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	953	1936	0	1
+62685	529788_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	953	14834	0	1
+62699	530124_v2018	90% 91E0_va; 10% 91E0_vc; 0% 9130_end	90% 91E0_va; 10% 91E0_vc; 0% 9130_end	habitatmap_stdized	0	1	9130_end	4	types van vochtig milieu	953	9988	0	1
+62700	530125_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	953	1113	0	1
+62711	531299_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	953	6878	0	1
+62714	531302_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	953	9611	0	1
+62737	534523_v2018	90% 9130_end; 10% 91E0_vc	90% 9130_end; 10% 91E0_vc	habitatmap_stdized	90	1	9130_end	4	types van vochtig milieu	953	6641	1	1
+62785	580963_v2018	100% 9130_end	100% 9130_end	habitatmap_stdized	100	1	9130_end	4	types van vochtig milieu	953	10597	0	1
+62701	530143_v2018	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	953	10912	0	1
+62712	531300_v2018	90% 91E0_va; 10% 91E0_vc	90% 91E0_va; 10% 91E0_vc	habitatmap_stdized	90	1	91E0_va	4	types van vochtig milieu	953	11514	0	1
+62851	637195_v2014	100% 91E0_va	100% 91E0_va	habitatmap_stdized	100	1	91E0_va	4	types van vochtig milieu	953	3458	0	1
+3482	104243_v2014	50% gh; 50% rbbmr	50% gh; 50% rbbmr	habitatmap_stdized	50	1	rbbmr	2	types van nat milieu	957	3265	0	1
+3437	109290_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	4809	0	1
+3458	111425_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	2452	0	1
+3456	115387_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	1992	0	1
+3457	115718_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	564	0	1
+3404	591481_v2014	70% gh; 30% rbbmr	70% gh; 30% rbbmr	habitatmap_stdized	30	1	rbbmr	2	types van nat milieu	957	14805	0	1
+3489	613580_v2014	80% gh; 20% rbbmr	80% gh; 20% rbbmr	habitatmap_stdized	20	1	rbbmr	2	types van nat milieu	957	21002	0	1
+3416	625569_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	88091	0	1
+3406	625683_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	10079	0	1
+3472	625727_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	4038	0	1
+3488	627555_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	10939	1	1
+3439	631278_v2014	100% rbbmr	100% rbbmr	habitatmap_stdized	100	1	rbbmr	2	types van nat milieu	957	9367	0	1
+43289	658261_v2014	90% gh; 10% rbbmr	90% gh; 10% rbbmr	habitatmap_stdized	10	1	rbbmr	2	types van nat milieu	998	27229	1	1

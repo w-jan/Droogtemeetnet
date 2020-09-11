@@ -1,0 +1,244 @@
+..generic:
+  git2rdata: 0.2.1
+  optimize: yes
+  NA string: NA
+  sorting:
+  - target_groupnr
+  - type
+  hash: 96267b5ce159061136515e896b7442b55f94727e
+  data_hash: bca9c980e859a8e09e3ce786f01075926d4478b5
+target_groupnr:
+  class: numeric
+groupnr:
+  class: numeric
+type:
+  class: character
+type_shortname:
+  class: factor
+  labels:
+  - estuaria
+  - bij eb droogvallend zand en slik
+  - zilte pionierbegroeiingen
+  - binnendijkse zeekraalvegetatie
+  - buitendijks laag schor
+  - buitendijks hoog schor
+  - schorren met slijkgras
+  - Atlantische schorren
+  - buitendijkse schor
+  - zilte graslanden
+  - embryonale duinen
+  - wandelende duinen
+  - vastgelegde duinen
+  - kalkarme duingraslanden
+  - kalkrijke duingraslanden
+  - vastgelegde ontkalkte duinen
+  - duindoornstruwelen
+  - kruipwilgstruwelen
+  - duinbossen
+  - vochtige duinvalleien
+  - duinplassen
+  - duinpannen (kalkrijk)
+  - vochtige duinvalleien - overige vegetaties
+  - droge heide op landduinen
+  - open grasland op landduinen
+  - buntgrasvegetatie
+  - dwerghavervegetatie
+  - zeer zwakgebufferde vennen
+  - zwakgebufferde vennen
+  - oligotrofe tot mesotrofe vijvers en vennen
+  - dwergbiezenvegetaties
+  - kranswierwateren
+  - van nature eutrofe wateren
+  - dystrofe vennen
+  - beken en rivieren met bepaalde waterplanten
+  - voedselrijke slikoevers met bepaalde eenjarige planten
+  - brak tot zilt water
+  - vochtige heide
+  - droge heide
+  - brem- en gaspeldoornstruweel
+  - gagelstruweel
+  - jeneverbesstruwelen
+  - jeneverbesstruweel in heide
+  - jeneverbesstruweel in kalkgrasland
+  - stroomdalgraslanden
+  - droge kalkgraslanden en struweel op kalkbodem
+  - kalkgraslanden
+  - kalkrijke zomen en struwelen
+  - heischrale graslanden
+  - struisgrasland
+  - vochtige heischrale graslanden
+  - droge heischrale graslanden
+  - kalkrijkere heischrale graslanden
+  - blauwgraslanden
+  - blauwgrasland
+  - veldrusgrasland
+  - voedselrijke zoomvormende ruigten
+  - nitrofiele boszoom
+  - moerasspirearuigte
+  - ruigte en zoom met harig wilgenroosje
+  - ruiger rietland
+  - soortenrijke glanshavergraslanden
+  - glanshavergrasland
+  - habitatwaardig vossenstaartgrasland
+  - kalkrijk kamgrasgrasland
+  - pimpernelgrasland
+  - soortenrijke struisgrasvegetatie
+  - dotterbloemgrasland
+  - moerasspirearuigte met graslandkenmerken
+  - natte ruigte met grote wederik en hennegras
+  - kamgrasland
+  - soortenrijk kamgrasland
+  - grote vossenstaartgrasland
+  - soortenrijk grote vossenstaartgrasland
+  - zilverschoongrasland
+  - soortenrijk zilverschoongrasland
+  - actief hoogveen
+  - overgangs- en trilveen
+  - basenrijk trilveen
+  - circum-neutraal overgangsveen
+  - rietland op drijftillen
+  - zuur overgangsveen
+  - pioniervegetaties met snavelbiezen
+  - galigaanmoerassen
+  - kalktufbronnen
+  - alkalisch laagveen
+  - grote zeggenvegetatie
+  - rietland en andere vegetatie van het rietverbond
+  - kleine zeggenvegetatie niet vervat in 7140
+  - niet voor publiek opengestelde grotten
+  - veldbies-beukenbossen
+  - beuken-eikenbossen op zure bodem
+  - eiken-berkenbos als successiestadium
+  - eiken-beukenbossen met wilde hyacint en parelgras-beukenbossen
+  - atlantisch neutrofiel beukenbos
+  - midden-Europese neutrofiel beukenbos
+  - kalkminnende beukenbossen
+  - eiken-haagbeukenbossen
+  - oude eiken-berkenbossen
+  - vochtige alluviale bossen
+  - wilgenvloedbos
+  - beekbegeleidend bos
+  - goudveil-essenbos
+  - mesotroof broekbos
+  - ruigt-elzenbos
+  - oligotroof broekbos
+  - hardhoutooibossen
+  - structuurrijk, oud bestand van grove den
+  - moerasbos van breedbladige wilgen
+  - vochtig wilgenstruweel op venige of zure grond
+  - doornstruweel
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 35
+  - 36
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+  - 44
+  - 45
+  - 46
+  - 47
+  - 48
+  - 49
+  - 50
+  - 51
+  - 52
+  - 53
+  - 54
+  - 55
+  - 56
+  - 57
+  - 58
+  - 59
+  - 60
+  - 61
+  - 62
+  - 63
+  - 64
+  - 65
+  - 66
+  - 67
+  - 68
+  - 69
+  - 70
+  - 71
+  - 72
+  - 73
+  - 74
+  - 75
+  - 76
+  - 77
+  - 78
+  - 79
+  - 80
+  - 81
+  - 82
+  - 83
+  - 84
+  - 85
+  - 86
+  - 87
+  - 88
+  - 89
+  - 90
+  - 91
+  - 92
+  - 93
+  - 94
+  - 95
+  - 96
+  - 97
+  - 98
+  - 99
+  - 100
+  - 101
+  - 102
+  - 103
+  - 104
+  - 105
+  - 106
+  - 107
+  - 108
+  - 109
+  - 110
+  - 111
+  ordered: no
+aandeel:
+  class: numeric
