@@ -1768,7 +1768,7 @@ indic_rel_percentiel <- indic_rel_basis %>%
             ) %>% 
   ungroup
 
-write_vc(indic_rel_percentiel, file.path("data", "result", "indic_rel_percentiel"), sorting = c("meetpunt","simulatienr", "daginjaar_corr"), strict = FALSE)
+write_vc(indic_rel_percentiel, file.path("data", "result", "indicator_nara","indic_rel_percentiel"), sorting = c("meetpunt","simulatienr", "daginjaar_corr"), strict = FALSE, root = gitroot)
 
 indic_rel <- indic_rel_basis %>% 
   inner_join(indic_rel_percentiel %>% dplyr::select(-aantal), by = c("meetpunt", "simulatienr", "daginjaar_corr")) %>% 
@@ -1790,7 +1790,7 @@ indic_rel <- indic_rel_basis %>%
 
 indic_rel <- indic_rel %>% filter (jaar < 2019)
 
-write_vc(indic_rel, file.path("data", "result", "indic_rel"), sorting = c("jaar", "meetpunt","simulatienr"), strict = FALSE)
+write_vc(indic_rel, file.path("data", "result", "indicator_nara","indic_rel"), sorting = c("jaar", "meetpunt","simulatienr"), strict = FALSE, root = gitroot)
 
 checkdistributie <- indic_rel %>% 
   filter(jaar <= 2000, meetpunt == "ASBP003") %>% 
