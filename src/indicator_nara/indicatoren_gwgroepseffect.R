@@ -16,8 +16,6 @@ indic_abs_function_gw_model <- function(modeldata, respons, percentile, indicato
   model_gn_meetpunt <-  as.formula(paste(respons, "~", "1 + groep3n + f(jaar, model =", "'rw1', scale.model = TRUE,
                  hyper = prec.prior)", sep = " "))
 
-  model_enkelgroep <-  as.formula(paste(respons, "~", "1 + groep3n ", sep = " "))  
-  
   resultname_stat <- paste0("indic_abs_p", percentile,"_jaar_stat_gw", if (standardised == TRUE) ("_std"))
   resultname_fitted <- paste0("indic_abs_p", percentile,"_fitted_gw", if (standardised == TRUE) ("_std"))
   
@@ -56,20 +54,9 @@ indic_abs_function_gw_model <- function(modeldata, respons, percentile, indicato
                  verbose = FALSE
       )
       
-      I2d <- inla(model_enkelgroep, 
-                  control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
-                  family = modelkeuze %>% filter(percentiel == percentile) %>% 
-                    dplyr::pull(model), 
-                  #Ntrials = aantaldagen_jaar,
-                  data = mdata,
-                  verbose = FALSE
-      )
-      
-            
       summary(I2)
       summary(I2b)
-      summary(I2c)   
-      summary(I2d)
+      summary(I2c)      
       modelkeuze %>% filter(percentiel == percentile) %>% dplyr::pull(model)
 
       sum(log(I2$cpo$cpo))
@@ -331,9 +318,7 @@ drogejaren_extreem <- indic_abs_p05_finaal %>%
   dplyr::pull(jaar)
 
 modeldata <- indic_abs_basis_gw %>% 
-  mutate(groep3n = factor(groep3n)) %>% 
   filter (jaar %in% drogejaren)
 
 modeldata <- indic_abs_basis_gw %>% 
-  mutate(groep3n = factor(groep3n)) %>% 
   filter (jaar %in% drogejaren_extreem)
