@@ -6,8 +6,8 @@
   - jaar
   - meetpunt
   - simulatienr
-  hash: 49500fbae837d025f9f394b4c2f77db3644bee00
-  data_hash: f056e5917fbe4277f21c3c4117d5ac20fad9321c
+  hash: db9272a079f9f12cef33208365f6a629ca2f0ca3
+  data_hash: 81e87df7ac7044cb3f5f458b18740749ab477f49
 meetpunt:
   class: factor
   labels:
@@ -230,14 +230,6 @@ lengte_onder_p10_std:
   class: numeric
 lengte_onder_p30_std:
   class: numeric
-p01_mean_fitted.x:
-  class: numeric
-p01_sd_fitted.x:
-  class: numeric
-p01_p02.5_fitted.x:
-  class: numeric
-p01_p97.5_fitted.x:
-  class: numeric
 p05_mean_fitted:
   class: numeric
 p05_sd_fitted:
@@ -262,11 +254,11 @@ p30_p02.5_fitted:
   class: numeric
 p30_p97.5_fitted:
   class: numeric
-p01_mean_fitted.y:
+p01_mean_fitted:
   class: numeric
-p01_sd_fitted.y:
+p01_sd_fitted:
   class: numeric
-p01_p02.5_fitted.y:
+p01_p02.5_fitted:
   class: numeric
-p01_p97.5_fitted.y:
+p01_p97.5_fitted:
   class: numeric

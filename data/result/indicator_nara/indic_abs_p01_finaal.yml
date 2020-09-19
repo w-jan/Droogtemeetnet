@@ -3,19 +3,17 @@
   optimize: yes
   NA string: NA
   sorting: jaar
-  hash: 49c079ee44b6ac33e88ba50581235cd3ab84ce81
-  data_hash: d70f32a91543fa40b57cd16b1b39785aa85e4f1c
+  hash: 7a6e0813c05fda4e16e240bc038d0bcc6cbe52bd
+  data_hash: ca9510b04e4d4e5be659d6ea08878ef970ed0451
 jaar:
   class: numeric
 gem_jaar:
   class: numeric
-gem_og:
-  class: numeric
-gem_bg:
-  class: numeric
 og_jaar:
   class: numeric
 bg_jaar:
+  class: numeric
+var_sim:
   class: numeric
 dag_onder_p01_mean:
   class: numeric
@@ -32,4 +30,14 @@ dag_onder_p05_median:
 dag_onder_p10_median:
   class: numeric
 dag_onder_p30_median:
+  class: numeric
+gem_jaar_t:
+  class: numeric
+gem_og_t:
+  class: numeric
+gem_bg_t:
+  class: numeric
+og_jaar_t:
+  class: numeric
+bg_jaar_t:
   class: numeric

@@ -3,8 +3,8 @@
   optimize: yes
   NA string: NA
   sorting: jaar
-  hash: 43f3f35af2bcc283bc31955db8f7e8611cf185e6
-  data_hash: 0e0d9036b43bc34320036d3080b3c29a09a3a775
+  hash: a4f2fbe4bd9f5a265ad0c4c5e4118bbc568de4e3
+  data_hash: 8a279c9eb70950c68e5d3446c7b2504912e4f3af
 jaar:
   class: numeric
 gem_jaar:
@@ -32,4 +32,6 @@ lengte_onder_p05_median:
 lengte_onder_p10_median:
   class: numeric
 lengte_onder_p30_median:
+  class: numeric
+var_sim:
   class: numeric

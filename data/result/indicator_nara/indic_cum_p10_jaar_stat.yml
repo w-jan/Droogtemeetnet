@@ -5,8 +5,8 @@
   sorting:
   - jaar
   - simulatienr
-  hash: b2258fb4989868f4ada25556c4a1bb73878d4954
-  data_hash: 966755e4d14fa9df8fcbf833d8237c4db7dd372f
+  hash: 84d5f275dffb05152e3572bf00d0ee5fbf55fccf
+  data_hash: 56d1b984c9c6111bd5c40558cdb081cf917004eb
 jaar:
   class: numeric
 mean:
@@ -19,3 +19,5 @@ p97.5:
   class: numeric
 simulatienr:
   class: integer
+sd:
+  class: numeric

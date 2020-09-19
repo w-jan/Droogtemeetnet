@@ -6,8 +6,8 @@
   - jaar
   - meetpunt
   - simulatienr
-  hash: 57f100439b9902911a46395b30ee4fec89a508e8
-  data_hash: 360270f69109626f8b385bf8ceb4d433da623eba
+  hash: 3ee89557c411479320b33e2c515bde548017ec70
+  data_hash: 9549df3c5f4f904f03aca5515525e3e5b6873fda
 meetpunt:
   class: factor
   labels:
@@ -232,14 +232,6 @@ jaar_factor:
   - 35
   - 36
   ordered: no
-p01_mean_fitted:
-  class: numeric
-p01_sd_fitted:
-  class: numeric
-p01_p02.5_fitted:
-  class: numeric
-p01_p97.5_fitted:
-  class: numeric
 p05_mean_fitted:
   class: numeric
 p05_sd_fitted:
@@ -263,4 +255,12 @@ p30_sd_fitted:
 p30_p02.5_fitted:
   class: numeric
 p30_p97.5_fitted:
+  class: numeric
+p01_mean_fitted:
+  class: numeric
+p01_sd_fitted:
+  class: numeric
+p01_p02.5_fitted:
+  class: numeric
+p01_p97.5_fitted:
   class: numeric

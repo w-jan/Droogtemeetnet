@@ -3,19 +3,27 @@
   optimize: yes
   NA string: NA
   sorting: jaar
-  hash: b046aec08a3acf8b7d19578880fea5059822f37d
-  data_hash: 6a78dc2f129bda0a31faafb3272c3c3b88115bf2
+  hash: 71eec6bfa28032fafdf05da7a2750f775e637f13
+  data_hash: 298e33bd630dc31752246dbc9f2a20bbd5319278
 jaar:
   class: numeric
 gem_jaar:
   class: numeric
-gem_og:
-  class: numeric
-gem_bg:
-  class: numeric
 og_jaar:
   class: numeric
 bg_jaar:
+  class: numeric
+gem_jaar_t:
+  class: numeric
+gem_og_t:
+  class: numeric
+gem_bg_t:
+  class: numeric
+var_sim:
+  class: numeric
+og_jaar_t:
+  class: numeric
+bg_jaar_t:
   class: numeric
 rdag_onder_p01_mean:
   class: numeric
