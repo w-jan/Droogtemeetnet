@@ -1212,7 +1212,7 @@ modelkeuze$model <- as.character(modelkeuze$model)
 indic_abs_function <- function(modeldata, suffix= "", respons, percentile, indicatorname, standardised) {
 
   prec.prior <- list(prec = list(param = c(0.001, 0.001)))
-  prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.035, 0.001)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.025, 0.001)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
   model <- as.formula(paste(respons, "~", "f(jaar, model =", "'rw2', scale.model = TRUE,
                           hyper = prec.prior)+ f(meetpunt, model = 'iid', hyper = prec.prior)", sep = " "))   
   # model <- as.formula(paste(respons, "~", "1 + jaar_factor + f(meetpunt, model = 'iid', hyper = prec.prior)", sep = " "))     
@@ -2062,7 +2062,8 @@ indic_rel_function <- function(modeldata, respons, percentile, indicatorname, st
              !!varname_sd := sd,
              !!varname_p025 := '0.025quant',
              !!varname_p975 := '0.975quant')
-    mdata <- bind_cols(mdata, result_fitted_i)
+    mdata <- bind_cols(mdata, result_fitted_i) %>% 
+      slice(-(1:nrow(jaren))) #de regels met lege responsen hieruit verwijderen
     if (standardised == TRUE) {
       varname_mean_backtransformed <- paste0(varname_mean, "_untr")
       varname_p025_backtransformed <- paste0(varname_p025, "_untr")
@@ -2337,7 +2338,7 @@ write_vc(indic_rel_p30_jaar_stat, file.path("data", "result", "indicator_nara", 
 
 indic_abs_basis_bu <- indic_abs_basis 
 indic_abs_basis_gw <- indic_abs_basis %>% 
-  dplyr::select(-contains("fitted") )
+  dplyr::select(-contains("fitted"), -groep3 )
 indic_abs_basis_gw <- indic_abs_basis_gw %>% 
   inner_join(tubes_indicator %>% 
                mutate(groep3 = ifelse(groupnr == 1, 2, groupnr)) %>% 
@@ -2368,7 +2369,8 @@ indic_abs_function_gw <- function(modeldata, respons, percentile, indicatorname,
       #i <- 1
       #groep <- 3
       mdata <- modeldata[modeldata$simulatienr == i & modeldata$groep3n == groep,]
-
+      jaren <- mdata %>% distinct(jaar) %>% mutate(simulatienr = i)
+      mdata <- bind_rows(jaren, mdata)    
       # mdata[mdata[,respons] == 0,respons] <- 1e16
       print(i)    
       teller <- teller + 1
@@ -2382,13 +2384,17 @@ indic_abs_function_gw <- function(modeldata, respons, percentile, indicatorname,
                  verbose = FALSE
       )
       
-      result_stat_i <-  I2$summary.random$jaar %>% 
-        mutate_at(names(I2$summary.random$jaar)[2:6], exp) %>%
-        mutate_at(names(I2$summary.random$jaar)[2:6], function(x){x*exp(I2$summary.fixed$mean)}) %>% 
-        mutate(simulatienr = i,
-               groep3n = groep) %>% 
-        dplyr::select(-sd, -mode, -kld)
-  
+      # result_stat_i <-  I2$summary.random$jaar %>% 
+      #   mutate_at(names(I2$summary.random$jaar)[2:6], exp) %>%
+      #   mutate_at(names(I2$summary.random$jaar)[2:6], function(x){x*exp(I2$summary.fixed$mean)}) %>% 
+      #   mutate(simulatienr = i,
+      #          groep3n = groep) %>% 
+      #   dplyr::select(-sd, -mode, -kld)
+      result_stat_i <- I2$summary.linear.predictor %>% 
+        slice(1:nrow(jaren)) %>% 
+        bind_cols(jaren) %>% 
+        mutate(intercept = I2$summary.fixed$mean) %>% 
+        dplyr::select(-mode, -kld)      
       
       varname_mean <- paste0("p", percentile, "_mean", if (standardised == TRUE) ("_std"), "_fitted")
       varname_sd <- paste0("p", percentile, "_sd", if (standardised == TRUE) ("_std"), "_fitted")
@@ -2399,7 +2405,8 @@ indic_abs_function_gw <- function(modeldata, respons, percentile, indicatorname,
                !!varname_sd := sd,
                !!varname_p025 := '0.025quant',
                !!varname_p975 := '0.975quant')
-      mdata <- bind_cols(mdata, result_fitted_i)
+      mdata <- bind_cols(mdata, result_fitted_i) %>% 
+        slice(-(1:nrow(jaren))) #de regels met lege responsen hieruit verwijderen
       if (standardised == TRUE) {
         varname_mean_backtransformed <- paste0(varname_mean, "_untr")
         varname_p025_backtransformed <- paste0(varname_p025, "_untr")
@@ -2425,8 +2432,7 @@ indic_abs_function_gw <- function(modeldata, respons, percentile, indicatorname,
       
       if (teller == 20 * 3) {  
         result_stat <- result_stat %>% 
-          rename( jaar = ID,
-                  p02.5 = '0.025quant',
+          rename( p02.5 = '0.025quant',
                   p50 = '0.5quant',
                   p97.5 = '0.975quant')
         
@@ -2453,7 +2459,7 @@ indic_abs_function_gw <- function(modeldata, respons, percentile, indicatorname,
         
         indic_abs_basis_gw <- indic_abs_basis_gw %>% 
           inner_join(result_fitted %>% 
-                       dplyr::select(contains("fitted"), 2:4), 
+                       dplyr::select(contains("fitted"), 1:3), 
                      by = c("meetpunt","simulatienr", "jaar")) 
       } #if teller = 20*3
     } #for i
@@ -2492,20 +2498,31 @@ indic_abs_gem_gw <- indic_abs_basis_gw %>%
 indic_abs_p05_finaal_gw <- indic_abs_p05_jaar_stat_gw %>% 
   mutate(groep3n = factor(groep3n)) %>% 
   group_by(jaar, groep3n) %>% 
-  summarise(gem_jaar = mean(mean),
-            # sd_jaar_biased = mean(sd),            
-            gem_og = mean(p02.5),
-            gem_bg = mean(p97.5),
-            # sd_jaar = sd_jaar_biased + (20 + 1)/20 * sum((gem_jaar - mean)^2)/(20 - 1),
-            # og_jaar = gem_jaar - 1.96 * sd_jaar,
-            # bg_jaar = gem_jaar + 1.96 * sd_jaar
-            og_jaar = gem_og - 1.96 * (20 + 1)/20 * sum((gem_og - p02.5)^2) / (20 - 1),
-            bg_jaar = gem_bg + 1.96 * (20 + 1)/20 * sum((gem_bg - p97.5)^2) / (20 - 1)            
-  ) %>% 
+    summarise(gem_jaar_t = mean(mean),
+              #gem_intercept = mean(intercept),
+              # sd_sim = mean(sd),            
+              gem_og_t = mean(p02.5),
+              gem_bg_t = mean(p97.5),
+              # sd_jaar = sd_jaar_biased + (20 + 1)/20 * sum((gem_jaar - mean)^2)/(20 - 1),
+              # og_jaar = gem_jaar - 1.96 * sd_jaar,
+              # bg_jaar = gem_jaar + 1.96 * sd_jaar
+              # og_jaar = gem_og - 1.96 * (12 + 1)/12 * sum((gem_og - p02.5)^2) / (12 - 1), #7 simulatieruns convergeerden niet
+              # bg_jaar = gem_bg + 1.96 * (12 + 1)/12 * sum((gem_bg - p97.5)^2) / (12 - 1)            
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - gem_jaar_t)^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>% 
   ungroup() %>% 
   inner_join(indic_abs_gem_gw, by = c("jaar", "groep3n"))
 
-plotdata <- indic_abs_p05_finaal_gw %>% inner_join(gw_types_groups  %>% rename (gw = 'GT-groep: nummer') %>% mutate(gw = factor(gw)), by = c("groep3n" = "gw")) %>% rename(Grondwatertype = 'GT-groep: naam')
+plotdata <- indic_abs_p05_finaal_gw %>% 
+  inner_join(gw_types_groups  %>% 
+               rename(gw = 'GT-groep: nummer') %>% 
+               mutate(gw = factor(gw)), by = c("groep3n" = "gw")) %>% 
+  rename(Grondwatertype = 'GT-groep: naam')
 
 gplot <- ggplot(data = plotdata, aes(x = jaar, y = dag_onder_p05_mean, color = Grondwatertype)) + 
   # geom_line(aes(x = jaar, y = og_jaar), linetype = "longdash") +
@@ -2518,36 +2535,47 @@ gplot <- ggplot(data = plotdata, aes(x = jaar, y = dag_onder_p05_mean, color = G
   geom_hline(aes(yintercept = 18), linetype = "dotted") +
   scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +  
   labs(x = "Jaar", y = "trend")
-png(paste0(file.path("figures", "indicator","dag_onder_p05"),"_trend_groep",".png"), width = 800)
+png(paste0(file.path("..","figures", "indicator_nara","dag_onder_p05"),"_trend_groep",".png"), width = 800)
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis_gw, respons = "dag_onder_p05", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p05"),"_tijdreeks_groep",".png"))
+png(paste0(file.path("..","figures", "indicator_nara","dag_onder_p05"),"_tijdreeks_groep",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p05_finaal_gw, file.path("data", "result", "indic_abs_p05_finaal_groep"), sorting = c("jaar", "groep3n"), strict = FALSE)
-write_vc(indic_abs_p05_jaar_stat_gw, file.path("data", "result", "indic_abs_p05_jaar_stat_groep"), sorting = c("jaar", "simulatienr", "groep3n"), strict = FALSE)
+write_vc(indic_abs_p05_finaal_gw, file.path("data", "result","indicator_nara", "indic_abs_p05_finaal_groep"), sorting = c("jaar", "groep3n"), strict = FALSE, root = gitroot)
+write_vc(indic_abs_p05_jaar_stat_gw, file.path("data", "result","indicator_nara", "indic_abs_p05_jaar_stat_groep"), sorting = c("jaar", "simulatienr", "groep3n"), strict = FALSE, root = gitroot)
 
 indic_abs_p30_finaal_gw <- indic_abs_p30_jaar_stat_gw %>% 
   mutate(groep3n = factor(groep3n)) %>% 
   group_by(jaar, groep3n) %>% 
-  summarise(gem_jaar = mean(mean),
-            # sd_jaar_biased = mean(sd),            
-            gem_og = mean(p02.5),
-            gem_bg = mean(p97.5),
+  summarise(gem_jaar_t = mean(mean),
+            #gem_intercept = mean(intercept),
+            # sd_sim = mean(sd),            
+            gem_og_t = mean(p02.5),
+            gem_bg_t = mean(p97.5),
             # sd_jaar = sd_jaar_biased + (20 + 1)/20 * sum((gem_jaar - mean)^2)/(20 - 1),
             # og_jaar = gem_jaar - 1.96 * sd_jaar,
             # bg_jaar = gem_jaar + 1.96 * sd_jaar
-            og_jaar = gem_og - 1.96 * (20 + 1)/20 * sum((gem_og - p02.5)^2) / (20 - 1),
-            bg_jaar = gem_bg + 1.96 * (20 + 1)/20 * sum((gem_bg - p97.5)^2) / (20 - 1)            
+            # og_jaar = gem_og - 1.96 * (12 + 1)/12 * sum((gem_og - p02.5)^2) / (12 - 1), #7 simulatieruns convergeerden niet
+            # bg_jaar = gem_bg + 1.96 * (12 + 1)/12 * sum((gem_bg - p97.5)^2) / (12 - 1)            
+            var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - gem_jaar_t)^2)/(20 - 1),
+            og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+            bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+            gem_jaar = exp(gem_jaar_t),
+            og_jaar = exp(og_jaar_t),
+            bg_jaar = exp(bg_jaar_t)
   ) %>% 
   ungroup() %>% 
   inner_join(indic_abs_gem_gw, by = c("jaar", "groep3n"))
 
-plotdata <- indic_abs_p30_finaal_gw %>% inner_join(gw_types_groups  %>% rename (gw = 'GT-groep: nummer') %>% mutate(gw = factor(gw)), by = c("groep3n" = "gw")) %>% rename(Grondwatertype = 'GT-groep: naam')
+plotdata <- indic_abs_p30_finaal_gw %>% 
+  inner_join(gw_types_groups  %>% 
+               rename (gw = 'GT-groep: nummer') %>% 
+               mutate(gw = factor(gw)), by = c("groep3n" = "gw")) %>% 
+  rename(Grondwatertype = 'GT-groep: naam')
 
 gplot <- ggplot(data = plotdata, aes(x = jaar, y = dag_onder_p30_mean, color = Grondwatertype)) + 
   # geom_line(aes(x = jaar, y = og_jaar), linetype = "longdash") +
@@ -2560,18 +2588,18 @@ gplot <- ggplot(data = plotdata, aes(x = jaar, y = dag_onder_p30_mean, color = G
   geom_hline(aes(yintercept = 110), linetype = "dotted") +
   scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +  
   labs(x = "Jaar", y = "trend")
-png(paste0(file.path("figures", "indicator","dag_onder_p30"),"_trend_groep",".png"), width = 800)
+png(paste0(file.path("..","figures", "indicator_nara","dag_onder_p30"),"_trend_groep",".png"), width = 800)
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis_gw, respons = "dag_onder_p30", gemid = "p30_mean_fitted", og = p30_p02.5_fitted, bg = p30_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p30"),"_tijdreeks_groep",".png"))
+png(paste0(file.path("..","figures", "indicator_nara","dag_onder_p30"),"_tijdreeks_groep",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p30_finaal_gw, file.path("data", "result", "indic_abs_p30_finaal_groep"), sorting = c("jaar", "groep3n"), strict = FALSE)
-write_vc(indic_abs_p30_jaar_stat_gw, file.path("data", "result", "indic_abs_p30_jaar_stat_groep"), sorting = c("jaar", "simulatienr", "groep3n"), strict = FALSE)
+write_vc(indic_abs_p30_finaal_gw, file.path("data", "result", "indicator_nara","indic_abs_p30_finaal_groep"), sorting = c("jaar", "groep3n"), strict = FALSE, root = gitroot)
+write_vc(indic_abs_p30_jaar_stat_gw, file.path("data", "result","indicator_nara","indic_abs_p30_jaar_stat_groep"), sorting = c("jaar", "simulatienr", "groep3n"), strict = FALSE, root = gitroot)
 
 #enkel voor zeer droge jaren
 modeldata <- indic_abs_basis %>%
@@ -2590,15 +2618,22 @@ indic_abs_basis_droog <- indic_abs_function(modeldata = modeldata, suffix = "dro
 
 indic_abs_p05_droog_finaal <- indic_abs_p05_droog_jaar_stat %>% 
   group_by(jaar) %>% 
-  summarise(gem_jaar = mean(mean),
-            # sd_jaar_biased = mean(sd),            
-            gem_og = mean(p02.5),
-            gem_bg = mean(p97.5),
+  summarise(gem_jaar_t = mean(mean),
+            #gem_intercept = mean(intercept),
+            # sd_sim = mean(sd),            
+            gem_og_t = mean(p02.5),
+            gem_bg_t = mean(p97.5),
             # sd_jaar = sd_jaar_biased + (20 + 1)/20 * sum((gem_jaar - mean)^2)/(20 - 1),
             # og_jaar = gem_jaar - 1.96 * sd_jaar,
             # bg_jaar = gem_jaar + 1.96 * sd_jaar
-            og_jaar = gem_og - 1.96 * (20 + 1)/20 * sum((gem_og - p02.5)^2) / (20 - 1),
-            bg_jaar = gem_bg + 1.96 * (20 + 1)/20 * sum((gem_bg - p97.5)^2) / (20 - 1)            
+            # og_jaar = gem_og - 1.96 * (12 + 1)/12 * sum((gem_og - p02.5)^2) / (12 - 1), #7 simulatieruns convergeerden niet
+            # bg_jaar = gem_bg + 1.96 * (12 + 1)/12 * sum((gem_bg - p97.5)^2) / (12 - 1)            
+            var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - gem_jaar_t)^2)/(20 - 1),
+            og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+            bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+            gem_jaar = exp(gem_jaar_t),
+            og_jaar = exp(og_jaar_t),
+            bg_jaar = exp(bg_jaar_t)       
   ) %>% 
   ungroup() %>% 
   inner_join(indic_abs_gem, by = "jaar")
@@ -2606,15 +2641,15 @@ indic_abs_p05_droog_finaal <- indic_abs_p05_droog_jaar_stat %>%
 
 #plot van de trend
 gplot <- plottrend(indic_abs_p05_droog_finaal,"dag_onder_p05_mean", 18)
-png(paste0(file.path("figures", "indicator","dag_onder_p05_droog"),"_trend",".png"))
+png(paste0(file.path("..","figures", "indicator_nara","dag_onder_p05_droog"),"_trend",".png"))
 gplot
 dev.off()
 
 fig <- plotfitting(indic_basis = indic_abs_basis_droog, respons = "dag_onder_p05", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted)
-png(paste0(file.path("figures", "indicator","dag_onder_p05_droog"),"_tijdreeks",".png"))
+png(paste0(file.path("..","figures", "indicator_nara","dag_onder_p05_droog"),"_tijdreeks",".png"))
 fig
 dev.off()
 
 #bewaren resultaten
-write_vc(indic_abs_p05_finaal, file.path("data", "result", "indic_abs_p05_finaal"), sorting = c("jaar"), strict = FALSE)
-write_vc(indic_abs_p05_jaar_stat, file.path("data", "result", "indic_abs_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE)
+write_vc(indic_abs_p05_finaal, file.path("data", "result", "indicator_nara","indic_abs_p05_finaal"), sorting = c("jaar"), strict = FALSE, root = gitroot)
+write_vc(indic_abs_p05_jaar_stat, file.path("data", "result", "indicator_nara","indic_abs_p05_jaar_stat"), sorting = c("jaar", "simulatienr"), strict = FALSE, root = gitroot)
