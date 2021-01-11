@@ -1,0 +1,581 @@
+# Inleiding
+In dit document worden droogte-indicatoren berekend die moeten toelaten om op jaarbasis de algemene droogte-toestand in grondwaterafhankelijke vegetaties weer te geven. 
+Eén (of misschien meer) van deze indicatoren zal opgenomen worden in het NARA-rapport.
+
+Drie soorten indicatoren worden berekend.
+
+- een *cumulatieve*: **de som per jaar van de diepte van het grondwaterpeil beneden een kritische drempelwaarde** 
+
+- een *absolute*: **aantal dagen per jaar dat het grondwaterpeil beneden een kritische drempelwaarde is**
+
+- een *relatieve*: **aantal relatief droge dagen per jaar** 
+Een relatief droge dag is een dag waarbij het grondwaterpeil lager staat dan een bepaalde percentielwaarde voor die dag in de periode 1985 - 2015.
+
+Om deze droogte-indicatoren te berekenen wordt beroep gedaan op het meetnet dat voorgesteld wordt om acute droogte in grondwaterafhankelijke vegetaties in Vlaanderen te monitoren.
+In het meetnet is het voorzien om 100 meetpunten op te nemen, verdeeld over verschillende grondwatertypen en dit zo ruimtelijk gebalanceerd mogelijk.
+Op elk meetpunt werd in het programma Menyanthes een tijdreeksanalyse uitgevoerd. 
+Er werd in dit programma een tijdreeks samengesteld van 01/01/1985 tot 15/05/2019, bestaande uit effectieve veldmetingen en modelmatig gesimuleerde metingen. 
+De beschikbare data lieten dat niet voor elk geselecteerd meetpunt toe.
+Om geselecteerd te kunnen worden moest minstens 66 % van de variantie verklaard kunnen worden door weersvariabelen (neerslag en potentiële evaporatie) en mocht in de tijdreeks geen lineaire dalende of stijgende trend waarneembaar zijn. 
+Een [lineaire trend]{#lintrend} werd als significant beschouwd indien de stijging/daling per jaar (= `trend`), rekening houdend met de standaardafwijking hierop (= `se`), voldoet één van de volgende twee regels:
+
+$$trend - 1.96* se > 1(cm/jaar)$$ 
+of 
+$$trend + 1.96* se < -1(cm/jaar)$$
+Voor 58 meetpunten konden wel dergelijke tijdreeksen opgebouwd worden.
+
+In het Menyanthesprogramma werden voor elk van de 58 meetpunten 20 tijdreeksen gesimuleerd. 
+Een effectieve veldmeting kreeg hierbij voorrang op een modelwaarde (op dagen met werkelijke metingen hebben de 20 reeksen dus steeds dezelfde waarde).
+Deze verschillende simulaties zullen toelaten om de onzekerheid te schatten die er bestaat voor de dagen zonder veldmeting. 
+
+Het databestand waarmee de indicatoren berekend zullen worden bestaat uit naar schatting : 58 meetpunten \* 33 jaar \* 365 metingen/jaar * 20 simulaties = 13.972.200 metingen.
+
+```{r functies}
+#grafiek voor het bekijken van de modelfitting. Het plot de gemeten data (in werkelijkheid omvatten ze zowel geïmputeerde data als veldmetingen) en de gefitte waarden incl credible interval. 
+
+#hulpfunctie voor het maken van minor ticks in de grafieken
+insert_minor <- function(major_labs, n_minor) {
+  labs <- c( sapply( major_labs, function(x) c(x, rep("", 4) ) ) )
+  labs[1:(length(labs) - n_minor)]}
+
+modelfitting <- function(indic_basis, respons, gemid, og, bg) {
+  og <- enquo(og)
+  bg <- enquo(bg)
+  PI_data <- indic_basis %>% group_by(jaar) %>% 
+    summarise(ymax_data = max(!! bg), ymin_data = min(!! og))
+  p <- ggplot(data = indic_basis, aes_string(y = respons, x = "jaar"))
+  p <- p + xlab("Jaar") + ylab(respons)
+  p <- p + theme(text = element_text(size = 15))
+  p <- p + geom_point(shape = 16, size = 2, col = "black")
+  p <- p + geom_line(aes_string(x = "jaar", y = gemid), size = 1, color = "red")
+  p <- p + geom_ribbon(data = PI_data,
+                       aes(x = jaar, ymax = ymax_data, ymin = ymin_data), inherit.aes = F,
+                       fill = grey(0.5),
+                       alpha = 0.4)
+  p <- p + scale_x_continuous(breaks = 1985:2020, 
+                              labels = insert_minor(seq(1985, 2020, by = 5), 4))
+  p <- p + theme(strip.text = element_text(size = 15))
+  return(p)
+}
+
+
+```
+
+# Voorbereiding
+
+## Inlezen van ruwe gegevens van de SQL-server
+De ruwe data staan op de SQL-server in de FlaVen-databank.
+Het inlezen vergt een betrouwbare (langdurig werkzame) VPN-verbinding en vraagt ook veel tijd.
+Daarom werden de data na het inlezen omgezet in het VC-formaat en lokaal/in github bewaard. 
+Het inlezen van deze bestanden gaat 3x-sneller dan het inlezen van de SQL-server.
+
+```{r inlezen-ruwe-data-sqlserver, eval=FALSE}
+con <- dbConnect(odbc::odbc(), .connection_string = "Driver=SQL Server;Server=inbo-sql07-prd.inbo.be,1433;Database=D0136_00_Flaven;Trusted_Connection=Yes;")
+
+#de brondata bestaat uit een reeks van 19 tabellen. Door deze op de SQL-server samen te voegen tot één bestand, zou het importeren falen.
+
+ruwetabellen_lijst <- data.frame (a = "droogte_tijdreeks", b = "ruwedata", c = seq(from = 1, to = 19))
+
+ruwetabellen_lijst <- ruwetabellen_lijst %>% mutate (naambrontabel = paste0(a,c), 
+                                                     naamdoeltabel = sprintf(paste0(b,"%02d"), c)) 
+
+ruwetabellen_lijst <- setNames(ruwetabellen_lijst %>% dplyr::pull(naambrontabel), make.names(ruwetabellen_lijst %>% dplyr::pull(naamdoeltabel)))
+
+
+list2env(
+  lapply(ruwetabellen_lijst, 
+         dbReadTable, conn = con,
+         guess_max = 300000), 
+  envir = .GlobalEnv)
+
+DBI::dbDisconnect(con)
+
+
+```
+
+```{r wegschrijven-brontabellen-naar-vc-formaat, eval=FALSE }
+for (i in seq(from = 1, to = 19)){
+  write_vc(get(sprintf("ruwedata%02d", i)), file.path("data", "local", sprintf("ruwedata%02d", i)), sorting = c("dag","meetpunt_import"), strict= FALSE)
+}
+
+```
+De data worden niet in één keer ingelezen.
+De brondata zitten in 19 bestanden.
+Elk van deze 19 bestanden is op zich al vrij omvangrijk. 
+Ze samenvoegen tot één bestand, zou kunnen leiden tot importproblemen.
+De opdeling is ook wel praktisch als je met de data iets wil testen.
+```{r inlezen-vc-tabellen}
+ruwetabellen_lijst <- data.frame(bron = "ruwedata", doel = "ruwedata", c = seq(from = 1, to = 19))
+
+ruwetabellen_lijst <- ruwetabellen_lijst %>% mutate (naambrontabel = file.path("data", "local", paste0(bron,sprintf("%02d", c))), 
+                                                     naamdoeltabel = sprintf(paste0(doel,"%02d"), c)) 
+
+ruwetabellen_lijst <- setNames(ruwetabellen_lijst %>% dplyr::pull(naambrontabel), make.names(ruwetabellen_lijst %>% dplyr::pull(naamdoeltabel)))
+
+list2env(
+  lapply(ruwetabellen_lijst, 
+         read_vc), 
+  envir = .GlobalEnv)
+
+```
+
+```{r samenvoegen-bestanden}
+#verkies dit in een aparte chunk te doen, omdat het zo mogelijk is om testdata samen te stellen, bijv. ik heb voor het uittesten van de methoden gewerkt met een testbestand van de eerste 5 ruwe tabellen.
+for (i in seq (from = 1, to = 19)){
+  if (i == 1) {
+    ruwedata <- get(sprintf("ruwedata%02d",i))
+  } else {
+    ruwedata <- bind_rows(ruwedata, get(sprintf("ruwedata%02d",i)))
+  }
+}
+
+#data cleaning
+ruwedata <-  ruwedata %>% 
+  mutate(jaar = year(dag)) %>% 
+  filter(meetpunt_import != meetreeks, jaar >= 1985) %>%  #uitsluiten van niet gesimuleerde meetreeksen (veldmetingen zitten namelijk al in de simuleerde reeksen)  
+  mutate(meetpunt = factor(meetpunt)) %>% 
+  dplyr::select(-meetpunt_import, -meetreeks, -is_veldmeting) #om de grootte van het databestand te reduceren
+```
+
+```{r verwijderen-tsv-tabellen, eval = FALSE}
+#verwijderen van de 19 deelbestanden (beter nog niet doen als je wil testen, het is handig om te testen met één van de bestanden, bijv. ruwedata01 (rel. groot) of ruwedata19 (rel klein)
+rm(list = sprintf("ruwedata%02d", seq(from = 1, to = 19)))
+
+```
+
+# Cumulatieve indicatoren
+
+In een cumulatieve indicator wordt het aantal dagen per jaar dat het grondwaterpeil gelijk aan of onder een kritische drempelwaarde zakt opgeteld.
+Deze drempelwaarde is specifiek voor elk meetpunt.
+Er worden in dit onderzoek vier kritische drempelwaarden gebruikt:
+**het _jaargemiddelde_ van de 1%-percentiel, 5%-percentiel, 10%-percentiel en 30%-percentiel van de grondwatermetingen _van een jaar_ voor het meetpunt voor de periode 1985 - 2015**
+
+Het is dus niet de absolute percentielwaarde van alle metingen van die 30 jaar. 
+Stel bijvoorbeeld dat er op 10 jaar één heel droog jaar is, zou dat ene jaar de kritische drempelwaarden leveren. Dat zou een onderschatting zijn, omdat de vegetatie niet zo snel op een grote afwijking zal kunnen reageren. 
+Daarom wordt hier verkozen om te werken met een gemiddelde van percentielwaarden per jaar. 
+Deze werkwijze is ook analoog aan het berekenen van karakteristieke grondwaterstanden (GXG’s) voor vegetaties.
+
+Deze drempelwaarden worden op een vaste periode berekend. 
+Het is niet de bedoeling ze jaarlijks mee te laten opschuiven.
+Dit zou de vergelijking over de jaren heen bemoeilijken.
+Ze kunnen eventueel periodiek (10-15 jaar) herberekend worden.
+
+## Berekenen absolute drempelwaarden
+Om de cumulatieve (en absolute) indicatoren te kunnen berekenen, moeten eerst de kritische drempelwaarden bepaald worden. 
+
+```{r absolute-drempelwaarden-schrikkeljaren}
+absperc <- ruwedata %>% 
+  filter(between(jaar,1985,2015)) %>% 
+  group_by(meetpunt, jaar) %>% 
+  summarise(p01 = quantile(meting_TAW, 1/100),
+            p05 = quantile(meting_TAW, 5/100),
+            p10 = quantile(meting_TAW, 10/100),
+            p30 = quantile(meting_TAW, 30/100)) %>% 
+  group_by(meetpunt) %>% 
+  summarise(p01 = mean(p01),
+            p05 = mean(p05),
+            p10 = mean(p10),
+            p30 = mean(p30)) %>%   
+  ungroup()
+
+write_vc(absperc, file.path("data", "result", "percentielen_1985_2015"), sorting = c("meetpunt"), strict = FALSE)
+
+schrikkeljaar <- ruwedata %>% 
+  filter(meetpunt == 
+           ruwedata %>% 
+           dplyr::select(meetpunt) %>% 
+           head(1) %>% 
+           dplyr::pull(meetpunt)
+         ) %>% 
+  filter(day(dag) == 29, month(dag) == 2) %>% 
+  distinct(jaar) %>% 
+  arrange(jaar) %>% 
+  dplyr::pull(jaar)
+
+
+#vrijmaken geheugenruimte, kan soms van pas komen
+  gc()
+```
+
+```{r basisbestand_cumulatieve_indicatoren}
+indic_cum_basis <-  ruwedata %>% 
+  inner_join(absperc, by = "meetpunt") %>% 
+  mutate( lengte_onder_p01 = if_else(meting_TAW <= p01,p01-meting_TAW,0),
+          lengte_onder_p05 = if_else(meting_TAW <= p05,p05-meting_TAW,0),
+          lengte_onder_p10 = if_else(meting_TAW <= p10,p10-meting_TAW,0),
+          lengte_onder_p30 = if_else(meting_TAW <= p30,p30-meting_TAW,0)
+  ) %>% 
+  group_by(meetpunt, simulatienr,jaar) %>% 
+  summarise_at(vars(lengte_onder_p01: lengte_onder_p30), sum) %>% 
+  ungroup() %>% 
+  mutate(jaar_factor = factor(jaar)
+         )
+indic_cum_basis <- indic_cum_basis %>% filter (simulatienr > 0) %>% 
+  mutate(lengte_onder_p01 = if_else(lengte_onder_p01 == 0, 1e-16, lengte_onder_p01),
+         lengte_onder_p05 = if_else(lengte_onder_p05 == 0, 1e-16, lengte_onder_p05),
+         lengte_onder_p10 = if_else(lengte_onder_p10 == 0, 1e-16, lengte_onder_p10),
+         lengte_onder_p30 = if_else(lengte_onder_p30 == 0, 1e-16, lengte_onder_p30)
+         ) 
+  
+indic_cum_basis <- indic_cum_basis %>% 
+  filter(simulatienr <= 20, jaar < 2019) # toch nog wat data-cleaning nodig, dagen na 1/1/2019 mogen niet meegenomen worden omdat 2019 geen volledig jaar bestrijkt
+
+```
+```{r check_distributies, eval= FALSE}
+
+varcum <- "lengte_onder_p01"
+
+#hier een voorbeeld voor het jaar 2018 (extreem droog) en meetpunt DYLP029
+#ook voor andere, natte, jaren (2002, 1986) testen
+
+checkdistributie <- indic_cum_basis %>% 
+  filter(jaar == 2018, meetpunt == "DYLP029") %>% 
+  dplyr::select(!!varcum)
+# nbinom <- fitdistr(checkdistributie, "Negative Binomial")
+# qqp(checkdistributie, "nbinom", size = nbinom$estimate[[1]], mu = nbinom$estimate[[2]])
+# poisson <- fitdistr(checkdistributie, "Poisson")
+# qqp(checkdistributie, "pois", lambda = poisson$estimate)
+ #binom <- fitdistrplus::fitdist(checkdistributie %>% dplyr::pull(1), "binom", fix.arg = list(size = 365), start = list(prob = 0.1))
+#summary(binom)
+#qqp(checkdistributie %>% dplyr::pull(1), "binom", size = 365, prob = binom$estimate)
+qqp(checkdistributie %>% dplyr::pull(1), "norm")
+cgamma <- fitdistr(checkdistributie %>% dplyr::pull(1), "Gamma")
+qqp(checkdistributie %>% dplyr::pull(1), "gamma", shape = cgamma$estimate[[1]], rate = cgamma$estimate[[2]])
+qqp(checkdistributie %>% dplyr::pull(1), "lnorm")
+exponent <- fitdistr(checkdistributie %>% dplyr::pull(1), "exponential")
+qqp(checkdistributie %>% dplyr::pull(1), "exp", exponent$estimate[[1]])
+
+#voor p01: gamma of normaal, gamma iets beter
+#voor p05: gamma of normaal, gamma iets beter
+#voor p10: gamma of normaal, gamma iets beter
+#voor p30: gamma of normaal
+
+```
+
+## Berekenen indicatoren 
+
+Op zich is deze indicator gemakkelijk te berekenen.
+Dat geldt ook voor de overige indicatoren.
+Men telt per jaar, meetpunt en simulatierun de onderschrijding van de grondwaterstand t.o.v. elk van de vier kritische drempelwaarde op.
+We noemen deze onderschrijdingssom hier voor de eenvoud: een basisgetal
+Dit geeft een tussenresultaat van 20\*56 (= het aantal simulatieruns \* aantal meetpunten) waarden per jaar. 
+Door hiervan het rekenkundig gemiddelde te berekenen, verkrijgt men de indicatorwaarde voor dat jaar.
+
+We willen echter meer weten.
+We zouden namelijk ook de betrouwbaarheid of onzekerheid willen inschatten voor deze waarden. 
+De onzekerheid wordt door twee factoren bepaald: de variatie tussen de gemiddelde waarden tussen de meetpunten onderling en de variatie die veroorzaakt wordt door de onzekerheid van het inschatten van ontbrekende grondwaterstanden (= het imputeren).
+
+### Variabiliteit tussen de meetpunten
+Het inschatten van de eerste onzekerheidsfactor te wijten aan de variabiliteit tussen de meetpunten kan berekend worden door voor elke simulatierun een regressie-analyse op de basisgetallen uit te voeren.
+Per regressie-analyse zijn dit 56 \* 34 = 1904 basisgetallen. 
+Wenst men een regressie-analyse uit te voeren, moet men een model opstellen. 
+Een model bouwen betekent de werkelijkheid wat vereenvoudigen.
+
+We menen dat deze basisgetallen niet willekeurig gevormd werden, m.a.w. dat ze niet onafhankelijk zijn van elkaar.
+De basisgetallen van eenzelfde jaar zijn bijv. afhankelijk door een gelijkaardig weer dat de meetpunten gekregen hebben. 
+We nemen hier voor de eenvoud aan dat de tijdsinvloed van jaar tot jaar kan verschillen, maar dat een invloed van een bepaald jaar voor alle meetpunten gelijk is.
+De basisgetallen van eenzelfde meetpunt zijn in zekere zin ook afhankelijk van elkaar, omdat ze een gelijkaardig grondwaterregime kennen.
+We nemen hier voor de eenvoud aan dat de invloed of effect van een meetpunt op een basisgetal constant in de tijd is.
+Modelmatig en mathematisch worden deze twee afhankelijkheden dan vertaald door te stellen dat we de tijd gaan modelleren als een random walk (eerste orde) en de meetpunten als een random variabele.
+Rest ons nog een aanname te doen: welke (kans)verdeling zouden de basisgetallen vormen, wanneer ze wel onafhankelijk van elkaar zouden zijn. 
+Voor de cumulatieve indicator twijfelen we tussen een normaalverdeling en een gammaverdeling. 
+Door naar de data te kijken (d.m.v. kwantielplots) proberen we te achterhalen welke distributie het beste past bij de waargenomen basisgetallen.
+In het geval van de cumulatieve indicator bleek een gamma-verdeling het best te passen.
+
+Samengevat:
+Op de tijdreeksen passen we een mixed model toe met formule $ basisgetal ~ jaar + (1|meetpunt) $, met jaar als een random-walk factor van de eerste orde en meetpunt als een random variabele. Het basisgetal volgt een gamma-verdeling.
+Voor de modelberekeningen volgen we een Bayesiaanse benadering.
+
+Technisch werden de modellen berekend in het R-programma INLA.
+
+
+### Variabiliteit ten gevolge van de imputaties
+
+
+
+```{r model_cumulatieve_indicator}
+indic_cum_function <- function(modeldata, respons, percentile, indicatorname, standardised) {
+  #instellen van een n
+  prec.prior <- list(prec = list(param = c(0.001, 0.001)))
+  model <- as.formula(paste(respons, "~", "1 + f(jaar, model =", "'rw1', scale.model = FALSE,
+                            hyper = prec.prior)+ f(meetpunt, model = 'iid', hyper = prec.prior)", sep = " "))   
+  
+  resultname_stat <- paste0("indic_cum_p", percentile,"_jaar_stat", if (standardised == TRUE) ("_std"))
+  resultname_fitted <- paste0("indic_cum_p", percentile,"_fitted", if (standardised == TRUE) ("_std"))
+  if (percentile == "01") {
+    reeks <- c(1:2,5, 7:9, 11:12, 14:15, 18:19) #8 modellen wilden maar niet convergeren
+  } else {
+    reeks <- c(1:20)    
+  }
+  for (i in reeks) {
+    #i <- 18
+   # i <- 20
+    print(i)
+    mdata <- modeldata[modeldata$simulatienr == i,]    
+    #mdata1 <- modeldata[modeldata$simulatienr == 1,]  
+    #summary(mdata1)
+    I1 <- inla(model, 
+               control.compute = list(dic = TRUE),
+               family = modelkeuze %>% filter(percentiel == percentile) %>% 
+                 dplyr::pull(model), 
+               data = mdata,
+               #control.inla = list(strategy = "gaussian", int.strategy = "eb"),
+               verbose = FALSE
+    )
+    #summary(I1)
+    # sum(log(I1$cpo$cpo)) 
+    # sum(log(I1b$cpo$cpo))
+    # sum(log(I1c$cpo$cpo))
+    # sum(log(I1d$cpo$cpo))
+    # sum(log(I1_binom$cpo$cpo)) 
+    # 
+    # sum(log(I1$dic$dic))    
+    # sum(log(I1b$dic$dic))  
+    # sum(log(I1c$dic$dic))  
+    # sum(log(I1d$dic$dic))  
+    # 
+    # sum(log(I1b$waic$waic))    
+    # sum(log(I1$waic$waic))    
+    # sum(log(I1c$waic$waic))
+    # sum(log(I1d$waic$waic))
+    # 
+    # sum(I1$mlik)   
+    # sum(I1b$mlik)    
+    # sum(I1c$mlik)
+    # sum(I1d$mlik)
+    
+    # names(inla.models()$likelihood)
+    
+    # # Assess overdispersion (variantie / aantal vrijheidsgraden ~ 1)
+    # #voor binomiaal
+    # Pi   <- I1_binom$summary.fitted.values[,"mean"]
+    # ExpY <- Pi * mdata$aantaldagen_jaar
+    # VarY <- Pi * mdata$aantaldagen_jaar * (1 - Pi)
+    # E1   <- (mdata %>%
+    #               dplyr::pull(!!indicatorname) - ExpY) / sqrt(VarY)
+    # N    <- nrow(mdata)
+    # p <- nrow(I1_binom$summary.fixed)
+    # Dispersion <- sum(E1^2) / (N - p)
+    # Dispersion
+    
+    # #voor poisson
+    # Pi   <- I1_binom$summary.fitted.values[,"mean"]
+    # ExpY <- Pi #* mdata$aantaldagen_jaar
+    # VarY <- Pi #* mdata$aantaldagen_jaar * (1 - Pi)
+    # E1   <- (mdata %>%
+    #               dplyr::pull(!!indicatorname) - ExpY) / sqrt(VarY)
+    # N    <- nrow(mdata)
+    # p <- nrow(I1_binom$summary.fixed)
+    # Dispersion <- sum(E1^2) / (N - p)
+    # Dispersion
+    
+    # #voor negatief binomiaal
+    # Pi  <- I1_untr$summary.fitted.values[,"mean"]
+    # theta <- I1_untr$summary.hyperpar[1,"mean"]
+    # E1 <- (mdata %>% 
+    #          dplyr::pull(!!indicatorname)  - Pi) / sqrt(Pi + Pi^2 / theta)
+    # sum(E1^2) / (nrow(mdata) - 1)
+    # 
+    # Pi  <- I1_untr_kleineu$summary.fitted.values[,"mean"]
+    # theta <- I1_untr_kleineu$summary.hyperpar[1,"mean"]
+    # E1 <- (mdata %>% 
+    #          dplyr::pull(!!indicatorname)  - Pi) / sqrt(Pi + Pi^2 / theta)
+    # sum(E1^2) / (nrow(mdata) - 1)    
+    # 
+    # 
+    # 
+    # Pi  <- I1_prior$summary.fitted.values[,"mean"]
+    # theta <- I1_prior$summary.hyperpar[1,"mean"]
+    # E1 <- (mdata %>% 
+    #          dplyr::pull(!!indicatorname)  - Pi) / sqrt(Pi + Pi^2 / theta)
+    # sum(E1^2) / (nrow(mdata) - 1)    
+    # 
+    # 
+    # Pi  <- I1$summary.fitted.values[,"mean"]
+    # theta <- I1$summary.hyperpar[1,"mean"]
+    # E1 <- (mdata %>%
+    #          dplyr::pull(!!indicatorname)  - Pi) / sqrt(Pi + Pi^2 / theta)
+    # sum(E1^2) / (nrow(mdata) - 1)
+    # 
+    # # Pearson residuals
+    # par(mfrow = c(1,1), mar = c(5,5,2,2), cex.lab = 1.5)
+    # plot(x = Pi,
+    #      y = E1,
+    #      xlab = "Fitted values",
+    #      ylab = "Pearson residuals")
+    # abline(h = 0, lty = 2)
+    #
+    # #names(inla.models()$likelihood)
+    #
+    #bekijk de gefitte waarden van het model
+    # Plot the fitted values
+    # Fit1     <- I1c$summary.fitted.values[,"mean"]
+    # Fit1.025 <- I1c$summary.fitted.values$"0.025quant"
+    # Fit1.975 <- I1c$summary.fitted.values$"0.975quant"
+    # 
+    # Fit1     <- I1$summary.fitted.values[,"mean"]
+    # Fit1.025 <- I1$summary.fitted.values$"0.025quant"
+    # Fit1.975 <- I1$summary.fitted.values$"0.975quant"
+    # 
+    # # 
+    # # check <- I1$summary.random$meetpunt
+    # # 
+    # # result_fitted_i 
+    # mdata
+    # mdata$Fitted1  <- Fit1
+    # mdata$Fit1.025 <- Fit1.025
+    # mdata$Fit1.975 <- Fit1.975
+    # #gdata <- mdata %>% dplyr::select(!!respons, jaar, contains("Fit"))
+    # p <- ggplot(data = mdata, aes_string(y = respons, x = "jaar"))
+    # p <- p + xlab("Jaar") + ylab(respons)
+    # p <- p + theme(text = element_text(size=15))
+    # p <- p + geom_point(shape = 16, size = 2, col = "black")
+    # p <- p + geom_line(aes(x = jaar, y = Fitted1))
+    # p <- p + geom_ribbon(data = mdata, aes(x = jaar,
+    #                          ymax = Fit1.975,
+    #                          ymin = Fit1.025),
+    #                      fill = grey(0.5),
+    #                      alpha = 0.4)
+    # p <- p + theme(strip.text = element_text(size = 15))
+    # p
+    # summary(I1)
+    # result_stat_i <-  I1d$summary.random$jaar %>%
+    #   mutate(simulatienr = i)
+    #  result_stat_i <- result_stat_i %>%  rename (p0.025 = '0.025quant',
+    #                              p975.5 = '0.975quant',
+    #                              jaar =  ID)
+    #  gplot <- ggplot(data = result_stat_i, aes(x = jaar, y = mean)) + 
+    #    geom_line(aes(x = jaar, y = p0.025), linetype = "longdash") +
+    #    geom_ribbon(aes(x = jaar, ymax = p975.5, ymin = p0.025)) +  
+    #    geom_line(aes(x = jaar, y = p975.5), linetype = "longdash") +
+    #    geom_line(color = "lightblue") +
+    #    #geom_point(data = mdata, aes_string(x = "jaar", y = respons)) +
+    #    geom_hline(aes(yintercept = 0), linetype = "dotted") +
+    #    labs(x = "Jaar", y = "trend")
+    #  gplot
+    # 
+    # #conclusie negative binomiaal (bij 30 wel onderdispersed), gestandardiseerd met een gewijzigde non-informatieve prior
+    # 
+    # result_stat_i_meetpunt <-  I1$summary.random$meetpunt %>% 
+    #   mutate(simulatienr = i)
+    
+    # result_stat_i <- result_stat_i %>% 
+    #   mutate(og_berekend = mean - 1.96*sd,
+    #          bg_berekend = mean + 1.96*sd)    
+    
+    
+    #gamma-verdeling gebruikt de logit-link
+    #om de niet-getransformeerde waarden te krijgen moet men zowel de intercept als de coëfficiënten exponentiëren. Exp(standaardfout) heeft geen zin, maar het was moeilijker om deze uit te sluiten dan ze (verkeerdelijk) mee te nemen
+    result_stat_i <-  I1$summary.random$jaar %>% 
+      mutate_at(names(I1$summary.random$jaar)[2:6], exp) %>%
+      mutate_at(names(I1$summary.random$jaar)[2:6], function(x){x*exp(I1$summary.fixed$mean)}) %>%       mutate(simulatienr = i) %>% 
+      dplyr::select(-sd, -mode, -kld)
+    
+    # result_stat_i <- result_stat_i %>% 
+    #   mutate(og_berekend = mean - 1.96*sd,
+    #           bg_berekend = mean + 1.96*sd)
+    
+    varname_mean <- paste0("p", percentile, "_mean", if (standardised == TRUE) ("_std"), "_fitted")
+    varname_sd <- paste0("p", percentile, "_sd", if (standardised == TRUE) ("_std"), "_fitted")
+    varname_p025 <- paste0("p", percentile, "_p02.5", if (standardised == TRUE) ("_std"), "_fitted")
+    varname_p975 <- paste0("p", percentile, "_p97.5", if (standardised == TRUE) ("_std"), "_fitted")
+    result_fitted_i <-  I1$summary.fitted.values %>% 
+      rename(!!varname_mean := mean,
+           !!varname_sd := sd,
+           !!varname_p025 := '0.025quant',
+           !!varname_p975 := '0.975quant')
+    mdata <- bind_cols(mdata, result_fitted_i)   
+    # if (standardised == TRUE) {
+    #   varname_mean_backtransformed <- paste0(varname_mean, "_untr")
+    #   varname_p025_backtransformed <- paste0(varname_p025, "_untr")
+    #   varname_p975_backtransformed <- paste0(varname_p975, "_untr")
+    #   result_fitted_i <- result_fitted_i %>% 
+    #   mutate( !!varname_mean_backtransformed := unscale(result_fitted_i %>% 
+    #                                                       dplyr::pull(!!varname_mean),m,s),
+    #           !!varname_p025_backtransformed := unscale(result_fitted_i %>% 
+    #                                                       dplyr::pull(!!varname_p025),m,s),
+    #           !!varname_p975_backtransformed := unscale(result_fitted_i %>% 
+    #                                                       dplyr::pull(!!varname_p975),m,s)    
+    #     )
+    # }
+
+ 
+    if (i == 1) {
+      result_stat <- result_stat_i
+      result_fitted <- mdata
+      
+    } else {
+      result_stat <- bind_rows(result_stat, 
+                                           result_stat_i)
+      result_fitted <- bind_rows(result_fitted, mdata)    
+    }
+  
+  
+    # if (standardised == TRUE) {
+    #   result_stat <- result_stat %>% 
+    #     mutate(mean_untr = unscale(mean, m, s),
+    #            og_berekend_untr = unscale(og_berekend, m, s),
+    #            bg_berekend_untr = unscale(bg_berekend, m, s),
+    #            p02.5_untr = unscale(p02.5, m, s),
+    #            p97.5_untr = unscale(p97.5, m, s),
+    #            se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+    #                                  (p02.5_untr  - mean_untr )/1.96)/2,
+    #     )
+    # }
+  
+    if (i == length(reeks)) {
+      result_stat <- result_stat %>% 
+        rename( jaar = ID,
+                p02.5 = '0.025quant',
+                p50 = '0.5quant',
+                p97.5 = '0.975quant')
+      
+      # if (standardised == TRUE) {
+      #   result_stat <- result_stat %>% 
+      #     mutate(mean_untr = unscale(mean, m, s),
+      #            og_berekend_untr = unscale(og_berekend, m, s),
+      #            bg_berekend_untr = unscale(bg_berekend, m, s),
+      #            p02.5_untr = unscale(p02.5, m, s),
+      #            p97.5_untr = unscale(p97.5, m, s),
+      #            se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+      #                                  (p02.5_untr  - mean_untr )/1.96)/2,
+      #     )
+      # }
+      resultlijst <- list( result_stat, 
+                           result_fitted)
+      names(resultlijst) <- c(resultname_stat, resultname_fitted)
+      list2env(resultlijst, envir = .GlobalEnv)
+      
+      if (varname_mean %in% colnames(indic_cum_basis)) {
+        indic_cum_basis <- indic_cum_basis %>% 
+          dplyr::select(-!!varname_mean, -!!varname_sd, -!!varname_p025, -!!varname_p975) 
+      }
+      
+      indic_cum_basis <- indic_cum_basis %>% 
+        inner_join(result_fitted %>% 
+                     dplyr::select(contains("fitted"), 1:3), 
+                   by = c("meetpunt","simulatienr", "jaar")) 
+    }
+  }
+  return(indic_cum_basis)
+}
+
+```
+
+
+```{r}
+#opruimen van velden van een mogelijke vorige run.
+indic_cum_basis <- indic_cum_basis %>% 
+  dplyr::select(-contains("fitted") )
+
+
+modeldata <- indic_cum_basis
+modelkeuze <- data.frame(percentiel = c("01", "05", "10", "30" ), model = c("gamma", "gamma", "gamma", "gamma"))
+modelkeuze$model <- as.character(modelkeuze$model)
+```
+
+
+```{r}
+
+```
+

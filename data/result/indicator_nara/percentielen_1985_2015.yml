@@ -1,0 +1,152 @@
+..generic:
+  git2rdata: 0.2.1
+  optimize: yes
+  NA string: NA
+  sorting: meetpunt
+  hash: 475e08aa12eeaeea8653b4dfd8c96bbdf510f959
+  data_hash: 93638436927c42576ea40a8483f74965ec6ff361
+meetpunt:
+  class: factor
+  labels:
+  - ALMP003
+  - ASBP003
+  - BTRP001
+  - COOP001
+  - DORP002
+  - DORP024
+  - DUNP012
+  - DYLP029
+  - DYLP037
+  - GSCP017
+  - HAGP019
+  - HAGP023
+  - HBTP007
+  - IJSP023
+  - ITTP212
+  - KALP136
+  - KBRP056
+  - KBRP060
+  - LAVP080
+  - LDOP019
+  - LDOP041
+  - LOHP015
+  - MANP029
+  - MATP010
+  - MATP011
+  - MOEP030
+  - MOLP023
+  - MOMP003
+  - MOSP015
+  - ORCP011
+  - ORCP012
+  - PARP003
+  - ROTP003
+  - SCPP042
+  - SCPP051
+  - SILP004
+  - SNOP129
+  - SWPP032
+  - TEUP045
+  - TIEP026
+  - TORP018
+  - TYDP204
+  - UKPP029
+  - VDBP506
+  - VDBP513
+  - VDBP514
+  - VLBP001
+  - VRIP013
+  - WALP118
+  - WERP012
+  - WESP008
+  - WESP093
+  - ZABP014
+  - ZEBP009
+  - ZWAP141
+  - ZWAP228
+  - ZWAP231
+  - ZWAP303
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 35
+  - 36
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+  - 44
+  - 45
+  - 46
+  - 47
+  - 48
+  - 49
+  - 50
+  - 51
+  - 52
+  - 53
+  - 54
+  - 55
+  - 56
+  - 57
+  - 58
+  ordered: no
+p01:
+  class: numeric
+p05:
+  class: numeric
+p10:
+  class: numeric
+p30:
+  class: numeric
+p50:
+  class: numeric
+p70:
+  class: numeric
+p90:
+  class: numeric
+p95:
+  class: numeric
+p99:
+  class: numeric
+groep3:
+  class: numeric
+ampl:
+  class: numeric
+groep3n:
+  class: numeric

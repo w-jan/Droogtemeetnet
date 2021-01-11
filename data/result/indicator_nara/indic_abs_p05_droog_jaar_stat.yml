@@ -1,0 +1,21 @@
+..generic:
+  git2rdata: 0.2.1
+  optimize: yes
+  NA string: NA
+  sorting:
+  - jaar
+  - simulatienr
+  hash: b2258fb4989868f4ada25556c4a1bb73878d4954
+  data_hash: 071647a294637046d718068248388abf6d0f4b08
+jaar:
+  class: numeric
+mean:
+  class: numeric
+p02.5:
+  class: numeric
+p50:
+  class: numeric
+p97.5:
+  class: numeric
+simulatienr:
+  class: integer
