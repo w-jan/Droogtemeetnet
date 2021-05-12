@@ -1,10 +1,16 @@
-book_filename: "droogteindicator_voor_nara.Rmd"
-new_session: FALSE
-rmd_files: # specifies the order of Rmd files; NOT needed when you use index.Rmd and an alphabetical order for other Rmd files
-    # - index.Rmd
+book_filename: "nara_indicator_droogte.Rmd"
+output_dir: "../report"
+delete_merged_file: FALSE
 language:
   label:
-    tab: "tabel "
-    fig: "figuur "
-  ui:
-    chapter_name: "Hoofdstuk "
+    fig:    'Figuur '
+    tab:    'Tabel '
+    eq:     'Vergelijking '
+    thm:    'Theorema '
+    lem:    'Lemma '
+    def:    'Definitie '
+    cor:    'Gevolgtrekking '
+    prp:    'Bewering '
+    ex:     'Voorbeeld '
+    proof:  'Bewijs. '
+    remark: 'Opmerking. '

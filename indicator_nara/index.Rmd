@@ -1,48 +1,93 @@
 ---
-title: "Kiezen van een droogte-indicator voor het NARA"
-author: "Jan Wouters, Katrijn Alaerts, Floris Vanderhaeghe"
-date: '`r paste("Versie",lubridate::now())`'
-link-citations: true
-bibliography: lit_droogtemeetnet.bib
-csl: research-institute-for-nature-and-forest.csl
-linkcolor: link.colour
-citecolor: link.colour
-urlcolor: link.colour
-geometry: margin=1in
-mainfont: "Calibri"
-fontsize: 11pt
-always_allow_html: yes #mogelijk slechts een tijdelijke verplichting
-# documentclass: "article"
+title: "Titel van het rapport"
+author: 
+  - 
+    name: "Voornaam1 Achternaam1"
+    email: "voornaam1.achternaam1@inbo.be"
+  - 
+    name: "Voornaam2 Achternaam2"
+    email: "voornaam2.achternaam2@inbo.be"
+subtitle: "Hier komt de optionele ondertitel"
+reportnr: "Hier komt de DOI van het rapport"
+# ordernr: "Het optionele nummer van de opdrachtgever"
+bibliography: references.bib
+link-citations: TRUE
 site: bookdown::bookdown_site
-documentclass: book
-params:
-  refresh_data: 2
-  refresh_figures: 2
-output: 
-  # bookdown::gitbook: default
-    #bookdown::pdf_book: default
-  # number_sections: TRUE
-  bookdown::html_document2:
-    keep_md: TRUE
-    number_sections: yes
-    fig_caption: yes
-    df_print: paged
-    toc: TRUE
-    toc_float:
-      collapsed: FALSE
-      smooth_scroll: FALSE
-    toc_depth: 4
-    includes:
-        in_header: header.html
-  bookdown::pdf_document2:
-    fig_caption: yes
-    keep_tex: yes
-    toc: yes
-    toc_depth: 3
-    latex_engine: xelatex
-    number_sections: true
-    includes:
-        in_header: header.tex
-editor_options: 
-  chunk_output_type: console
+output:
+  bookdown::gitbook:
+    split_by: "chapter+number"
+    template: !expr INBOmd::inbo_rapport_css("html")
+    pandoc_args: !expr c("--csl", system.file("research-institute-for-nature-and-forest.csl", package = "INBOmd"))
+  bookdown::pdf_book:
+    base_format: INBOmd::inbo_rapport
+    style: INBO
+    tocdepth: 2
+    lof: TRUE
+    lot: TRUE
+    floatbarrier: subsection
+  bookdown::epub_book:
+    stylesheet: "css/inbo_rapport.css"
+    template: !expr INBOmd::inbo_rapport_css("epub")
+    pandoc_args: !expr c("--csl", system.file("research-institute-for-nature-and-forest.csl", package = "INBOmd"))
 ---
+
+
+# INBO rapport met RMarkdown met Bookdown extensie
+
+Een concreet voorbeeld van de broncode van dergelijk rapport vind je op https://github.com/inbo/inbomd_examples onder het mapje source/inbo_rapport. Hoe zo een rapport er finaal uit kan zien, vind je op https://inbomd-examples.netlify.com/
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  echo = FALSE,
+  eval = TRUE,
+  cache = FALSE,
+  fig.width = 150 / 25.4,
+  fig.height = 100 / 25.4,
+  warning = TRUE,
+  error = FALSE,
+  message = TRUE
+)
+library(tidyverse)
+library(INBOtheme)
+if (interactive()) {
+  theme_set(
+    theme_inbo(
+      base_family = "Calibri", # "FlandersArtSans-Regular",
+      base_size = 10
+    )
+  )
+} else {
+  switch(
+    opts_knit$get("rmarkdown.pandoc.to"),
+    html = {
+      opts_chunk$set(dev = "png", dpi = 72)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular",
+          base_size = 12
+        )
+      )
+    },
+    latex = {
+      opts_chunk$set(dev = "cairo_pdf", dpi = 300)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular",
+          base_size = 9
+        )
+      )
+      update_geom_defaults("point", list(size = 1.5))
+    },
+    epub3 = {
+      opts_chunk$set(dev = "png", dpi = 300)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular",
+          base_size = 12
+        )
+      )
+    }
+  )
+}
+```

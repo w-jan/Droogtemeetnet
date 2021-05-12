@@ -27,6 +27,7 @@ vignettes/*.pdf
 # knitr and R markdown default cache directories
 /*_cache/
 /cache/
+/src/cache/*
 
 # Temporary files created by R markdown
 *.utf8.md
@@ -48,9 +49,6 @@ data/result/indicator_meetnet/GIS/*
 # temporary map, files
 /temp/*
 /src/temp/*
-
-#cache
-/src/cache/*
 
 # Other
 _bookdown_files/
