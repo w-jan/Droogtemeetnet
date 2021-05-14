@@ -14,3 +14,5 @@ language:
     ex:     'Voorbeeld '
     proof:  'Bewijs. '
     remark: 'Opmerking. '
+  ui:
+    chapter_name: "Hoofdstuk "    
