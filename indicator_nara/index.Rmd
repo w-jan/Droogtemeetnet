@@ -1,13 +1,13 @@
 ---
-title: "Titel van het rapport"
+title: "Een indicator voor het opvolgen van droogte in ondiepe grondwaterlagen binnen natuurgebieden"
 author: 
   - 
-    name: "Voornaam1 Achternaam1"
-    email: "voornaam1.achternaam1@inbo.be"
+    name: "Jan Wouters"
+    email: "jan.wouters@inbo.be"
   - 
-    name: "Voornaam2 Achternaam2"
-    email: "voornaam2.achternaam2@inbo.be"
-subtitle: "Hier komt de optionele ondertitel"
+    name: "Floris Vanderhaeghe"
+    email: "floris.vanderhaeghe@inbo.be"
+#subtitle: "Hier komt de optionele ondertitel"
 reportnr: "Hier komt de DOI van het rapport"
 # ordernr: "Het optionele nummer van de opdrachtgever"
 bibliography: references.bib
