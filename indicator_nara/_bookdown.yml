@@ -1,5 +1,5 @@
 book_filename: "nara_indicator_droogte.Rmd"
-output_dir: "../report"
+output_dir: "./report"
 delete_merged_file: FALSE
 language:
   label:

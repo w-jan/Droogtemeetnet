@@ -25,11 +25,12 @@ library(car)
 library(lme4)
 library(INLA)
 
-output_format <- ifelse(
-  interactive(),
-  "html",
-  opts_knit$get("rmarkdown.pandoc.to")
-)
+# ingesteld in index.Rmd
+# output_format <- ifelse(
+#   interactive(),
+#   "html",
+#   opts_knit$get("rmarkdown.pandoc.to")
+# )
 
 #keuzen voor het aanmaken van een document
 #welke data verversen

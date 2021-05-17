@@ -50,6 +50,9 @@ data/result/indicator_meetnet/GIS/*
 /temp/*
 /src/temp/*
 
+# older version not to be versionised
+/old/*
+
 # Other
 _bookdown_files/
 _book/
