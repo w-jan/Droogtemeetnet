@@ -43,8 +43,10 @@ library(knitr)
 opts_chunk$set(
   echo = FALSE,
   eval = TRUE,
-  cache = FALSE,
-  fig.width = 150 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
+  include = TRUE,
+  cache = TRUE,
+  cache.path = "cache/",  
+  fig.width = 200 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
   fig.height = 100 / 25.4,
   warning = TRUE,
   error = FALSE,

@@ -1,21 +1,14 @@
 <!-- #setup -->
-```{r include=FALSE}
-knitr::opts_chunk$set(
-	eval = FALSE,
-	include = TRUE,
-	echo = FALSE,
-	cache = TRUE,
-  cache.path = "cache/",
-	dpi = 300
-)
-
+```{r lib-param, include=FALSE}
 options(stringsAsFactors = FALSE)
 
 #belangrijke opmerking: run dit programma in de 64-bit versie van R
 #Tijdens de uitvoering van het programma in de 32-bit versie van R ontstonden er op mijn laptop geheugenproblemen.
 library(knitr)
+library(kableExtra)
 library(INBOmd)
 library(tidyverse)
+library(INBOtheme)
 library(odbc)
 library(DBI)
 library(git2rdata)
