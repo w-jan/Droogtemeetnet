@@ -46,7 +46,7 @@ opts_chunk$set(
   include = TRUE,
   cache = TRUE,
   cache.path = "cache/",  
-  fig.width = 200 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
+  fig.width = 150 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
   fig.height = 100 / 25.4,
   warning = TRUE,
   error = FALSE,
