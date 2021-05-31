@@ -53,6 +53,12 @@ data/result/indicator_meetnet/GIS/*
 # older version not to be versionised
 /old/*
 
+#report files, excluding output
+/report/*
+!/report/*.html
+!/report/*.epub
+!/report/*.pdf
+
 # Other
 _bookdown_files/
 _book/
