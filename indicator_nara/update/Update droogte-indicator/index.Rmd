@@ -10,9 +10,12 @@ author:
 subtitle: "Hier komt de optionele ondertitel"
 reportnr: "Hier komt de DOI van het rapport"
 ordernr: "Het optionele nummer van de opdrachtgever"
-bibliography: references.bib
+bibliography: JanWouters.bib
 link-citations: TRUE
 site: bookdown::bookdown_site
+params:
+  refresh_data: 2
+  refresh_figures: 2
 output:
   bookdown::gitbook:
     split_by: "chapter+number"
@@ -20,6 +23,8 @@ output:
     pandoc_args: !expr c("--csl", system.file("research-institute-for-nature-and-forest.csl", package = "INBOmd"))
   bookdown::pdf_book:
     base_format: INBOmd::inbo_rapport
+    citation_package: "none"
+    #base_format: mijneerstepackage::inbo_rapport_jw
     style: INBO
     tocdepth: 2
     lof: TRUE
@@ -32,17 +37,16 @@ output:
 ---
 
 
-# INBO rapport met RMarkdown met Bookdown extensie
-
-Een concreet voorbeeld van de broncode van dergelijk rapport vind je op https://github.com/inbo/inbomd_examples onder het mapje source/inbo_rapport. Hoe zo een rapport er finaal uit kan zien, vind je op https://inbomd-examples.netlify.com/
 
 ```{r setup, include = FALSE}
 library(knitr)
 opts_chunk$set(
   echo = FALSE,
   eval = TRUE,
-  cache = FALSE,
-  fig.width = 150 / 25.4,
+  include = TRUE,
+  cache = TRUE,
+  cache.path = "cache/",  
+  fig.width = 150 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
   fig.height = 100 / 25.4,
   warning = TRUE,
   error = FALSE,
