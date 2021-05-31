@@ -40,10 +40,11 @@ Deze werkwijze is ook analoog aan het berekenen van karakteristieke grondwaterst
 ## Berekenen van de droogte-indicator {#h3-3:indicator}
 
 Kennen we de kritische drempelwaarde dan kan de droogte-indicator vrij eenvoudig berekend worden.
-Eerst tellen we voor elke meetlocatie, elk jaar en elke simulatie het aantal dagen dat het grondwaterpeil onder de kritische drempelwaarde is = ${\text {dagen_droog}}_{meetlocatie_m; simulatie_s; jaar_j}$. Voor de periode 1985 - 2018, 58 meetlokaties en 20 simulaties betekent dit dus 34 * 58 * 20 = 39440 ${\text {dagen_droog}}$-waarden
+Eerst tellen we voor elke meetlocatie, elk jaar en elke simulatie het aantal dagen dat het grondwaterpeil onder de kritische drempelwaarde is $=dagen\_droog_{meetlocatie_m; simulatie_s; jaar_j}$. 
+Voor de periode 1985 - 2018, 58 meetlokaties en 20 simulaties betekent dit dus 34 * 58 * 20 = 39440 ${\textstyle {dagen_droog}}$-waarden
 
 ```{block2 definitie-droogte-indicator, type="exampleblock", latex.options="{}", echo = TRUE}
-De droogte-indicator voor een bepaald jaar $j$ is dan het gemiddelde van deze aantallen droge dagen voor alle simulaties en meetlocaties: ${\text {droogte-ind}}_{j} = \frac{\sum_{s=1}^{20}\sum_{m=1}^{58}{\text {dagen_droog}}_{m;s;j}}{20*58}$
+De droogte-indicator voor een bepaald jaar $j$ is dan het gemiddelde van deze aantallen droge dagen voor alle simulaties en meetlocaties: ${\text {droogte-ind}}_{j} = \frac{\sum_{s=1}^{20}\sum_{m=1}^{58}{\textstyle {dagen_droog}}_{m;s;j}}{20*58}$
 
 ```
 
@@ -65,18 +66,18 @@ Kennen we de variantie kan hiermee, op basis van de centrale limietstelling, voo
 
 Mathematisch wordt het betrouwbaarheidsinterval door de hieronder gegeven formules berekend. 
 
-$${\text {de droogte-indicator voor één simulatie en één jaar : droogte-ind-sim}}_{j;s} =  \sum_{m = 1}^{58}({\text {dagen_droog}}_{m;s;j}) / 58 $$
-$${\text {de droogte-indicator voor één jaar : droogte-ind}}_{j} =  \sum_{s = 1}^{20}(\frac{\sum_{m=1}^{58}{\text {dagen_droog}}_{m;s;j}}{58}) / 20 $$
+$${\textstyle {de droogte-indicator voor één simulatie en één jaar : droogte-ind-sim}}_{j;s} =  \sum_{m = 1}^{58}({\textstyle {dagen_droog}}_{m;s;j}) / 58 $$
+$${\textstyle {de droogte-indicator voor één jaar : droogte-ind}}_{j} =  \sum_{s = 1}^{20}(\frac{\sum_{m=1}^{58}{\textstyle {dagen_droog}}_{m;s;j}}{58}) / 20 $$
 
-$$ \bar\sigma^2_{{\text {droogte-ind}}_{j}} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{{\text {droogte-ind-sim}}_{j;s}}}{20} + (1 + 1/20)*\frac{\sum_{s=1}^{20}({\text {droogte-ind-sim}}_{j;s} - {\text {droogte-ind}}_{j})^2}{(20 - 1)}$$
+$$ \bar\sigma^2_{{\textstyle {droogte-ind}}_{j}} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{{\textstyle {droogte-ind-sim}}_{j;s}}}{20} + (1 + 1/20)*\frac{\sum_{s=1}^{20}({\textstyle {droogte-ind-sim}}_{j;s} - {\textstyle {droogte-ind}}_{j})^2}{(20 - 1)}$$
 
 De ondergrens van het betrouwbaarheidsinterval (LCL) voor een bepaald jaar $j$ wordt dan :
 
-$$ {\text {LCL}}_j = {\text{droogte-ind}}_{j} - 1.96 * \sqrt{\bar\sigma^2_{{\text {droogte-ind}}_{j}}}$$
+$$ {\textstyle {LCL}}_j = {\textstyle{droogte-ind}}_{j} - 1.96 * \sqrt{\bar\sigma^2_{{\textstyle {droogte-ind}}_{j}}}$$
 
 De bovengrens van het betrouwbaarheidsinterval (UCL) voor een bepaald jaar $j$ wordt dan :
 
-$$ {\text {UCL}}_j = {\text{droogte-ind}}_{j} + 1.96 * \sqrt{\bar\sigma^2_{{\text {droogte-ind}}_{j}}}$$
+$$ {\textstyle {UCL}}_j = {\textstyle{droogte-ind}}_{j} + 1.96 * \sqrt{\bar\sigma^2_{{\textstyle {droogte-ind}}_{j}}}$$
 
 
 ## Berekenen van de evolutie/trend van de droogte-indicator {#h3-4:trend}
@@ -89,13 +90,13 @@ Het effect van de factor “jaar” wordt beschreven door een random walk-functi
 Meer informatie over dergelijke modellen is o.a. te vinden in @RN6221
 
 Per jaar (en simulatie) wordt een gemiddelde waarde met haar standaardafwijking berekend. 
-In tegenstelling met ${\text {droogte-ind}}_{j}$ worden aan die berekening voorwaarden gekoppeld, namelijk dat het effect van een jaar afhangt van de vorig(e) jaar/jaren volgens een tweede orde functie en ook dat een meetpunt een vaste (maar onbekende) bijdrage levert (dus dat meetpunten systematisch droger of natter kunnen zijn).
-$${\text {dagen_droog}}_{m;s;j} \sim NB(\overline{{\text {droogte-ind-sim}}}_{j;s}, \theta)  $$
+In tegenstelling met ${\textstyle {droogte-ind}}_{j}$ worden aan die berekening voorwaarden gekoppeld, namelijk dat het effect van een jaar afhangt van de vorig(e) jaar/jaren volgens een tweede orde functie en ook dat een meetpunt een vaste (maar onbekende) bijdrage levert (dus dat meetpunten systematisch droger of natter kunnen zijn).
+$${\textstyle {dagen_droog}}_{m;s;j} \sim NB(\overline{{\textstyle {droogte-ind-sim}}}_{j;s}, \theta)  $$
 
-$$\overline{{\text {droogte-ind-sim}}}_{j;s} = E({\text {dagen_droog}}_{m;s;j}) \sim {\text {jaar}} + (1 \vert{\text{meetlocatie}})  $$
+$$\overline{{\textstyle {droogte-ind-sim}}}_{j;s} = E({\textstyle {dagen_droog}}_{m;s;j}) \sim {\textstyle {jaar}} + (1 \vert{\textstyle{meetlocatie}})  $$
 of 
 
-$$\log(\overline{{\text {droogte-ind-sim}}}_{j;s}) = \beta_0 + \beta_1T_j + t_j + b_m + \epsilon_{jm}$$
+$$\log(\overline{{\textstyle {droogte-ind-sim}}}_{j;s}) = \beta_0 + \beta_1T_j + t_j + b_m + \epsilon_{jm}$$
 $\beta_0$ is de intercept
 
 $\beta_1T_j$ is het specifiek effect/bijdrage van een jaar
@@ -116,19 +117,19 @@ $\epsilon_{jm}$ is de term voor de random ruis in de log-schaal.
 $$\epsilon_{jm} \sim N(0,\sigma_{jm}^2) $$
 Voor het bepalen van de onzekerheid, de betrouwbaarheidsintervallen, van de trendwaarden doen we opnieuw een beroep op de formule van Rubin [@RN6220].
 
-$${\text {de trend van de droogte-indicator berekend voor één jaar : }} \overline{{\text {droogte-ind}}}_{j} =  \sum_{s = 1}^{20}(\overline{{\text {droogte-ind-sim}}}_{j;s} / 20 $$
+$${\textstyle {de trend van de droogte-indicator berekend voor één jaar : }} \overline{{\textstyle {droogte-ind}}}_{j} =  \sum_{s = 1}^{20}(\overline{{\textstyle {droogte-ind-sim}}}_{j;s} / 20 $$
 
 
 
-$$ \bar\sigma^2_{\overline{{\text {droogte-ind}}}_{j}} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{\overline{{\text {droogte-ind-sim}}}_{j;s}}}{20} + (1 + 1/20)*\frac{\sum_{s=1}^{20}(\overline{{\text {droogte-ind-sim}}}_{j;s} - \overline{{\text {droogte-ind}}}_{j})^2}{(20 - 1)}$$
+$$ \bar\sigma^2_{\overline{{\textstyle {droogte-ind}}}_{j}} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{\overline{{\textstyle {droogte-ind-sim}}}_{j;s}}}{20} + (1 + 1/20)*\frac{\sum_{s=1}^{20}(\overline{{\textstyle {droogte-ind-sim}}}_{j;s} - \overline{{\textstyle {droogte-ind}}}_{j})^2}{(20 - 1)}$$
 
 De ondergrens van het betrouwbaarheidsinterval (LCL) voor een bepaald jaar $j$ wordt dan :
 
-$$ {\text {LCL}}_j = \overline{{\text {droogte-ind}}}_{j} - 1.96 * \sqrt{\bar\sigma^2_{\overline{{\text {droogte-ind}}}_{j}}}$$
+$$ {\textstyle {LCL}}_j = \overline{{\textstyle {droogte-ind}}}_{j} - 1.96 * \sqrt{\bar\sigma^2_{\overline{{\textstyle {droogte-ind}}}_{j}}}$$
 
 De bovengrens van het betrouwbaarheidsinterval (UCL) voor een bepaald jaar $j$ wordt dan :
 
-$$ {\text {UCL}}_j = \overline{{\text {droogte-ind}}}_{j} + 1.96 * \sqrt{\bar\sigma^2_{\overline{{\text {droogte-ind}}}_{j}}}$$
+$$ {\textstyle {UCL}}_j = \overline{{\textstyle {droogte-ind}}}_{j} + 1.96 * \sqrt{\bar\sigma^2_{\overline{{\textstyle {droogte-ind}}}_{j}}}$$
 
 
 Het berekenen van de droogte-indicator en de betrouwbaarheid en trend ervan werden uitgevoerd met R versie 4.0.2 [@RN6222] en met het softwarepakket INLA [@RN6223].

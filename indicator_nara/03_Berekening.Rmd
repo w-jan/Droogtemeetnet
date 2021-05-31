@@ -361,18 +361,18 @@ checkdistributie <- dagen_droog %>%
 
 ```
 
-De figuren \@ref(fig:check-distribution-qq-poisson), \@ref(fig:check-distribution-qq-nbinom) en \@ref(fig:check-distribution-qq-binom) geven een voorbeeld van een QQ-plot voor resp. de poisson, de negatief-binomiale en binomiale verdeling.
+De figuren \@ref(fig:check-qq-poisson), \@ref(fig:check-qq-nbinom) en \@ref(fig:check-distribution-qq-binom) geven een voorbeeld van een QQ-plot voor resp. de poisson, de negatief-binomiale en binomiale verdeling.
 
-```{r check-distribution-qq-poisson, fig.cap = "QQ-plot poisson-verdeling"}
+```{r check-qq-poisson, fig.cap = "QQ-plot poisson-verdeling"}
 
-poisson <- fitdistr(checkdistributie, "Poisson")
-qqp(checkdistributie, "pois", lambda = poisson$estimate, id = FALSE)
+poisson <- MASS::fitdistr(checkdistributie, "Poisson")
+car::qqp(checkdistributie, "pois", lambda = poisson$estimate, id = FALSE)
 
 ```
 
-```{r check-distribution-qq-nbinom, fig.cap = "QQ-plot negatief binomiale-verdeling"}
+```{r check-qq-nbinom, fig.cap = "QQ-plot negatief binomiale-verdeling"}
 
-nbinom <- fitdistr(checkdistributie, "Negative Binomial")
+nbinom <- MASS::fitdistr(checkdistributie, "Negative Binomial")
 qqPlot(checkdistributie, "nbinom", size = nbinom$estimate[[1]], mu = nbinom$estimate[[2]], id = FALSE)
 
 ```
