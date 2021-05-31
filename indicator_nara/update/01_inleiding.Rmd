@@ -1,0 +1,22 @@
+# Inleiding {#h1:inleiding}
+
+Dit document geeft het stappenplan om de data voor de droogte-indicator aan te vullen.
+Het is in eerste instantie bedoeld om data van een nieuw, recent meetjaar toe te voegen aan de bestaande dataset.
+Het toevoegen van gegevens voor een jaar dat reeds in de indicator verwerkt is, kan in principe ook nog vrij vlot gaan.
+Om reeds verwerkte metingen van een meetpunt bij te werken, zal een andere werkwijze moeten gevolgd worden, omdat deze een impact hebben op de tijdreeksmodellen van Menyanthes. 
+
+Stel dat we de indicator willen uitbreiden met een nieuw jaar.
+Voor elk meetpunt zijn er dan drie scenario's mogelijk.
+
+[^1]: Een valabele meting is een effectieve meting van een waterpeil. Als een meetpunt droogvalt (te korte buis) dan is de droogval wel een gevalideerde meting, maar is ze toch niet valabel om meegenomen te worden.
+
+- Er zijn minder dan 12 gevalideerde, valabele[^1] metingen
+    - Het bestaande tijdreeksmodel wordt gebruikt om een nieuw meetjaar te simuleren
+    - De veldmetingen hebben (zoals steeds) voorrang t.o.v. de simulaties.
+- Er zijn > 12 en < 365/366 gevalideerde, valabele metingen
+    - Er wordt met de bijkomende data in Menyanthes een nieuw tijdreeksmodel aangemaakt, waarmee de resterende data gesimuleerd worden
+        - Op basis van expertoordeel wordt geoordeeld of op basis van de nieuwe gegevens de reeds behandelde meetjaren moeten aangepast worden.
+        - Enkel wanneer er sprake is van een opvallende verbetering zal hiertoe besloten worden.
+- Er zijn voor alle dagen van het jaar gevalideerde, valabele metingen.
+    - Het bestaande model wordt gebruikt, waaraan deze data worden toegevoegd.
+
