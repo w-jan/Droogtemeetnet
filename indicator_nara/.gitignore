@@ -58,6 +58,7 @@ data/result/indicator_meetnet/GIS/*
 !/report/*.html
 !/report/*.epub
 !/report/*.pdf
+/update/css/*
 
 # Other
 _bookdown_files/
