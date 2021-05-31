@@ -55,12 +55,9 @@ data/result/indicator_meetnet/GIS/*
 /old/*
 
 #report files, excluding output
-/report/*
-!/report/*.html
-!/report/*.epub
-!/report/*.pdf
 /css/*
 /update/css/*
+/report/nara_indicator_droogte_files/*
 
 # Other
 _bookdown_files/
