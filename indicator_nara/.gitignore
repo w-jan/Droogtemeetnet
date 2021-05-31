@@ -28,6 +28,7 @@ vignettes/*.pdf
 /*_cache/
 /cache/
 /src/cache/*
+/update/cache/
 
 # Temporary files created by R markdown
 *.utf8.md
@@ -58,6 +59,7 @@ data/result/indicator_meetnet/GIS/*
 !/report/*.html
 !/report/*.epub
 !/report/*.pdf
+/css/*
 /update/css/*
 
 # Other
