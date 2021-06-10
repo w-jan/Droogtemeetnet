@@ -1,0 +1,66 @@
+<!-- #setup -->
+```{r lib-param, include=FALSE}
+options(stringsAsFactors = FALSE)
+
+#belangrijke opmerking: run dit programma in de 64-bit versie van R
+#Tijdens de uitvoering van het programma in de 32-bit versie van R ontstonden er op mijn laptop geheugenproblemen.
+library(knitr)
+library(kableExtra)
+library(INBOmd)
+library(tidyverse)
+library(INBOtheme)
+library(odbc)
+library(DBI)
+library(git2rdata)
+library(lubridate)
+library(MASS)
+library(car)
+library(lme4)
+library(INLA)
+
+# ingesteld in index.Rmd
+# output_format <- ifelse(
+#   interactive(),
+#   "html",
+#   opts_knit$get("rmarkdown.pandoc.to")
+# )
+
+#keuzen voor het aanmaken van een document
+#welke data verversen
+# 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
+if (params$refresh_data == 2) {
+  datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
+  dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+}
+
+#figuren opnieuw aanmaken of inlezen
+# 2: figuren terug aanmaken (en wegschrijven); 1: de huidige figuren van google-drive downloaden, 0: alleen lokale figuren inlezen
+if (params$refresh_figures == 2) {
+  figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
+}
+
+# lokale gitignored paden aanmaken
+if (!dir.exists(file.path("..", "data", "local"))) dir.create(file.path("..", "data", "local"), recursive = TRUE)
+if (!dir.exists(file.path("..", "figures", "local"))) dir.create(file.path("..", "figures", "local"), recursive = TRUE)
+
+pdfmaken <- FALSE
+
+```
+
+```{r constanten, include= FALSE}
+
+
+```
+
+```{r read-databases, include= FALSE}
+if (params$refresh_data == 2) {
+
+}
+```
+
+```{r read-gisdata, include= FALSE}
+if (params$refresh_data == 2) {
+  
+}
+```
+

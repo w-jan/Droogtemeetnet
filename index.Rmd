@@ -3,7 +3,7 @@ title: "Ontwerp van een early-warning meetnet voor droogte in natuurgebieden"
 author: "Jan Wouters, Floris Vanderhaeghe"
 date: '`r paste("Versie",lubridate::now())`'
 link-citations: true
-bibliography: lit_droogtemeetnet.bib
+bibliography: lit-droogtemeetnet.bib
 csl: research-institute-for-nature-and-forest.csl
 linkcolor: link.colour
 citecolor: link.colour
@@ -15,8 +15,6 @@ always_allow_html: yes #mogelijk slechts een tijdelijke verplichting
 # documentclass: "article"
 site: bookdown::bookdown_site
 documentclass: book
-
-#welke data verversen
 # refresh_data of refresh_figures :
 # 3: alle data worden (her)berekend, er wordt hierbij ook beroep gedaan op bestanden van een Google Drive-map ;  
 # 2: een volledige (her)berekening zonder data van Google-Drive (indien data ontbreken worden ze daar wel gedownload) 

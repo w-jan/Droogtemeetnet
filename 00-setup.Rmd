@@ -1,0 +1,476 @@
+<!-- #setup -->
+```{r include=FALSE}
+knitr::opts_chunk$set(
+	eval = TRUE,
+	include = TRUE,
+	echo = FALSE,
+	cache = params$cache,
+  cache.path = "cache/",
+	dpi = 300
+)
+
+options(stringsAsFactors = FALSE)
+
+library(stringr)
+library(sf)
+library(units)
+library(git2rdata)
+library(lubridate)
+library(assertthat)
+# install watina-package branch develop_fv
+# remotes::install_github("inbo/watina",
+#                         ref = "develop_fv")
+library(watina)
+# install n2khab-package
+# remotes::install_github("inbo/n2khab",
+#                         build_opts = c("--no-resave-data", "--no-manual"))
+library(n2khab)
+library(raster)
+library(tmap)
+library(tidyverse)
+library(kableExtra)
+library(knitr)
+library(googledrive)
+options(gargle_oauth_email = TRUE)
+library(RSQLite) 
+
+output_format <- ifelse(
+  interactive(),
+  "html",
+  opts_knit$get("rmarkdown.pandoc.to")
+)
+
+#keuzen voor het aanmaken van een document
+if (params$refresh_data <= 1) {
+  cache_selection_polygon_cat1A <- TRUE
+  cache_assigning_tubes_grts <- TRUE
+  }else{
+  cache_selection_polygon_cat1A <- params$cache_selection_polygon_cat1A
+  cache_assigning_tubes_grts <- params$cache_assigning_tubes_grts
+}
+
+if (params$refresh_data == 3) {
+  datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
+  #dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+}
+
+#figuren opnieuw aanmaken of inlezen
+# 2: figuren worden gedownload van Google Drive-map (niet toegepast) ; 1:  de figuren (terug) aangemaakt ; 0: gebruik van figuren uit een lokale map (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of 2)
+if (params$refresh_figures == 3) {
+  figpath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/figuren"
+}
+
+# lokale gitignored paden aanmaken
+if (!dir.exists("data/local")) dir.create("data/local", recursive = TRUE)
+if (!dir.exists("figures/local")) dir.create("figures/local", recursive = TRUE)
+if (!dir.exists("data/result/meetnet/GIS")) dir.create("data/result/meetnet/GIS", recursive = TRUE)
+
+pdfmaken <- FALSE
+
+# interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
+# tmap_mode("view")
+# statische modus, dus niet inzoombaar
+tmap_mode("plot")
+```
+
+```{r constanten, include= FALSE}
+#gewenste grootte van het meetnet
+tot_n_tub <- 100
+
+#aantal stratificatielagen
+aantal_strat <- 5
+
+#verdeling meetpunten over de stratificatielagen
+#minaantal_tub_group <- as.integer(tot_n_tub/aantal_strat)
+minaantal_tub_group <- c(11,22,33,34,0)
+
+#kwaliteitscriteria meetreeksen
+  #minimale lengte van de tijdreeks 
+  minlength <- 5
+  #maximale duur van een onderbreking van de tijdreeks 
+  maxgap <- 2
+  #binnen een tijdreeks minimaal aantal meetjaren waarvoor een lg3 kan berekend worden
+  minnryears <- 5
+  
+  #aanvullende criteria om meetreeksen te vergelijken
+  toelaatbare_spreiding_jaren <- 5
+  toelaatbaar_verschil_lengte_tijdreeks <- 5
+
+#zoekstraal rond peilbuizen (buffer) (meter)
+bufferpb <- 3 
+
+#peilbuizen die zeker niet kunnen opgenomen worden, bijv. geen toelating, omdat het te dicht bij een ander geselecteerd punt ligt
+#uitgesloten_tubes <- c("MOSP001", "HALP005", "BUIP027")
+uitgesloten_tubes <- c("HAGP018", "WALP101") #pb van een peilbuiskoppel
+
+```
+
+```{r read-databases, include= FALSE}
+if (params$refresh_data >= 1) {
+  gw_types <- read_scheme_types(lang = "nl") %>%
+      filter(scheme == "GW_05.1_terr") %>%
+      arrange(typegroup) %>%
+      mutate(groupnr = as.integer(str_sub(typegroup, -1))) %>% 
+      dplyr::select(type, groupnr, typegroup_name)
+  output_vc <- write_vc(gw_types, file.path(".","data","processed", "meetnet","gw_types"), sorting = c("type"), strict =  FALSE)
+  
+  types <- read_types(lang = "nl")
+  output_vc <- write_vc(types, file.path(".","data","processed", "meetnet","types"), sorting = c("type"), strict =  FALSE)
+  
+  
+  rm(output_vc)
+}
+```
+
+```{r read-gisdata, include= FALSE}
+#habitatmap_terr_inclbos.gpkg importeren en opslaan in een (lokale) subdirectory van n2khab. Indien het bestand daar niet gevonden wordt, wordt het gedownload van GD. Bij refresh_data-optie=2 wordt het sowieso gedownload (bijv. bij een nieuwere versie)
+if (file.exists(normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg"))) == FALSE | params$refresh_data == 3 ) {
+  drive_download(drive_get(id = "13mon4WXdWVIAOjGLBts_S2Jl4lqzrCG5"), 
+                 path = normalizePath(file.path(n2khab::fileman_up("n2khab_data"), "20_processed", "habitatmap_terr", "habitatmap_terr_inclbos.gpkg")), 
+                 overwrite = TRUE)
+}
+
+
+if (params$refresh_data >= 1) {
+  habmap_terr <- read_habitatmap_terr(file = "20_processed/habitatmap_terr/habitatmap_terr_inclbos.gpkg")
+  
+  habmap_polygons <- habmap_terr$habitatmap_terr_polygons
+  
+  habmap_types <- habmap_terr$habitatmap_terr_types
+  
+  habmap_types <- habmap_types %>%
+    mutate( polygon_id = as.factor(.data$polygon_id),
+            certain = .data$certain == 1,
+            type = factor(.data$type,
+                          levels = levels(types$type)
+            )
+    )
+  
+  # Verspreiding van de verdrogingsgevoelige typen in Vlaanderen volgens de habitatkaart.
+  habmap_types_gw <- habmap_types %>% 
+    inner_join(gw_types, by = c("type" = "type"))
+  
+  habmap_polygons_gw <- 
+    habmap_polygons %>% 
+    inner_join(habmap_types_gw %>% 
+                 dplyr::select(-code_orig, -source), 
+               by = "polygon_id")
+  habmap_polygons_gw <- sf::st_make_valid(habmap_polygons_gw)
+  
+  #wegschrijven als geopackage
+  st_write(habmap_polygons_gw,
+           dsn = file.path(".","data","local", "habmap_terr_gw.gpkg"),
+           layer = "habitatmap_terr_polygons_gw", 
+           driver = "GPKG",
+           delete_dsn = TRUE)
+  
+  con = dbConnect(SQLite(),
+                  dbname = file.path(".","data","local", "habmap_terr_gw.gpkg")
+                  )
+  
+  dbWriteTable(con, "habitatmap_terr_types_gw", habmap_types_gw)
+  dbDisconnect(con)
+  
+  
+  #GRTS-data
+  
+  raster_meetnet_poly <- read_GRTSmh_diffres(level = 8, polygon = TRUE)
+  raster_meetnet_poly <- raster_meetnet_poly %>% 
+    rename(rasterid =  value)
+  raster_meetnet_poly <- sf::st_make_valid(raster_meetnet_poly) 
+  
+  #wegschrijven van dit grid
+  st_write(raster_meetnet_poly,
+           dsn = file.path(".","data","local", "raster_meetnet_poly.gpkg"),
+           layer = "raster_meetnet_poly", 
+           driver = "GPKG",
+           delete_dsn = TRUE)
+  
+  
+  #overlay maken hab-kaart en GRTS-rooster
+  habmap_gw_raster_overlay <- habmap_polygons_gw %>% 
+    st_intersection(raster_meetnet_poly)
+  
+  habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+      mutate(opp = as.integer(st_area(habmap_gw_raster_overlay))) 
+  
+  #wegschrijven van deze intersectie
+  st_write(habmap_gw_raster_overlay,
+           dsn = file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"),
+           layer = "habmap_gw_raster_overlay", 
+           driver = "GPKG",
+           delete_dsn = TRUE)
+  
+  
+  #inlezen grts-raster level 0 (hoogste resolutie = kleinste gridcelgrootte)
+  grts_level0 <- read_GRTSmh(brick = TRUE) %>% 
+    raster::subset(1)
+  
+  #inlezen grts-raster level 8 (resolutie = raster_meetnet_poly), het heeft een gridgrootte van 8192 m, let wel de rastercelgrootte is ook hier 32 bij 32m, dus het aantal rastercellen = grts-raster level 0. 
+  grts_level8 <- read_GRTSmh(brick = TRUE) %>% 
+    raster::subset(9)
+  
+  #±inlezen grts-raster level 5 : voor het selecteren van habitatvlekken
+  grts_level5 <- read_GRTSmh(brick = TRUE) %>% 
+    raster::subset(6)
+  
+  writeRaster(grts_level8,
+              filename = file.path(".","data","local", "grts_level8.tif"),
+              format = "GTiff", 
+              datatype = "INT4S",
+              overwrite = TRUE)
+  
+  writeRaster(grts_level5,
+              filename = file.path(".","data","local", "grts_level5.tif"),
+              format = "GTiff", 
+              datatype = "INT4S",
+              overwrite = TRUE)
+
+    writeRaster(grts_level0,
+              filename = file.path(".","data","local", "grts_level0.tif"),
+              format = "GTiff", 
+              datatype = "INT4S",
+              overwrite = TRUE)  
+}
+```
+
+
+```{r read-watina-data, include= FALSE}
+if (params$refresh_data >= 1) {
+  watina <- connect_watina()
+  tubes_hab <- get_locs(watina, mask = habmap_gw_raster_overlay, join_mask = TRUE,
+                        buffer = bufferpb, loc_type = "P", loc_validity = c("VLD", "ENT"), 
+                        collect = TRUE) %>% as_tibble()
+  tubes_hab_basis <-   tubes_hab #interne backup
+#toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
+  vmm_pb <- read_csv(file.path(getwd(), "data","interim","meetnet","vmm_indc.csv")) %>% 
+    rename(loc_code = FID_stand,
+            polygon_id = plygn_d,
+            typegroup_name = typgrp_) %>% 
+    mutate(area_code = "VMM",
+            area_name = "Grondwaterstandindicator") %>%
+    inner_join(habmap_gw_raster_overlay %>% st_drop_geometry() %>%  
+                dplyr::select(polygon_id, type, groupnr, rasterid, opp), by = c("polygon_id", "groupnr", "type")) %>% as_tibble()
+
+  tubes_hab <- tubes_hab %>% 
+    full_join(vmm_pb %>% dplyr::select(loc_code, area_code, area_name, x, y, phab, type, groupnr, typegroup_name, rasterid, opp, polygon_id))
+  
+  tubes_hab <- tubes_hab %>% 
+    mutate(polygon_id = as.character(polygon_id),
+           loc_validitycode = factor(loc_validitycode),
+           loc_validity = factor(loc_validity),
+           loc_typecode = factor(loc_typecode),
+           loc_typename = factor(loc_typename),
+           obswell_statecode = factor(obswell_statecode),
+           obswell_state = factor(obswell_state),
+           typegroup_name = factor(typegroup_name)
+           ) 
+  #beperken van peilbuizen tot de rastercel waar ze effectief in liggen. Door het gebruik van een buffer is het immers mogelijk dat een peilbuis in twee of meer cellen komt te liggen.
+  tubes_hab_sf <- as_points(tubes_hab)
+  
+  #overlay van peilbuizen met het raster
+  tubes_hab_gw_raster_overlay <- tubes_hab_sf %>% 
+    distinct(loc_code, x, y) %>% 
+    st_intersection(raster_meetnet_poly)
+  
+  tubes_hab <- tubes_hab %>% 
+    semi_join(tubes_hab_gw_raster_overlay, by = c("loc_code","rasterid"))
+  
+  #save tubes_hab as a git2rdata-object
+  tubes_hab <- tubes_hab %>% 
+    arrange(loc_code, polygon_id, rasterid, type)
+  
+  output_vc <- write_vc(tubes_hab, file.path(".","data","processed","meetnet","tubes_hab"), 
+                        sorting = c("loc_code", "polygon_id", "rasterid", "type" ),
+                        strict =  FALSE)
+  rm(output_vc)
+  
+  tubes_xg3 <- tubes_hab %>% 
+    get_xg3(watina, startyear = year(now()) - 20, endyear = year(now()), 
+            vert_crs = "local", truncated =  TRUE, collect = TRUE)
+
+#toevoegen van pb gebruikt voor grondwaterstandstandsindicator die gelegen zijn in een gw-afhankelijk type
+  tubes_xg3_vmm <- data.frame(loc_code = rep(tubes_hab %>% 
+                                       filter(area_code == "VMM") %>% 
+                                       distinct(loc_code) %>% 
+                                       dplyr::pull(loc_code),times = 31), 
+                              hydroyear = seq(from = 2016 - 30, to = 2016),
+                              lg3_lcl = rep(-1, 31)) %>% as_tibble() 
+  
+  tubes_xg3 <- bind_rows(tubes_xg3, tubes_xg3_vmm)  
+  #oplossen van UTF-probleem: strings worden in inbo-SQL-databanken opgeslagen in UTF-16, terwijl hier gewerkt wordt met UTF-8. Dit geeft een probleem bij de kable-functie
+  
+  #tubes_xg3 <- mutate_if(tubes_xg3, is.character, iconv, to = "UTF-8")
+  
+  tubes_xg3 <- tubes_xg3 %>% 
+    arrange(loc_code, hydroyear)
+  
+  output_vc <- write_vc(tubes_xg3, file.path(".","data","processed", "meetnet","tubes_xg3"), 
+                        sorting = c("loc_code", "hydroyear"),
+                        strict =  FALSE, root = ".")
+  
+  
+  DBI::dbDisconnect(watina)
+  #volgende watina-functie werkt ook zonder databankconnectie, maar omdat deze op sommige pc's niet stabiel werkt, worden de data hier alvast lokaal weggeschreven.
+    
+  filter_xg3_lok <- function(data,
+                             xg3_type) {
+    
+    assertthat::assert_that(all(c("loc_code", "hydroyear") %in% colnames(data)) &
+                              any(grepl("g3", colnames(data))),
+                            msg = "data does not have the necessary 'loc_code', 'hydroyear' and XG3 columns.")
+    
+    assertthat::assert_that(("L" %in% xg3_type & any(grepl("lg3", colnames(data)))) |
+                              ("H" %in% xg3_type & any(grepl("hg3", colnames(data)))) |
+                              ("V" %in% xg3_type & any(grepl("vg3", colnames(data)))),
+                            msg = paste("xg3_type is set to",
+                                        dput(xg3_type),
+                                        "but at least one XG3 type is missing in data.")
+    )
+    
+    xg3_filtered <-
+      data %>%
+      dplyr::select(.data$loc_code,
+             .data$hydroyear,
+             if ("L" %in% xg3_type) contains("lg"),
+             if ("H" %in% xg3_type) contains("hg"),
+             if ("V" %in% xg3_type) contains("vg")
+      ) %>%
+      arrange(.data$loc_code,
+              .data$hydroyear)
+    
+    return(xg3_filtered)
+  }
+  
+  eval_xg3_series_lok <- function(data,
+                                  xg3_type = c("L", "H", "V"),
+                                  max_gap,
+                                  min_dur){
+    if (missing(xg3_type)) {
+      xg3_type <- match.arg(xg3_type)} else {
+        assertthat::assert_that(all(xg3_type %in%
+                                      c("L", "H", "V")),
+                                msg = "You specified at least one unknown xg3_type.")
+      }
+    series_memberyrs <-
+      data %>%
+      extract_xg3_series(xg3_type = xg3_type,
+                         max_gap = max_gap,
+                         min_dur = min_dur)
+    
+    # summarize series properties:
+    tmpf <- tempfile()
+    file.create(tmpf)
+    capture.output({# to suppress the many disc_ks_test() messages
+      xg3_series_props <-
+        series_memberyrs %>%
+        group_by(.data$loc_code,
+                 .data$xg3_variable,
+                 .data$series) %>%
+        summarise(
+          ser_length = first(.data$series_length),
+          ser_nryears = n(),
+          ser_rel_nryears = .data$ser_nryears / .data$ser_length,
+          ser_firstyear = min(.data$hydroyear),
+          ser_lastyear = max(.data$hydroyear)  
+          #   ser_pval_uniform = disc_ks_test(.data$hydroyear,
+          #                                   ecdf(seq(.data$ser_firstyear,
+          #                                            .data$ser_lastyear)),
+          #                                   exact = TRUE) %>%
+          #     .$p.value
+        ) %>%
+        ungroup
+    },
+    file = tmpf)
+    
+    # calculation of standard errors
+    
+    xg3_filtered <-
+      data %>%
+      filter_xg3_lok(xg3_type = xg3_type)
+    
+    if (inherits(xg3_filtered, "tbl_lazy")) {
+      xg3_filtered <- collect(xg3_filtered)
+    }
+    
+    xg3_series_values <-
+      xg3_filtered %>%
+      gather(key = "xg3_variable",
+             value = "value",
+             -.data$loc_code,
+             -.data$hydroyear) %>%
+      inner_join(
+        series_memberyrs,
+        by = c("loc_code", "hydroyear", "xg3_variable")
+      ) %>%
+      group_by(.data$loc_code,
+               .data$xg3_variable,
+               .data$series)
+    
+    xg3_series_se <-
+      xg3_series_values %>%
+      summarise(
+        ser_mean = mean(.data$value),
+        ser_sd = sd(.data$value),
+        ser_se_6y = (var(.data$value) / 6 *
+                       (1 - n() / first(.data$series_length))) %>%
+          sqrt,
+        ser_rel_sd_lcl = ifelse(str_detect(first(.data$xg3_variable), "_lcl"),
+                                .data$ser_sd / abs(.data$ser_mean),
+                                NA),
+        ser_rel_se_6y_lcl = ifelse(str_detect(
+          first(.data$xg3_variable), "_lcl"),
+          .data$ser_se_6y / abs(.data$ser_mean),
+          NA)
+      ) %>%
+      ungroup
+    
+    # put it all together...
+    xg3_series_props <-
+      xg3_series_props %>%
+      left_join(xg3_series_se,
+                by = c("loc_code",
+                       "xg3_variable",
+                       "series")
+      )  
+    return(xg3_series_props)
+  }  
+  # debugonce("extract_xg3_series")
+  # test <- tubes_xg3_basis %>%
+  #   eval_xg3_series_lok(xg3_type = c("L"),
+  #                       max_gap = maxgap,
+  #                       min_dur = minlength)
+  
+  tubes_lg3_eval <- tubes_xg3 %>%
+    eval_xg3_series_lok(xg3_type = c("L"),
+                        max_gap = maxgap,
+                        min_dur = minlength) %>% as_tibble()
+  
+  tubes_lgl_eval <- tubes_lg3_eval %>%
+    filter(ser_nryears >= minnryears)
+  
+  output_vc <- write_vc(tubes_lgl_eval, file.path(".","data","processed", "meetnet","tubes_lgl_eval"), 
+                        sorting = c("loc_code", "ser_firstyear"), 
+                        strict =  FALSE, root = ".")
+  
+  rm(output_vc)
+}
+```
+
+```{r inlezen-lokaledata, eval=TRUE, include = TRUE, echo=FALSE, warning=FALSE}
+#inlezen van lokale data (alleen van toepassing bij params$refresh_data-optie = 0)
+if (params$refresh_data < 1) {
+  gw_types <- read_vc("gw_types", file.path(".","data","processed", "meetnet"))
+  types <- read_vc("types", file.path(".","data","processed", "meetnet"))
+  habmap_polygons_gw <- read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+                                 "habitatmap_terr_polygons_gw")
+  
+  habmap_types_gw <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_terr_gw.gpkg"),
+  
+                                              "habitatmap_terr_types_gw"))
+   
+  raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
+   
+  habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
+}
+```
