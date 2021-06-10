@@ -100,7 +100,7 @@ Een absolute indicator laat dat wel toe.
 Zo ligt, zoals hoger al werd aangehaald, het referentieniveau of baseline bij een absolute indicator o.b.v. 5% drempelwaarde op 18 dagen. Een jaar met meer dan 18 droge dagen kan als een relatief droog jaar worden beschouwd.
 
 Conclusie:
-Voor de gewenste doeleinde is een absolute droogte-indicator gebaseerd op de 5% drempelwaarde het meest aangewezen.
+Voor het gewenste doeleinde is een absolute droogte-indicator gebaseerd op de 5% drempelwaarde het meest aangewezen.
 
 
 [^gwindic]: één van de [grondwaterstandsindicatoren](https://www.vmm.be/data/grondwaterstandindicator) van de VMM is een voorbeeld van een relatieve indicator. 

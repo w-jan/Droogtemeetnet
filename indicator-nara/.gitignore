@@ -41,11 +41,12 @@ rsconnect/
 /data/local/*
 /figures/local/*
 /local/*
+/report/lokaal/*
 
 #gis data
 data/result/meetnet/GIS/*
-data/result/indicator_nara/GIS/*
-data/result/indicator_meetnet/GIS/*
+data/result/indicator-nara/GIS/*
+data/result/indicator-meetnet/GIS/*
 
 # temporary map, files
 /temp/*
@@ -57,7 +58,6 @@ data/result/indicator_meetnet/GIS/*
 #report files, excluding output
 /css/*
 /update/css/*
-/report/nara_indicator_droogte_files/*
 
 # Other
 _bookdown_files/
@@ -68,4 +68,5 @@ _book/
 *.log
 !header.html
 .Rproj.user
-droogteindicator_voor_nara.md
+droogteindicator-voor-nara.md
+droogteindicator-voor-nara.Rmd

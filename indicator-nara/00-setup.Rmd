@@ -12,6 +12,7 @@ library(INBOtheme)
 library(odbc)
 library(DBI)
 library(git2rdata)
+library(pracma)
 library(lubridate)
 library(MASS)
 library(car)
@@ -48,7 +49,8 @@ pdfmaken <- FALSE
 ```
 
 ```{r constanten, include= FALSE}
-
+#berekenen van rollende gemiddelden
+tijdsvenster <- c(0,2,4,6,8,10,20,30)
 
 ```
 

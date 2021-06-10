@@ -7,10 +7,13 @@ author:
   - 
     name: "Floris Vanderhaeghe"
     email: "floris.vanderhaeghe@inbo.be"
+  - 
+    name: "Thierry Onkelinx"
+    email: "thierry.onkelinx@inbo.be"    
 #subtitle: "Hier komt de optionele ondertitel"
 reportnr: "Hier komt de DOI van het rapport"
 # ordernr: "Het optionele nummer van de opdrachtgever"
-bibliography: JanWouters.bib
+bibliography: bib-jan-wouters.bib
 link-citations: TRUE
 site: bookdown::bookdown_site
 params:
@@ -44,10 +47,10 @@ opts_chunk$set(
   echo = FALSE,
   eval = TRUE,
   include = TRUE,
-  cache = TRUE,
+  cache = FALSE,
   cache.path = "cache/",  
-  fig.width = 150 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
-  fig.height = 100 / 25.4,
+  fig.width = 300 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
+  fig.height = 200 / 25.4,
   warning = TRUE,
   error = FALSE,
   message = TRUE

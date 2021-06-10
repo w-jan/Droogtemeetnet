@@ -1,0 +1,24 @@
+
+Tabel "\@ref(tab:droogte-indicator-ci-tbl) geeft de berekende indicator-waarden inclusief het 95% betrouwbaarheidsinterval (CI).
+
+```{r droogte-indicator-ci-tbl, include = TRUE}
+
+droogte_ind_j %>% 
+  dplyr::select(-droogte_ind_j_var) %>% 
+  rename('ondergrens (05% CI)' = lcl,
+          'bovengrens (95% CI)' = ucl,
+          indicator = droogte_ind_j
+          ) %>% 
+  mutate_at(2:4, format, digits=1, nsmall = 0) %>% 
+  kbl(longtable = TRUE,
+      booktabs = TRUE,      
+      caption = "Droogte-indicator inclusief p05-95 betrouwhaarheidsinterval (CI) 1985 - 2018",
+      align = c("l", rep("r",3))
+      ) %>% 
+  kable_styling(full_width = FALSE, 
+                position = "center",
+                latex_options = c("striped","repeat_header"), 
+                repeat_header_text = "(vervolg)"
+                )
+```
+

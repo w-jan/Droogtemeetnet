@@ -1,0 +1,31 @@
+## De droogte-indicator en haar betrouwbaarheid {#h4-2:droogte-indicator}
+
+### Droogte-indicator {#h4-2-1:droogte-indicator}
+De droogte-indicator is op zich vrij eenvoudig te berekenen door voor elk jaar het gemiddelde te berekenen van de $\text {dagen\_droog}$-waarden, cfr. \@ref(h3-3:indicator).
+
+Tabel \@ref(tab:droogte-indicator) geeft de berekende indicator-waarden.
+
+
+```{r droogte-indicator, include = TRUE}
+droogte_ind_j <- dagen_droog %>% 
+  group_by(jaar) %>% 
+  summarise(droogte_ind_j = mean(dag_onder_p05)
+            ) %>% 
+  ungroup()
+
+droogte_ind_j %>% 
+  rename(indicator = droogte_ind_j) %>% 
+  mutate_at(2, format, digits = 1, nsmall = 0) %>% 
+  kbl(longtable = TRUE,
+      booktabs = TRUE,
+      caption = "Droogte-indicator 1985 - 2018",
+      align = c("l","r")
+      ) %>% 
+  kable_styling(full_width = FALSE, 
+                position = "center",
+                latex_options = c("striped","repeat_header"), 
+                repeat_header_text = "(vervolg)"
+                )
+
+```
+
