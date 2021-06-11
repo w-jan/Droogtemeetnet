@@ -1,56 +1,91 @@
 ---
 title: "Ontwerp van een early-warning meetnet voor droogte in natuurgebieden"
-author: "Jan Wouters, Floris Vanderhaeghe"
-date: '`r paste("Versie",lubridate::now())`'
-link-citations: true
+author: 
+  - 
+    name: "Jan Wouters"
+    email: "jan.wouters@inbo.be"
+  - 
+    name: "Floris Vanderhaeghe"
+    email: "floris.vanderhaeghe@inbo.be"
+#subtitle: "Hier komt de optionele ondertitel"
+reportnr: "Hier komt de DOI van het rapport"
+ordernr: "Het optionele nummer van de opdrachtgever"
 bibliography: lit-droogtemeetnet.bib
-csl: research-institute-for-nature-and-forest.csl
-linkcolor: link.colour
-citecolor: link.colour
-urlcolor: link.colour
-geometry: margin=1in
-mainfont: "Calibri"
-fontsize: 11pt
-always_allow_html: yes #mogelijk slechts een tijdelijke verplichting
-# documentclass: "article"
+link-citations: TRUE
 site: bookdown::bookdown_site
-documentclass: book
-# refresh_data of refresh_figures :
-# 3: alle data worden (her)berekend, er wordt hierbij ook beroep gedaan op bestanden van een Google Drive-map ;  
-# 2: een volledige (her)berekening zonder data van Google-Drive (indien data ontbreken worden ze daar wel gedownload) 
-# 1: een volledige (her)berekening zonder data van Google-Drive (indien data ontbreken, worden ze daar wel gedownload), echter voor twee tijdslopende berekeningen wordt bij een herberekening de cache gebruikt; 
-# 0: een herberekening met lokale data, soms van een intermediaire oorsprong (dit veronderstelt een eerdere run obv deze parameter met waarde 1 of hoger), voor twee tijdslopende berekeningen wordt ook de cache gebruikt 
-params:
-  refresh_data: 3
-  refresh_figures: 3
-  cache: FALSE
-  cache_assigning_tubes_grts: FALSE
-  cache_selection_polygon_cat1A: FALSE
-output: 
-  # bookdown::gitbook: default
-    #bookdown::pdf_book: default
-  # number_sections: TRUE
-  bookdown::html_document2:
-    keep_md: TRUE
-    number_sections: yes
-    fig_caption: yes
-    df_print: paged
-    toc: TRUE
-    toc_float:
-      collapsed: FALSE
-      smooth_scroll: FALSE
-    toc_depth: 4
-    includes:
-        in_header: header.html
-  bookdown::pdf_document2:
-    fig_caption: yes
-    keep_tex: yes
-    toc: yes
-    toc_depth: 3
-    latex_engine: xelatex
-    number_sections: true
-    includes:
-        in_header: header.tex
-editor_options: 
-  chunk_output_type: console
+output:
+  bookdown::gitbook:
+    split_by: "chapter+number"
+    template: !expr INBOmd::inbo_rapport_css("html")
+    pandoc_args: !expr c("--csl", system.file("research-institute-for-nature-and-forest.csl", package = "INBOmd"))
+  bookdown::pdf_book:
+    base_format: INBOmd::inbo_rapport
+    citation_package: "none"
+    style: INBO
+    tocdepth: 2
+    lof: TRUE
+    lot: TRUE
+    floatbarrier: subsection
+  bookdown::epub_book:
+    stylesheet: "css/inbo_rapport.css"
+    template: !expr INBOmd::inbo_rapport_css("epub")
+    pandoc_args: !expr c("--csl", system.file("research-institute-for-nature-and-forest.csl", package = "INBOmd"))
 ---
+
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  echo = FALSE,
+  eval = TRUE,
+  include = TRUE,
+  cache = FALSE,
+  fig.width = 300 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
+  fig.height = 200 / 25.4,
+  warning = TRUE,
+  error = FALSE,
+  message = TRUE
+)
+library(tidyverse)
+library(INBOtheme)
+if (interactive()) {
+  theme_set(
+    theme_inbo(
+      base_family = "Calibri", # "FlandersArtSans-Regular",
+      base_size = 10
+    )
+  )
+} else {
+  switch(
+    opts_knit$get("rmarkdown.pandoc.to"),
+    html = {
+      opts_chunk$set(dev = "png", dpi = 72)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular",
+          base_size = 12
+        )
+      )
+    },
+    latex = {
+      opts_chunk$set(dev = "cairo_pdf", dpi = 300)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular",
+          base_size = 9
+        )
+      )
+      update_geom_defaults("point", list(size = 1.5))
+    },
+    epub3 = {
+      opts_chunk$set(dev = "png", dpi = 300)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular",
+          base_size = 12
+        )
+      )
+    }
+  )
+}
+```
