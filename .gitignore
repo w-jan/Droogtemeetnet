@@ -42,12 +42,13 @@ rsconnect/
 
 #gis data
 data/result/meetnet/GIS/*
-data/result/indicator_nara/GIS/*
-data/result/indicator_meetnet/GIS/*
+data/result/indicator-nara/GIS/*
+data/result/indicator-meetnet/GIS/*
 
-# temporary map, files
+# temporary map, old files
 /temp/*
 /src/temp/*
+old*
 
 #cache
 /src/cache/*
@@ -59,6 +60,7 @@ _book/
 *.pdf
 *.tex
 *.log
+*.zip
 !header.html
 .Rproj.user
 droogtemeetnet_ontwerp.md
