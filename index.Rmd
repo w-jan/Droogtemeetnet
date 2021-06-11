@@ -13,6 +13,12 @@ ordernr: "Het optionele nummer van de opdrachtgever"
 bibliography: lit-droogtemeetnet.bib
 link-citations: TRUE
 site: bookdown::bookdown_site
+params:
+  refresh_data: 3
+  refresh_figures: 3
+  cache: FALSE
+  cache_assigning_tubes_grts: FALSE
+  cache_selection_polygon_cat1A: FALSE
 output:
   bookdown::gitbook:
     split_by: "chapter+number"
