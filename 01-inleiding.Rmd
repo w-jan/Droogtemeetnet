@@ -55,7 +55,7 @@ gw_types_groups <- gw_types %>%
          "GT-groep: naam" = typegroup_name,
          "Gewenst aantal meetlocaties" = gewenst_aantal_locaties)
 
-kobj <- kable(gw_types_groups %>%  select(1:2), 
+kobj <- kable(gw_types_groups %>%  dplyr::select(1:2), 
       caption = "Grondwatertype-groepen") 
 
 if (pdfmaken == TRUE) {

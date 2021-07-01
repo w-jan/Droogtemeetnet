@@ -396,7 +396,7 @@ sel_raster_meetnet <-
   group_by(rasterid, groupnr, opp_gw_cel, gew_aantal_meetptn) %>% 
   summarise (temp = n()) %>% 
   ungroup %>% 
-  select(-temp)
+  dplyr::select(-temp)
 
 #uit voorzorg nog eens de geometrie checken
 sel_raster_meetnet <- st_make_valid(sel_raster_meetnet)
@@ -527,7 +527,7 @@ tubes_hab_multipolyg <- tubes_hab_groep %>%
           by = "loc_code")
 
 tubes_hab_aggr <- tubes_hab %>%
-  select(-phab, -certain, -type, -source, -polygon_id, -starts_with("description"), -opp) %>% 
+  dplyr::select(-phab, -certain, -type, -source, -polygon_id, -starts_with("description"), -opp) %>% 
   distinct %>% 
   semi_join(tubes_hab_multipolyg, by = c("loc_code", "rasterid", "groupnr" ))
 
@@ -688,7 +688,7 @@ sel_raster_pb <-
     summarise(n_tubes = n(),
               n_tubes_lg3 = sum(lastyear > 0)) %>% 
     ungroup %>% 
-    select(-geom, geom)
+    dplyr::select(-geom, geom)
 
 
 kobj <- kable(sel_raster_pb %>% st_drop_geometry() %>%
@@ -730,7 +730,7 @@ Figuur \@ref(fig:cat1A-plot) toont deze rastercellen op een kaart.
 sel_cat1A_raster <- sel_raster_meetnet %>% 
   left_join(sel_raster_pb %>% 
               st_drop_geometry() %>% 
-              select(-gew_aantal_meetptn),
+              dplyr::select(-gew_aantal_meetptn),
             by = c("rasterid", "groupnr")) %>% 
   filter(is.na(n_tubes) | gew_aantal_meetptn > n_tubes) %>% 
   arrange(rasterid, groupnr)
@@ -743,7 +743,7 @@ sel_cat1A_table <- sel_cat1A_raster %>%
   rename(gewenst_aantal_meetpunten = gew_aantal_meetptn) %>% 
   mutate(totaal_peilbuizen =  replace_na(n_tubes,0),
          aantal_cat1A = gewenst_aantal_meetpunten - totaal_peilbuizen) %>% 
-  select(-n_tubes) %>% 
+  dplyr::select(-n_tubes) %>% 
   arrange(rasterid)
 
 kobj <- kable(sel_cat1A_table %>%
@@ -962,7 +962,7 @@ sel_cat2_table <-
   inner_join(sel_qual,
              by = c("rasterid", "groupnr", "gew_aantal_meetptn")) %>% 
   filter(beschikbaar_aantal == gew_aantal_meetptn) %>% 
-  select(-beschikbaar_aantal, -maxrank)
+  dplyr::select(-beschikbaar_aantal, -maxrank)
 
 kobj <- kable(sel_cat2_table %>% 
         dplyr::select(1:3,7,5:6,4) %>% 
@@ -1047,7 +1047,7 @@ sel_cat3_table <-
       ungroup %>% 
       inner_join(sel_qual, by = c("rasterid", "groupnr", "gew_aantal_meetptn") ) %>% 
       filter(beschikbaar_aantal > gew_aantal_meetptn, rankclus <= maxrank) %>% 
-      select(-beschikbaar_aantal, -maxrank)  
+      dplyr::select(-beschikbaar_aantal, -maxrank)  
 
 
 kobj <- kable(sel_cat3_table %>% 
@@ -1367,7 +1367,7 @@ sel_cat2_table_bis <-
   inner_join(sel_qual_bis,
              by = c("rasterid", "groupnr", "gew_aantal_meetptn")) %>% 
   filter(beschikbaar_aantal == gew_aantal_meetptn) %>% 
-  select(-beschikbaar_aantal, -maxrank)
+  dplyr::select(-beschikbaar_aantal, -maxrank)
 
 ```
 
@@ -1456,7 +1456,7 @@ sel_cat3_table_bis <-
       ungroup %>% 
       inner_join(sel_qual_bis, by = c("rasterid", "groupnr", "gew_aantal_meetptn") ) %>% 
       filter(beschikbaar_aantal > gew_aantal_meetptn, rankclus <= maxrank) %>% 
-      select(-beschikbaar_aantal, -maxrank)  
+      dplyr::select(-beschikbaar_aantal, -maxrank)  
 
 
 ```
@@ -1692,7 +1692,7 @@ sel_excess <- sel_cat3_table_bis %>%
   distinct()
 ```
 
-```{r assigning-tubes-grts, cache=cache_assigning_tubes_grts}
+```{r assigning-tubes-grts, cache=cache_assigning_tubes_grts, eval = !file.exists(file.path("cache", "tubes_cat3_grts.rds" ))}
 #gecached !
 
 sel_excess <- sel_cat3_table_bis %>% 
@@ -1863,14 +1863,18 @@ tubes_cat3_grts_reserve <- tubes_excess %>%
   filter(reserve > 0) %>% 
   arrange(rasterid, groupnr, reserve)
 
+saveRDS(tubes_cat3_grts, file.path("cache", "tubes_cat3_grts.rds" ))
+saveRDS(tubes_cat3_grts_reserve, file.path("cache", "tubes_cat3_grts_reserve.rds" ))
 ```
 
 ```{r write-grts-tubes, message=FALSE, warning=FALSE}
 #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
+tubes_cat3_grts <- readRDS(file.path("cache", "tubes_cat3_grts.rds" ))
+tubes_cat3_grts_reserve <- readRDS(file.path("cache", "tubes_cat3_grts_reserve.rds" ))
+
 output_vc <- write_vc(tubes_cat3_grts, file.path(".","data","processed", "meetnet","tubes_cat3_grts"), sorting = c("rasterid","groupnr", "loc_code"), strict =  FALSE)
 output_vc <- write_vc(tubes_cat3_grts_reserve, file.path(".","data","processed","meetnet","tubes_cat3_grts_reserve"), sorting = c("rasterid","groupnr", "reserve"), strict =  FALSE)
 rm(output_vc)
-
   
 ```
 
@@ -1943,7 +1947,7 @@ Via een desktop-analyse zoals hieronder beschreven wordt, kunnen slechts kandida
 De hier gepresenteerde methode volgt een meer pragmatische benadering. 
 Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseerd obv de grondwatergroepen. Elke cel van 32\*32m wordt zo in een van de vijf groepen ingedeeld. Is er voor een bepaalde grondwatergroep een pb gewenst, dan wordt de bijhorende rastercel met het laagste rangnummer gekozen. Deze cel ligt ingebed in een grotere grid van bijv. 1024\*1024. Hierbinnen worden de rastercellen die tot dezelfde gw-groep behoren geselecteerd en gerangschikt volgens oplopend rangnummer. Dit zijn bij voorkeur de alternatieve plaatsen.
 
-```{r selection-polygon-cat1A, cache=cache_selection_polygon_cat1A, message=FALSE, warning= FALSE}
+```{r selection-polygon-cat1A, cache=cache_selection_polygon_cat1A, message=FALSE, warning= FALSE, eval = !file.exists(file.path("cache", "tubes_cat1_polyg.rds" ))}
 
  #wat voorbereidende databewerkingen aan de overlay habitatkaart en het raster (grid8)
  habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>%
@@ -1957,7 +1961,7 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
  #overzicht van rasterid-GT-groep waarbinnen moet gezocht worden
  sel_cat1A_raster_gw_df <- sel_cat1A_raster %>% 
    st_drop_geometry() %>% 
-   select(-opp_gw_cel) %>% 
+   dplyr::select(-opp_gw_cel) %>% 
    arrange(rasterid, groupnr) %>% 
    distinct()
  
@@ -1965,7 +1969,7 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
  
  #overzicht van alleen de rastercellen
  sel_cat1A_raster_df <- sel_cat1A_raster_gw_df %>% 
-   select(-groupnr) %>% 
+   dplyr::select(-groupnr) %>% 
    distinct
  
  # loop per rastercel
@@ -2049,7 +2053,7 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
        left_join(habmap_raster_unieknr_select_df, 
                  by = "unieknr") %>% 
        mutate(selecteerbaar = ifelse(is.na(geselecteerd), selecteerbaar, 0)) %>% 
-       select(-geselecteerd)
+       dplyr::select(-geselecteerd)
      
      
      #opzoeken reservepunten
@@ -2115,7 +2119,7 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
        left_join(habmap_raster_unieknr_reserve_df, 
                  by = "unieknr") %>% 
        mutate(selecteerbaar_reserve = ifelse(is.na(geselecteerd), selecteerbaar_reserve, 0)) %>% 
-       select(-geselecteerd)
+       dplyr::select(-geselecteerd)
    } #loop grondwatergroup
  } #loop grid
 
@@ -2130,14 +2134,21 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
    arrange(rasterid, type, polygon_id) 
  
  habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
-   select(-starts_with("selecteerbaar"))
+   dplyr::select(-starts_with("selecteerbaar"))
  
+saveRDS(tubes_cat1_polyg, file.path("cache", "tubes_cat1_polyg.rds" ))
+saveRDS(habmap_gw_raster_overlay, file.path("cache", "habmap_gw_raster_overlay.rds" ))
 
 ```
+```{r tubes-cat1-polyg-result}
+tubes_cat1_polyg <- readRDS(file.path("cache", "tubes_cat1_polyg.rds" ))
+habmap_gw_raster_overlay <- readRDS(file.path("cache", "habmap_gw_raster_overlay.rds" ))
+```
+
 ```{r write-tubes-cat1-polyg, message=FALSE, warning=FALSE}
  #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
  output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","processed", "meetnet","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
- rm(output_vc)
+rm(output_vc)
 write_sf(tubes_cat1_polyg, file.path("data", "result", "meetnet", "GIS", "bijkomende_hokken.shp"))
 write_sf(tubes_cat1_polyg, file.path("data", "result", "meetnet", "GIS", "bijkomende_hokken.gpkg")) 
 ```
@@ -2166,14 +2177,14 @@ tubes_selected <- bind_rows(tubes_cat1 %>% mutate(cat = "1"),
                             tubes_cat3_grts %>% mutate(cat = "3"))
 
 tubes_selected <- tubes_selected %>% 
-  select(-selectie) %>% 
+  dplyr::select(-selectie) %>% 
   left_join(tubes_eval_namenyanthes %>% 
               dplyr::select(loc_code, selectie), by = "loc_code")
 
 tubes_reserve <- bind_rows(tubes_cat3_grts_reserve %>% mutate(cat = "3")
 )
 tubes_reserve <- tubes_reserve %>% 
-  select(-selectie) %>% 
+  dplyr::select(-selectie) %>% 
   left_join(tubes_eval_namenyanthes %>% 
               dplyr::select(loc_code, selectie), by = "loc_code")      
 
@@ -2187,10 +2198,10 @@ tubes_selected_types <-
   tubes_selected %>% 
   #as_tibble %>% 
   # filter(selectie == 1) %>% 
-  select(loc_code, x, y, selectie, 
+  dplyr::select(loc_code, x, y, selectie, 
          target_groupnr = groupnr) %>% 
   left_join(tubes_hab %>% 
-              select(loc_code, 
+              dplyr::select(loc_code, 
                      description,
                      type, 
                      certain, 
@@ -2453,23 +2464,23 @@ tubes_selected_tm
 ```{r tubes-as-shape, warning=FALSE}
 
 write_sf(tubes_selected_sf %>%  
-           select(-obswell_statecode, -loc_validitycode) %>% 
+           dplyr::select(-obswell_statecode, -loc_validitycode) %>% 
            rename(watinac = "loc_code"), 
          driver = "ESRI Shapefile", file.path("data", "result", "meetnet", "GIS", "tubes_selected_2020_05.shp"))
 
 write_sf(tubes_reserve %>% 
            as_points() %>%  
-           select(-obswell_statecode, -loc_validitycode) %>% 
+           dplyr::select(-obswell_statecode, -loc_validitycode) %>% 
            rename(watinac = "loc_code"), 
          file.path("data", "result", "meetnet","GIS", "tubes_reserve_2020_05.shp" ))
 
 write_sf(tubes_selected_sf %>%  
-           select(-obswell_statecode, -loc_validitycode) %>% 
+           dplyr::select(-obswell_statecode, -loc_validitycode) %>% 
            rename(watinac = "loc_code"), file.path("data", "result", "meetnet","GIS", "tubes_selected_2020_05.gpkg"))
 
 write_sf(tubes_reserve %>% 
            as_points() %>%  
-           select(-obswell_statecode, -loc_validitycode) %>% 
+           dplyr::select(-obswell_statecode, -loc_validitycode) %>% 
            rename(watinac = "loc_code"), 
          file.path("data", "result", "meetnet","GIS", "tubes_reserve_2020_05.gpkg" ))
 ```
@@ -2477,7 +2488,7 @@ write_sf(tubes_reserve %>%
 ```{r tubes_currently_applicable, message= FALSE, warning= FALSE}
 tubes_current <- tubes_selected %>% 
   as_tibble() %>% 
-  select(-n) %>% #n uitsluiten, want de count-functie loopt hierdoor mis
+  dplyr::select(-n) %>% #n uitsluiten, want de count-functie loopt hierdoor mis
   filter(selectie == 1) %>% 
   count(groupnr) 
 
@@ -2501,7 +2512,7 @@ Als we beide GT-groepen samennemen, is het percentage `r tubes_current_GT %>% fi
 
 ```{r tubes-currently-applicable-table}
 kobj <- kable(tubes_current_GT %>% 
-        select(-ends_with("2")) %>% 
+        dplyr::select(-ends_with("2")) %>% 
         arrange(groupnr) %>%           
         rename('GT-groep: nummer' = groupnr,
                'Gewenst aantal meetlocaties' = gew_aantal,

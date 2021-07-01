@@ -42,10 +42,11 @@ De twee natste GT-klassen krijgen een lager gewicht toegemeten, omdat deze klass
 Concreet:
 
 - Het aantal stratificatielagen  = `r aantal_strat - 1`
-- De verdeling van het aantal meetpunten per laag is gegeven in tabel \@ref(tab:GTgroepen-verdeling-over-strata): 
+- De verdeling van het aantal meetpunten per laag is gegeven in tabel \@ref(tab:GTgroepen-verdeling-over-strata)
+
 ```{r GTgroepen-verdeling-over-strata}
 kobj <- kable(gw_types_groups %>% arrange(`GT-groep: nummer`), 
-      caption = "Verdeling van het gewenst aantal meetlocaties over de grondwatertype-groepen") 
+      caption = "Het gewenst aantal meetlocaties per grondwatertype-groep") 
 
 if (pdfmaken == TRUE) {
   kobj

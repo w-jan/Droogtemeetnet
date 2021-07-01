@@ -65,7 +65,7 @@ if (!dir.exists("data/local")) dir.create("data/local", recursive = TRUE)
 if (!dir.exists("figures/local")) dir.create("figures/local", recursive = TRUE)
 if (!dir.exists("data/result/meetnet/GIS")) dir.create("data/result/meetnet/GIS", recursive = TRUE)
 
-pdfmaken <- FALSE
+pdfmaken <- TRUE
 
 # interactieve modus, maar vraagt veel computertijd en genereert ook een mega html-bestand
 # tmap_mode("view")
