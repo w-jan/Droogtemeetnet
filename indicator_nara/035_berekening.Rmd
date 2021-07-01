@@ -93,7 +93,7 @@ droogte_ind_j_ma <- droogte_ind_j_ma %>%
 ```
 
 ```{r rollend-gem-met-ci-vc, include=FALSE}
-write_vc(droogte_ind_j_ma, file.path("data", "result", "droogte-indicator"), sorting = c("jaar", "tijdsvenster"), strict= FALSE)
+write_vc(droogte_ind_j_ma, file.path("data", "result", "droogte_indicator"), sorting = c("jaar", "tijdsvenster"), strict= FALSE)
 ```
 Figuur \@ref(fig:rollend-gem-fig) geeft het effect weer van de verschillende tijdsvensters.
 Op de figuren zijn de jaren met een onvolledig tijdsvenster lichter gekleurd, omdat voor deze jaren de berekening van het rollend gemiddelde niet helemaal vergelijkbaar is met de jaren waarvoor het rollend gemiddelde wel op basis van een volledig jaarvenster kon gebeuren.
@@ -723,7 +723,7 @@ for (ma in tijdsvenster) {
 ```{r trend-data-vc, include=FALSE}
 
 #bewaren resultaat
-write_vc(dagen_droog_update, file.path("data", "result", "dagen-droog"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
+write_vc(dagen_droog_update, file.path("data", "result", "dagen_droog"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
 
 ```
 
@@ -860,9 +860,9 @@ dev.off()
 
 ```{r trend-vc, include=FALSE}
 #bewaren resultaten
-write_vc(droogte_trend_05, file.path("data", "result", "droogte-trend-05"), sorting = c("jaar", "tijdsvenster"), strict = FALSE)
+write_vc(droogte_trend_05, file.path("data", "result", "droogte_trend_05"), sorting = c("jaar", "tijdsvenster"), strict = FALSE)
 
-write_vc(dagen_droog_lang_breed, file.path("data", "result", "droogte-fitting-05"), sorting = c("jaar", "simulatienr", "tijdsvenster"), strict = FALSE)
+write_vc(dagen_droog_lang_breed, file.path("data", "result", "droogte_fitting_05"), sorting = c("jaar", "simulatienr", "tijdsvenster"), strict = FALSE)
 ```
 
 
@@ -874,6 +874,6 @@ write_csv(droogte_trend_05 %>%
                    og_jaar_trend =  og_jaar,
                    bg_jaar_trend = bg_jaar,
                    og_jaar_indicator = lcl,
-                   bg_jaar_indicator = ucl), file.path("data", "result", "figuur-nara.csv"))
+                   bg_jaar_indicator = ucl), file.path("data", "result", "figuur_nara.csv"))
 ```
 

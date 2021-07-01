@@ -54,5 +54,5 @@ droogte_ind_j <- droogte_ind_j %>%
 ```
 
 ```{r droogte-indicator-met-ci-vc, include=FALSE}
-write_vc(droogte_ind_j, file.path("data", "result", "droogte-indicator"), sorting = c("jaar"), strict= FALSE)
+write_vc(droogte_ind_j, file.path("data", "result", "droogte_indicator"), sorting = c("jaar"), strict= FALSE)
 ```
