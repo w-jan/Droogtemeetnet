@@ -1,4 +1,4 @@
-# Werkwijze berekening droogte-indicator {#h3:methode}
+# Werkwijze berekening droogte-indicator {#h1:methode}
 
 Het toekomstig droogte-meetnet zal uit een honderdtal meetpunten bestaan. 
 Op 58 van de geselecteerde locaties wordt het grondwaterpeil reeds verschillende jaren gemeten.
@@ -10,14 +10,14 @@ De berekening bevat vier delen:
 - berekenen van de droogte-indicator
 - berekenen van de evolutie/trend van de droogte-indicator
 
-## Vervolledigen tijdreeksen {#h3-1:tijdreeks}
+## Vervolledigen tijdreeksen {#h2:tijdreeks}
 
-Zoals in \@ref(h2-2-1:referentietoestand) werd aangehaald, willen we werken met een vast referentietijdsvenster: 1985 -  2014.
+Zoals in \@ref(h3:referentietoestand) werd aangehaald, willen we werken met een vast referentietijdsvenster: 1985 -  2014.
 Voor geen enkele van de geselecteerde meetpunten beschikken we echter voor deze tijdsperiode over volledige tijdreeksen, t.t.z. 30 jaar * 365 metingen/jaar.
 
-Een selectiecriterium om als meetpunt in het meetnet te kunnen worden opgenomen, was dat het verloop van de grondwaterstanden in belangrijke mate (minstens 2/3 van de variatie) kan verklaard worden door de meteorologische variabelen: neerslag en potentiële evapotranspiratie [@RN6212].
+Een selectiecriterium om als meetpunt in het meetnet te kunnen worden opgenomen, was dat het verloop van de grondwaterstanden in belangrijke mate (minstens 2/3 van de variatie) kan verklaard worden door de meteorologische variabelen: neerslag en potentiële evapotranspiratie [@WoutersVanderhaeghe2020].
 Deze eigenschap kunnen we gebruiken om ontbrekende data in de tijdreeks aan te vullen.
-Hiervoor doen we een beroep op het softwareprogramma Menyanthes [@RN5899].
+Hiervoor doen we een beroep op het softwareprogramma Menyanthes [@Menyanthes].
 Het programma kan op basis van verklarende reeksen zoals neerslag en potentiële evapotranspiratie een model bouwen waarmee grondwaterpeilen kunnen worden geschat.
 
 Voor elk van de 58 meetlocaties werd op deze basis een model gebouwd.
@@ -26,9 +26,9 @@ Een effectieve veldmeting kreeg hierbij voorrang op een modelwaarde.
 Dit betekent dat op dagen met werkelijke metingen de 20 reeksen steeds dezelfde waarde, nl. die van de veldmeting, zullen hebben.
 Deze verschillende simulaties zullen toelaten om de onzekerheid te schatten die er bestaat voor de dagen zonder veldmeting. 
 
-## Berekenen van de krtitische drempelwaarden {#h3-2:drempelwaarde}
+## Berekenen van de krtitische drempelwaarden {#h2:drempelwaarde}
 
-Zoals in \@ref(h2-2-1:referentietoestand) besproken werd, stellen we als kritische drempelwaarde het grondwaterpeil dat 'normaal' op minder dan 5% van de dagen van een jaar (dit is afgerond 18 dagen) onderschreden wordt. 
+Zoals in \@ref(h3:referentietoestand) besproken werd, stellen we als kritische drempelwaarde het grondwaterpeil dat 'normaal' op minder dan 5% van de dagen van een jaar (dit is afgerond 18 dagen) onderschreden wordt. 
 Het ontbreekt hier nog aan duiding over wat als 'normaal' of als referentie wordt beschouwd. 
 Hiervoor kijken we naar het referentietijdsvenster (1985 - 2014) en berekenen we voor elk meetlocatie de kritische drempelwaarde als het gemiddelde van de 5%-percentiel van de grondwatermetingen van een jaar binnen de periode 1985 - 2014. 
 Het is dus niet de absolute percentielwaarde op alle metingen van 30 jaar. 
@@ -36,6 +36,6 @@ Stel bijvoorbeeld dat er één heel droog jaar is, waarbij de 5% droogste peilen
 Dit beschouwen we als niet representatief, ook omdat de responstijd van vegetaties op wijzigende grondwaterregimes veel sneller is dan 30 jaar. 
 Eén extreem droog jaar kan al aantoonbare gevolgen hebben.
 Daarom wordt hier verkozen om te werken met een gemiddelde van percentielwaarden per jaar. 
-Deze werkwijze is ook analoog aan het berekenen van karakteristieke grondwaterstanden (GXG’s) voor vegetaties [@RN5875].
+Deze werkwijze is ook analoog aan het berekenen van karakteristieke grondwaterstanden (GXG’s) voor vegetaties [@VanHeesen1970].
 
 

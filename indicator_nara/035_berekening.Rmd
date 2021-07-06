@@ -96,11 +96,11 @@ droogte_ind_j_ma <- droogte_ind_j_ma %>%
 write_vc(droogte_ind_j_ma, file.path("data", "result", "droogte_indicator"), sorting = c("jaar", "tijdsvenster"), strict= FALSE)
 ```
 Figuur \@ref(fig:rollend-gem-fig) geeft het effect weer van de verschillende tijdsvensters.
-Op de figuren zijn de jaren met een onvolledig tijdsvenster lichter gekleurd, omdat voor deze jaren de berekening van het rollend gemiddelde niet helemaal vergelijkbaar is met de jaren waarvoor het rollend gemiddelde wel op basis van een volledig jaarvenster kon gebeuren.
+Op de figuren zijn de jaren met een onvolledig tijdsvenster lichter gekleurd, omdat voor deze jaren de berekening van het lopend gemiddelde niet helemaal vergelijkbaar is met de jaren waarvoor het lopend gemiddelde wel op basis van een volledig jaarvenster kon gebeuren.
 Naarmate het tijdsvenster vergroot, wordt de lijn logischerwijze rechtlijniger. 
 De trend vertoont een lichte stijging.
  
-```{r rollend-gem-fig-save, fig.cap="rollend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
+```{r rollend-gem-fig-save, fig.cap="lopend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
 #plot van de trend
 gplot <- plotma(droogte_ind_j_ma,"droogte_ind_j", 18)
 png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-rollendgem",".png"), width = 1500, height = 1500, res = 150)
@@ -118,7 +118,7 @@ In het model is de factor tijd één van de verklarende variabelen.
 De andere verklarende factor is de locatie (de ene plaats kan een afwijkend gedrag vertonen t.o.v. een andere).
 We onderzoeken hier alleen het tijdsaspect. 
 Een mogelijke andere interessante vraag is of er regionale verschillen zijn tussen de waarden en waardoor deze dan  kunnen verklaard worden. 
-Om deze vraag te kunnen beantwoorden is het huidige en voorziene meetnet echter minstens een orde te klein!
+Om deze vraag te kunnen beantwoorden is het huidige en voorziene meetnet echter minstens een grootte-orde te klein! (\@ref(h3:calc-tijdreeks))
 
 Voor de berekening van de trend doen we beroep op Bayesiaanse modeltechnieken.
 Deze technieken laten toe om voorkennis over de data te gebruiken bij het modelleren. 
@@ -475,7 +475,7 @@ indic_abs_function <- function(modeldata, suffix= "", respons, percentile, indic
   lc <- inla.make.lincombs(jaar = lc_iyear) %>%
     setNames(rownames(lc_iyear))
   
-  #rollend gemiddelde berekenen
+  #lopend gemiddelde berekenen
   for (ma in tijdsvenster) {
     
     
@@ -788,7 +788,7 @@ Figuur \@ref(fig:trend-fitting-fig) geeft het resultaat van de modelbouw.
 De figuur toont de zowel de werkelijke waarden (punten) als de door het model geschatte waarden per meetpunt met hun betrouwbaarheidsinterval. 
 
 ```{r trend-fitting-fig-save, message=FALSE, warning=FALSE, include=FALSE}
-#tabel met de indicatorwaarden (rollend gemiddelden) en trend berekening (model) omvormen naar een lange versie
+#tabel met de indicatorwaarden (lopend gemiddelden) en trend berekening (model) omvormen naar een lange versie
 dagen_droog_lang_breed <- dagen_droog_update %>% 
   pivot_longer(cols = starts_with("p05."), names_to = "statistiek", values_to = "waarde") %>% 
   mutate(tijdsvenster = as.integer(substr(statistiek, 4 + 1,  str_locate(string = statistiek, pattern = "_") - 1)),
@@ -823,7 +823,7 @@ Het valt op dat het tijdreeksmodel de feitelijke indicatorwaarden niet volgt.
 Het was een bewuste keuze bij het ontwerp om een uitgevlakte curve te berekenen (cfr. keuze voor random walk van de tweede orde i.p.v. de eerste orde). 
 Bij de rollende gemiddelden worden de pieken afgevlakt en dan is goed te zien dat naarmate door het vergroten van het tijdsvenster deze uitvlakken het tijdreeksmodel de resulterende golfbeweging steeds beter kan bijhouden.
 Het valt bij de grotere tijdsvensters ook op te merken dat de gemiddelde waarde duidelijk hoger is dan de referentie van 18 dagen. 
-Dit is volledig toe te schrijven aan de combinatie van de berekeningswijze van de kritische drempelwaarde, nl. een gemiddelde berekenen van afzonderlijke jaargemiddelden i.p.v. een gemiddelde voor het volledige tijdsvenster (cfr. \@ref(h3-2:drempelwaarde) en het feit dat range van mogelijke afwijkingen voor droge jaren veel groter is dan de range bij natte jaren.
+Dit is volledig toe te schrijven aan de combinatie van de berekeningswijze van de kritische drempelwaarde, nl. een gemiddelde berekenen van afzonderlijke jaargemiddelden i.p.v. een gemiddelde voor het volledige tijdsvenster (cfr. \@ref(h2:drempelwaarde) en het feit dat range van mogelijke afwijkingen voor droge jaren veel groter is dan de range bij natte jaren.
 Daaruit kan men concluderend dat de referentie van 18 dagen enkel op jaarbasis mag gebruikt worden om te bepalen of het tijdens dat jaar al dan niet droog was.
 
 Op de vraag welk tijdsvenster nu het meest toepasselijk is kan niet eenduidig worden geantwoord. 

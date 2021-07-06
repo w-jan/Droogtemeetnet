@@ -1,0 +1,178 @@
+## Berekenen van de droogte-indicator {#h2:calcindicator}
+Voor de leesbaarheid willen we eerst nog een duidelijk onderscheid maken tussen enerzijds de absolute indicatorwaarde en de gerapporteerde droogte-indicator, die in dit hoofdstuk centraal staat. 
+Kennen we de kritische drempelwaarde van een meetpunt dan kan de absolute indicatorwaarde vrij eenvoudig berekend worden.
+
+
+```{block2 definitie-absolute-indicator, type="exampleblock", latex.options="{}", echo = TRUE}
+De absolute indicatorwaarde is het aantal dagen op een jaar $j$ dat het grondwaterpeil op een meetlocatie $m$ onder een kritische drempelwaarde zit (cfr. \@ref(h3:indicator)). 
+
+```
+
+We berekenen deze waarde voor elke simulatie $s$ afzonderlijk en geven deze de notatie $d_{mjs}$.
+Voor de periode 1985 - 2018, 58 meetlocaties en 20 simulaties betekent dit dus 34 * 58 * 20 = 39440 $d_{mjs}$-waarden
+
+De absolute indicatorwaarden vormen de basis voor het berekenen van een index, die we de droogte-indicator noemen.
+
+
+```{block2 definitie-droogte-indicator, type="exampleblock", latex.options="{}", echo = TRUE}
+De droogte-indicator $DI_j$ voor een bepaald jaar $j$ is dan het gemiddelde van de $d_{mjs}$-waarden voor alle simulaties en meetlocaties: $$DI_j$ = \frac{\sum_{s=1}^{20}\sum_{m=1}^{58}d_{mjs}}{20*58}$
+
+```
+
+Momenteel wordt de droogte-indicator $DI_j$ berekend op basis van 58 meetlocaties. 
+Er zijn echter een honderdtal locaties voorzien.
+Mettertijd zal de droogte-indicator op een groter aantal punten berekend worden. 
+Het mogelijke effect op de droogte-indicator $DI_j$  zal ingeschat worden door ook de $DI_j$ voor de huidige 58 locaties te blijven berekenen.
+
+Het wordt complexer als we inzicht willen krijgen in de onzekerheid die er op de droogte-indicator $DI_j$ zit, m.a.w. wat is het betrouwbaarheidsinterval van de droogte-indicator ? 
+
+Hiervoor doen we een beroep op de formule van Rubin [@Rubin1987].
+We geven eerst de inhoudelijke betekenis, vooraleer we betrouwbaarheidsinterval mathematisch verder uitwerken.
+De totale variantie in de data kan beschouwd worden als een optelling van twee varianties, een variantie die inherent is aan de data en een bijkomende variantie die voorvloeit uit de onzekerheid over de schatting van ontbrekende waarden (= variantie door imputatie).
+Om deze twee varianties te kunnen onderscheiden, dient (eerst) de droogte-indicator voor elke simulatie afzonderlijk berekend te worden, $DI_{js}$ , in plaats van (onmiddellijk) dat op de volledige dataset te doen.
+
+In het geval van de droogteindicator wordt (voor één bepaald jaar) dan de variantie die inherent is aan de data geschat op basis van de verschillen in de indicatorwaarden tussen de meetpunten binnen eenzelfde simulatie.
+De variantie door imputatie wordt geschat op basis van de verschillen tussen de $DI_{js}$. 
+
+Kennen we de variantie kan hiermee, op basis van de centrale limietstelling, voor elke $DI_j$ een betrouwbaarheidsinterval berekend worden.
+
+Mathematisch wordt het betrouwbaarheidsinterval door de hieronder gegeven formules berekend. 
+
+$${\mbox{de droogte-indicator voor één simulatie en één jaar : }}DI_{js} =  \sum_{m = 1}^{58}d_{mjs} / 58 $$
+
+$${\text {de droogte-indicator voor één jaar : }}DI_j =  \sum_{s = 1}^{20}(DI_{js}) /20 = \sum_{s = 1}^{20}(\frac{\sum_{m=1}^{58}d_{mjs}}{58}) / 20 = \frac{\sum_{s = 1}^{20}\sum_{m=1}^{58}d_{mjs}}{58 * 20} $$
+
+De totale variantie $ \bar\sigma^2_{DI_j}$kan dan berekend worden op basis van de formule van Rubin [@Rubin1987]
+$$ \bar\sigma^2_{DI_j} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{DI_{js}}}{20} + (1 + 1/20)\frac{\sum_{s=1}^{20}(DI_{js} - DI_j)^2}{(20 - 1)}$$
+
+met $\widehat{\sigma}^2_{DI_{js}} = $ $\frac{\sum_{m = 1}^{58}(d_{mjs}-DI_{js})^2}{(58-1)}$
+
+De ondergrens van het betrouwbaarheidsinterval (LCL) voor een bepaald jaar $j$ wordt dan :
+
+$$ {\text {LCL}}_j = DI_j - 1.96  \bar\sigma_{DI_j}$$
+
+De bovengrens van het betrouwbaarheidsinterval (UCL) voor een bepaald jaar $j$ wordt dan :
+
+$$ {\text {UCL}}_j = DI_j + 1.96  \bar\sigma_{DI_j}$$
+
+
+## Berekenen van de evolutie/trend van de droogte-indicator {#h2:calctrend}
+
+Om de trend in de droogte-indicator over de jaren heen te detecteren, worden twee soorten tijdreeksanalyse uitgevoerd: een tijdreeksanalyse op basis van een rollend (meerjarig) gemiddelde en op basis van een tijdreeksmodel.
+
+### lopend gemiddelde {#h3:calc-rollend-gemiddelde}
+
+Een rollend of meerjarig gemiddelde zwakt de onderlinge jaarschommelingen af, waardoor het verloop rechtlijniger zal verlopen. 
+Door een relatief korte periode te kiezen waarover men uitmiddelt, krijgt men een zicht op de korte termijn evolutie. door een relatief lange periode op de lange termijn.
+
+Men heeft daarenboven nog verschillende mogelijkheden om een lopend gemiddelde te berekenen, ongewogen of bijv. gewogen op basis van een lineaire trend, exponentiële functie etc.
+Bij een gewogen gemiddelde wenst men dat de jaren die het dichtst bij het jaar in kwestie liggen relatief meer kunnen bijdragen.
+We kiezen hier voor een gewogen gemidddelde (gewichten nemen lineair met de tijd af) omdat het beter het ecologisch effect weerspiegelt. 
+Bijv. drie opeenvolgende droge jaren kunnen een zwaardere impact hebben dan wanneer deze droge jaren onderbroken werden met een nat jaar. 
+Een andere keuze die men moet maken is of men alleen een gemiddelde berekent voor de jaren voordien of dat men dit wenst te centreren in een venster dat zowel oudere als recentere jaren omvat.
+We kiezen voor het eerste, waarbij alleen oudere jaren in het tijdsvenster zitten.
+
+We berekenen een lopend gemiddelde voor een aantal tijdvensters (2, 4, 6, 8, 10, 20 en 30 jaar). 
+Net zoals bij de originele waarden kan ook voor een lopend gemiddelde met behulp van de formule van Rubin  een betrouwbaarheidsinterval bepaald worden. 
+
+### Tijdreeksmodellering {#h3:calc-tijdreeks}
+
+Een andere techniek om een trend in de data te vinden is het gebruik maken van tijdreeksmodellen.
+We kunnen deze toepassen zowel op de originele waarden als op de rollende gemiddelden. 
+Een voordeel van een tijdreeksmodel is dat het toelaat de invloed van andere, niet tijdsafhankelijke, factoren op de variatie van de indicator in te schatten.
+
+Voor elke simulatie verloopt die berekening als volgt: een Bayesiaans mixed model met jaar als factor en meetpunt als een random variabele schat de kans in dat het aantal droge dagen per jaar $d_{mjs}$ zich onder de drempel bevindt.
+Het aantal droge dagen per jaar kan ook slaan op een meerjarig gemiddelde.
+Het aantal droge dagen per jaar volgt hierbij redelijk goed een zero-inflated negatieve binomiale verdeling.
+Deze verdeling werd bevonden op basis van een voorafgaand onderzoek.
+Op theoretische basis was een binomiale verdeling te verwachten, omdat de waarden, aantallen, steeds discreet zijn en deze waarden beperkt zijn tot het aantal dagen in een jaar. 
+Echter de waarneming of een dag in een jaar al dan niet droog is, is niet onafhankelijk. 
+Immers de kans dat als het vandaag een droge dag is, vergroot de kans dat het ook morgen droog zal zijn.
+Dit kan verklaren waarom de waargenomen verdeling afwijkt van een zuivere binomiale verdeling.
+
+Het effect van de factor “jaar” beschrijven we door een random walk-functie van de tweede orde. 
+Met een random walk-functie van de tweede orde kunnen abrupte jaar tot jaar schommelingen ingeperkt worden.
+Meer informatie over dergelijke modellen is o.a. te vinden in @Onkelinx2017
+
+Per jaar (en simulatie) wordt een gemiddelde waarde met haar standaardafwijking berekend. 
+Dit gemiddelde $DIT_j$, waarbij de $T$ slaat op Trend, zal afwijken van de hierboven berekende $DI_j$.
+Dit is te verklaren doordat in tegenstelling met $DI_j$ aan de berekening van het gemiddelde twee voorwaarden worden gekoppeld.
+Ten eerste dat het effect van een jaar afhangt van de vorig(e) jaar/jaren volgens een tweede orde functie (zie hoger). 
+Daarenboven wordt ook aangenomen dat een meetpunt een vaste (maar onbekende) bijdrage aan de droogte-indicator levert (dus dat een meetpunt systematisch droger of natter dan een andere kan zijn).
+
+Meer statistisch omschreven geeft dit:
+$$d_{mjs} \sim NB(\mu_{mjs}, \theta)  $$
+Het aantal droge dagen $d_{mjs}$ volgt een negatieve binomiale verdeling.
+Deze wordt door twee parameters beschreven: de verwachte waarde $\mu_{mjs}$ en een parameter $\theta$.
+De parameter $\theta$ kan bekeken worden als een correctiemaat t.a.v. een binomiale verdeling. 
+Bij een binomiale verdeling is deze altijd gelijk aan 1.
+
+$$\log(\mu_{mjs}) = \eta_{mjs}$$
+
+De verwachte waarde van een absolute indicator waarde $d_{mjs}$ is de som van twee bijdragen: een jaarbijdrage en een bijdrage van een meetpunt.
+
+De jaarbijdrage beschouwen we voor alle meetpunten constant.
+Dit is een vrij strenge voorwaarde. 
+Het model laat niet toe mogelijke lokale/regionale verschillen te detecteren. 
+Zouden we dit willen doen, dan zal een heel ander (uitgebreider !) meetnet nodig zijn.
+
+De bijdrage van een meetpunt beschouwen we dan weer voor alle jaren constant.
+Dit betekent dat het model wel toelaat dat het ene meetpunt systematisch droger of natter is dan het andere, maar niet dat deze verhouding jaarlijks kan wijzigen.
+Ook dit is een vrij strenge voorwaarde.  
+Hier kan wel bij opgemerkt worden dat 1) bij de selectieprocedure van de meetpunten, meetpunten geweerd werden die tijdens de referentieperiode een significante trend (verdroging/vernatting) vertonen, die niet door klimatologische factoren kan verklaard worden en 2) voor elk meetpunt afzonderlijk een specifieke kritische drempelwaarde werd bepaald.
+
+Om de eerste opmerking zullen, vooral voor de referentieperiode, er over de jaren heen tussen de punten weinig grote verschuivingen optreden. 
+Voor de jaren buiten de referentieperiode is dat evenwel minder verzekerd. 
+
+Door de tweede opmerking zullen de absolute verschillen tussen de punten relatief gering zijn. 
+De overschrijding van het aantal droge dagen is immers, voor de referentieperiode, voor alle meetpunten gemiddeld dezelfde, nl. 18 dagen. 
+
+Daarom kunnen we aannemen dat, minstens voor de referentieperiode, de locatie-effecten relatief stabiel in de tijd zullen zijn.
+
+$$ E(d_{mjs}) \sim {\text {jaar}_{js}} + (1 \vert{\text{meetlocatie}_{ms}})  $$
+of anders geformuleerd:
+
+$$\eta_{mjs} = \beta_{0s} + \beta_{js} + t_{js} + b_{ms} + \epsilon_{mjs}$$
+$\beta_{0s}$ is de intercept
+
+$\beta_{js}$ is het specifiek effect/bijdrage van jaar $j$
+
+$t_{js}$ is een term ('random walk') die toelaat om rekening te houden met het feit dat het effect van het ene jaar mogelijk afhankelijk is van dat van één of meer van de voorgaande jaren.
+
+Hier beschrijven we die mogelijke afhankelijkheid als een twee-orde relatie:
+$$ \Delta^2 t_{js} = \Delta t_{j+1, s} - \Delta t_j = (t_{j+1,s} - t_{j,s}) - (t_{j,s} - t_{j-1,s}) = t_{j+1,s} - 2t_{j,s} + t_{j-1,s} $$
+$$ \Delta^2 t_{js} \sim  N(0,\sigma^2)$$
+
+
+$b_{ms}$ is het mogelijke systematische effect van een meetpunt. 
+We nemen aan dat deze effecten normaal verdeeld zijn: $b_{ms} \sim N(0, \sigma _{ms})$.
+
+$\epsilon_{mjs}$ is de term die de fout geeft tussen de verwachte en waargenomen waarde. 
+We nemen aan dat deze fout in de log-schaal een normale verdeling volgt.
+$$\epsilon_{mjs} \sim N(0,\sigma_{mjs}^2) $$
+
+De term  $\beta_{js} + t_{js} =  DIT_{js}$ beschrijft de trend voor één simulatie.
+Het is deze term en meer nog de veralgemening voor alle simulaties die ons hier interesseert.
+
+Voor het bepalen van de onzekerheid, de betrouwbaarheidsintervallen, van de trendwaarden doen we opnieuw een beroep op de formule van Rubin [@Rubin1987].
+Om de onzekerheid in de trend te kunnen inschatten afkomstig van het schatten van peilen, wordt er niet één model met alle data berekend, maar wordt voor elke simulatie een model berekend.
+
+De gemiddelde droogte-indicator voor jaar $j$ is het gemiddelde van de trends per simulatie:  $DIT_{j} =  \sum_{s = 1}^{20}DIT_{js} / 20$
+
+De variantie van de trend is volgens de formule van Rubin:
+
+$$ \bar\sigma^2_{{DIT}_{j}} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{{DIT}_{js}}}{20} + (1 + 1/20)\frac{\sum_{s=1}^{20}({DIT}_{js} - {DIT}_{j})^2}{(20 - 1)}$$
+met $\widehat{\sigma}^2_{{DIT}_{js}}$ de door het model geschatte variantie van de trend voor één simulatie. 
+Deze variantie wordt bepaald door de tweede-orde random walk.
+
+De ondergrens van het betrouwbaarheidsinterval (LCL) voor een bepaald jaar $j$ wordt dan :
+
+$$ {\text {LCL}}_j = {DIT}_{j} - 1.96 \bar\sigma_{{DIT}_{j}}$$
+
+De bovengrens van het betrouwbaarheidsinterval (UCL) voor een bepaald jaar $j$ wordt dan :
+
+$$ {\text {UCL}}_j = {DIT}_{j} + 1.96 \bar\sigma_{{DIT}_{j}}$$
+
+
+Het berekenen van de droogte-indicator en de betrouwbaarheid en trend ervan werden uitgevoerd met R versie 4.0.2 [@R2020] en met het softwarepakket INLA [@Rue2009].
+

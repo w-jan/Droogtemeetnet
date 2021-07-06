@@ -1,7 +1,7 @@
 ## De droogte-indicator en haar betrouwbaarheid {#h4-2:droogte-indicator}
 
 ### Droogte-indicator {#h4-2-1:droogte-indicator}
-De droogte-indicator is op zich vrij eenvoudig te berekenen door voor elk jaar het gemiddelde te berekenen van de $\text {dagen_droog}$-waarden, cfr. \@ref(h3-3:indicator).
+De droogte-indicator is op zich vrij eenvoudig te berekenen door voor elk jaar het gemiddelde te berekenen van de $\text {dagen_droog}$-waarden, cfr. \@ref(h2:calcindicator).
 
 Tabel \@ref(fig:droogte-indicator) geeft de berekende indicator-waarden.
 

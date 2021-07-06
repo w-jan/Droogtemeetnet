@@ -3,7 +3,7 @@ title: "Ontwerp van een early-warning meetnet voor droogte in natuurgebieden"
 author: "Jan Wouters, Floris Vanderhaeghe"
 date: '`r paste("Versie",lubridate::now())`'
 link-citations: true
-bibliography: lit-droogtemeetnet.bib
+bibliography: lit_droogtemeetnet.bib
 csl: research-institute-for-nature-and-forest.csl
 linkcolor: link.colour
 citecolor: link.colour

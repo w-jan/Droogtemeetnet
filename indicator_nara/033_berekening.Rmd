@@ -17,7 +17,7 @@ g
 ### Betrouwbaarheid {#h4-2-2:betrouwbaarheid}
 
 We wensen ook inzicht te krijgen in de onzekerheid die er op de droogte-indicator zit, m.a.w. wat is het betrouwbaarheidsinterval van de droogte-indicator.
-We doen hiervoor beroep op de formule van Rubin (\@ref(h3-3:indicator)). 
+We doen hiervoor beroep op de formule van Rubin (\@ref(h2:calcindicator)). 
 Deze formule laat toe de onzekerheid die inherent is aan de data (verschillen tussen de locaties) te scheiden van de onzekerheid door het ontbreken van gegevens.
 
 ```{r droogte-indicator-met-ci, include=FALSE}

@@ -5,7 +5,7 @@ We verkiezen een absolute indicator als droogte-indicator.
 Bij een dergelijke indicator wordt het aantal dagen per jaar dat het grondwaterpeil gelijk aan of onder een kritische drempelwaarde zakt opgeteld.
 Deze kritische drempelwaarde is specifiek voor elk meetpunt.
 Als kritische drempelwaarde wordt gekozen voor 
-**het _jaargemiddelde_ van de 5%-percentiel van de grondwatermetingen _van een jaar_ voor het meetpunt voor de periode 1985 - 2014**, cfr. \@ref(h3-2:drempelwaarde), die periodiek, bijv. elke vijftien jaar, met meer recente data kan herijkt worden, cfr. \@ref(h2-2-1:referentietoestand).
+**het _jaargemiddelde_ van de 5%-percentiel van de grondwatermetingen _van een jaar_ voor het meetpunt voor de periode 1985 - 2014**, cfr. \@ref(h2:drempelwaarde), die periodiek, bijv. elke vijftien jaar, met meer recente data kan herijkt worden, cfr. \@ref(h3:referentietoestand).
 
 ## De voorbereiding {#h4-1:voorbereiding}
 
@@ -23,8 +23,8 @@ De hierop volgende analysen gebeurden volledig in R.
 
 #hulpfunctie voor het maken van minor ticks in de grafieken
 insert_minor <- function(major_labs, n_minor) {
-  labs <- c( sapply( major_labs, function(x) c(x, rep("", 4) ) ) )
-  labs[1:(length(labs) - n_minor)]}
+  labs <- c( sapply( major_labs, function(x) c(x, rep("", n_minor) ) ) )
+  labs[seq_len(length(labs) - n_minor)]}
 
 #plot van de modelfitting
 plotfitting <- function(indic_basis, respons, gemid, og, bg) {
@@ -38,126 +38,133 @@ plotfitting <- function(indic_basis, respons, gemid, og, bg) {
     ungroup() %>% 
     inner_join(dagen_droog_lang_breed)
   
-  p <- ggplot(data = PI_data, aes_string(y = respons, x = "jaar"))
-  p <- p + xlab("Jaar") + ylab("Aantal dagen onder kritsche drempelwaarde")
-  # p <- p + theme(text = element_text(size = 15))
-  p <- p + geom_point(shape = 16, size = 2, col = "black")
-  p <- p + geom_line(aes_string(x = "jaar", y = gemid), size = 1, color = "red")
-  p <- p + geom_ribbon(aes(x = jaar, ymax = ymax_data, ymin = ymin_data),
+  p <- ggplot(data = PI_data, aes_string(y = respons, x = "jaar")) +
+    xlab("Jaar") + ylab("Aantal dagen onder kritsche drempelwaarde") +
+  #   theme(text = element_text(size = 15)) +
+    geom_point(shape = 16, size = 2, col = "black") +
+    geom_line(aes_string(x = "jaar", y = gemid), size = 1, color = "red") +
+    geom_ribbon(aes(x = jaar, ymax = ymax_data, ymin = ymin_data),
                        fill = grey(0.5),
-                       alpha = 0.4)
-  p <- p + scale_x_continuous(breaks = 1985:2020, 
-                              labels = insert_minor(seq(1985, 2020, by = 5), 4))
-  # p <- p + theme(strip.text = element_text(size = 15))
-  p <- p + facet_wrap(vars('tijdsvenster (jaren) ' = tijdsvenster), labeller = label_both)
+                       alpha = 0.4) +
+    scale_x_continuous(breaks = 1985:2020, 
+                              labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
+  #   theme(strip.text = element_text(size = 15)) +
+    facet_wrap(vars('tijdsvenster (jaren) ' = tijdsvenster), labeller = label_both)
   return(p)
 }
 
 #plot van de rollende gemiddelden
 plotma.basis <- function(indic_finaal, indicator, intercept) {
+  indic_finaal <- indic_finaal %>% 
+    mutate (period = jaar >= 1985 + tijdsvenster)
   p <- ggplot(data = indic_finaal ) + 
-    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = lcl), linetype = "longdash") +
-    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = lcl), linetype = "longdash", alpha = 0.20) +
-    geom_ribbon(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, ymax = ucl, ymin = lcl),
-                fill = "lightpink",
-                alpha = 0.4) +
-    geom_ribbon(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, ymax = ucl, ymin = lcl),
-                fill = "lightpink",
-                alpha = 0.15) +
-    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = ucl), linetype = "longdash") +
-    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = ucl), linetype = "longdash", alpha = 0.20) +
-    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes_string(x = "jaar", y = indicator), color = "red" ) +
-    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes_string(x = "jaar", y = indicator), color = "red", alpha = 0.15 ) +    
+    geom_line(data = indic_finaal, aes(x = jaar, y = lcl, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    # geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = lcl), linetype = "longdash", alpha = 0.20) +
+    geom_ribbon(data = indic_finaal, aes(x = jaar, ymax = ucl, ymin = lcl, alpha = ifelse(period, 0.4, 0.15)),
+                fill = "lightpink") +
+    # geom_ribbon(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, ymax = ucl, ymin = lcl),
+    #             fill = "lightpink",
+    #             alpha = 0.15) +
+    geom_line(data = indic_finaal, aes(x = jaar, y = ucl, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    # geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = ucl), linetype = "longdash", alpha = 0.20) +
+    geom_line(data = indic_finaal, aes_string(x = "jaar", y = indicator, alpha = ifelse(period, 1, 0.15)), color = "red" ) +
+    # geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes_string(x = "jaar", y = indicator), color = "red", alpha = 0.15 ) +    
     geom_hline(aes(yintercept = intercept), linetype = "dotted")
   return(p)
 }
 
 plotma.basis_1venster <- function(indic_finaal, indicator, intercept, tijdsvenster) {
   tv <- tijdsvenster
-  indic_finaal_1 <- indic_finaal %>% filter(tijdsvenster == tv)
+  indic_finaal_1 <- indic_finaal %>% 
+    filter(tijdsvenster == tv) %>% 
+    mutate (period = jaar >= 1985 + tijdsvenster)
   p <- ggplot(data = indic_finaal_1 ) + 
-    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = lcl), linetype = "longdash") +
-    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = lcl), linetype = "longdash", alpha = 0.20) +
-    geom_ribbon(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, ymax = ucl, ymin = lcl),
+    geom_line(data = indic_finaal_1, aes(x = jaar, y = lcl, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    # geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = lcl), linetype = "longdash", alpha = 0.20) +
+    geom_ribbon(data = indic_finaal_1, aes(x = jaar, ymax = ucl, ymin = lcl, alpha = ifelse(period, 0.4, 0.15)),
                 fill = "lightpink",
                 alpha = 0.4) +
-    geom_ribbon(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, ymax = ucl, ymin = lcl),
-                fill = "lightpink",
-                alpha = 0.15) +
-    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = ucl), linetype = "longdash") +
-    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = ucl), linetype = "longdash", alpha = 0.20) +
-    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes_string(x = "jaar", y = indicator), color = "red" ) +
-    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes_string(x = "jaar", y = indicator), color = "red", alpha = 0.15 ) +    
+    # geom_ribbon(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, ymax = ucl, ymin = lcl),
+    #             fill = "lightpink",
+    #             alpha = 0.15) +
+    geom_line(data = indic_finaal_1, aes(x = jaar, y = ucl, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    # geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = ucl), linetype = "longdash", alpha = 0.20) +
+    geom_line(data = indic_finaal_1, aes_string(x = "jaar", y = indicator, alpha = ifelse(period, 1, 0.15)), color = "red" ) +
+    # geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes_string(x = "jaar", y = indicator), color = "red", alpha = 0.15 ) +    
     geom_hline(aes(yintercept = intercept), linetype = "dotted")
   return(p)
   }
 
 plotma <-  function(indic_finaal, indicator, intercept) {
-    p <- plotma.basis(indic_finaal, indicator, intercept)
-    p <- p + 
-      scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
-      labs(x = "Jaar", y = "indicator (rollend gemiddelde)") +
-      facet_wrap(vars('tijdsvenster (jaren) ' = tijdsvenster), labeller = label_both)
-    return(p)
+  p <- plotma.basis(indic_finaal, indicator, intercept)
+  p <- p + 
+    scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
+    labs(x = "Jaar", y = "indicator (lopend gemiddelde)") +
+    facet_wrap(vars('tijdsvenster (jaren) ' = tijdsvenster), labeller = label_both)
+  return(p)
 }
 
 #plot van de trend (zowel modelschatting als berekende)
 plottrend <- function(indic_finaal, indicator, intercept) {
-    p <- plotma.basis(indic_finaal, indicator, intercept)
-    p <- p +  
-      geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = og_jaar), linetype = "longdash") +
-      geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = og_jaar), linetype = "longdash", alpha = 0.20) +
-      geom_ribbon(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
-                  fill = grey(0.5),
-                  alpha = 0.4) +  
-      geom_ribbon(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
-                  fill = grey(0.5),
-                  alpha = 0.15) +  
-      geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = bg_jaar), linetype = "longdash") +
-      geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = bg_jaar), linetype = "longdash", alpha = 0.20) +
-      geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = gem_jaar), color = "dark blue") +
-      geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = gem_jaar), color = "dark blue", alpha = 0.20) +    
-      geom_hline(aes(yintercept = intercept), linetype = "dotted") +
-      scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
-      labs(x = "Jaar", y = "trend") +
-      scale_y_continuous(sec.axis = dup_axis(name = "droogte-indicator")) +
-      theme( axis.text.y.right = element_text(color = "red"), 
-        axis.ticks.y.right = element_line(color = "red"), 
-        axis.title.y.left =  element_text(color = "darkblue"),
-        axis.title.y.right =  element_text(color = "red")
-         ) + 
-      facet_wrap(vars('tijdsvenster (jaren) ' = tijdsvenster), labeller = label_both)
-    return(p)
+  indic_finaal <- indic_finaal %>% 
+    mutate (period = jaar >= 1985 + tijdsvenster)  
+  p <- plotma.basis(indic_finaal, indicator, intercept)
+  p <- p +  
+    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = og_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = og_jaar), linetype = "longdash", alpha = 0.20) +
+    geom_ribbon(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar, alpha = ifelse(period, 0.4, 0.15)),
+                fill = grey(0.5),
+                alpha = 0.4) +  
+    geom_ribbon(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
+                fill = grey(0.5),
+                alpha = 0.15) +  
+    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = bg_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = bg_jaar), linetype = "longdash", alpha = 0.20) +
+    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = gem_jaar, alpha = ifelse(period, 1, 0.15)), color = "dark blue") +
+    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = gem_jaar), color = "dark blue", alpha = 0.20) +    
+    geom_hline(aes(yintercept = intercept), linetype = "dotted") +
+    scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
+    labs(x = "Jaar", y = "trend") +
+    scale_y_continuous(sec.axis = dup_axis(name = "droogte-indicator")) +
+    theme( axis.text.y.right = element_text(color = "red"), 
+      axis.ticks.y.right = element_line(color = "red"), 
+      axis.title.y.left =  element_text(color = "darkblue"),
+      axis.title.y.right =  element_text(color = "red")
+       ) + 
+    facet_wrap(vars('tijdsvenster (jaren) ' = tijdsvenster), labeller = label_both)
+  return(p)
 }
 
 #plot van de trend (zowel modelschatting als berekende) voor één bepaald tijdsvenster
 plottrend.1venster <- function(indic_finaal, indicator, intercept, tijdsvenster) {
-    p <- plotma.basis_1venster(indic_finaal, indicator, intercept, tijdsvenster)
-    tv <- tijdsvenster
-    indic_finaal_1 <- indic_finaal %>% filter(tijdsvenster == tv)    
-    p <- p +  
-      geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = og_jaar), linetype = "longdash") +
-      geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = og_jaar), linetype = "longdash", alpha = 0.20) +
-      geom_ribbon(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
-                  fill = grey(0.5),
-                  alpha = 0.4) +  
-      geom_ribbon(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
-                  fill = grey(0.5),
-                  alpha = 0.15) +  
-      geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = bg_jaar), linetype = "longdash") +
-      geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = bg_jaar), linetype = "longdash", alpha = 0.20) +
-      geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = gem_jaar), color = "dark blue") +
-      geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = gem_jaar), color = "dark blue", alpha = 0.20) +    
-      geom_hline(aes(yintercept = intercept), linetype = "dotted") +
-      scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
-      labs(x = "Jaar", y = "trend") +
-      scale_y_continuous(sec.axis = dup_axis(name = "droogte-indicator")) +
-      theme( axis.text.y.right = element_text(color = "red"), 
-        axis.ticks.y.right = element_line(color = "red"), 
-        axis.title.y.left =  element_text(color = "darkblue"),
-        axis.title.y.right =  element_text(color = "red")
-         ) 
-    return(p)
+  indic_finaal <- indic_finaal %>% 
+    mutate (period = jaar >= 1985 + tijdsvenster)  
+  p <- plotma.basis_1venster(indic_finaal, indicator, intercept, tijdsvenster)
+  tv <- tijdsvenster
+  indic_finaal_1 <- indic_finaal %>% filter(tijdsvenster == tv)    
+  p <- p +  
+    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = og_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = og_jaar), linetype = "longdash", alpha = 0.20) +
+    geom_ribbon(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar, alpha = ifelse(period, 0.4, 0.15)),
+                fill = grey(0.5),
+                alpha = 0.4) +  
+    geom_ribbon(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
+                fill = grey(0.5),
+                alpha = 0.15) +  
+    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = bg_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = bg_jaar), linetype = "longdash", alpha = 0.20) +
+    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = gem_jaar, alpha = ifelse(period, 1, 0.15)), color = "dark blue") +
+    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = gem_jaar), color = "dark blue", alpha = 0.20) +    
+    geom_hline(aes(yintercept = intercept), linetype = "dotted") +
+    scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
+    labs(x = "Jaar", y = "trend") +
+    scale_y_continuous(sec.axis = dup_axis(name = "droogte-indicator")) +
+    theme( axis.text.y.right = element_text(color = "red"), 
+      axis.ticks.y.right = element_line(color = "red"), 
+      axis.title.y.left =  element_text(color = "darkblue"),
+      axis.title.y.right =  element_text(color = "red")
+       ) 
+  return(p)
 }
 moving_trend <- function(n_year = 30, trend_year = 6, first_year = 1985) {
   trend_coef <- seq_len(trend_year) - (trend_year + 1) / 2
@@ -344,7 +351,7 @@ ruwedata <- readRDS(file.path("cache", "basisdata.rds" ))
 
 ### Berekenen kritische drempelwaarden {#h4-1-1:drempelwaarde}
 Een absolute indicator vergelijkt dagelijks het grondwaterpeil met een kritische drempelwaarde. 
-De dagen dat het grondwaterpeil onder deze drempelwaarde valt, worden per jaar opgeteld (\@ref(h3-2:drempelwaarde) en \@ref(h3-3:indicator)).
+De dagen dat het grondwaterpeil onder deze drempelwaarde valt, worden per jaar opgeteld (\@ref(h2:drempelwaarde) en \@ref(h2:calcindicator)).
 
 ```{r absolute-drempelwaarden, include=FALSE, eval = !file.exists(file.path("cache", "percentielen.rds" ))}
 absperc <- ruwedata %>% 
@@ -577,7 +584,7 @@ modeldata <- dagen_droog %>%
             dag_onder_p05.10 = movavg(dag_onder_p05, n = 10, "w"),
             dag_onder_p05.20 = movavg(dag_onder_p05, n = 20, "w"),
             dag_onder_p05.30 = movavg(dag_onder_p05, n = 30, "w"),
-            # dag_onder_p05.2 = movavg(dag_onder_p05, n = 2, "s"), # een ongewogen rollend gemiddelde
+            # dag_onder_p05.2 = movavg(dag_onder_p05, n = 2, "s"), # een ongewogen lopend gemiddelde
             # dag_onder_p05.4 = movavg(dag_onder_p05, n = 4, "s"),
             # dag_onder_p05.6 = movavg(dag_onder_p05, n = 6, "s"),
             # dag_onder_p05.8 = movavg(dag_onder_p05, n = 8, "s"),

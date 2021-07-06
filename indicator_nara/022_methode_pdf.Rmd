@@ -1,4 +1,4 @@
-## Berekenen van de droogte-indicator {#h3-3:indicator}
+## Berekenen van de droogte-indicator {#h2:calcindicator}
 
 Kennen we de kritische drempelwaarde dan kan de droogte-indicator vrij eenvoudig berekend worden.
 Eerst tellen we voor elke meetlocatie, elk jaar en elke simulatie het aantal dagen dat het grondwaterpeil onder de kritische drempelwaarde is $=dagen\_droog_{meetlocatie_m; simulatie_s; jaar_j}$. 
@@ -16,8 +16,8 @@ Het mogelijke effect op de indicatorwaarden zal ingeschat worden door ook de waa
 
 Het wordt complexer als we inzicht willen krijgen in de onzekerheid die er op de droogte-indicator zit, m.a.w. wat is het betrouwbaarheidsinterval van de droogte-indicator ? 
 
-Hiervoor doen we een beroep op de formule van Rubin [@RN6220].
-We geven eerst de inhoudelijke betekenis, Vooraleer we de mathematische uitwerking geven.
+Hiervoor doen we een beroep op de formule van Rubin [@Rubin1987].
+We geven eerst de inhoudelijke betekenis, vooraleer we de mathematische uitwerking geven.
 De totale variantie in de data kan beschouwd worden als een optelling van twee varianties, een variantie die inherent is aan de data en een bijkomende variantie die voorvloeit uit de onzekerheid over de schatting van ontbrekende waarden (= variantie door imputatie).
 In het geval van de droogteindicator wordt (voor één bepaald jaar) de variantie die inherent is aan de data geschat op basis van de verschillen in de indicatorwaarden tussen de meetpunten.
 De variantie door imputatie wordt geschat op basis van de verschillende simulaties. 
@@ -41,19 +41,19 @@ De bovengrens van het betrouwbaarheidsinterval (UCL) voor een bepaald jaar $j$ w
 $$ {\text {UCL}}_j = {\text{droogte-ind}}_{j} + 1.96  \bar\sigma_{{\text{droogte-ind}}_{j}}$$
 
 
-## Berekenen van de evolutie/trend van de droogte-indicator {#h3-4:trend}
+## Berekenen van de evolutie/trend van de droogte-indicator {#h2:calctrend}
 
 Om de trend in de droogte-indicator over de jaren heen te detecteren, worden twee soorten tijdreeksanalyse uitgevoerd. 
 
 Ten eerste berekenen we een rollend (meerjarig) gemiddelde van de droogte-indicator.
 Men heeft verschillende mogelijkheden om dergelijk gemiddelde te berekenen, ongewogen of bijv. gewogen op basis van een lineaire trend, exponentiële functie etc.
 Bij een gewogen gemiddelde wenst men dat de jaren die het dichtst bij het jaar in kwestie liggen relatief meer kunnen bijdragen.
-We kiezen hier voor een eenvoudig, ongewogen, gemidddelde om dat dit beter het effect van een rollend gemiddelde op de evolutie weerspiegelt.
+We kiezen hier voor een eenvoudig, ongewogen, gemidddelde om dat dit beter het effect van een lopend gemiddelde op de evolutie weerspiegelt.
 Een andere keuze die men moet maken is of men alleen een gemiddelde berekent voor de jaren voordien of dat men dit wenst te centreren in een venster dat zowel oudere als recentere jaren omvat.
 We kiezen voor het eerste, waarbij alleen oudere jaren in het tijdsvenster zitten.
 
-We berekenen een rollend gemiddelde voor een aantal tijdvensters (2, 4, 6, 8, 10 en 30 jaar). 
-Net zoals bij de originele waarden kan voor een rollend gemiddelde met behulp van de formule van Rubin ook een betrouwbaarheidsinterval bepaald worden. 
+We berekenen een lopend gemiddelde voor een aantal tijdvensters (2, 4, 6, 8, 10 en 30 jaar). 
+Net zoals bij de originele waarden kan voor een lopend gemiddelde met behulp van de formule van Rubin ook een betrouwbaarheidsinterval bepaald worden. 
 
 Daarnaast worden op de tijdreeksen van de droogte-indicator, zowel de originele waarden als de rollende gemiddelden, een tijdreeksmodel toegepast. 
 Hierbij wordt getracht de evolutie te schatten. 
@@ -61,7 +61,7 @@ Het voordeel van een model is dat men zo bijvoorbeeld de invloed van de verschil
 
 Voor elke simulatie verloopt die berekening als volgt: een Bayesiaans mixed model, met een zero-inflated negatieve binomiale verdeling en jaar als factor schat de kans in dat een gesimuleerde dagwaarde zich onder de drempel bevindt. 
 Het effect van de factor “jaar” wordt beschreven door een random walk-functie van de tweede orde. 
-Meer informatie over dergelijke modellen is o.a. te vinden in @RN6221
+Meer informatie over dergelijke modellen is o.a. te vinden in @Onkelinx2017
 
 Per jaar (en simulatie) wordt een gemiddelde waarde met haar standaardafwijking berekend. 
 In tegenstelling met ${\text {droogte-ind}}_{j}$ worden aan die berekening voorwaarden gekoppeld, namelijk dat het effect van een jaar afhangt van de vorig(e) jaar/jaren volgens een tweede orde functie en ook dat een meetpunt een vaste (maar onbekende) bijdrage levert (dus dat meetpunten systematisch droger of natter kunnen zijn).
@@ -93,7 +93,7 @@ Daarom kunnen we ook aannemen dat, minstens voor de referentieperiode, de locati
 
 $\epsilon_{jms}$ is de term voor de random ruis in de log-schaal.
 $$\epsilon_{jms} \sim N(0,\sigma_{jms}^2) $$
-Voor het bepalen van de onzekerheid, de betrouwbaarheidsintervallen, van de trendwaarden doen we opnieuw een beroep op de formule van Rubin [@RN6220].
+Voor het bepalen van de onzekerheid, de betrouwbaarheidsintervallen, van de trendwaarden doen we opnieuw een beroep op de formule van Rubin [@Rubin1987].
 Om de onzekerheid in de trend te kunnen inschatten afkomstig van het schatten van peilen, wordt er niet één model berekend, maar wordt een model voor elke simulatie berekend.
 
 $${\text{de trend van de droogte-indicator berekend voor één jaar : }} \overline{{\text {droogte-ind}}}_{j} =  \sum_{s = 1}^{20}(\overline{{\text {droogte-ind-sim}}}_{j;m;s} / 20 $$
@@ -111,5 +111,5 @@ De bovengrens van het betrouwbaarheidsinterval (UCL) voor een bepaald jaar $j$ w
 $$ {\text {UCL}}_j = \overline{{\text {droogte-ind}}}_{j} + 1.96 \bar\sigma_{\overline{{\text {droogte-ind}}}_{j}}$$
 
 
-Het berekenen van de droogte-indicator en de betrouwbaarheid en trend ervan werden uitgevoerd met R versie 4.0.2 [@RN6222] en met het softwarepakket INLA [@RN6223].
+Het berekenen van de droogte-indicator en de betrouwbaarheid en trend ervan werden uitgevoerd met R versie 4.0.2 [@R2020] en met het softwarepakket INLA [@Rue2009].
 
