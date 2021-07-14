@@ -1,13 +1,5 @@
 
 ```{r include=FALSE}
-knitr::opts_chunk$set(
-	eval = TRUE,
-	include = TRUE,
-	echo = FALSE,
-	cache = params$cache,
-  cache.path = "cache/",
-	dpi = 300
-)
 
 options(stringsAsFactors = FALSE)
 
@@ -226,11 +218,40 @@ if (params$refresh_data >= 1) {
               datatype = "INT4S",
               overwrite = TRUE)
 
-    writeRaster(grts_level0,
+  writeRaster(grts_level0,
               filename = file.path(".","data","local", "grts_level0.tif"),
               format = "GTiff", 
               datatype = "INT4S",
               overwrite = TRUE)  
+}
+```
+
+```{r read-gisdata-extra, include=FALSE}
+
+#gislaag met percelen in natuurbeheer maken en overleggen met habitatkaart (met grts-raster)
+if(file.exists(file.path(".","data","local", "InNatuurbeheer2020.gpkg")) == FALSE | params$refresh_data == 3){
+  drive_download(drive_get(id = "1bKJ1PwOmMcNrcoCzhTnoLfCUPft0PQuN"), 
+                 path = file.path(".","data","local", "InNatuurbeheer2020.gpkg"), 
+                 overwrite = TRUE)
+}
+
+if (params$refresh_data >= 1) {
+  inbeheer <- read_sf(file.path(".","data","local", "InNatuurbeheer2020.gpkg"), "InNatuurbeheer")
+  suppressWarnings(st_crs(inbeheer) <- 31370)
+  
+  #overlay maken met habmap_gw_raster_overlay, duur verschrikkelijk lang !!
+  habmap_gw_raster_overlay <- st_make_valid(habmap_gw_raster_overlay)
+  inbeheer <- st_make_valid(inbeheer)
+  
+  habmap_gw_raster_in_beheer <- habmap_gw_raster_overlay %>% 
+    st_intersection(inbeheer %>% select(OBJECTID))
+  #wegschrijven van deze intersectie
+  st_write(habmap_gw_raster_in_beheer,
+    dsn = file.path(".","data","local", "habmap_gw_raster_in_beheer.gpkg"),
+    layer = "habmap_gw_raster_in_beheer", 
+    driver = "GPKG",
+    delete_dsn = TRUE)
+
 }
 ```
 
@@ -472,5 +493,6 @@ if (params$refresh_data < 1) {
   raster_meetnet_poly <- suppressWarnings(read_sf(file.path(".","data","local", "raster_meetnet_poly.gpkg"), "raster_meetnet_poly"))
    
   habmap_gw_raster_overlay <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_overlay.gpkg"), "habmap_gw_raster_overlay"))
+  habmap_gw_raster_in_beheer <- suppressWarnings(read_sf(file.path(".","data","local", "habmap_gw_raster_in_beheer.gpkg"), "habmap_gw_raster_in_beheer"))  
 }
 ```

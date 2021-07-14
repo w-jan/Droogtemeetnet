@@ -1,5 +1,5 @@
 book_filename: "mijn_rapport.Rmd"
-output_dir: "../output"
+output_dir: "./report"
 delete_merged_file: FALSE
 language:
   label:
@@ -14,3 +14,5 @@ language:
     ex:     'Voorbeeld '
     proof:  'Bewijs. '
     remark: 'Opmerking. '
+  ui:
+    chapter_name: "Hoofdstuk "    

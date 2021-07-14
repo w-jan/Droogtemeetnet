@@ -1950,11 +1950,12 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
 ```{r selection-polygon-cat1A, cache=cache_selection_polygon_cat1A, message=FALSE, warning= FALSE, eval = !file.exists(file.path("cache", "tubes_cat1_polyg.rds" ))}
 
  #wat voorbereidende databewerkingen aan de overlay habitatkaart en het raster (grid8)
- habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>%
+
+ habmap_gw_raster_in_beheer <- habmap_gw_raster_in_beheer %>%
    rownames_to_column(var = "unieknr") %>%
    mutate(unieknr = as.integer(unieknr))
  
- habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+ habmap_gw_raster_in_beheer <- habmap_gw_raster_in_beheer %>% 
    mutate(selecteerbaar = 1, 
           selecteerbaar_reserve = 1) 
  
@@ -2000,7 +2001,7 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
        as.integer()
      
      # raster met binnen het grid (level8) de rangnummers (GRTS) van de habitatpolygonen die behoren tot een bep. grondwatergroep
-     habmap_raster_rangnr <- raster::rasterize(habmap_gw_raster_overlay %>% 
+     habmap_raster_rangnr <- raster::rasterize(habmap_gw_raster_in_beheer %>% 
                                                  filter(groupnr == gwgroup & selecteerbaar == 1),
                                                clip0, 
                                                mask = TRUE)
@@ -2026,7 +2027,7 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
      habmap_raster_rcl <- raster::reclassify(habmap_raster_rangnr, rcl)
 
      # raster met binnen het grid (level8) alle unieke nrs van de habitatpolygonen die behoren tot een bep. grondwatergroep
-     habmap_raster_unieknr <- raster::rasterize(habmap_gw_raster_overlay %>%
+     habmap_raster_unieknr <- raster::rasterize(habmap_gw_raster_in_beheer %>%
                                                   filter(groupnr == gwgroup & selecteerbaar == 1),
                                                 clip0,
                                                 field = "unieknr",
@@ -2048,8 +2049,8 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
        mutate(geselecteerd = 1)
      
      #vind de habmap-polygoon voor die rastercel
-     habmap_gw_raster_overlay <- 
-       habmap_gw_raster_overlay %>% 
+     habmap_gw_raster_in_beheer <- 
+       habmap_gw_raster_in_beheer %>% 
        left_join(habmap_raster_unieknr_select_df, 
                  by = "unieknr") %>% 
        mutate(selecteerbaar = ifelse(is.na(geselecteerd), selecteerbaar, 0)) %>% 
@@ -2114,8 +2115,8 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
      
      
      #markeren en ook zo vermijden dat een polygoon twee keer wordt geselecteerd
-     habmap_gw_raster_overlay <- 
-       habmap_gw_raster_overlay %>% 
+     habmap_gw_raster_in_beheer <- 
+       habmap_gw_raster_in_beheer %>% 
        left_join(habmap_raster_unieknr_reserve_df, 
                  by = "unieknr") %>% 
        mutate(selecteerbaar_reserve = ifelse(is.na(geselecteerd), selecteerbaar_reserve, 0)) %>% 
@@ -2124,7 +2125,7 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
  } #loop grid
 
  tubes_cat1_polyg <-
-   habmap_gw_raster_overlay %>% 
+   habmap_gw_raster_in_beheer %>% 
    rename(geselecteerd_basis = selecteerbaar,
           geselecteerd_reserve = selecteerbaar_reserve) %>% 
    mutate(geselecteerd_basis = ifelse(geselecteerd_basis == 0,1,0),
@@ -2133,21 +2134,21 @@ Elke gridcel waar het plaatsen van een pb gewenst is, wordt eerst gecategoriseer
    filter(geselecteerd_basis == 1 | geselecteerd_reserve == 1) %>% 
    arrange(rasterid, type, polygon_id) 
  
- habmap_gw_raster_overlay <- habmap_gw_raster_overlay %>% 
+ habmap_gw_raster_in_beheer <- habmap_gw_raster_in_beheer %>% 
    dplyr::select(-starts_with("selecteerbaar"))
  
 saveRDS(tubes_cat1_polyg, file.path("cache", "tubes_cat1_polyg.rds" ))
-saveRDS(habmap_gw_raster_overlay, file.path("cache", "habmap_gw_raster_overlay.rds" ))
+saveRDS(habmap_gw_raster_in_beheer, file.path("cache", "habmap_gw_raster_in_beheer.rds" ))
 
 ```
 ```{r tubes-cat1-polyg-result}
 tubes_cat1_polyg <- readRDS(file.path("cache", "tubes_cat1_polyg.rds" ))
-habmap_gw_raster_overlay <- readRDS(file.path("cache", "habmap_gw_raster_overlay.rds" ))
+habmap_gw_raster_in_beheer <- readRDS(file.path("cache", "habmap_gw_raster_in_beheer.rds" ))
 ```
 
 ```{r write-tubes-cat1-polyg, message=FALSE, warning=FALSE}
  #wegschrijven van het resultaat, omdat de berekening hiervan toch wel enkele minuten tijd vraagt.
- output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","processed", "meetnet","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
+output_vc <- write_vc(tubes_cat1_polyg %>% st_drop_geometry(), file.path(".","data","processed", "meetnet","tubes_cat1_polyg"), sorting = c("rasterid","type", "polygon_id"), strict =  FALSE)
 rm(output_vc)
 write_sf(tubes_cat1_polyg, file.path("data", "result", "meetnet", "GIS", "bijkomende_hokken.shp"))
 write_sf(tubes_cat1_polyg, file.path("data", "result", "meetnet", "GIS", "bijkomende_hokken.gpkg")) 

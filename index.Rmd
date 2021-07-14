@@ -50,13 +50,14 @@ opts_chunk$set(
   echo = FALSE,
   eval = TRUE,
   include = TRUE,
-  cache = FALSE,
+  cache = params$cache,
   fig.width = 300 / 25.4, #lengte en breedte worden uitgedrukt in inches => 150 mm
   fig.height = 200 / 25.4,
   warning = TRUE,
   error = FALSE,
   message = TRUE
 )
+
 library(tidyverse)
 library(INBOtheme)
 if (interactive()) {
