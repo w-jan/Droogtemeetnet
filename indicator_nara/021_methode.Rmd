@@ -23,19 +23,18 @@ Het programma kan op basis van verklarende reeksen zoals neerslag en potentiële
 Voor elk van de 58 meetlocaties werd op deze basis een model gebouwd.
 Met dit model werden vervolgens 20 simulaties berekend voor de periode 1985 - 2018, dus niet alleen voor de referentieperiode. 
 Een effectieve veldmeting kreeg hierbij voorrang op een modelwaarde.
-Dit betekent dat op dagen met werkelijke metingen de 20 reeksen steeds dezelfde waarde, nl. die van de veldmeting, zullen hebben.
-Deze verschillende simulaties zullen toelaten om de onzekerheid te schatten die er bestaat voor de dagen zonder veldmeting. 
+Dit betekent dat op dagen met werkelijke metingen de 20 reeksen steeds dezelfde waarde, nl. die van de veldmeting, hebben.
+Deze verschillende simulaties laten toe om de onzekerheid te schatten die er bestaat voor de dagen zonder veldmeting. 
 
-## Berekenen van de krtitische drempelwaarden {#h2:drempelwaarde}
+## Berekenen van de kritische drempelwaarden {#h2:drempelwaarde}
 
 Zoals in \@ref(h3:referentietoestand) besproken werd, stellen we als kritische drempelwaarde het grondwaterpeil dat 'normaal' op minder dan 5% van de dagen van een jaar (dit is afgerond 18 dagen) onderschreden wordt. 
 Het ontbreekt hier nog aan duiding over wat als 'normaal' of als referentie wordt beschouwd. 
 Hiervoor kijken we naar het referentietijdsvenster (1985 - 2014) en berekenen we voor elk meetlocatie de kritische drempelwaarde als het gemiddelde van de 5%-percentiel van de grondwatermetingen van een jaar binnen de periode 1985 - 2014. 
-Het is dus niet de absolute percentielwaarde op alle metingen van 30 jaar. 
-Stel bijvoorbeeld dat er één heel droog jaar is, waarbij de 5% droogste peilen in dat jaar vallen, dan zou kritische drempelwaarde louter op dat ene uitzonderlijke jaar gebaseerd zijn.
+We rekenen niet met de absolute percentielwaarde op alle metingen van 30 jaar, om het effect van extreem droge jaren te temperen. Door dit niet te doen, wordt de indicator voor droogte gevoeliger voor droogte.
+Stel bijvoorbeeld dat er één heel droog jaar is, waarbij de 5% droogste peilen in dat jaar vallen, dan zou de kritische drempelwaarde louter op dat ene uitzonderlijke jaar gebaseerd zijn.
 Dit beschouwen we als niet representatief, ook omdat de responstijd van vegetaties op wijzigende grondwaterregimes veel sneller is dan 30 jaar. 
 Eén extreem droog jaar kan al aantoonbare gevolgen hebben.
-Daarom wordt hier verkozen om te werken met een gemiddelde van percentielwaarden per jaar. 
-Deze werkwijze is ook analoog aan het berekenen van karakteristieke grondwaterstanden (GXG’s) voor vegetaties [@VanHeesen1970].
+Deze werkwijze is analoog aan het berekenen van karakteristieke grondwaterstanden (GXG’s) voor vegetaties [@VanHeesen1970].
 
 

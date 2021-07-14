@@ -1,18 +1,18 @@
 
-# De berekening van de droogte-indicator, haar betrouwbaarheid en trend {#h4:berekening}
+# De berekening van de droogte-indicator, zijn betrouwbaarheid en trend {#h4:berekening}
 
 We verkiezen een absolute indicator als droogte-indicator.
 Bij een dergelijke indicator wordt het aantal dagen per jaar dat het grondwaterpeil gelijk aan of onder een kritische drempelwaarde zakt opgeteld.
 Deze kritische drempelwaarde is specifiek voor elk meetpunt.
 Als kritische drempelwaarde wordt gekozen voor 
-**het _jaargemiddelde_ van de 5%-percentiel van de grondwatermetingen _van een jaar_ voor het meetpunt voor de periode 1985 - 2014**, cfr. \@ref(h2:drempelwaarde), die periodiek, bijv. elke vijftien jaar, met meer recente data kan herijkt worden, cfr. \@ref(h3:referentietoestand).
+**het _jaargemiddelde_ van de 5%-percentiel van de grondwatermetingen _van een jaar_ voor het meetpunt voor de periode 1985 - 2014**, cfr. \@ref(h2:drempelwaarde), die periodiek, bv. elke vijftien jaar, met meer recente data kan herijkt worden, cfr. \@ref(h3:referentietoestand).
 
 ## De voorbereiding {#h4-1:voorbereiding}
 
 Tot op heden kon met het software-programma Menyanthes voor 58 meetpunten een tijdreeksmodel gemaakt worden, waarbij 
 
 - neerslag en potentiële evapotranspiratie voor minstens 66% van de waargenomen variatie kon verklaren en
-- er geen significante trend in de tijdreeks kon gedetecteerd worden.
+- de tijdreeks geen significante trend vertoont die niet door meteorologische factoren kon worden verklaard.
 
 Met deze modellen werden 20 tijdreeksen van dagelijkse grondwaterpeilen gesimuleerd voor de periode 1985 - 2018.
 Deze data werden in een centrale databank opgeslagen om daarna te worden ingelezen in R. 
@@ -30,17 +30,14 @@ insert_minor <- function(major_labs, n_minor) {
 plotfitting <- function(indic_basis, respons, gemid, og, bg) {
   og <- enquo(og)
   bg <- enquo(bg)
-  # PI_data <- indic_basis %>% group_by(jaar) %>% 
-  #   summarise(ymax_data = max(!! bg, na.rm = TRUE), ymin_data = min(!! og, na.rm = TRUE))
-  
-  PI_data <- indic_basis %>% group_by(jaar, tijdsvenster) %>% 
+
+    PI_data <- indic_basis %>% group_by(jaar, tijdsvenster) %>% 
     summarise(ymax_data = max(!! bg, na.rm = TRUE), ymin_data = min(!! og, na.rm = TRUE)) %>% 
     ungroup() %>% 
     inner_join(dagen_droog_lang_breed)
   
   p <- ggplot(data = PI_data, aes_string(y = respons, x = "jaar")) +
     xlab("Jaar") + ylab("Aantal dagen onder kritsche drempelwaarde") +
-  #   theme(text = element_text(size = 15)) +
     geom_point(shape = 16, size = 2, col = "black") +
     geom_line(aes_string(x = "jaar", y = gemid), size = 1, color = "red") +
     geom_ribbon(aes(x = jaar, ymax = ymax_data, ymin = ymin_data),
@@ -48,7 +45,6 @@ plotfitting <- function(indic_basis, respons, gemid, og, bg) {
                        alpha = 0.4) +
     scale_x_continuous(breaks = 1985:2020, 
                               labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
-  #   theme(strip.text = element_text(size = 15)) +
     facet_wrap(vars('tijdsvenster (jaren) ' = tijdsvenster), labeller = label_both)
   return(p)
 }
@@ -59,16 +55,10 @@ plotma.basis <- function(indic_finaal, indicator, intercept) {
     mutate (period = jaar >= 1985 + tijdsvenster)
   p <- ggplot(data = indic_finaal ) + 
     geom_line(data = indic_finaal, aes(x = jaar, y = lcl, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
-    # geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = lcl), linetype = "longdash", alpha = 0.20) +
     geom_ribbon(data = indic_finaal, aes(x = jaar, ymax = ucl, ymin = lcl, alpha = ifelse(period, 0.4, 0.15)),
                 fill = "lightpink") +
-    # geom_ribbon(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, ymax = ucl, ymin = lcl),
-    #             fill = "lightpink",
-    #             alpha = 0.15) +
     geom_line(data = indic_finaal, aes(x = jaar, y = ucl, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
-    # geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = ucl), linetype = "longdash", alpha = 0.20) +
     geom_line(data = indic_finaal, aes_string(x = "jaar", y = indicator, alpha = ifelse(period, 1, 0.15)), color = "red" ) +
-    # geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes_string(x = "jaar", y = indicator), color = "red", alpha = 0.15 ) +    
     geom_hline(aes(yintercept = intercept), linetype = "dotted")
   return(p)
 }
@@ -80,17 +70,11 @@ plotma.basis_1venster <- function(indic_finaal, indicator, intercept, tijdsvenst
     mutate (period = jaar >= 1985 + tijdsvenster)
   p <- ggplot(data = indic_finaal_1 ) + 
     geom_line(data = indic_finaal_1, aes(x = jaar, y = lcl, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
-    # geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = lcl), linetype = "longdash", alpha = 0.20) +
     geom_ribbon(data = indic_finaal_1, aes(x = jaar, ymax = ucl, ymin = lcl, alpha = ifelse(period, 0.4, 0.15)),
                 fill = "lightpink",
                 alpha = 0.4) +
-    # geom_ribbon(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, ymax = ucl, ymin = lcl),
-    #             fill = "lightpink",
-    #             alpha = 0.15) +
     geom_line(data = indic_finaal_1, aes(x = jaar, y = ucl, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
-    # geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = ucl), linetype = "longdash", alpha = 0.20) +
     geom_line(data = indic_finaal_1, aes_string(x = "jaar", y = indicator, alpha = ifelse(period, 1, 0.15)), color = "red" ) +
-    # geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes_string(x = "jaar", y = indicator), color = "red", alpha = 0.15 ) +    
     geom_hline(aes(yintercept = intercept), linetype = "dotted")
   return(p)
   }
@@ -99,7 +83,7 @@ plotma <-  function(indic_finaal, indicator, intercept) {
   p <- plotma.basis(indic_finaal, indicator, intercept)
   p <- p + 
     scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
-    labs(x = "Jaar", y = "indicator (lopend gemiddelde)") +
+    labs(x = "Jaar", y = "indicator (rollend gemiddelde)") +
     facet_wrap(vars('tijdsvenster (jaren) ' = tijdsvenster), labeller = label_both)
   return(p)
 }
@@ -110,18 +94,11 @@ plottrend <- function(indic_finaal, indicator, intercept) {
     mutate (period = jaar >= 1985 + tijdsvenster)  
   p <- plotma.basis(indic_finaal, indicator, intercept)
   p <- p +  
-    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = og_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
-    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = og_jaar), linetype = "longdash", alpha = 0.20) +
-    geom_ribbon(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar, alpha = ifelse(period, 0.4, 0.15)),
-                fill = grey(0.5),
-                alpha = 0.4) +  
-    geom_ribbon(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
-                fill = grey(0.5),
-                alpha = 0.15) +  
-    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = bg_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
-    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = bg_jaar), linetype = "longdash", alpha = 0.20) +
-    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdsvenster), aes(x = jaar, y = gem_jaar, alpha = ifelse(period, 1, 0.15)), color = "dark blue") +
-    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdsvenster), aes(x = jaar, y = gem_jaar), color = "dark blue", alpha = 0.20) +    
+    geom_line(data = indic_finaal, aes(x = jaar, y = og_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    geom_ribbon(data = indic_finaal, aes( x = jaar, ymax = bg_jaar, ymin = og_jaar, alpha = ifelse(period, 0.4, 0.15)),
+                fill = grey(0.5)) +  
+    geom_line(data = indic_finaal, aes(x = jaar, y = bg_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    geom_line(data = indic_finaal, aes(x = jaar, y = gem_jaar, alpha = ifelse(period, 1, 0.15)), color = "dark blue") 
     geom_hline(aes(yintercept = intercept), linetype = "dotted") +
     scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
     labs(x = "Jaar", y = "trend") +
@@ -138,23 +115,16 @@ plottrend <- function(indic_finaal, indicator, intercept) {
 #plot van de trend (zowel modelschatting als berekende) voor één bepaald tijdsvenster
 plottrend.1venster <- function(indic_finaal, indicator, intercept, tijdsvenster) {
   indic_finaal <- indic_finaal %>% 
-    mutate (period = jaar >= 1985 + tijdsvenster)  
+    mutate(period = jaar >= 1985 + tijdsvenster)  
   p <- plotma.basis_1venster(indic_finaal, indicator, intercept, tijdsvenster)
   tv <- tijdsvenster
   indic_finaal_1 <- indic_finaal %>% filter(tijdsvenster == tv)    
   p <- p +  
-    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = og_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
-    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = og_jaar), linetype = "longdash", alpha = 0.20) +
-    geom_ribbon(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar, alpha = ifelse(period, 0.4, 0.15)),
-                fill = grey(0.5),
-                alpha = 0.4) +  
-    geom_ribbon(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
-                fill = grey(0.5),
-                alpha = 0.15) +  
-    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = bg_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
-    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = bg_jaar), linetype = "longdash", alpha = 0.20) +
-    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = gem_jaar, alpha = ifelse(period, 1, 0.15)), color = "dark blue") +
-    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = gem_jaar), color = "dark blue", alpha = 0.20) +    
+    geom_line(data = indic_finaal_1, aes(x = jaar, y = og_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    geom_ribbon(data = indic_finaal_1, aes( x = jaar, ymax = bg_jaar, ymin = og_jaar, alpha = ifelse(period, 0.4, 0.15)),
+                fill = grey(0.5)) + 
+    geom_line(data = indic_finaal_1, aes(x = jaar, y = bg_jaar, alpha = ifelse(period, 1, 0.2)), linetype = "longdash") +
+    geom_line(data = indic_finaal_1, aes(x = jaar, y = gem_jaar, alpha = ifelse(period, 1, 0.15)), color = "dark blue") +
     geom_hline(aes(yintercept = intercept), linetype = "dotted") +
     scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
     labs(x = "Jaar", y = "trend") +
@@ -264,7 +234,7 @@ list2env(lapply(X = ruwetabellen_lijst_rds, FUN = readRDS),
 ```
 
 ```{r samenvoegen-bestanden, include=FALSE, eval=!file.exists(file.path("cache", "basisdata.rds" ))}
-#ik verkies dit in een aparte chunk te doen, omdat het zo mogelijk is om testdata samen te stellen, bijv. ik heb voor het uittesten van de methoden gewerkt met een testbestand van de eerste 5 ruwe tabellen.
+#ik verkies dit in een aparte chunk te doen, omdat het zo mogelijk is om testdata samen te stellen, bv. ik heb voor het uittesten van de methoden gewerkt met een testbestand van de eerste 5 ruwe tabellen.
 for (i in seq (from = 1, to = 23)){
   if (i == 1) {
     ruwedata <- get(sprintf("ruwedata%02d",i))
@@ -293,7 +263,7 @@ ruwedata <- ruwedata %>%
 ```
 
 ```{r samenvoegen-bestanden-test, include=FALSE, eval= FALSE}
-#ik verkies dit in een aparte chunk te doen, omdat het zo mogelijk is om testdata samen te stellen, bijv. ik heb voor het uittesten van de methoden gewerkt met een testbestand van de eerste 5 ruwe tabellen.
+#ik verkies dit in een aparte chunk te doen, omdat het zo mogelijk is om testdata samen te stellen, bv. ik heb voor het uittesten van de methoden gewerkt met een testbestand van de eerste 5 ruwe tabellen.
 for (i in seq (from = 1, to = 5)){
   if (i == 1) {
     ruwetest <- get(sprintf("ruwedata%02d",i))
@@ -313,7 +283,7 @@ ruwetest <- ruwetest %>%
 ```
 
 ```{r verwijderen-tsv-tabellen, eval = FALSE}
-#verwijderen van de 23 deelbestanden (beter nog niet doen als je wil testen, het is handig om te testen met één van de bestanden, bijv. ruwedata01 (rel. groot) of ruwedata19 (rel klein)
+#verwijderen van de 23 deelbestanden (beter nog niet doen als je wil testen, het is handig om te testen met één van de bestanden, bv. ruwedata01 (rel. groot) of ruwedata19 (rel klein)
 rm(list = sprintf("ruwedata%02d", seq(from = 1, to = 23)))
 
 ```
@@ -584,7 +554,7 @@ modeldata <- dagen_droog %>%
             dag_onder_p05.10 = movavg(dag_onder_p05, n = 10, "w"),
             dag_onder_p05.20 = movavg(dag_onder_p05, n = 20, "w"),
             dag_onder_p05.30 = movavg(dag_onder_p05, n = 30, "w"),
-            # dag_onder_p05.2 = movavg(dag_onder_p05, n = 2, "s"), # een ongewogen lopend gemiddelde
+            # dag_onder_p05.2 = movavg(dag_onder_p05, n = 2, "s"), # een ongewogen rollend gemiddelde
             # dag_onder_p05.4 = movavg(dag_onder_p05, n = 4, "s"),
             # dag_onder_p05.6 = movavg(dag_onder_p05, n = 6, "s"),
             # dag_onder_p05.8 = movavg(dag_onder_p05, n = 8, "s"),
@@ -643,12 +613,14 @@ Het feit dat er een kritische drempelwaarde is die al dan niet overschreden word
 Een probleem is dat één belangrijke conditie voor het gebruik van een verdeling wordt geschonden. 
 De 'trekkingen' gebeuren namelijk niet onafhankelijk van elkaar: de kans dat als het vandaag een droge dag is, het dat morgen of overmorgen ook zal zijn is veel groter dan 0,05 en vice versa. 
 Modellen die uitgaan van een binomiale of een andere verdeling gaan er van uit dat dit wel zo is. 
-We hebben onderzocht of in de dataset de indicator binomiaal verdeeld is door de 
-
 Daarom werd de verdeling van de indicator niet alleen vergeleken met de negatief-binomiale, maar ook met de poisson- en de binomiale verdeling. 
 
 Voor deze vergelijking werd gebruikt gemaakt van zogenaamde QQ-plots. 
-Een QQ-plot zet de kans uit dat een bepaalde waarde of kleiner uit een bepaalde verdeling wordt getrokken uit ten opzichte van de percentielwaarde van deze waarde.
+QQ-plots tonen voor een variabele het waargenomen kwantiel en het kwantiel dat men bij een theoretische verdeling van die variabele mag verwachten. 
+Een kwantiel is Waarneming die hoort bij een bepaalde cumulatieve proportie. 
+Het kwantiel bij een cumulatieve proportie van bijvoorbeeld 0.6, is die waarneming waarvoor geldt dat 6/10e deel van alle waarnemingen er kleiner of gelijk aan is of m.a.w. de kans is 0.6 dat een waarneming kleiner of gelijk aan die kwantielwaarde zal zijn. 
+
+Een QQ-plot zet het waargenomen kwantiel voor een waarde van de variabele, voor deze studie het aantal droge dagen per jaar $d_{mjs}$, uit ten op zichte van de theoretische kans dat deze waarde of kleiner uit een bepaalde verdeling wordt getrokken.
 
 De verdelingen werden steekproefgewijs getest op een aantal meetpunten en jaren. 
 Deze testen gaven aan dat de verdeling vrij goed overeenkwam met de binomiale of negatief binomiale verdeling. 
@@ -668,14 +640,14 @@ De figuren \@ref(fig:check-qq-poisson), \@ref(fig:check-qq-nbinom) en \@ref(fig:
 ```{r check-qq-poisson, fig.cap = "QQ-plot poisson-verdeling"}
 
 poisson <- MASS::fitdistr(checkdistributie, "Poisson")
-car::qqp(checkdistributie, "pois", lambda = poisson$estimate, id = FALSE)
+car::qqp(checkdistributie, "pois", lambda = poisson$estimate, id = FALSE, xlab = "Theoretische kwantielen voor een poisson-verdeling", ylab = "Waargenomen kwantielen")
 
 ```
 
 ```{r check-qq-nbinom, fig.cap = "QQ-plot negatief binomiale-verdeling"}
 
 nbinom <- MASS::fitdistr(checkdistributie, "Negative Binomial")
-qqPlot(checkdistributie, "nbinom", size = nbinom$estimate[[1]], mu = nbinom$estimate[[2]], id = FALSE)
+qqPlot(checkdistributie, "nbinom", size = nbinom$estimate[[1]], mu = nbinom$estimate[[2]], id = FALSE, xlab = "Theoretische kwantielen voor een negatief binomiale verdeling", ylab = "Waargenomen kwantielen")
 
 ```
 
@@ -684,7 +656,7 @@ invisible(capture.output(binom <- fitdistrplus::fitdist(checkdistributie, "binom
 ))
 #summary(binom)
 
-  qqp(checkdistributie, "binom", size = 365, prob = binom$estimate, id = FALSE)
+  qqp(checkdistributie, "binom", size = 365, prob = binom$estimate, id = FALSE, xlab = "Theoretische kwantielen voor een binomiale verdeling", ylab = "Waargenomen kwantielen")
 
 
 ```

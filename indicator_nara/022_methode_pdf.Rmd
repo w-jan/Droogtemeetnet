@@ -46,14 +46,14 @@ $$ {\text {UCL}}_j = {\text{droogte-ind}}_{j} + 1.96  \bar\sigma_{{\text{droogte
 Om de trend in de droogte-indicator over de jaren heen te detecteren, worden twee soorten tijdreeksanalyse uitgevoerd. 
 
 Ten eerste berekenen we een rollend (meerjarig) gemiddelde van de droogte-indicator.
-Men heeft verschillende mogelijkheden om dergelijk gemiddelde te berekenen, ongewogen of bijv. gewogen op basis van een lineaire trend, exponentiële functie etc.
+Men heeft verschillende mogelijkheden om dergelijk gemiddelde te berekenen, ongewogen of bv. gewogen op basis van een lineaire trend, exponentiële functie etc.
 Bij een gewogen gemiddelde wenst men dat de jaren die het dichtst bij het jaar in kwestie liggen relatief meer kunnen bijdragen.
-We kiezen hier voor een eenvoudig, ongewogen, gemidddelde om dat dit beter het effect van een lopend gemiddelde op de evolutie weerspiegelt.
+We kiezen hier voor een eenvoudig, ongewogen, gemidddelde om dat dit beter het effect van een rollend gemiddelde op de evolutie weerspiegelt.
 Een andere keuze die men moet maken is of men alleen een gemiddelde berekent voor de jaren voordien of dat men dit wenst te centreren in een venster dat zowel oudere als recentere jaren omvat.
 We kiezen voor het eerste, waarbij alleen oudere jaren in het tijdsvenster zitten.
 
-We berekenen een lopend gemiddelde voor een aantal tijdvensters (2, 4, 6, 8, 10 en 30 jaar). 
-Net zoals bij de originele waarden kan voor een lopend gemiddelde met behulp van de formule van Rubin ook een betrouwbaarheidsinterval bepaald worden. 
+We berekenen een rollend gemiddelde voor een aantal tijdvensters (2, 4, 6, 8, 10 en 30 jaar). 
+Net zoals bij de originele waarden kan voor een rollend gemiddelde met behulp van de formule van Rubin ook een betrouwbaarheidsinterval bepaald worden. 
 
 Daarnaast worden op de tijdreeksen van de droogte-indicator, zowel de originele waarden als de rollende gemiddelden, een tijdreeksmodel toegepast. 
 Hierbij wordt getracht de evolutie te schatten. 

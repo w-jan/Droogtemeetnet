@@ -4,12 +4,12 @@ Kennen we de kritische drempelwaarde van een meetpunt dan kan de absolute indica
 
 
 ```{block2 definitie-absolute-indicator, type="exampleblock", latex.options="{}", echo = TRUE}
-De absolute indicatorwaarde is het aantal dagen op een jaar $j$ dat het grondwaterpeil op een meetlocatie $m$ onder een kritische drempelwaarde zit (cfr. \@ref(h3:indicator)). 
+De absolute indicatorwaarde is het aantal dagen op een jaar $j$ dat het grondwaterpeil op een meetlocatie $m$ zich onder een kritische drempelwaarde  bevindt (cfr. \@ref(h3:indicator)). 
 
 ```
 
 We berekenen deze waarde voor elke simulatie $s$ afzonderlijk en geven deze de notatie $d_{mjs}$.
-Voor de periode 1985 - 2018, 58 meetlocaties en 20 simulaties betekent dit dus 34 * 58 * 20 = 39440 $d_{mjs}$-waarden
+Voor een periode van 34 jaar (van 1985 tot en met 2018), 58 meetlocaties en 20 simulaties betekent dit 34 * 58 * 20 = 39440 $d_{mjs}$-waarden
 
 De absolute indicatorwaarden vormen de basis voor het berekenen van een index, die we de droogte-indicator noemen.
 
@@ -20,8 +20,7 @@ De droogte-indicator $DI_j$ voor een bepaald jaar $j$ is dan het gemiddelde van 
 ```
 
 Momenteel wordt de droogte-indicator $DI_j$ berekend op basis van 58 meetlocaties. 
-Er zijn echter een honderdtal locaties voorzien.
-Mettertijd zal de droogte-indicator op een groter aantal punten berekend worden. 
+Er zijn echter een honderdtal locaties voorzien waardoor mettertijd de droogte-indicator op een groter aantal punten zal berekend worden. 
 Het mogelijke effect op de droogte-indicator $DI_j$  zal ingeschat worden door ook de $DI_j$ voor de huidige 58 locaties te blijven berekenen.
 
 Het wordt complexer als we inzicht willen krijgen in de onzekerheid die er op de droogte-indicator $DI_j$ zit, m.a.w. wat is het betrouwbaarheidsinterval van de droogte-indicator ? 
@@ -34,9 +33,9 @@ Om deze twee varianties te kunnen onderscheiden, dient (eerst) de droogte-indica
 In het geval van de droogteindicator wordt (voor één bepaald jaar) dan de variantie die inherent is aan de data geschat op basis van de verschillen in de indicatorwaarden tussen de meetpunten binnen eenzelfde simulatie.
 De variantie door imputatie wordt geschat op basis van de verschillen tussen de $DI_{js}$. 
 
-Kennen we de variantie kan hiermee, op basis van de centrale limietstelling, voor elke $DI_j$ een betrouwbaarheidsinterval berekend worden.
+Kennen we de variantie dan kan hiermee, op basis van de centrale limietstelling, voor elke $DI_j$ een betrouwbaarheidsinterval berekend worden.
 
-Mathematisch wordt het betrouwbaarheidsinterval door de hieronder gegeven formules berekend. 
+Mathematisch wordt het 95%-betrouwbaarheidsinterval door de hieronder gegeven formules berekend. 
 
 $${\mbox{de droogte-indicator voor één simulatie en één jaar : }}DI_{js} =  \sum_{m = 1}^{58}d_{mjs} / 58 $$
 
@@ -60,20 +59,20 @@ $$ {\text {UCL}}_j = DI_j + 1.96  \bar\sigma_{DI_j}$$
 
 Om de trend in de droogte-indicator over de jaren heen te detecteren, worden twee soorten tijdreeksanalyse uitgevoerd: een tijdreeksanalyse op basis van een rollend (meerjarig) gemiddelde en op basis van een tijdreeksmodel.
 
-### lopend gemiddelde {#h3:calc-rollend-gemiddelde}
+### Rollend gemiddelde {#h3:calc-rollend-gemiddelde}
 
 Een rollend of meerjarig gemiddelde zwakt de onderlinge jaarschommelingen af, waardoor het verloop rechtlijniger zal verlopen. 
 Door een relatief korte periode te kiezen waarover men uitmiddelt, krijgt men een zicht op de korte termijn evolutie. door een relatief lange periode op de lange termijn.
 
-Men heeft daarenboven nog verschillende mogelijkheden om een lopend gemiddelde te berekenen, ongewogen of bijv. gewogen op basis van een lineaire trend, exponentiële functie etc.
-Bij een gewogen gemiddelde wenst men dat de jaren die het dichtst bij het jaar in kwestie liggen relatief meer kunnen bijdragen.
-We kiezen hier voor een gewogen gemidddelde (gewichten nemen lineair met de tijd af) omdat het beter het ecologisch effect weerspiegelt. 
-Bijv. drie opeenvolgende droge jaren kunnen een zwaardere impact hebben dan wanneer deze droge jaren onderbroken werden met een nat jaar. 
-Een andere keuze die men moet maken is of men alleen een gemiddelde berekent voor de jaren voordien of dat men dit wenst te centreren in een venster dat zowel oudere als recentere jaren omvat.
-We kiezen voor het eerste, waarbij alleen oudere jaren in het tijdsvenster zitten.
+Er zijn daarenboven nog verschillende mogelijkheden om een rollend gemiddelde te berekenen, ongewogen of bv. gewogen op basis van een lineaire trend, exponentiële functie etc.
+Bij een gewogen gemiddelde dragen de jaren die het dichtst bij het jaar in kwestie liggen relatief meer bij.
+We kiezen hier voor een gewogen gemidddelde (gewichten nemen lineair met de tijd af), omdat het beter het ecologisch effect weerspiegelt. 
+bv. drie opeenvolgende droge jaren kunnen een zwaardere impact hebben dan wanneer deze droge jaren onderbroken werden met een nat jaar. 
+Je kan dat gemiddelde berekenen op basis van voorgaande jaren of op basis van een tijdsvenster dat zowel voorgaande als volgende jaren omvat. 
+We kiezen voor de eerste optie, omdat dit beter afgestemd is op de mogelijke ecologische respons op droogte.
 
-We berekenen een lopend gemiddelde voor een aantal tijdvensters (2, 4, 6, 8, 10, 20 en 30 jaar). 
-Net zoals bij de originele waarden kan ook voor een lopend gemiddelde met behulp van de formule van Rubin  een betrouwbaarheidsinterval bepaald worden. 
+We berekenen een rollend gemiddelde voor een aantal tijdvensters (2, 4, 6, 8, 10, 20 en 30 jaar). 
+Net zoals bij de originele waarden kan ook voor een rollend gemiddelde met behulp van de formule van Rubin  een betrouwbaarheidsinterval bepaald worden. 
 
 ### Tijdreeksmodellering {#h3:calc-tijdreeks}
 
@@ -98,7 +97,7 @@ Per jaar (en simulatie) wordt een gemiddelde waarde met haar standaardafwijking 
 Dit gemiddelde $DIT_j$, waarbij de $T$ slaat op Trend, zal afwijken van de hierboven berekende $DI_j$.
 Dit is te verklaren doordat in tegenstelling met $DI_j$ aan de berekening van het gemiddelde twee voorwaarden worden gekoppeld.
 Ten eerste dat het effect van een jaar afhangt van de vorig(e) jaar/jaren volgens een tweede orde functie (zie hoger). 
-Daarenboven wordt ook aangenomen dat een meetpunt een vaste (maar onbekende) bijdrage aan de droogte-indicator levert (dus dat een meetpunt systematisch droger of natter dan een andere kan zijn).
+Daarenboven wordt ook aangenomen dat een meetpunt een vaste (maar onbekende) bijdrage aan de droogte-indicator levert (dus dat een meetpunt systematisch droger of natter dan een ander meetpunt kan zijn).
 
 Meer statistisch omschreven geeft dit:
 $$d_{mjs} \sim NB(\mu_{mjs}, \theta)  $$
@@ -113,15 +112,15 @@ De verwachte waarde van een absolute indicator waarde $d_{mjs}$ is de som van tw
 
 De jaarbijdrage beschouwen we voor alle meetpunten constant.
 Dit is een vrij strenge voorwaarde. 
-Het model laat niet toe mogelijke lokale/regionale verschillen te detecteren. 
+Het model laat dus niet toe mogelijke lokale/regionale verschillen te detecteren. 
 Zouden we dit willen doen, dan zal een heel ander (uitgebreider !) meetnet nodig zijn.
 
 De bijdrage van een meetpunt beschouwen we dan weer voor alle jaren constant.
 Dit betekent dat het model wel toelaat dat het ene meetpunt systematisch droger of natter is dan het andere, maar niet dat deze verhouding jaarlijks kan wijzigen.
 Ook dit is een vrij strenge voorwaarde.  
-Hier kan wel bij opgemerkt worden dat 1) bij de selectieprocedure van de meetpunten, meetpunten geweerd werden die tijdens de referentieperiode een significante trend (verdroging/vernatting) vertonen, die niet door klimatologische factoren kan verklaard worden en 2) voor elk meetpunt afzonderlijk een specifieke kritische drempelwaarde werd bepaald.
+Hier kan wel bij opgemerkt worden dat 1) bij de selectieprocedure van de meetpunten, meetpunten geweerd werden die tijdens de referentieperiode een significante trend (verdroging/vernatting) vertonen die niet door meteorologische factoren kan worden verklaard en 2) voor elk meetpunt afzonderlijk een specifieke kritische drempelwaarde bepaald werd.
 
-Om de eerste opmerking zullen, vooral voor de referentieperiode, er over de jaren heen tussen de punten weinig grote verschuivingen optreden. 
+Door de eerste opmerking zullen, vooral voor de referentieperiode, er over de jaren heen tussen de punten weinig grote verschuivingen optreden. 
 Voor de jaren buiten de referentieperiode is dat evenwel minder verzekerd. 
 
 Door de tweede opmerking zullen de absolute verschillen tussen de punten relatief gering zijn. 
@@ -141,6 +140,8 @@ $t_{js}$ is een term ('random walk') die toelaat om rekening te houden met het f
 
 Hier beschrijven we die mogelijke afhankelijkheid als een twee-orde relatie:
 $$ \Delta^2 t_{js} = \Delta t_{j+1, s} - \Delta t_j = (t_{j+1,s} - t_{j,s}) - (t_{j,s} - t_{j-1,s}) = t_{j+1,s} - 2t_{j,s} + t_{j-1,s} $$
+
+De verandering van de verandering in de tijd worden verondersteld normaal verdeeld te zijn, met gemiddelde 0 en variantie $\sigma^2$.
 $$ \Delta^2 t_{js} \sim  N(0,\sigma^2)$$
 
 
@@ -151,8 +152,8 @@ $\epsilon_{mjs}$ is de term die de fout geeft tussen de verwachte en waargenomen
 We nemen aan dat deze fout in de log-schaal een normale verdeling volgt.
 $$\epsilon_{mjs} \sim N(0,\sigma_{mjs}^2) $$
 
-De term  $\beta_{js} + t_{js} =  DIT_{js}$ beschrijft de trend voor één simulatie.
-Het is deze term en meer nog de veralgemening voor alle simulaties die ons hier interesseert.
+De term $\beta_{js} + t_{js} =  DIT_{js}$ beschrijft de trend voor één simulatie.
+Het is deze term, en meer nog de veralgemening voor alle simulaties, die ons interesseert.
 
 Voor het bepalen van de onzekerheid, de betrouwbaarheidsintervallen, van de trendwaarden doen we opnieuw een beroep op de formule van Rubin [@Rubin1987].
 Om de onzekerheid in de trend te kunnen inschatten afkomstig van het schatten van peilen, wordt er niet één model met alle data berekend, maar wordt voor elke simulatie een model berekend.
