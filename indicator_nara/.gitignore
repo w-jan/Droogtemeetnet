@@ -41,7 +41,9 @@ rsconnect/
 /data/local/*
 /figures/local/*
 /local/*
-/report/lokaal/*
+
+# reports
+/report/
 
 #gis data
 data/result/meetnet/GIS/*
