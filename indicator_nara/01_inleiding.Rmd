@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 # Inleiding {#h1:inleiding}
 Driekwart van de voor Vlaanderen en Europa meest waardevolle natuurtypes, steunen voor hun voortbestaan op grondwater. Grondwaterafhankelijke vegetaties [^def-grondwaterafhankelijk] komen voor in en op de rand van kwelgebieden, beekvalleien, vijvers en poelen. 
 De vochtige gebieden vertonen vaak veel gradiënten en herbergen daarom een hoge biodiversiteit [@Becker2020]. 
@@ -7,14 +12,15 @@ De vochtige gebieden vertonen vaak veel gradiënten en herbergen daarom een hoge
 2. die specifieke grondwaterstand gedurende een zekere periode aanwezig moet zijn voor het duurzaam voortbestaan van het type.
 In deze context is de term 'grondwaterafhankelijk’ daarom synoniem voor ‘gevoelig aan verdroging door effecten op het grondwater'.
 
-
 De jongste jaren kent Vlaanderen regelmatig langdurige periodes van droogte.
 Droogte is op zich een natuurlijk verschijnsel. 
 Als gevolg van een tekort aan neerslag is de vraag van planten naar (grond)water hoger dan het aanbod, waardoor het beschikbaar water in de bodem (bodemvocht) zal afnemen en/of het (grond)waterpeil zal dalen.
-Na zonneschijn komt er regen: droogte heeft een tijdelijk karakter.
 
+Droogteverschijnselen zijn niet beperkt tot grondwaterafhankelijke vegetaties. Ook niet-grondwaterafhankelijke vegetaties kunnen droogtegevoelig zijn en door een gebrek aan bodemvocht te kampen krijgen met droogtestress. 
+
+Na zonneschijn komt er regen: droogte heeft daarom een tijdelijk karakter.
 Men mag het tijdelijk karakter echter niet onderschatten.
-Om de droogte in beeld te brengen volstaat immers niet alleen een beeld te geven van het neerslagtekort. 
+Om de droogte in beeld te brengen volstaat louter een blik op het neerslagtekort niet. 
 Hoewel het neerslagtekort een drijvende kracht is voor het optreden van grondwaterdalingen, zijn er andere factoren die meespelen hoe dat neerslagtekort zich effectief in peilverlagingen zal vertalen. 
 De periode van het jaar is een eenvoudig voorbeeld van een dergelijke factor: een periode zonder neerslag zal in de winter een ander effect hebben dan in de zomer. 
 Zo kan niet gesteld worden dat een korte duur van een neerslagtekort, altijd slechts maar tot kortstondige peilverlagingen zal leiden. 
@@ -24,19 +30,16 @@ Zelfs al is een periode van droogte mogelijk beperkt in de tijd, de *ecologische
 Bijvoorbeeld een tijdelijke droogval van een permanent waterlichaam kan langdurige ecologische gevolgen hebben.
 @Jansen2020 geven een overzicht van de impact van de recente droge jaren op de natuur in Nederland en geven hiervoor ook causale verbanden. 
 
-
 We spreken van verdroging als door structurele oorzaken er op langere termijn een systematische daling van het grondwaterpeil wordt waargenomen of ook wanneer dit grondwater van samenstelling verandert.
 Als dit optreedt, krijgen typische soorten het moeilijk. 
 Slagen die soorten er niet in om zich aan te passen of om hun leefgebied te verschuiven, dan dreigen ze te verdwijnen. 
-Dat risico wordt groter als bijvoorbeeld het landgebruik of het grondwaterregime in de omgeving de beschikbare ruimte om uit te wijken beperkt. 
-Ook een gewijzigd klimaat kan tot verdroging leiden. 
+Dat risico wordt groter als bijvoorbeeld het landgebruik, andere milieudrukken of het grondwaterregime in de omgeving de beschikbare ruimte om uit te wijken beperkt. 
+Zo kan ook een gewijzigd klimaat tot verdroging leiden. 
 
-In dit rapport presenteren we een indicator waarmee de droogte op jaarbasis kan opgevolgd worden en passen deze toe op een meetnet om een in Vlaanderen een globaal beeld te krijgen van de droogte in grondwaterafhankelijke vegetaties. 
-Droogteverschijnselen zijn niet beperkt tot grondwaterafhankelijke vegetaties. 
-Ook niet-grondwaterafhankelijke vegetaties kunnen droogtegevoelig zijn. 
-We beperken ons echter toch de grondwaterafhankelijke. 
-Ze beide behandelen in één indicator is moeilijk, doordat ze een andere benadering vergen. 
-Het opvolgen van droogte voor niet-grondwaterafhankelijke vegetaties, gebeurt best via het bodemvocht (cfr. het project CurieuzeNeuzen <https://curieuzeneuzen.be/>).
+In dit rapport presenteren we een indicator waarmee de droogte op jaarbasis kan opgevolgd worden en passen deze toe op een meetnet om in Vlaanderen een globaal beeld te krijgen van de droogte in grondwaterafhankelijke vegetaties. 
+We beperken ons in deze studie dus tot de grondwaterafhankelijke vegetaties.  
+Zowel de grondwaterafhankelijke als de niet-grondwaterafhankelijke vegetaties behandelen in één indicator is moeilijk, doordat ze een andere benadering vergen. 
+Het opvolgen van droogte voor niet-grondwaterafhankelijke vegetaties, verloopt best via het bodemvocht (cfr. het project CurieuzeNeuzen, <https://curieuzeneuzen.be/>).
 
 
 # Monitoring droogte in Vlaanderen {#h1:monitoring}
@@ -51,22 +54,21 @@ Als maatstaf gaan we op zoek naar een gepaste droogte-indicator (zie \@ref(h2:in
 
 ## Droogtemeetnet {#h2:meetnet}
 Om in Vlaanderen een globaal beeld te krijgen van de evolutie van de grondwaterstanden op middellange tot lange termijn in grondwaterafhankelijke vegetaties werd een meetnet van een honderdtal punten ontworpen.
-Bij de evolutie ligt het accent op de lage grondwaterstanden. 
-Hoe frequent en/of hoe lang treden relatief lage grondwaterstanden op?
+Bij de evolutie ligt het accent op de lage grondwaterstanden: "Hoe frequent en/of hoe lang treden relatief lage grondwaterstanden op?"
 Het meetnet dient vooral om de droogte in kaart te brengen, minder de verdroging.
 Hoewel beide duidelijk gerelateerd zijn, zijn het toch andere verschijnselen. 
-Wenst men verdroging in kaart te brengen, dient men bv. ook rekening te houden met de grondwatervoeding (nuttige neerslag). 
+Wenst men verdroging te monitoren, dient men bv. ook rekening te houden met de grondwatervoeding (nuttige neerslag). 
 We geven een voorbeeld om het mogelijke verschil te duiden.
-Het eerste jaarhelft kan heel droog zijn, waardoor de peilen 's zomers lang zeer laag zijn. 
+Het eerste jaarhelft kan heel droog zijn, met als gevolg langdurig zeer lage zomerpeilen. 
 Het najaar kan echter heel nat zijn, waardoor de grondwaterlagen weer voldoende kunnen worden aangevuld.
-Om zicht te krijgen op de verdroging dient ook de evolutie van de hoge grondwaterstanden opgevolgd te worden.
+Om zicht te krijgen op verdroging dient ook de evolutie van de hoge grondwaterstanden opgevolgd te worden.
 
 De punten van het meetnet werden onder andere geselecteerd doordat ze geen significante tekenen hadden van verdroging of vernatting: het grootste deel van de peilschommelingen kan toegeschreven worden aan meteorologische variabelen (neerslag en evapotranspiratie).
 
 Op schaal Vlaanderen is een honderdtal een relatief laag aantal. 
-Wil men op deze schaal veralgemeenbare uitspraken kunnen maken, is het sterk aan te bevelen de keuze van deze punten zo goed mogelijk ruimtelijk te balanceren. 
-Ook moet er rekening gehouden worden met mogelijke verschillen in het gedrag van het grond/oppervlaktewaterpeil t.a.v. een neerslagtekort. 
-@WoutersVanderhaeghe2020 geven een toelichting hoe dit meetnet concreet werd ontworpen. 
+Wil men op deze schaal en met dit beperkt aantal punten veralgemeenbare uitspraken kunnen maken, is het sterk aan te bevelen de keuze van deze punten zo goed mogelijk ruimtelijk te balanceren. Ook moet er rekening gehouden worden met mogelijke verschillen in het gedrag van het grond/oppervlaktewaterpeil t.a.v. een neerslagtekort. 
+Doordat we voor het meetnet in belangrijke mate beroep doen op bestaande meetpunten van Watina (<https://watina-import.inbo.be/>) blijft desondanks een risico op een systematische fout bestaan.
+@WoutersVanderhaeghe2020 geven een nadere toelichting over het ontwerp van het meetnet. 
 
 ## Droogte-indicatoren {#h2:indicator}
 Een volgende vraag die zich stelt, is een goede maat te vinden voor het bepalen van droogte in verdrogingsgevoelige vegetaties.
@@ -85,7 +87,7 @@ De referentiewaarde wordt berekend als het percentiel (bv. 5-percentiel) van de 
 We gaan verder in dit hoofdstuk wat dieper in op de beweegredenen om voor de beleidsrapportering een absolute indicator te verkiezen. 
 
 ### Bepalen referentietoestand {#h3:referentietoestand}
-Een indicator vergelijkt een bepaalde toestand met een referentietoestand. 
+Om de uitkomst (trend/toestand) van een indicator te kunnen interpreteren, vergelijkt men deze vaak met een referentietoestand. 
 Bij het bepalen van de referentietoestand spelen twee factoren een rol:
 
 - welk grondwaterpeil beschouwen we als indicatief voor droogte oftewel wat is een **kritische waarde**?
@@ -98,15 +100,43 @@ Een droog jaar is een jaar met meer dan 18 droge dagen.
 Deze drempelwaarde stemt nauw overeen met de hydrologische variabele 'gemiddeld laagste grondwaterstand' (GLG) [@AdviesDroogteIndicatoren]. 
 Dit is het gemiddelde van de drie laagste grondwaterpeilen op een jaar, met een minimum verschil van 14 dagen tussen de metingen, en dit uitgemiddeld over een zekere tijdsperiode: standaard een achttal jaar [@VanHeesen1970].
 Voor vele verdrogingsgevoelige vegetaties is de GLG een belangrijke standplaatsfactor, zie bv. [@Aggenbach1998; @Niche2007; @VanCalster2020].
-De reden waarom dan niet de GLG als kritische drempelwaarde werd gekozen, ligt in het feit dat er een minimumaantal dagen tussen de waarnemingen moet zitten.
-Dit bemoeilijkt het werken met tijdreeksen van dagelijkse metingen. 
+De reden waarom dan niet de GLG als kritische drempelwaarde werd gekozen, ligt in het feit dat 
+
+- de GLG geen rekening houdt met de duur van een droogteperiode
+- er een minimumaantal dagen tussen de waarnemingen moet zitten, waardoor men in vergelijking met tijdreeksen met dagelijkse metingen aan nauwkeurigheid inboet.
+
 
 Het tijdvenster is een andere belangrijke factor bij het vastleggen van een referentie.
-Men heeft dan te bepalen of gewerkt wordt met een vast tijdskader (van jaar a tot jaar b) of een relatief tijdskader (bv. de laatste x jaren).
-Ook de lengte van de tijdsperiode is een keuze die men moet maken.
+Men heeft dan te bepalen of gewerkt wordt met een vast tijdvenster (van jaar a tot jaar b) of een relatief tijdvenster (bv. de laatste x jaren).
+Ook de lengte van de periode in een venster is een keuze die men moet maken.
 We kiezen hier voor een vast tijdvenster van 30 jaar, nl. 1985 tot en met 2014.
+
+Het startjaar 1985 is gekozen om de pragmatische reden dat er voordien in Vlaamse natuurgebieden het grondwaterpeil weinig werd gemeten (figuur \@ref(fig:watina-metingen-fig)).
+
+Zoals hoger (\@ref(h2:meetnet)) werd aangehaald, werden alleen meetpunten voor het meetnet geselecteerd als ze geen significante tekenen hadden van verdroging of vernatting.
+De mogelijke trend in de indicator tijdens deze periode zal dus hoofdzakelijk aan meteorologische factoren kunnen worden toegeschreven.
+In de toekomst zal mogelijk een opdeling van de trend in een aandeel toe te schrijven aan meteorologie en aan verdroging of vernatting van de meetlocaties nodig blijken.
+
+```{r watina-metingen, message=FALSE, warning=FALSE, include=FALSE}
+aantalmetingen <- read_csv(paste0(file.path("data", "interim", "tbl_aantalmetingen_jaar"), ".csv"))
+aantalmetingen <- aantalmetingen %>% 
+    dplyr::select(-3) 
+colnames(aantalmetingen) <- c("aantal_metingen", "jaar")
+aantalmetingen <- aantalmetingen %>% 
+    filter(jaar < 2021)
+gplot <- ggplot(aantalmetingen, aes(x= jaar, y= aantal_metingen)) + 
+    labs(y = "aantal peilmetingen") +
+    geom_col(fill = inbo_grijsblauw) 
+png(paste0(file.path("data","result", "figures","watina-metingen"),".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+```{r watina-metingen-fig, fig.cap="Aantal peilmetingen in Vlaamse natuurgebieden tot en met 2020, bron: Watina", message=FALSE, warning=FALSE}
+gplot
+```
+
 Een periode van dertig jaar is gebruikelijk in klimaatstudies. 
-We kiezen voor een vast venster kiezen, omdat de trend dan gemakkelijker te interpreteren is. 
+We kiezen voor een vast venster, omdat de trend dan gemakkelijker te interpreteren is. 
 Ook het KMI werkt met vaste vasters, die het periodiek herziet.
 Het venster kan na bv. vijftien jaar worden herzien: dus bv. vanaf 2035 kan 2000 - 2029 als nieuwe referentie genomen worden).
 De periodieke herijking laat toe om de meer recente evolutie beter in beeld te brengen.
@@ -141,8 +171,14 @@ Om die reden valt een relatieve indicator af als een kandidaat-indicator.
 
 Blijft dan nog de keuze tussen een cumulatieve en een absolute droogte-indicator.
 De cumulatieve geeft iets beter de sterkte van een droogte-periode aan: hij houdt niet alleen rekening houdt met het aantal dagen dat het grondwaterpeil onder een referentiepeil staat, maar ook met de grootte van de daling.
-Een cumulatieve indicator heeft echter als nadeel dat het moeilijk is om een indicatorwaarde te definiëren die droge jaren van niet-droge jaren kan onderscheiden. 
-Een absolute indicator laat dat wel toe.
+Een cumulatieve indicator heeft echter als nadeel dat 
+
+- de waarden moeilijk ecologisch te interpreteren zijn: in welke mate heeft een onderschrijding van bv. 50 cm t.o.v. 20 cm een grotere ecologische impact?
+- het ook moeilijk is om een indicatorwaarde te definiëren die droge jaren van niet-droge jaren kan onderscheiden
+
+Een absolute indicator heeft die nadelen minder of niet. 
+De duur van een droogteperiode is een belangrijke functie in de overleving, groei en reproductie van organismen.
+Het laat daarenboven ook een onderscheid in droge en niet-droge jaren (in vergelijking met de referentieperiode) toe.
 Zo ligt, zoals hoger al werd aangehaald, het referentieniveau of baseline bij een absolute indicator o.b.v. 5% drempelwaarde op 18 dagen. Een jaar met meer dan 18 droge dagen kan als een relatief droog jaar worden beschouwd.
 
 Conclusie:  
@@ -151,5 +187,15 @@ Voor het gewenste doeleinde is een absolute droogte-indicator gebaseerd op de 5%
 
 [^gwindic]: één van de [grondwaterstandsindicatoren](https://www.vmm.be/data/grondwaterstandindicator) van de VMM is een voorbeeld van een relatieve indicator. 
 
+### Bepaling kritische drempelwaarde {#h3:drempelwaarde}
+Zoals in \@ref(h3:referentietoestand) besproken werd, stellen we als kritische drempelwaarde het grondwaterpeil dat 'normaal' op minder dan 5% van de dagen van een jaar (dit is afgerond 18 dagen) onderschreden wordt. 
+Het ontbreekt hier nog aan duiding over wat als 'normaal' of als referentie wordt beschouwd. 
+Hiervoor kijken we naar het referentietijdvenster (1985 - 2014) en berekenen we voor elk meetlocatie de kritische drempelwaarde als het gemiddelde van de 5%-percentiel van de grondwatermetingen van een jaar binnen de periode 1985 - 2014. 
 
+We rekenen niet met de absolute percentielwaarde op alle metingen van 30 jaar, om het effect van extreem droge jaren te temperen. 
+Door dit niet te doen, wordt de indicator voor droogte gevoeliger voor droogte.
+Stel bijvoorbeeld dat er één heel droog jaar is, waarbij de 5% droogste peilen in dat jaar vallen, dan zou de kritische drempelwaarde louter op dat ene uitzonderlijke jaar gebaseerd zijn.
+Dit beschouwen we als niet representatief, ook omdat de responstijd van vegetaties op wijzigende grondwaterregimes veel sneller is dan 30 jaar. 
+Eén extreem droog jaar kan al aantoonbare gevolgen hebben.
+Deze werkwijze is ook analoog aan het berekenen van karakteristieke grondwaterstanden (GXG’s) voor vegetaties [@VanHeesen1970].
 

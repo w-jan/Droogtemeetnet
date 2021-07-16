@@ -26,16 +26,9 @@ Een effectieve veldmeting kreeg hierbij voorrang op een modelwaarde.
 Dit betekent dat op dagen met werkelijke metingen de 20 reeksen steeds dezelfde waarde, nl. die van de veldmeting, hebben.
 Deze verschillende simulaties laten toe om de onzekerheid te schatten die er bestaat voor de dagen zonder veldmeting. 
 
-## Berekenen van de kritische drempelwaarden {#h2:drempelwaarde}
+## Berekenen van de kritische drempelwaarden {#h2:methode-drempelwaarde}
 
-Zoals in \@ref(h3:referentietoestand) besproken werd, stellen we als kritische drempelwaarde het grondwaterpeil dat 'normaal' op minder dan 5% van de dagen van een jaar (dit is afgerond 18 dagen) onderschreden wordt. 
-Het ontbreekt hier nog aan duiding over wat als 'normaal' of als referentie wordt beschouwd. 
-Hiervoor kijken we naar het referentietijdvenster (1985 - 2014) en berekenen we voor elk meetlocatie de kritische drempelwaarde als het gemiddelde van de 5%-percentiel van de grondwatermetingen van een jaar binnen de periode 1985 - 2014. 
-We rekenen niet met de absolute percentielwaarde op alle metingen van 30 jaar, om het effect van extreem droge jaren te temperen. Door dit niet te doen, wordt de indicator voor droogte gevoeliger voor droogte.
-Stel bijvoorbeeld dat er één heel droog jaar is, waarbij de 5% droogste peilen in dat jaar vallen, dan zou de kritische drempelwaarde louter op dat ene uitzonderlijke jaar gebaseerd zijn.
-Dit beschouwen we als niet representatief, ook omdat de responstijd van vegetaties op wijzigende grondwaterregimes veel sneller is dan 30 jaar. 
-Eén extreem droog jaar kan al aantoonbare gevolgen hebben.
-Deze werkwijze is analoog aan het berekenen van karakteristieke grondwaterstanden (GXG’s) voor vegetaties [@VanHeesen1970].
+We berekenen voor elk meetlocatie de kritische drempelwaarde als het gemiddelde van de 5%-percentiel van de grondwatermetingen van een jaar binnen de periode 1985 - 2014 (cfr.\@ref(h3:drempelwaarde)).
 
 ## Berekenen van de droogte-indicator {#h2:methode-indicator}
 Voor de leesbaarheid willen we eerst nog een duidelijk onderscheid maken tussen enerzijds de absolute indicatorwaarde en de gerapporteerde droogte-indicator, die in dit hoofdstuk centraal staat. 
@@ -54,13 +47,12 @@ De absolute indicatorwaarden vormen de basis voor het berekenen van een index, d
 
 
 ```{block2 definitie-droogte-indicator, type="exampleblock", latex.options="{}", echo = TRUE}
-De droogte-indicator $DI_j$ voor een bepaald jaar $j$ is dan het gemiddelde van de $d_{mjs}$-waarden voor alle simulaties en meetlocaties: $$DI_j$ = \frac{\sum_{s=1}^{20}\sum_{m=1}^{58}d_{mjs}}{20*58}$
+De droogte-indicator $DI_j$ voor een bepaald jaar $j$ is dan het gemiddelde van de $d_{mjs}$-waarden voor alle simulaties en meetlocaties: $$DI_j = \frac{\sum_{s=1}^{20}\sum_{m=1}^{58}d_{mjs}}{20*58}$$
 
 ```
 
 Momenteel wordt de droogte-indicator $DI_j$ berekend op basis van 58 meetlocaties. 
 Er zijn echter een honderdtal locaties voorzien waardoor mettertijd de droogte-indicator op een groter aantal punten zal berekend worden. 
-Het mogelijke effect op de droogte-indicator $DI_j$  zal ingeschat worden door ook de $DI_j$ voor de huidige 58 locaties te blijven berekenen.
 
 Het wordt complexer als we inzicht willen krijgen in de onzekerheid die er op de droogte-indicator $DI_j$ zit, m.a.w. wat is het betrouwbaarheidsinterval van de droogte-indicator ? 
 
@@ -80,18 +72,18 @@ $${\mbox{de droogte-indicator voor één simulatie en één jaar : }}DI_{js} =  
 
 $${\text {de droogte-indicator voor één jaar : }}DI_j =  \sum_{s = 1}^{20}(DI_{js}) /20 = \sum_{s = 1}^{20}(\frac{\sum_{m=1}^{58}d_{mjs}}{58}) / 20 = \frac{\sum_{s = 1}^{20}\sum_{m=1}^{58}d_{mjs}}{58 * 20} $$
 
-De totale variantie $ \bar\sigma^2_{DI_j}$kan dan berekend worden op basis van de formule van Rubin [@Rubin1987]
+De totale variantie $$ \bar\sigma^2_{DI_j}$$ kan dan berekend worden op basis van de formule van Rubin [@Rubin1987]
 $$ \bar\sigma^2_{DI_j} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{DI_{js}}}{20} + (1 + 1/20)\frac{\sum_{s=1}^{20}(DI_{js} - DI_j)^2}{(20 - 1)}$$
 
-met $\widehat{\sigma}^2_{DI_{js}} = $ $\frac{\sum_{m = 1}^{58}(d_{mjs}-DI_{js})^2}{(58-1)}$
+met $$\widehat{\sigma}^2_{DI_{js}} = \frac{\sum_{m = 1}^{58}(d_{mjs}-DI_{js})^2}{(58-1)}$$
 
 De ondergrens van het betrouwbaarheidsinterval (LCL) voor een bepaald jaar $j$ wordt dan :
 
-$$ {\text {LCL}}_j = DI_j - 1.96  \bar\sigma_{DI_j}$$
+$$ \text {LCL}_j = DI_j - 1.96  \bar\sigma_{DI_j}$$
 
 De bovengrens van het betrouwbaarheidsinterval (UCL) voor een bepaald jaar $j$ wordt dan :
 
-$$ {\text {UCL}}_j = DI_j + 1.96  \bar\sigma_{DI_j}$$
+$$ \text {UCL}_j = DI_j + 1.96  \bar\sigma_{DI_j}$$
 
 
 ## Berekenen van de evolutie/trend van de droogte-indicator {#h2:calctrend}
@@ -197,7 +189,7 @@ Het is deze term, en meer nog de veralgemening voor alle simulaties, die ons int
 Voor het bepalen van de onzekerheid, de betrouwbaarheidsintervallen, van de trendwaarden doen we opnieuw een beroep op de formule van Rubin [@Rubin1987].
 Om de onzekerheid in de trend te kunnen inschatten afkomstig van het schatten van peilen, wordt er niet één model met alle data berekend, maar wordt voor elke simulatie een model berekend.
 
-De gemiddelde droogte-indicator voor jaar $j$ is het gemiddelde van de trends per simulatie:  $DIT_{j} =  \sum_{s = 1}^{20}DIT_{js} / 20$
+De gemiddelde droogte-indicator voor jaar $j$ is het gemiddelde van de trends per simulatie:  $$DIT_{j} =  \sum_{s = 1}^{20}DIT_{js} / 20$$
 
 De variantie van de trend is volgens de formule van Rubin:
 
@@ -207,11 +199,11 @@ Deze variantie wordt bepaald door de tweede-orde random walk.
 
 De ondergrens van het betrouwbaarheidsinterval (LCL) voor een bepaald jaar $j$ wordt dan :
 
-$$ {\text {LCL}}_j = {DIT}_{j} - 1.96 \bar\sigma_{{DIT}_{j}}$$
+$$ \text {LCL}_j = {DIT}_{j} - 1.96 \bar\sigma_{{DIT}_{j}}$$
 
 De bovengrens van het betrouwbaarheidsinterval (UCL) voor een bepaald jaar $j$ wordt dan :
 
-$$ {\text {UCL}}_j = {DIT}_{j} + 1.96 \bar\sigma_{{DIT}_{j}}$$
+$$ \text {UCL}_j = {DIT}_{j} + 1.96 \bar\sigma_{{DIT}_{j}}$$
 
 
 Het berekenen van de droogte-indicator en de betrouwbaarheid en trend ervan werden uitgevoerd met R versie 4.0.2 [@R2020] en met het softwarepakket INLA [@Rue2009].

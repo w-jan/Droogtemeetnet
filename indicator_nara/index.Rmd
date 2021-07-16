@@ -13,7 +13,7 @@ author:
 #subtitle: "Hier komt de optionele ondertitel"
 reportnr: "Hier komt de DOI van het rapport"
 # ordernr: "Het optionele nummer van de opdrachtgever"
-bibliography: bib-jan-wouters.bib
+bibliography: bib_indicator_nara.bib
 link-citations: TRUE
 site: bookdown::bookdown_site
 params:
