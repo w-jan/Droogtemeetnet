@@ -5,9 +5,9 @@
   sorting:
   - jaar
   - simulatienr
-  - tijdsvenster
-  hash: d06123373c5af85e0d97b03d73732c4b7e5da892
-  data_hash: 252338073dc6c048e28124d498c446a4bd9925ae
+  - tijdvenster
+  hash: be403a3502dfe8178c964d0e77eb6f1269021735
+  data_hash: c2cd6a672de4170fda5170218a1d23d99f18306f
 meetpunt:
   class: factor
   labels:
@@ -236,8 +236,6 @@ jaar_factor:
   - 33
   - 34
   ordered: no
-tijdsvenster:
-  class: integer
 p05_mean_fitted:
   class: numeric
 p05_sd_fitted:
@@ -247,4 +245,6 @@ p05_p02.5_fitted:
 p05_p97.5_fitted:
   class: numeric
 dag_onder_p05.ma:
+  class: integer
+tijdvenster:
   class: integer
