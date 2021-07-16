@@ -27,17 +27,17 @@ insert_minor <- function(major_labs, n_minor) {
   labs[seq_len(length(labs) - n_minor)]}
 
 #plot van de modelfitting
-plotfitting <- function(indic_basis, respons, gemid, og, bg) {
+plotfitting <- function(indic_basis, respons, gemid, og, bg, yas) {
   og <- enquo(og)
   bg <- enquo(bg)
 
     PI_data <- indic_basis %>% group_by(jaar, tijdvenster) %>% 
     summarise(ymax_data = max(!! bg, na.rm = TRUE), ymin_data = min(!! og, na.rm = TRUE)) %>% 
     ungroup() %>% 
-    inner_join(dagen_droog_lang_breed)
+    inner_join(indic_basis)
   
   p <- ggplot(data = PI_data, aes_string(y = respons, x = "jaar")) +
-    xlab("Jaar") + ylab("Aantal dagen onder kritsche drempelwaarde") +
+    xlab("Jaar") + ylab(yas) +
     geom_point(shape = 16, size = 1, col = inbo_lichtblauw) +
     geom_line(aes_string(x = "jaar", y = gemid), size = 1, color = inbo_rood) +
     geom_ribbon(aes(x = jaar, ymax = ymax_data, ymin = ymin_data),
@@ -108,7 +108,7 @@ plotma <-  function(indic_finaal, indicator, intercept) {
 }
 
 #plot van de trend (zowel modelschatting als berekende)
-plottrend <- function(indic_finaal, indicator, intercept) {
+plottrend <- function(indic_finaal, indicator, intercept, yrechts) {
     p <- plotma.basis(indic_finaal, indicator, intercept)
     p <- p +  
       geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes(x = jaar, y = og_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.5) +
@@ -126,7 +126,7 @@ plottrend <- function(indic_finaal, indicator, intercept) {
       geom_hline(aes(yintercept = intercept), color = inbo_oranje, linetype = "dotted") +
       scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
       labs(x = "Jaar", y = "trend") +
-      scale_y_continuous(sec.axis = dup_axis(name = "droogte-indicator")) +
+      scale_y_continuous(sec.axis = dup_axis(name = yrechts)) +
       facet_wrap(vars('tijdvenster (jaren) ' = tijdvenster), labeller = label_both) +
       theme( axis.text.y.right = element_text(color = inbo_rood, size = 14), 
         axis.ticks.y.right = element_line(color = inbo_rood), 
@@ -140,7 +140,7 @@ plottrend <- function(indic_finaal, indicator, intercept) {
 }
 
 #plot van de trend (zowel modelschatting als berekende) voor één bepaald tijdvenster
-plottrend.1venster <- function(indic_finaal, indicator, intercept, tijdvenster) {
+plottrend.1venster <- function(indic_finaal, indicator, intercept, tijdvenster, yrechts) {
     p <- plotma.basis_1venster(indic_finaal, indicator, intercept, tijdvenster)
     tv <- tijdvenster
     indic_finaal_1 <- indic_finaal %>% filter(tijdvenster == tv)    
@@ -160,7 +160,7 @@ plottrend.1venster <- function(indic_finaal, indicator, intercept, tijdvenster) 
       geom_hline(aes(yintercept = intercept), color = inbo_oranje, linetype = "dotted") +
       scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
       labs(x = "Jaar", y = "trend") +
-      scale_y_continuous(sec.axis = dup_axis(name = "droogte-indicator")) +
+      scale_y_continuous(sec.axis = dup_axis(name = yrechts)) +
       theme( axis.text.y.right = element_text(color = inbo_rood, size = 14), 
         axis.ticks.y.right = element_line(color = inbo_rood), 
         axis.title.y.left =  element_text(color = inbo_grijsblauw, size = 14),
@@ -319,10 +319,6 @@ rm(list = sprintf("ruwedata%02d", 1:23))
 
 ```{r tubes-network, include=FALSE}
 #laatste versie met de geselecteerde meetpunten ophalen. De ruwe data bevatten namelijk ook nog meetreeksen van punten van een eerdere versie.
-
-#absolute paden naar resp. repo (droogtemeetnet) en project (nara_indicator) 
-gitroot <- repository()
-projroot <- rprojroot::find_root(rprojroot::is_rstudio_project)
 
 tubes_selected <- read_vc(file.path(".","data","result","meetnet","tubes_selected"), root = gitroot)
 
@@ -540,13 +536,13 @@ dagen_droog <- ruwedata %>% #oude objectnaam: indic_abs_basis
           dag_onder_p05 = if_else(meting_TAW < p05,1,0),
           dag_onder_p10 = if_else(meting_TAW < p10,1,0),
           dag_onder_p30 = if_else(meting_TAW < p30,1,0),
-          dag_boven_p01 = if_else(dag_onder_p01 == 0,1,0),
-          dag_boven_p05 = if_else(dag_onder_p05 == 0,1,0),
-          dag_boven_p10 = if_else(dag_onder_p10 == 0,1,0),
-          dag_boven_p30 = if_else(dag_onder_p30 == 0,1,0)          
+          dag_boven_p99 = if_else(meting_TAW > p99,1,0),
+          dag_boven_p95 = if_else(meting_TAW > p95,1,0),
+          dag_boven_p90 = if_else(meting_TAW > p90,1,0),
+          dag_boven_p70 = if_else(meting_TAW > p70,1,0)         
   ) %>% 
   group_by(meetpunt, simulatienr,jaar, aantaldagen_jaar, groep3, groep3n) %>% 
-  summarise_at(vars(dag_onder_p01:dag_boven_p30), sum) %>% 
+  summarise_at(vars(dag_onder_p01:dag_boven_p70), sum) %>% 
   ungroup() %>% 
   mutate(jaar_factor = factor(jaar)
   )
@@ -590,6 +586,14 @@ modeldata <- dagen_droog %>%
             dag_onder_p05.10 = movavg(dag_onder_p05, n = 10, "w"),
             dag_onder_p05.20 = movavg(dag_onder_p05, n = 20, "w"),
             dag_onder_p05.30 = movavg(dag_onder_p05, n = 30, "w"),
+            dag_boven_p95.0 = dag_boven_p95,
+            dag_boven_p95.2 = movavg(dag_boven_p95, n = 2, "w"), 
+            dag_boven_p95.4 = movavg(dag_boven_p95, n = 4, "w"),
+            dag_boven_p95.6 = movavg(dag_boven_p95, n = 6, "w"),
+            dag_boven_p95.8 = movavg(dag_boven_p95, n = 8, "w"),
+            dag_boven_p95.10 = movavg(dag_boven_p95, n = 10, "w"),
+            dag_boven_p95.20 = movavg(dag_boven_p95, n = 20, "w"),
+            dag_boven_p95.30 = movavg(dag_boven_p95, n = 30, "w"),            
             # dag_onder_p05.2 = movavg(dag_onder_p05, n = 2, "s"), # een ongewogen rollend gemiddelde
             # dag_onder_p05.4 = movavg(dag_onder_p05, n = 4, "s"),
             # dag_onder_p05.6 = movavg(dag_onder_p05, n = 6, "s"),
@@ -735,6 +739,15 @@ droogte_ind_j <- dagen_droog %>%
 
 ```
 
+```{r nat-indicator, include=FALSE}
+nat_ind_j <- dagen_droog %>% 
+  group_by(jaar) %>% 
+  summarise(nat_ind_j = mean(dag_boven_p95)
+            ) %>% 
+  ungroup()
+
+```
+
 
 ```{r droogte-indicator-met-ci, include=FALSE}
 
@@ -770,8 +783,48 @@ droogte_ind_j <- droogte_ind_j %>%
 
 ```
 
+
+```{r nat-indicator-met-ci, include=FALSE}
+
+nat_ind_j_s <- dagen_droog %>% 
+  group_by(jaar, simulatienr) %>% 
+  summarise(nat_ind_j_s = mean(dag_boven_p95),
+            aantal = n(),
+            dagen_nat_se = sd(dag_boven_p95)/sqrt(aantal)
+            ) %>% 
+  ungroup()
+
+nat_ind_j_var <- nat_ind_j_s %>% 
+  inner_join(nat_ind_j) %>% 
+  group_by(jaar) %>% 
+  summarise(dagen_nat_gem_var = mean(dagen_nat_se^2),
+            aantalsim = n(),
+            imput_var = (1 + 1/aantalsim) * sum((nat_ind_j_s - nat_ind_j)^2/(aantalsim-1)),
+            nat_ind_j_var = dagen_nat_gem_var + imput_var
+            ) %>% 
+  ungroup() %>% 
+  dplyr::select (-aantalsim)
+
+nat_ind_j_var <- nat_ind_j_var %>% 
+  mutate (rel_bijdrage_imput = round(imput_var/nat_ind_j_var*100,0))
+
+
+nat_ind_j <- nat_ind_j %>% 
+  inner_join(nat_ind_j_var %>% 
+               dplyr::select(-starts_with(c("dagen", "imput", "rel")))) %>% 
+  mutate(lcl = nat_ind_j - 1.96 * sqrt(nat_ind_j_var),
+         ucl = nat_ind_j + 1.96 * sqrt(nat_ind_j_var)
+         )
+
+```
+
+
 ```{r droogte-indicator-met-ci-vc, include=FALSE}
 write_vc(droogte_ind_j, file.path("data", "result", "droogte_indicator"), sorting = c("jaar"), root = projroot)
+```
+
+```{r nat-indicator-met-ci-vc, include=FALSE}
+write_vc(nat_ind_j, file.path("data", "result", "nat_indicator"), sorting = c("jaar"), root = projroot)
 ```
 
 Onderstaande tabel geeft de berekende indicator-waarden inclusief het 95% betrouwbaarheidsinterval (CI).
@@ -840,11 +893,49 @@ g <- ggplot(data = droogte_ind_j, aes(x = jaar, y = droogte_ind_j)) +
 g
 ```
 
+```{r nat-indicator-met-ci-figuur, fig.cap= "(ref:nat-indicator-met-ci-figuur)", eval=FALSE}
+g <- ggplot(data = nat_ind_j, aes(x = jaar, y = nat_ind_j)) + 
+  theme_inbo() +
+  geom_ribbon(aes(ymin = lcl, ymax = ucl), fill = inbo_lichtgrijs) +
+  geom_hline(yintercept = 365 * 0.05, color = inbo_oranje, linetype = "dashed") +
+  geom_line(color = inbo_rood, size = 0.5) + 
+  labs(y = "aantal natte dagen") + 
+  scale_x_continuous(n.breaks = nrow(nat_ind_j)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, color = "black"))
+g
+```
+
+```{r verdroging-indicator-met-ci, eval=FALSE}
+#x1 - x2 +/- 1.96 * sqrt(sd1^2/n + sd2^2/n)
+
+verdroging_ind_j <- droogte_ind_j %>%
+  dplyr::select(-lcl, -ucl) %>% 
+  inner_join(nat_ind_j %>% 
+               dplyr::select(-lcl, -ucl), by = "jaar") %>% 
+  mutate(verdroging_ind_j = droogte_ind_j - nat_ind_j,
+         lcl = verdroging_ind_j - 1.96 * sqrt((droogte_ind_j_var + nat_ind_j_var)/2),
+         ucl = verdroging_ind_j + 1.96 * sqrt((droogte_ind_j_var + nat_ind_j_var)/2)  
+         )
+```
+
+
+```{r verdroging-indicator-met-ci-figuur, fig.cap= "(ref:nat-indicator-met-ci-figuur)", eval=FALSE}
+g <- ggplot(data = verdroging_ind_j, aes(x = jaar, y = verdroging_ind_j)) + 
+  theme_inbo() +
+  geom_ribbon(aes(ymin = lcl, ymax = ucl), fill = inbo_lichtgrijs) +
+  geom_line(color = inbo_rood, size = 0.5) + 
+  labs(y = "aantal droge dagen - aantal natte dagen") + 
+  scale_x_continuous(n.breaks = nrow(nat_ind_j)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, color = "black"))
+g
+```
+
+
 De formule van Rubin laat toe om in te schatten wat de kost is van het ontbreken van data op de betrouwbaarheid van het resultaat.
 Onderstaande figuur (\@ref(fig:droogte-indicator-imput-fig)) toont het aandeel van de bijkomende variatie door het schatten van ontbrekende gegevens in de totale variatie. 
 Dit is meestal meer dan 10% en kan tot 50% bedragen.
 Er zit een duidelijke neerwaartse trend in.
-Deze trend is te verklaren door de toegenomen meetintensiteit.
+Deze trend is te verklaren door de toegenomen meetintensiteit (zie figuur \@ref(fig:watina-metingen-fig).
 
 ```{r droogte-indicator-imput-fig, fig.cap="Het aandeel in de totale variatie van de droogte-indicator dat veroorzaakt wordt door het schatten van ontbrekende gegevens (imputatie) over de jaren heen", message=FALSE}
 g <- ggplot(data = droogte_ind_j_var, aes(x = jaar, y = rel_bijdrage_imput)) + 
@@ -862,7 +953,7 @@ Zijn in onze de natuurgebieden de grondwaterpeilen ten gevolge van neerslagtekor
 
 Om dit te kunnen nagaan bekijken we eerst de rollende gemiddelden. 
 
-```{r rollend-gem-met-ci, include=FALSE}
+```{r rollend-gem-droog-met-ci, include=FALSE}
 dagen_droog_ma <- dagen_droog %>% 
   pivot_longer(cols = starts_with("dag_onder_p05."), names_to = "rollendgem", values_to = "waarde") %>% 
   mutate(tijdvenster = as.integer(str_sub(rollendgem, 14 + 1,-1)),
@@ -908,28 +999,90 @@ droogte_ind_j_ma <- droogte_ind_j_ma %>%
 
 ```
 
-```{r rollend-gem-met-ci-vc, include=FALSE}
+```{r rollend-gem-nat-met-ci, include=FALSE}
+dagen_nat_ma <- dagen_droog %>% 
+  pivot_longer(cols = starts_with("dag_boven_p95."), names_to = "rollendgem", values_to = "waarde") %>% 
+  mutate(tijdvenster = as.integer(str_sub(rollendgem, 14 + 1,-1)),
+        rollendgem = "dag_boven_p95.ma"
+        ) %>% 
+  pivot_wider(names_from = rollendgem, values_from = waarde)
+
+nat_ind_j_ma <- dagen_nat_ma %>% 
+  group_by(jaar, tijdvenster) %>% 
+  summarise(nat_ind_j = mean(dag_boven_p95.ma)
+            ) %>% 
+  ungroup()
+
+nat_ind_j_s <- dagen_nat_ma %>% 
+  group_by(jaar, simulatienr, tijdvenster) %>% 
+  summarise(nat_ind_j_s = mean(dag_boven_p95.ma),
+            aantal = n(),
+            dagen_nat_se = sd(dag_boven_p95.ma)/sqrt(aantal)
+            ) %>% 
+  ungroup()
+
+nat_ind_j_var <- nat_ind_j_s %>% 
+  inner_join(nat_ind_j_ma) %>% 
+  group_by(jaar, tijdvenster) %>% 
+  summarise(dagen_nat_gem_var = mean(dagen_nat_se ^ 2),
+            aantalsim = n(),
+            imput_var = (1 + 1/aantalsim) * sum((nat_ind_j_s - nat_ind_j)^2/(aantalsim-1)),
+            nat_ind_j_var = dagen_nat_gem_var + imput_var
+            ) %>% 
+  ungroup() %>% 
+  dplyr::select (-aantalsim)
+
+nat_ind_j_var <- nat_ind_j_var %>% 
+  mutate (rel_bijdrage_imput = round(imput_var/nat_ind_j_var*100,0))
+
+
+nat_ind_j_ma <- nat_ind_j_ma %>% 
+  inner_join(nat_ind_j_var %>% 
+               dplyr::select(-starts_with(c("dagen", "imput", "rel")))) %>% 
+  mutate(lcl = nat_ind_j - 1.96*sqrt(nat_ind_j_var),
+         ucl = nat_ind_j + 1.96*sqrt(nat_ind_j_var)
+         )
+
+```
+
+```{r rollend-gem-droog-met-ci-vc, include=FALSE}
 write_vc(droogte_ind_j_ma, file.path("data", "result", "droogte_indicator_rollendgem"), sorting = c("jaar", "tijdvenster"), root = projroot)
 ```
-Figuur \@ref(fig:rollend-gem-fig) geeft het effect weer van de verschillende tijdvensters.
+
+```{r rollend-gem-nat-met-ci-vc, include=FALSE}
+write_vc(nat_ind_j_ma, file.path("data", "result", "nat_indicator_rollendgem"), sorting = c("jaar", "tijdvenster"), root = projroot)
+```
+
+Figuur \@ref(fig:rollend-gem-droog-fig) geeft het effect weer van de verschillende tijdvensters.
 De droogte-indicator (figuur \@ref(fig:droogte-indicator-met-ci-figuur)) stemt overeen met de figuur voor het tijdvenster van 0 jaar.
 Op de figuren zijn de jaren met een onvolledig tijdvenster lichter gekleurd, omdat voor deze jaren de berekening van het rollend gemiddelde niet helemaal vergelijkbaar is met de jaren waarvoor het rollend gemiddelde wel op basis van een volledig jaarvenster kon gebeuren.
 Naarmate het tijdvenster vergroot, wordt de lijn logischerwijze rechtlijniger. 
 De trend vertoont een lichte stijging.
  
-```{r rollend-gem-fig-save, fig.cap="rollend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
+```{r rollend-gem-droog-fig-save, fig.cap="rollend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
 #plot van de trend
 gplot <- plotma(droogte_ind_j_ma,"droogte_ind_j", 18)
 png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-rollendgem",".png"), width = 1500, height = 1500, res = 150)
 gplot
 dev.off()
 ```
- 
-```{r rollend-gem-fig, fig.cap="De droogte-indicator (cfr. tijdvenster = 0 jaar) en verschillende hiervan afgeleide rollende gemiddelden",  message=FALSE, warning=FALSE}
+
+```{r rollend-gem-droog-fig, fig.cap="De droogte-indicator (cfr. tijdvenster = 0 jaar) en verschillende hiervan afgeleide rollende gemiddelden",  message=FALSE, warning=FALSE}
 gplot
 ```
 
+ 
+```{r rollend-gem-nat-fig-save, fig.cap="rollend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plotma(nat_ind_j_ma,"nat_ind_j", 18)
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-rollendgem",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
 
+```{r rollend-gem-nat_fig, fig.cap="De droogte-indicator (cfr. tijdvenster = 0 jaar) en verschillende hiervan afgeleide rollende gemiddelden",  message=FALSE, warning=FALSE}
+gplot
+```
 Daarna maken we een model op dat de variatie in de indicatorwaarden tracht te verklaren. 
 In het model is de factor tijd één van de verklarende variabelen.
 De andere verklarende factor is de locatie (de ene plaats kan een afwijkend gedrag vertonen t.o.v. een andere).
@@ -1492,9 +1645,9 @@ indic_abs_function <- function(modeldata, suffix= "", respons, percentile, indic
             saveRDS(get(tabellen_lijst_rds$naambrontabel[i]), filename)
         }) 
     saveRDS(c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted), 
-            file.path(cache, paste0("model_namen_intermediair.",ma,".rds" )))  
+            file.path(cache, paste0("model_namen_intermediair.",ma,"_",respons, ".rds" )))  
   }
-  saveRDS(dagen_droog, file.path(cache, "modelresultaat.rds" ))
+  saveRDS(dagen_droog, file.path(cache, paste0("modelresultaat_", respons, ".rds" )))
 
   
   return(dagen_droog)
@@ -1506,48 +1659,79 @@ indic_abs_function <- function(modeldata, suffix= "", respons, percentile, indic
 dagen_droog_bu <- dagen_droog 
 ```
 
-```{r abs-indic-model, include=FALSE, eval = !file.exists(file.path("cache", "modelresultaat.rds" ))}
-#bij een eventuele herberekening moet de velden met de rekenresultaten eerst verwijderd worden
-dagen_droog <- dagen_droog %>% 
-  dplyr::select(-contains("fitted") )
-
-
-
-modelkeuze <- data.frame(percentiel = c("01", "05", "10", "30" ), model = c("zeroinflatednbinomial2", "zeroinflatednbinomial0", "zeroinflatednbinomial0", "nbinomial"))
-modelkeuze$model <- as.character(modelkeuze$model)
-
+```{r model-parameters-droog, include=FALSE}
 #keuze van parameters
 percentile <- "05"
 indicatorname <- paste0("dag_onder_p",percentile)
 indicatorname_inv <- paste0("dag_boven_p",percentile)
 standardised <- FALSE
 respons <- paste0(indicatorname, if (standardised == TRUE) ("_std"))
+```
+
+
+```{r abs-indic-model, include=FALSE, eval = !file.exists(file.path("cache", paste0("modelresultaat_", respons, ".rds" )))}
+#bij een eventuele herberekening moet de velden met de rekenresultaten eerst verwijderd worden
+dagen_droog <- dagen_droog %>% 
+  dplyr::select(-contains("fitted") )
+
+modelkeuze <- data.frame(percentiel = c("01", "05", "10", "30" ), model = c("zeroinflatednbinomial2", "zeroinflatednbinomial0", "zeroinflatednbinomial0", "nbinomial"))
+modelkeuze$model <- as.character(modelkeuze$model)
 
 dagen_droog <- indic_abs_function(modeldata = modeldata, respons = respons, percentile = percentile, indicatorname = indicatorname, standardised = standardised, cache = "cache", tijdvenster = tijdvenster)
 
 ```
 
-```{r abs-indic-model-uit-cache, include=FALSE}
-dagen_droog_update <- readRDS(file.path("cache", "modelresultaat.rds" ))
+```{r abs-indic-model-droog-uit-cache, include=FALSE}
+dagen_droog_update <- readRDS(file.path("cache", paste0("modelresultaat_", respons, ".rds" ) ))
 for (ma in tijdvenster) {
-  namen_intermediaire_tabellen <- readRDS(file.path("cache", paste0("model_namen_intermediair.",ma,".rds" ) ))
+  namen_intermediaire_tabellen <- readRDS(file.path("cache", paste0("model_namen_intermediair.",ma,"_",respons, ".rds" ) ))
   for (i in 1:length(namen_intermediaire_tabellen)) {
     assign(namen_intermediaire_tabellen[i], readRDS(paste0(file.path("cache", namen_intermediaire_tabellen[i]), ".rds" )))
   }
 }
 ```
 
-```{r trend-data-vc, include=FALSE}
+```{r model-parameters-nat, include=FALSE}
+#keuze van parameters
+percentile <- "95"
+indicatorname <- paste0("dag_boven_p",percentile)
+standardised <- FALSE
+respons <- paste0(indicatorname, if (standardised == TRUE) ("_std"))
+```
+
+
+```{r abs-indic-model-nat, include=FALSE, eval = !file.exists(file.path("cache", paste0("modelresultaat_", respons, ".rds" )))}
+#bij een eventuele herberekening moet de velden met de rekenresultaten eerst verwijderd worden
+
+modelkeuze <- data.frame(percentiel = c("01", "05", "10", "30", "95" ), model = c("zeroinflatednbinomial2", "zeroinflatednbinomial0", "zeroinflatednbinomial0", "nbinomial","zeroinflatednbinomial0"))
+modelkeuze$model <- as.character(modelkeuze$model)
+
+dagen_droog <- indic_abs_function(modeldata = modeldata, respons = respons, percentile = percentile, indicatorname = indicatorname, standardised = standardised, cache = "cache", tijdvenster = tijdvenster)
+
+```
+
+
+```{r abs-indic-model-nat-uit-cache, include=FALSE}
+dagen_droog_update <- readRDS(file.path("cache", paste0("modelresultaat_", respons, ".rds" ) ))
+for (ma in tijdvenster) {
+  namen_intermediaire_tabellen <- readRDS(file.path("cache", paste0("model_namen_intermediair.",ma,"_",respons, ".rds" ) ))
+  for (i in 1:length(namen_intermediaire_tabellen)) {
+    assign(namen_intermediaire_tabellen[i], readRDS(paste0(file.path("cache", namen_intermediaire_tabellen[i]), ".rds" )))
+  }
+}
+```
+
+```{r trend-data-nat-vc, include=FALSE}
 
 #bewaren resultaat
 write_vc(dagen_droog_update, file.path("data", "result", "dagen_droog"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
 
 ```
 
-```{r trend-rubin, message=FALSE, warning=FALSE, include=FALSE}
+```{r trend-droog-rubin, message=FALSE, warning=FALSE, include=FALSE}
 
 #berekenen van indicator
-indic_abs_gem <- dagen_droog_update %>% 
+indic_abs_droog_gem <- dagen_droog_update %>% 
   group_by(jaar) %>% 
   summarise_at(vars(starts_with("dag_onder_p05.")), list(gem = mean, med = median)) %>% 
   ungroup
@@ -1601,13 +1785,70 @@ for (ma in tijdvenster) {
 }
 ```
 
-Figuur \@ref(fig:trend-fitting-fig) geeft het resultaat van de modelbouw. 
+```{r trend-nat-rubin, message=FALSE, warning=FALSE, include=FALSE}
+
+#berekenen van indicator
+indic_abs_nat_gem <- dagen_droog_update %>% 
+  group_by(jaar) %>% 
+  summarise_at(vars(starts_with("dag_boven_p95.")), list(gem = mean, med = median)) %>% 
+  ungroup
+
+
+# rekening houden met multiple imputaties
+
+teller <- 1
+for (ma in tijdvenster) {
+  d <- get(paste0("indic_abs_p95.",ma,"_jaar_stat")) %>% 
+    group_by(jaar) %>% 
+    summarise(gem_jaar_t = mean(mean),
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - gem_jaar_t)^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>% 
+    ungroup() %>% 
+    mutate(tijdvenster = ma) %>% 
+    inner_join(nat_ind_j_ma, by = c("jaar", "tijdvenster"))
+  
+  if (teller == 1) {
+    nat_trend_95 <- d
+  } else {
+    nat_trend_95 <- bind_rows(nat_trend_95, d)
+  }
+
+  d <- get(paste0("indic_abs_p95.",ma,"_mov.average_stat")) %>%
+    group_by(jaar, duration) %>%
+    summarise(gem_jaar_t = mean(mean) + mean(intercept),
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - mean(mean))^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>%
+    ungroup() %>%
+    bind_rows(nat_ind_j_ma %>% filter (tijdvenster == ma)) %>%
+    mutate(tijdvenster = ma)
+
+  if (teller == 1) {
+    nat_trend.mov_95 <- d
+  } else {
+    nat_trend.mov_95 <- bind_rows(nat_trend.mov_95, d)
+  }
+  
+  teller <- teller + 1
+}
+```
+
+Figuur \@ref(fig:trend-fitting-droog-fig) geeft het resultaat van de modelbouw. 
 Het model schat o.a. voor elk meetpunt het verwachte aantal droge dagen per jaar en wat de betrouwbaarheid van deze schatting is.
 De figuur toont de zowel de werkelijke waarden (licht blauwe punten) als de door het model geschatte gemiddelde waarden (rode lijn) met hun betrouwbaarheidsinterval. 
 De verticale rode lijnen geeft het bereik van het geschatte verwachte aantal droge dagen per jaar voor de 58 locaties. 
 
 
-```{r trend-fitting-fig-save, message=FALSE, warning=FALSE, include=FALSE}
+```{r trend-fitting-droog-fig-save, message=FALSE, warning=FALSE, include=FALSE}
 #tabel met de indicatorwaarden (rollend gemiddelden) en trend berekening (model) omvormen naar een lange versie
 dagen_droog_lang_breed <- dagen_droog_update %>% 
   pivot_longer(cols = starts_with("p05."), names_to = "statistiek", values_to = "waarde") %>% 
@@ -1624,20 +1865,49 @@ dagen_droog_lang_breed <- dagen_droog_update %>%
   pivot_wider(names_from = rollendgem, values_from = waarde) %>% 
   dplyr::select(-tijdvenster2)
 
-fig <- plotfitting(indic_basis = dagen_droog_lang_breed, respons = "dag_onder_p05.ma", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted)
+fig <- plotfitting(indic_basis = dagen_droog_lang_breed, respons = "dag_onder_p05.ma", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted, yas = "Aantal dagen onder kritische drempelwaarde")
 png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-tijdreeks",".png"), width = 1500, height = 1500, res = 150)
 fig
 dev.off()
 
 ```
 
-(ref:trend-fitting-fig) Het aantal droogte-dagen (lichtblauwe bollen) in vergelijking tot het voor elk meetpunt modelmatig geschatte verwachte aantal droge dagen per jaar (rode lijn) en het betrouwbaarheidsinterval hiervan (grijze zone)
+(ref:trend-fitting-droog-fig) Het aantal droogte-dagen (lichtblauwe bollen) in vergelijking tot het voor elk meetpunt modelmatig geschatte verwachte aantal droge dagen per jaar (rode lijn) en het betrouwbaarheidsinterval hiervan (grijze zone)
 
-```{r trend-fitting-fig, fig.cap="(ref:trend-fitting-fig)",  message=FALSE, warning=FALSE}
+```{r trend-fitting-droog-fig, fig.cap="(ref:trend-fitting-droog-fig)",  message=FALSE, warning=FALSE}
 fig
 ```
 
-Figuur \@ref(fig:trend-fig) geeft de droogte-indicator (tijdvenster = 0 jaar) met zijn betrouwbaarheidsinterval in het rood en de trend met zijn betrouwbaarheidsinterval in het donkerblauw. 
+
+```{r trend-fitting-nat-fig-save, message=FALSE, warning=FALSE, include=FALSE}
+#tabel met de indicatorwaarden (rollend gemiddelden) en trend berekening (model) omvormen naar een lange versie
+dagen_nat_lang_breed <- dagen_droog_update %>% 
+  pivot_longer(cols = starts_with("p95."), names_to = "statistiek", values_to = "waarde") %>% 
+  mutate(tijdvenster = as.integer(substr(statistiek, 4 + 1,  str_locate(string = statistiek, pattern = "_") - 1)),
+          statistiek = paste0(substr(statistiek,1,3), str_sub(statistiek, start = str_locate(string = statistiek, pattern = "_")[,1], -1)
+                                   )
+         ) %>% 
+  pivot_wider(names_from = statistiek, values_from = waarde) %>% 
+  pivot_longer(cols = starts_with("dag_boven_p95."), names_to = "rollendgem", values_to = "waarde") %>% 
+  mutate(tijdvenster2 = as.integer(str_sub(rollendgem, 14 + 1,-1)),
+        rollendgem = "dag_boven_p95.ma"
+        ) %>% 
+  filter(tijdvenster == tijdvenster2) %>% 
+  pivot_wider(names_from = rollendgem, values_from = waarde) %>% 
+  dplyr::select(-tijdvenster2)
+
+fig <- plotfitting(indic_basis = dagen_nat_lang_breed, respons = "dag_boven_p95.ma", gemid = "p95_mean_fitted", og = p95_p02.5_fitted, bg = p95_p97.5_fitted, yas = "Aantal dagen boven drempelpeil")
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-tijdreeks",".png"), width = 1500, height = 1500, res = 150)
+fig
+dev.off()
+
+```
+
+```{r trend-fitting-nat-fig, fig.cap="(ref:trend-fitting-nat-fig)",  message=FALSE, warning=FALSE, include=FALSE}
+fig
+```
+
+Figuur \@ref(fig:trend-droog-fig) geeft de droogte-indicator (tijdvenster = 0 jaar) met zijn betrouwbaarheidsinterval in het rood en de trend met zijn betrouwbaarheidsinterval in het donkerblauw. 
 Tevens geeft de figuur ook de trend voor de verschillende rollende gemiddelden. 
 Het valt op dat het tijdreeksmodel de feitelijke indicatorwaarden niet volgt. 
 Het was een bewuste keuze bij het ontwerp om een uitgevlakte curve te berekenen (cfr. keuze voor random walk van de tweede orde i.p.v. de eerste orde). 
@@ -1653,40 +1923,75 @@ Voor trage systemen kunnen vooral de lange termijn-schommelingen een rol spelen.
 
 (ref:trend-fig) De droogte-indicator (tijdvenster = 0 jaar) en de hiervan afgeleide rollende gemiddelden met hun betrouwbaarheidsinterval (rood) en de modelmatig berekende trends met hun betrouwbaarheidsintervallen (resp. donkerblauw en grijs).
  
-```{r trend-fig-save, fig.cap="trend", message=FALSE, warning=FALSE, include=FALSE}
+```{r trend-droog-fig-save, fig.cap="trend", message=FALSE, warning=FALSE, include=FALSE}
 #plot van de trend
-gplot <- plottrend(droogte_trend_05,"droogte_ind_j", 18)
+gplot <- plottrend(droogte_trend_05,"droogte_ind_j", 18, yrechts = "droogte-indicator")
 png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-trend-allevensters",".png"), width = 1500, height = 1500, res = 150)
 gplot
 dev.off()
 ```
 
-```{r trend-fig, fig.cap="(ref:trend-fig)",  message=FALSE, warning=FALSE}
+```{r trend-droog-fig, fig.cap="(ref:trend-fig)",  message=FALSE, warning=FALSE}
+gplot
+```
+ 
+```{r trend-nat-fig-save, fig.cap="trend", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plottrend(nat_trend_95,"nat_ind_j", 18, yrechts = "nat-indicator")
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-trend-allevensters",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+```{r trend-nat-fig, fig.cap="(ref:trend-fig)",  message=FALSE, warning=FALSE, include=FALSE}
 gplot
 ```
 
-```{r trend-voor-1-venster-fig-save, fig.cap="trend één venster", message=FALSE, warning=FALSE, include=FALSE}
+```{r trend-voor-1-venster-droog-fig-save, fig.cap="trend één venster", message=FALSE, warning=FALSE, include=FALSE}
 #plot van de trend
-gplot <- plottrend.1venster(droogte_trend_05,"droogte_ind_j", intercept = 18, tijdvenster = 0)
+gplot <- plottrend.1venster(droogte_trend_05,"droogte_ind_j", intercept = 18, tijdvenster = 0, yrechts = "droogte-indicator")
 png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-trend-origineel",".png"), width = 1500, height = 1500, res = 150)
 gplot
 dev.off()
-gplot <- plottrend.1venster(droogte_trend_05,"droogte_ind_j", 18, tijdvenster = 8)
+gplot <- plottrend.1venster(droogte_trend_05,"droogte_ind_j", 18, tijdvenster = 8, yrechts = "droogte-indicator")
 png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-trend-8jaar",".png"), width = 1500, height = 1500, res = 150)
 gplot
 dev.off()
 ```
 
-
-```{r trend-vc, include=FALSE}
-#bewaren resultaten
-write_vc(droogte_trend_05, file.path("data", "result", "droogte_trend_05"), sorting = c("jaar", "tijdvenster"), strict = FALSE)
-
-write_vc(dagen_droog_lang_breed, file.path("data", "result", "droogte_fitting_05"), sorting = c("jaar", "simulatienr", "tijdvenster"), strict = FALSE)
+```{r trend-voor-1-venster-nat-fig-save, fig.cap="trend één venster", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plottrend.1venster(nat_trend_95,"nat_ind_j", intercept = 18, tijdvenster = 0, yrechts = "nat-indicator")
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-trend-origineel",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+gplot <- plottrend.1venster(nat_trend_95,"nat_ind_j", 18, tijdvenster = 8, yrechts = "nat-indicator")
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-trend-8jaar",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
 ```
 
 
-```{r trend-csv-voor-nara, include=FALSE}
+```{r trend-droog-vc, include=FALSE}
+#bewaren resultaten
+write_vc(droogte_trend_05, file.path("data", "result", "droogte_trend_05"), sorting = c("jaar", "tijdvenster"), root = projroot)
+
+dagen_droog_lang_breed <- dagen_droog_lang_breed %>% 
+  dplyr::select(-contains(c("boven", "p95")))
+write_vc(dagen_droog_lang_breed, file.path("data", "result", "droogte_fitting_05"), sorting = c("meetpunt", "jaar", "simulatienr", "tijdvenster"), root = projroot)
+```
+
+```{r trend-nat-vc, include=FALSE}
+#bewaren resultaten
+write_vc(nat_trend_95, file.path("data", "result", "nat_trend_05"), sorting = c("jaar", "tijdvenster"), root = projroot)
+
+dagen_nat_lang_breed <- dagen_nat_lang_breed %>% 
+  dplyr::select(-contains(c("onder", "p05")))
+write_vc(dagen_nat_lang_breed, file.path("data", "result", "nat_fitting_95"), sorting = c("meetpunt", "jaar", "simulatienr", "tijdvenster"), root = projroot)
+```
+
+
+```{r trend-droog-csv-voor-nara, include=FALSE}
 #bewaren data voor figuur in nara
 write_csv(droogte_trend_05 %>% 
             dplyr::select(jaar, gem_jaar, og_jaar, bg_jaar, droogte_ind_j, lcl, ucl, tijdvenster) %>% 
@@ -1694,7 +1999,19 @@ write_csv(droogte_trend_05 %>%
                    og_jaar_trend =  og_jaar,
                    bg_jaar_trend = bg_jaar,
                    og_jaar_indicator = lcl,
-                   bg_jaar_indicator = ucl), file.path("data", "result", "figuur_nara.csv"))
+                   bg_jaar_indicator = ucl), file.path("data", "result", "figuur_droog_nara.csv"))
+```
+
+
+```{r trend-nat-csv-voor-nara, include=FALSE}
+#bewaren data voor figuur in nara
+write_csv(nat_trend_95 %>% 
+            dplyr::select(jaar, gem_jaar, og_jaar, bg_jaar, nat_ind_j, lcl, ucl, tijdvenster) %>% 
+            rename(`aantal dagen boven hoog drempelpeil` = nat_ind_j,
+                   og_jaar_trend =  og_jaar,
+                   bg_jaar_trend = bg_jaar,
+                   og_jaar_indicator = lcl,
+                   bg_jaar_indicator = ucl), file.path("data", "result", "figuur_nat_nara.csv"))
 ```
 
 

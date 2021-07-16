@@ -51,7 +51,14 @@ pdfmaken <- FALSE
 ```{r constanten, include= FALSE}
 #berekenen van rollende gemiddelden
 tijdvenster <- c(0,2,4,6,8,10,20,30)
+```
 
+
+```{r basis-voor-relatieve-paden, include= FALSE}
+
+#absolute paden naar resp. repo (droogtemeetnet) en project (nara_indicator) 
+gitroot <- repository()
+projroot <- rprojroot::find_root(rprojroot::is_rstudio_project)
 ```
 
 ```{r read-databases, include= FALSE}

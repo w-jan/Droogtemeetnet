@@ -11,7 +11,7 @@ author:
     name: "Thierry Onkelinx"
     email: "thierry.onkelinx@inbo.be"    
 #subtitle: "Hier komt de optionele ondertitel"
-reportnr: "Hier komt de DOI van het rapport"
+reportnr: "doi.org/10.21436/inbor.39482098"
 # ordernr: "Het optionele nummer van de opdrachtgever"
 bibliography: bib_indicator_nara.bib
 link-citations: TRUE
