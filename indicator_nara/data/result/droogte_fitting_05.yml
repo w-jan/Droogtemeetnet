@@ -3,11 +3,12 @@
   optimize: yes
   NA string: NA
   sorting:
+  - meetpunt
   - jaar
   - simulatienr
   - tijdvenster
-  hash: be403a3502dfe8178c964d0e77eb6f1269021735
-  data_hash: c2cd6a672de4170fda5170218a1d23d99f18306f
+  hash: 67e6f20c92a8cc2b9ce3f77464be0dfbcf2fdebc
+  data_hash: bc2f3acf80cb28e3bb9154048925f1f88650486a
 meetpunt:
   class: factor
   labels:
@@ -154,14 +155,6 @@ dag_onder_p05:
 dag_onder_p10:
   class: numeric
 dag_onder_p30:
-  class: numeric
-dag_boven_p01:
-  class: numeric
-dag_boven_p05:
-  class: numeric
-dag_boven_p10:
-  class: numeric
-dag_boven_p30:
   class: numeric
 jaar_factor:
   class: factor

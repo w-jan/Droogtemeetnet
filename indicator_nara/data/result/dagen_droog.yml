@@ -6,8 +6,8 @@
   - jaar
   - meetpunt
   - simulatienr
-  hash: d047ef144d700656a8e0afd163c2b987edb8eeb4
-  data_hash: d0deab0690a6f1105e31638bfb835bfb8ef0d9a8
+  hash: f8139fad15fc156af42d70dcd63229c7cfc0ab67
+  data_hash: d12b47d12572ce6952ebeffa923357d950577a27
 meetpunt:
   class: factor
   labels:
@@ -154,14 +154,6 @@ dag_onder_p05:
 dag_onder_p10:
   class: numeric
 dag_onder_p30:
-  class: numeric
-dag_boven_p01:
-  class: numeric
-dag_boven_p05:
-  class: numeric
-dag_boven_p10:
-  class: numeric
-dag_boven_p30:
   class: numeric
 jaar_factor:
   class: factor
@@ -315,4 +307,92 @@ p05.30_sd_fitted:
 p05.30_p02.5_fitted:
   class: numeric
 p05.30_p97.5_fitted:
+  class: numeric
+dag_boven_p99:
+  class: numeric
+dag_boven_p95:
+  class: numeric
+dag_boven_p90:
+  class: numeric
+dag_boven_p70:
+  class: numeric
+dag_boven_p95.0:
+  class: integer
+dag_boven_p95.2:
+  class: integer
+dag_boven_p95.4:
+  class: integer
+dag_boven_p95.6:
+  class: integer
+dag_boven_p95.8:
+  class: integer
+dag_boven_p95.10:
+  class: integer
+dag_boven_p95.20:
+  class: integer
+dag_boven_p95.30:
+  class: integer
+p95.0_mean_fitted:
+  class: numeric
+p95.0_sd_fitted:
+  class: numeric
+p95.0_p02.5_fitted:
+  class: numeric
+p95.0_p97.5_fitted:
+  class: numeric
+p95.2_mean_fitted:
+  class: numeric
+p95.2_sd_fitted:
+  class: numeric
+p95.2_p02.5_fitted:
+  class: numeric
+p95.2_p97.5_fitted:
+  class: numeric
+p95.4_mean_fitted:
+  class: numeric
+p95.4_sd_fitted:
+  class: numeric
+p95.4_p02.5_fitted:
+  class: numeric
+p95.4_p97.5_fitted:
+  class: numeric
+p95.6_mean_fitted:
+  class: numeric
+p95.6_sd_fitted:
+  class: numeric
+p95.6_p02.5_fitted:
+  class: numeric
+p95.6_p97.5_fitted:
+  class: numeric
+p95.8_mean_fitted:
+  class: numeric
+p95.8_sd_fitted:
+  class: numeric
+p95.8_p02.5_fitted:
+  class: numeric
+p95.8_p97.5_fitted:
+  class: numeric
+p95.10_mean_fitted:
+  class: numeric
+p95.10_sd_fitted:
+  class: numeric
+p95.10_p02.5_fitted:
+  class: numeric
+p95.10_p97.5_fitted:
+  class: numeric
+p95.20_mean_fitted:
+  class: numeric
+p95.20_sd_fitted:
+  class: numeric
+p95.20_p02.5_fitted:
+  class: numeric
+p95.20_p97.5_fitted:
+  class: numeric
+p95.30_mean_fitted:
+  class: numeric
+p95.30_sd_fitted:
+  class: numeric
+p95.30_p02.5_fitted:
+  class: numeric
+p95.30_p97.5_fitted:
   class: numeric

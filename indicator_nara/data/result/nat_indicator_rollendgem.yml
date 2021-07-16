@@ -1,0 +1,21 @@
+..generic:
+  git2rdata: 0.3.1
+  optimize: yes
+  NA string: NA
+  sorting:
+  - jaar
+  - tijdvenster
+  hash: 2fbeea9666680a23ab0b3a6dd40160b6f6c39497
+  data_hash: fcc421f1a244074ae9e853a602df4f27e2b14c04
+jaar:
+  class: numeric
+tijdvenster:
+  class: integer
+nat_ind_j:
+  class: numeric
+nat_ind_j_var:
+  class: numeric
+lcl:
+  class: numeric
+ucl:
+  class: numeric
