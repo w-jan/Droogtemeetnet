@@ -1045,12 +1045,30 @@ nat_ind_j_ma <- nat_ind_j_ma %>%
 
 ```
 
+
+```{r rollend-gem-verdroging-met-ci, include=FALSE}
+verdroging_ind_j_ma <- droogte_ind_j_ma %>%
+  dplyr::select(-lcl, -ucl) %>% 
+  inner_join(nat_ind_j_ma %>% 
+               dplyr::select(-lcl, -ucl), by = c("jaar","tijdvenster")) %>% 
+  mutate(verdroging_ind_j = droogte_ind_j - nat_ind_j,
+         lcl = verdroging_ind_j - 1.96 * sqrt((droogte_ind_j_var + nat_ind_j_var)/2),
+         ucl = verdroging_ind_j + 1.96 * sqrt((droogte_ind_j_var + nat_ind_j_var)/2)  
+         )
+
+```
+
+
 ```{r rollend-gem-droog-met-ci-vc, include=FALSE}
 write_vc(droogte_ind_j_ma, file.path("data", "result", "droogte_indicator_rollendgem"), sorting = c("jaar", "tijdvenster"), root = projroot)
 ```
 
 ```{r rollend-gem-nat-met-ci-vc, include=FALSE}
 write_vc(nat_ind_j_ma, file.path("data", "result", "nat_indicator_rollendgem"), sorting = c("jaar", "tijdvenster"), root = projroot)
+```
+
+```{r rollend-gem-verdroging-met-ci-vc, include=FALSE}
+write_vc(verdroging_ind_j_ma, file.path("data", "result", "verdroging_indicator_rollendgem"), sorting = c("jaar", "tijdvenster"), root = projroot)
 ```
 
 Figuur \@ref(fig:rollend-gem-droog-fig) geeft het effect weer van de verschillende tijdvensters.
@@ -1081,6 +1099,19 @@ dev.off()
 ```
 
 ```{r rollend-gem-nat_fig, fig.cap="De droogte-indicator (cfr. tijdvenster = 0 jaar) en verschillende hiervan afgeleide rollende gemiddelden",  message=FALSE, warning=FALSE}
+gplot
+```
+
+ 
+```{r rollend-gem-verdroging-fig-save, fig.cap="rollend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plotma(verdroging_ind_j_ma,"verdroging_ind_j", 0)
+png(paste0(file.path("data","result", "figures","dagen-verdroging-p95"),"-rollendgem",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+```{r rollend-gem-verdroging_fig, fig.cap="De verdroging-indicator (cfr. tijdvenster = 0 jaar) en verschillende hiervan afgeleide rollende gemiddelden",  message=FALSE, warning=FALSE}
 gplot
 ```
 Daarna maken we een model op dat de variatie in de indicatorwaarden tracht te verklaren. 

@@ -4,6 +4,15 @@ editor_options:
   chunk_output_type: console
 ---
 # Inleiding {#h1:inleiding}
+
+De jongste jaren kent Vlaanderen regelmatig langdurige periodes van **droogte** (periodes zonder neerslag).
+Droogte is op zich een natuurlijk verschijnsel. 
+Als gevolg van een tekort aan neerslag is de vraag van planten naar (grond)water hoger dan het aanbod, waardoor het beschikbaar water in de bodem (bodemvocht) zal afnemen en/of het (grond)waterpeil zal dalen.
+De afname van het bodemvocht en de daling van het grondwaterpeil zijn verschillende verschijnselen die door droogte kunnen optreden.
+Om de effecten van droogte te kunnen inschatten is het nuttig dat ze beide, afzonderlijk, worden opgevolgd. 
+Het opvolgen van droogte via het bodemvocht wordt beoogd bv. door het project CurieuzeNeuzen, <https://curieuzeneuzen.be/>).
+Hier beperken we ons tot het effect van droogte op de grondwaterpeilen.
+
 Driekwart van de voor Vlaanderen en Europa meest waardevolle natuurtypes, steunen voor hun voortbestaan op grondwater. Grondwaterafhankelijke vegetaties [^def-grondwaterafhankelijk] komen voor in en op de rand van kwelgebieden, beekvalleien, vijvers en poelen. 
 De vochtige gebieden vertonen vaak veel gradiënten en herbergen daarom een hoge biodiversiteit [@Becker2020]. 
 
@@ -12,34 +21,25 @@ De vochtige gebieden vertonen vaak veel gradiënten en herbergen daarom een hoge
 2. die specifieke grondwaterstand gedurende een zekere periode aanwezig moet zijn voor het duurzaam voortbestaan van het type.
 In deze context is de term 'grondwaterafhankelijk’ daarom synoniem voor ‘gevoelig aan verdroging door effecten op het grondwater'.
 
-De jongste jaren kent Vlaanderen regelmatig langdurige periodes van droogte.
-Droogte is op zich een natuurlijk verschijnsel. 
-Als gevolg van een tekort aan neerslag is de vraag van planten naar (grond)water hoger dan het aanbod, waardoor het beschikbaar water in de bodem (bodemvocht) zal afnemen en/of het (grond)waterpeil zal dalen.
-
-Droogteverschijnselen zijn niet beperkt tot grondwaterafhankelijke vegetaties. Ook niet-grondwaterafhankelijke vegetaties kunnen droogtegevoelig zijn en door een gebrek aan bodemvocht te kampen krijgen met droogtestress. 
-
 Na zonneschijn komt er regen: droogte heeft daarom een tijdelijk karakter.
-Men mag het tijdelijk karakter echter niet onderschatten.
-Om de droogte in beeld te brengen volstaat louter een blik op het neerslagtekort niet. 
-Hoewel het neerslagtekort een drijvende kracht is voor het optreden van grondwaterdalingen, zijn er andere factoren die meespelen hoe dat neerslagtekort zich effectief in peilverlagingen zal vertalen. 
-De periode van het jaar is een eenvoudig voorbeeld van een dergelijke factor: een periode zonder neerslag zal in de winter een ander effect hebben dan in de zomer. 
-Zo kan niet gesteld worden dat een korte duur van een neerslagtekort, altijd slechts maar tot kortstondige peilverlagingen zal leiden. 
-Een periode van neerslagslagtekort kan zich over een langere tijd in de lagere (grond)waterpeilen uitsmeren.
+Men mag het tijdelijke karakter echter niet onderschatten.
 
-Zelfs al is een periode van droogte mogelijk beperkt in de tijd, de *ecologische* impact ervan kan wel op lange termijn voelbaar zijn. 
+- Hoewel het neerslagtekort een drijvende kracht is voor het optreden van grondwaterdalingen, zijn er andere factoren die meespelen hoe dat neerslagtekort zich effectief in peilverlagingen zal vertalen. 
+Om de droogte in beeld te brengen volstaat daarom louter een blik op het neerslagtekort niet. 
+De periode van het jaar is een eenvoudig voorbeeld van een dergelijke factor: een periode zonder neerslag zal in de winter een ander effect hebben dan in de zomer. 
+Een periode van neerslagslagtekort kan zich over een langere tijd in lagere (grond)waterpeilen uitsmeren.
+
+ - Zelfs al is een periode van neerslagtekort beperkt in de tijd, de *ecologische* impact ervan kan wel op lange termijn voelbaar zijn. 
 Bijvoorbeeld een tijdelijke droogval van een permanent waterlichaam kan langdurige ecologische gevolgen hebben.
 @Jansen2020 geven een overzicht van de impact van de recente droge jaren op de natuur in Nederland en geven hiervoor ook causale verbanden. 
 
-We spreken van verdroging als door structurele oorzaken er op langere termijn een systematische daling van het grondwaterpeil wordt waargenomen of ook wanneer dit grondwater van samenstelling verandert.
+We spreken van **verdroging** als door structurele oorzaken er op langere termijn een systematische daling van het grondwaterpeil wordt waargenomen of ook wanneer dit grondwater van samenstelling verandert.
 Als dit optreedt, krijgen typische soorten het moeilijk. 
 Slagen die soorten er niet in om zich aan te passen of om hun leefgebied te verschuiven, dan dreigen ze te verdwijnen. 
 Dat risico wordt groter als bijvoorbeeld het landgebruik, andere milieudrukken of het grondwaterregime in de omgeving de beschikbare ruimte om uit te wijken beperkt. 
-Zo kan ook een gewijzigd klimaat tot verdroging leiden. 
+Zo kan ook een gewijzigd klimaat (toename van periodes van droogte) tot verdroging leiden. 
 
-In dit rapport presenteren we een indicator waarmee de droogte op jaarbasis kan opgevolgd worden en passen deze toe op een meetnet om in Vlaanderen een globaal beeld te krijgen van de droogte in grondwaterafhankelijke vegetaties. 
-We beperken ons in deze studie dus tot de grondwaterafhankelijke vegetaties.  
-Zowel de grondwaterafhankelijke als de niet-grondwaterafhankelijke vegetaties behandelen in één indicator is moeilijk, doordat ze een andere benadering vergen. 
-Het opvolgen van droogte voor niet-grondwaterafhankelijke vegetaties, verloopt best via het bodemvocht (cfr. het project CurieuzeNeuzen, <https://curieuzeneuzen.be/>).
+In dit rapport presenteren we een indicator waarmee de droogte op jaarbasis kan opgevolgd worden en passen deze toe op een meetnet om in Vlaanderen een globaal beeld te krijgen van de droogte in en mogelijk ook van verdroging van grondwaterafhankelijke vegetaties. 
 
 
 # Monitoring droogte in Vlaanderen {#h1:monitoring}
