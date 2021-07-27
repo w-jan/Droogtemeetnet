@@ -24,7 +24,7 @@ Om de droogte in beeld te brengen volstaat louter een blik op het neerslagtekort
 Hoewel het neerslagtekort een drijvende kracht is voor het optreden van grondwaterdalingen, zijn er andere factoren die meespelen hoe dat neerslagtekort zich effectief in peilverlagingen zal vertalen. 
 De periode van het jaar is een eenvoudig voorbeeld van een dergelijke factor: een periode zonder neerslag zal in de winter een ander effect hebben dan in de zomer. 
 Zo kan niet gesteld worden dat een korte duur van een neerslagtekort, altijd slechts maar tot kortstondige peilverlagingen zal leiden. 
-Een periode van neerslagslagtekort kan zich over een langere tijd in de lagere (grond)waterpeilen uitsmeren.
+Een periode van neerslagslagtekort kan over een langere tijd lagere (grond)waterpeilen teweeg brengen.
 
 Zelfs al is een periode van droogte mogelijk beperkt in de tijd, de *ecologische* impact ervan kan wel op lange termijn voelbaar zijn. 
 Bijvoorbeeld een tijdelijke droogval van een permanent waterlichaam kan langdurige ecologische gevolgen hebben.
@@ -198,4 +198,3 @@ Stel bijvoorbeeld dat er één heel droog jaar is, waarbij de 5% droogste peilen
 Dit beschouwen we als niet representatief, ook omdat de responstijd van vegetaties op wijzigende grondwaterregimes veel sneller is dan 30 jaar. 
 Eén extreem droog jaar kan al aantoonbare gevolgen hebben.
 Deze werkwijze is ook analoog aan het berekenen van karakteristieke grondwaterstanden (GXG’s) voor vegetaties [@VanHeesen1970].
-
