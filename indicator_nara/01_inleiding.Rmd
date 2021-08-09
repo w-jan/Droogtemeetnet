@@ -65,9 +65,10 @@ Om zicht te krijgen op verdroging dient ook de evolutie van de hoge grondwaterst
 
 De punten van het meetnet werden onder andere geselecteerd doordat ze geen significante tekenen hadden van verdroging of vernatting: het grootste deel van de peilschommelingen kan toegeschreven worden aan meteorologische variabelen (neerslag en evapotranspiratie).
 
-Op schaal Vlaanderen is een honderdtal een relatief laag aantal. 
-Wil men op deze schaal en met dit beperkt aantal punten veralgemeenbare uitspraken kunnen maken, is het sterk aan te bevelen de keuze van deze punten zo goed mogelijk ruimtelijk te balanceren. Ook moet er rekening gehouden worden met mogelijke verschillen in het gedrag van het grond/oppervlaktewaterpeil t.a.v. een neerslagtekort. 
-Doordat we voor het meetnet in belangrijke mate beroep doen op bestaande meetpunten van Watina (<https://watina-import.inbo.be/>) blijft desondanks een risico op een systematische fout bestaan.
+Op schaal Vlaanderen is een honderdtal punten een relatief laag aantal. 
+Om ze zo efficiënt mogelijk in te zetten, is het sterk aan te bevelen de keuze van deze punten zo goed mogelijk ruimtelijk te balanceren. 
+Ook moet er rekening gehouden worden met mogelijke verschillen in het gedrag van het grond/oppervlaktewaterpeil t.a.v. een neerslagtekort. 
+Doordat we voor het meetnet in belangrijke mate beroep doen op bestaande meetpunten van Watina (<https://watina-import.inbo.be/>) blijft een risico op een systematische fout bestaan.
 @WoutersVanderhaeghe2020 geven een nadere toelichting over het ontwerp van het meetnet. 
 
 ## Droogte-indicatoren {#h2:indicator}

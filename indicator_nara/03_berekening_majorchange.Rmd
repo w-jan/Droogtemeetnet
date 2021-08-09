@@ -1,0 +1,2603 @@
+
+# De berekening van de droogte-indicator, zijn betrouwbaarheid en trend {#h1:berekening}
+
+We verkiezen een absolute indicator als droogte-indicator.
+Bij een dergelijke indicator wordt het aantal dagen per jaar dat het grondwaterpeil gelijk aan of onder een kritische drempelwaarde zakt opgeteld.
+Deze kritische drempelwaarde is specifiek voor elk meetpunt.
+Als kritische drempelwaarde wordt gekozen voor 
+**het _gemiddelde_ van de _jaarlijkse_ 5%-percentielen van de grondwatermetingen voor het meetpunt voor de periode 1985 - 2014**, cfr. \@ref(h3:drempelwaarde), die periodiek, bv. elke vijftien jaar, met meer recente data kan herijkt worden, cfr. \@ref(h3:referentietoestand).
+
+## De voorbereiding {#h2:calcvoorbereiding}
+
+Tot op heden kon met het software-programma Menyanthes voor 58 meetpunten een tijdreeksmodel gemaakt worden, waarbij 
+
+- neerslag en potentiële evapotranspiratie voor minstens 66% van de waargenomen variatie kon verklaren en
+- de tijdreeks geen significante trend vertoont die niet door meteorologische factoren kon worden verklaard.
+
+Met deze modellen werden 20 tijdreeksen van dagelijkse grondwaterpeilen gesimuleerd voor de periode 1985 - 2018.
+Deze data werden in een centrale databank opgeslagen om daarna te worden ingelezen in R. 
+De hierop volgende analysen gebeurden volledig in R.
+
+```{r functies}
+#grafiek voor het bekijken van de modelfitting. Het plot de gemeten data (in werkelijkheid omvatten ze zowel geïmputeerde data als veldmetingen) en de gefitte waarden incl credible interval. 
+
+#hulpfunctie voor het maken van minor ticks in de grafieken
+insert_minor <- function(major_labs, n_minor) {
+  labs <- c( sapply( major_labs, function(x) c(x, rep("", n_minor) ) ) )
+  labs[seq_len(length(labs) - n_minor)]}
+
+#plot van de modelfitting
+plotfitting <- function(indic_basis, respons, gemid, og, bg, yas) {
+  og <- enquo(og)
+  bg <- enquo(bg)
+
+    PI_data <- indic_basis %>% group_by(jaar, tijdvenster) %>% 
+    summarise(ymax_data = max(!! bg, na.rm = TRUE), ymin_data = min(!! og, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    inner_join(indic_basis)
+  
+  p <- ggplot(data = PI_data, aes_string(y = respons, x = "jaar")) +
+    xlab("Jaar") + ylab(yas) +
+    geom_point(shape = 16, size = 1, col = inbo_lichtblauw) +
+    geom_line(aes_string(x = "jaar", y = gemid), size = 1, color = inbo_rood) +
+    geom_ribbon(aes(x = jaar, ymax = ymax_data, ymin = ymin_data),
+                       fill = grey(0.5),
+                       alpha = 0.4) +
+    scale_x_continuous(breaks = 1985:2020, 
+                              labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
+    facet_wrap(vars('tijdvenster (jaren) ' = tijdvenster), labeller = label_both) +
+    theme(strip.text.x = element_text(size = 14),
+      axis.title.y = element_text(size = 14),
+      axis.text.y = element_text(size = 14),
+      axis.title.x = element_text(size = 14),
+      axis.text.x = element_text(size = 14, angle = 90, vjust = 0.5, hjust = 1))
+  return(p)
+}
+
+#plot van de rollende gemiddelden
+plotma.basis <- function(indic_finaal, indicator, intercept) {
+  p <- ggplot(data = indic_finaal ) + 
+    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes(x = jaar, y = lcl), color = inbo_rood, linetype = "longdash", alpha = 0.50) +
+    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdvenster), aes(x = jaar, y = lcl), color = inbo_rood, linetype = "longdash", alpha = 0.10) +
+    geom_ribbon(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes(x = jaar, ymax = ucl, ymin = lcl),
+                fill = "lightpink",
+                alpha = 0.4) +
+    geom_ribbon(data = indic_finaal %>% filter(jaar <= 1985 + tijdvenster), aes(x = jaar, ymax = ucl, ymin = lcl),
+                fill = "lightpink",
+                alpha = 0.15) +
+    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes(x = jaar, y = ucl), color = inbo_rood, linetype = "longdash", alpha = 0.50) +
+    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdvenster), aes(x = jaar, y = ucl), color = inbo_rood, linetype = "longdash", alpha = 0.10) +
+    geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes_string(x = "jaar", y = indicator), color = inbo_rood ) +
+    geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdvenster), aes_string(x = "jaar", y = indicator), color = inbo_rood, alpha = 0.15 ) +    
+    geom_hline(aes(yintercept = intercept), color = inbo_oranje, linetype = "dotted")
+  return(p)
+}
+
+plotma.basis_1venster <- function(indic_finaal, indicator, intercept, tijdvenster) {
+  tv <- tijdvenster
+  indic_finaal_1 <- indic_finaal %>% filter(tijdvenster == tv)
+  p <- ggplot(data = indic_finaal_1 ) + 
+    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = lcl), color = inbo_rood, linetype = "longdash", alpha = 0.50) +
+    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = lcl), color = inbo_rood, linetype = "longdash", alpha = 0.10) +
+    geom_ribbon(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, ymax = ucl, ymin = lcl),
+                fill = "lightpink",
+                alpha = 0.4) +
+    geom_ribbon(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, ymax = ucl, ymin = lcl),
+                fill = "lightpink",
+                alpha = 0.15) +
+    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = ucl), color = inbo_rood, linetype = "longdash", alpha = 0.50) +
+    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = ucl), color = inbo_rood, linetype = "longdash", alpha = 0.10) +
+    geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes_string(x = "jaar", y = indicator), color = inbo_rood ) +
+    geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes_string(x = "jaar", y = indicator), color = inbo_rood, alpha = 0.15 ) +    
+    geom_hline(aes(yintercept = intercept), color = inbo_oranje, linetype = "dotted")
+  return(p)
+  }
+
+plotma <-  function(indic_finaal, indicator, intercept) {
+    p <- plotma.basis(indic_finaal, indicator, intercept)
+    p <- p + 
+      scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
+      labs(x = "Jaar", y = "indicator (rollend gemiddelde)") +
+      facet_wrap(vars('tijdvenster (jaren) ' = tijdvenster), labeller = label_both) +
+      theme(strip.text.x = element_text(size = 14),
+            axis.title.y = element_text(size = 14),
+            axis.text.y = element_text(size = 14),
+            axis.title.x = element_text(size = 14),
+            axis.text.x = element_text(size = 14, angle = 90, vjust = 0.5, hjust = 1))
+    return(p)
+}
+
+#plot van de trend (zowel modelschatting als berekende)
+plottrend <- function(indic_finaal, indicator, intercept, yrechts) {
+    p <- plotma.basis(indic_finaal, indicator, intercept)
+    p <- p +  
+      geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes(x = jaar, y = og_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.5) +
+      geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdvenster), aes(x = jaar, y = og_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.10) +
+      geom_ribbon(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
+                  fill = grey(0.5),
+                  alpha = 0.4) +  
+      geom_ribbon(data = indic_finaal %>% filter(jaar <= 1985 + tijdvenster), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
+                  fill = grey(0.5),
+                  alpha = 0.15) +  
+      geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes(x = jaar, y = bg_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.5) +
+      geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdvenster), aes(x = jaar, y = bg_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.10) +
+      geom_line(data = indic_finaal %>% filter(jaar >= 1985 + tijdvenster), aes(x = jaar, y = gem_jaar), color = inbo_steun_blauw) +
+      geom_line(data = indic_finaal %>% filter(jaar <= 1985 + tijdvenster), aes(x = jaar, y = gem_jaar), color = inbo_steun_blauw, alpha = 0.15) +    
+      geom_hline(aes(yintercept = intercept), color = inbo_oranje, linetype = "dotted") +
+      scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
+      labs(x = "Jaar", y = "trend") +
+      scale_y_continuous(sec.axis = dup_axis(name = yrechts)) +
+      facet_wrap(vars('tijdvenster (jaren) ' = tijdvenster), labeller = label_both) +
+      theme( axis.text.y.right = element_text(color = inbo_rood, size = 14), 
+        axis.ticks.y.right = element_line(color = inbo_rood), 
+        axis.title.y.left =  element_text(color = inbo_grijsblauw, size = 14),
+        axis.title.y.right =  element_text(color = inbo_rood, size = 14),
+        strip.text.x = element_text(size = 14),
+        axis.text.x = element_text(size = 14, angle = 90, vjust = 0.5, hjust = 1),
+        axis.text.y.left = element_text(size = 14)
+         ) 
+    return(p)
+}
+
+#plot van de trend (zowel modelschatting als berekende) voor één bepaald tijdvenster
+plottrend.1venster <- function(indic_finaal, indicator, intercept, tijdvenster, yrechts) {
+    p <- plotma.basis_1venster(indic_finaal, indicator, intercept, tijdvenster)
+    tv <- tijdvenster
+    indic_finaal_1 <- indic_finaal %>% filter(tijdvenster == tv)    
+    p <- p +  
+      geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = og_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.5) +
+      geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = og_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.10) +
+      geom_ribbon(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
+                  fill = grey(0.5),
+                  alpha = 0.4) +  
+      geom_ribbon(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes( x = jaar, ymax = bg_jaar, ymin = og_jaar),
+                  fill = grey(0.5),
+                  alpha = 0.15) +  
+      geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = bg_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.5) +
+      geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = bg_jaar), color = inbo_steun_blauw, linetype = "longdash", alpha = 0.10) +
+      geom_line(data = indic_finaal_1 %>% filter(jaar >= 1985 + tv), aes(x = jaar, y = gem_jaar), color = inbo_steun_blauw) +
+      geom_line(data = indic_finaal_1 %>% filter(jaar <= 1985 + tv), aes(x = jaar, y = gem_jaar), color = inbo_steun_blauw, alpha = 0.15) +    
+      geom_hline(aes(yintercept = intercept), color = inbo_oranje, linetype = "dotted") +
+      scale_x_continuous(breaks = 1985:2020, labels = insert_minor(seq(1985, 2020, by = 5), 4)) +
+      labs(x = "Jaar", y = "trend") +
+      scale_y_continuous(sec.axis = dup_axis(name = yrechts)) +
+      theme( axis.text.y.right = element_text(color = inbo_rood, size = 14), 
+        axis.ticks.y.right = element_line(color = inbo_rood), 
+        axis.title.y.left =  element_text(color = inbo_grijsblauw, size = 14),
+        axis.title.y.right =  element_text(color = inbo_rood, size = 14),
+        axis.text.x = element_text(size = 14, angle = 90, vjust = 0.5, hjust = 1),
+        axis.text.y.left = element_text(size = 14)
+         ) 
+    return(p)
+}
+moving_trend <- function(n_year = 30, trend_year = 6, first_year = 1985) {
+  trend_coef <- seq_len(trend_year) - (trend_year + 1) / 2
+  trend_coef <- trend_coef / sum(trend_coef ^ 2)
+  lc <- vapply(
+    seq_len(n_year - trend_year + 1),
+    function(i) {
+      c(rep(0, i - 1), trend_coef, rep(0, n_year - trend_year - i + 1))
+    },
+    numeric(n_year)
+  )
+  colnames(lc) <- sprintf(
+    "trend_%.1f_%i",
+    seq_len(ncol(lc)) + first_year - 1 + (trend_year - 1) / 2, trend_year
+  )
+  t(lc)
+}
+```
+
+
+<!-- ### Inlezen van ruwe gegevens van de SQL-server {#h4-1-1:ruwedata} -->
+
+```{r inlezen-ruwe-data-sqlserver, eval=FALSE}
+# De ruwe data staan op de SQL-server in de FlaVen-databank.
+# Deze data is opgebouwd uit een reeks van 23 tabellen. Door deze op de SQL-server samen te voegen tot één bestand, zou het importeren falen.
+# Het inlezen vergt een betrouwbare (langdurig werkzame) VPN-verbinding en vraagt ook veel tijd.
+# Daarom werden de data na het inlezen omgezet in het VC-formaat (git2rdata-package) en lokaal/in github bewaard.
+# Het inlezen van deze bestanden gaat 3x-sneller dan het inlezen van de SQL-server. 
+# Het blijft tijdsbelastend, daarom wordt er na het inlezen een (tijdelijk) rds-bestand van gemaakt.
+
+con <- dbConnect(odbc::odbc(), .connection_string = "Driver=SQL Server;Server=inbo-sql07-prd.inbo.be,1433;Database=D0136_00_Flaven;Trusted_Connection=Yes;")
+
+
+
+ruwetabellen_lijst <- data.frame (a = "droogte_tijdreeks", b = "ruwedata", c = seq(from = 1, to = 23))
+
+ruwetabellen_lijst <- ruwetabellen_lijst %>% mutate (naambrontabel = paste0(a,c), 
+                                                     naamdoeltabel = sprintf(paste0(b,"%02d"), c)) 
+
+ruwetabellen_lijst <- setNames(ruwetabellen_lijst %>% dplyr::pull(naambrontabel), make.names(ruwetabellen_lijst %>% dplyr::pull(naamdoeltabel)))
+
+
+list2env(
+  lapply(ruwetabellen_lijst, 
+         dbReadTable, conn = con,
+         guess_max = 300000), 
+  envir = .GlobalEnv)
+
+DBI::dbDisconnect(con)
+
+
+```
+
+```{r wegschrijven-brontabellen-naar-vc-formaat, eval=FALSE }
+for (i in seq(from = 1, to = 19)){
+  write_vc(get(sprintf("ruwedata%02d", i)), file.path("data", "local", sprintf("ruwedata%02d", i)), sorting = c("dag","meetpunt_import"), strict= FALSE)
+}
+
+```
+
+
+```{r inlezen-vc-tabellen, include=FALSE, eval=!file.exists(file.path("cache", "basisdata.rds" ))}
+# De data worden niet in één keer ingelezen.
+# De brondata zitten in 23 bestanden.
+# Elk van deze 23 bestanden is op zich al vrij omvangrijk.
+# Ze samenvoegen tot één bestand, zou kunnen leiden tot importproblemen.
+# De opdeling is ook wel praktisch als je met de data iets wil testen.
+
+ruwetabellen_lijst <- data.frame(bron = "ruwedata", doel = "ruwedata", c = seq(from = 1, to = 23))
+
+ruwetabellen_lijst <- ruwetabellen_lijst %>% mutate (naambrontabel = file.path("data", "local", paste0(bron,sprintf("%02d", c))), 
+                                                     naamdoeltabel = sprintf(paste0(doel,"%02d"), c)) 
+ruwetabellen_lijst_rds <- ruwetabellen_lijst %>% mutate(naamdoeltabel = file.path("cache", paste0(bron,sprintf("%02d", c), ".rds")), 
+                                                     naambrontabel = sprintf(paste0(doel,"%02d"), c)) 
+
+ruwetabellen_lijst <- setNames(ruwetabellen_lijst %>% dplyr::pull(naambrontabel), make.names(ruwetabellen_lijst %>% dplyr::pull(naamdoeltabel)))
+
+list2env(
+  lapply(ruwetabellen_lijst, 
+         read_vc), 
+  envir = .GlobalEnv)
+
+sapply(1:nrow(ruwetabellen_lijst_rds), function(i) {
+        filename <- ruwetabellen_lijst_rds$naamdoeltabel[i]
+        saveRDS(get(ruwetabellen_lijst_rds$naambrontabel[i]), filename)
+    })
+```
+```{r inlezen-vc-tabellen-uit-cache, include=FALSE}
+ruwetabellen_lijst <- data.frame(bron = "ruwedata", doel = "ruwedata", c = seq(from = 1, to = 23))
+
+ruwetabellen_lijst_rds <- ruwetabellen_lijst %>% mutate(naambrontabel = file.path("cache", paste0(bron,sprintf("%02d", c), ".rds")), 
+                                                     naamdoeltabel = sprintf(paste0(doel,"%02d"), c)) 
+ruwetabellen_lijst_rds <- setNames(ruwetabellen_lijst_rds %>% dplyr::pull(naambrontabel), make.names(ruwetabellen_lijst_rds %>% dplyr::pull(naamdoeltabel)))
+
+list2env(lapply(X = ruwetabellen_lijst_rds, FUN = readRDS), 
+  envir = .GlobalEnv)
+```
+
+```{r samenvoegen-bestanden, include=FALSE, eval=!file.exists(file.path("cache", "basisdata.rds" ))}
+#ik verkies dit in een aparte chunk te doen, omdat het zo mogelijk is om testdata samen te stellen, bv. ik heb voor het uittesten van de methoden gewerkt met een testbestand van de eerste 5 ruwe tabellen.
+
+ruwedata <- purrr::map_dfr(sprintf("ruwedata%02d",1:23), get )
+
+#data cleaning - algemeen
+# 1) uitsluiten van niet gesimuleerde meetreeksen (veldmetingen zitten namelijk al in de simuleerde reeksen, zou dus tot dubbeltellingen leiden) 
+# 2) factoriseren van meetpunt en weglaten van ongebruikte velden 
+
+ruwedata <-  ruwedata %>% 
+  filter(meetpunt_import != meetreeks, year(dag) >= 1985) %>%  # 
+  mutate(meetpunt = factor(meetpunt)) %>% 
+  dplyr::select(-meetpunt_import, -meetreeks, -is_veldmeting) #om de grootte van het databestand te reduceren
+
+#data-cleaning - specifiek voor de eerste dataset
+#1) jaar 2019 is onvolledig: slechts data tot half mei
+
+ruwedata <- ruwedata %>% 
+  filter( year(dag) < 2019)
+# indic_abs_basis_gw <- indic_abs_basis_gw %>% 
+#   filter( between(simulatienr, 1,20), jaar < 2019)
+
+```
+
+```{r samenvoegen-bestanden-test, include=FALSE, eval= FALSE}
+#ik verkies dit in een aparte chunk te doen, omdat het zo mogelijk is om testdata samen te stellen, bv. ik heb voor het uittesten van de methoden gewerkt met een testbestand van de eerste 5 ruwe tabellen.
+for (i in seq (from = 1, to = 5)){
+  if (i == 1) {
+    ruwetest <- get(sprintf("ruwedata%02d",i))
+  } else {
+    ruwetest <- bind_rows(ruwetest, get(sprintf("ruwedata%02d",i)))
+  }
+}
+
+#data cleaning
+ruwetest <-  ruwetest %>% 
+  filter(meetpunt_import != meetreeks, year(dag) >= 1985) %>%  #uitsluiten van niet gesimuleerde meetreeksen (veldmetingen zitten namelijk al in de simuleerde reeksen, zou dus tot dubbeltellingen leiden)  
+  mutate(meetpunt = factor(meetpunt)) %>% 
+  dplyr::select(-meetpunt_import, -meetreeks, -is_veldmeting) #om de grootte van het databestand te reduceren
+
+ruwetest <- ruwetest %>% 
+  filter( year(dag) < 2019)
+```
+
+```{r verwijderen-tsv-tabellen, eval = FALSE}
+#verwijderen van de 23 deelbestanden (beter nog niet doen als je wil testen, het is handig om te testen met één van de bestanden, bv. ruwedata01 (rel. groot) of ruwedata19 (rel klein)
+rm(list = sprintf("ruwedata%02d", 1:23))
+
+```
+
+```{r tubes-network, include=FALSE}
+#laatste versie met de geselecteerde meetpunten ophalen. De ruwe data bevatten namelijk ook nog meetreeksen van punten van een eerdere versie.
+
+tubes_selected <- read_vc(file.path(".","data","result","meetnet","tubes_selected"), root = gitroot)
+
+#niet alle geselecteerde meetpunten kunnen nu al dienen om een indicator te berekenen. Alleen de meetpunten waarvan de tijdreeks kon gemodelleerd worden (min 70% van de variantie verklaard door meteorologische factoren: neerslag en evapotranspiratie) en waarvan het model geen merkelijke trend (dus van niet-meteorologische aard) vertoonde komen nu in aanmerking.
+
+tubes_indicator <- tubes_selected %>% 
+  filter(selectie == 1) %>% 
+  dplyr::select(loc_code, groupnr)
+```
+
+```{r basisdata-final, include=FALSE, eval=!file.exists(file.path("cache", "basisdata.rds" ))}
+#beperken van de ruwe data tot de laatste versie van de geselecteerde meetpunten
+ruwedata <- ruwedata %>% 
+  semi_join(tubes_indicator, by = c("meetpunt" = "loc_code"))
+
+# #linken van de metingen aan een gw-groep, cfr. MNM
+# tubes_in_raster <- read_vc(file.path(".","data","processed","meetnet","tubes_in_raster"), root = gitroot)
+# tubes_gw <- tubes_in_raster %>% 
+#   dplyr::select(loc_code, groupnr)
+# ruwedata <- ruwedata %>% 
+#   left_join(tubes_gw, by = c("meetpunt" = "loc_code")) #left_join om te testen
+
+#wegschrijven in een RDS-bestand (= een soort controleerbare vorm van cache)
+saveRDS(ruwedata,file.path("cache", "basisdata.rds" ))
+```
+
+```{r basisdata-final-uit-cache, include=FALSE}
+ruwedata <- readRDS(file.path("cache", "basisdata.rds" ))
+```
+
+
+### Berekenen van de kritische drempelwaarden en de absolute indicatorwaarden {#h3:calcdrempelwaarde}
+Een absolute indicator vergelijkt dagelijks het grondwaterpeil met een kritische drempelwaarde. 
+De dagen dat het grondwaterpeil onder deze drempelwaarde valt, worden per jaar opgeteld (\@ref(h2:methode-drempelwaarde) en \@ref(h2:methode-indicator)).
+Dit zijn de absolute indicatorwaarden.
+
+```{r absolute-drempelwaarden, include=FALSE, eval = !file.exists(file.path("cache", "percentielen.rds" ))}
+absperc <- ruwedata %>% 
+  mutate(jaar = year(dag)) %>% 
+  filter(dplyr::between(jaar,1985,2014)) %>% 
+  group_by(meetpunt, jaar) %>% 
+  summarise(p01 = quantile(meting_TAW, 1/100),
+            p05 = quantile(meting_TAW, 5/100),
+            p10 = quantile(meting_TAW, 10/100),
+            p30 = quantile(meting_TAW, 30/100),
+            p50 = quantile(meting_TAW, 50/100),
+            p70 = quantile(meting_TAW, 70/100),
+            p90 = quantile(meting_TAW, 90/100),
+            p95 = quantile(meting_TAW, 95/100),
+            p99 = quantile(meting_TAW, 99/100)
+            ) %>% 
+  group_by(meetpunt) %>% 
+  summarise(p01 = mean(p01),
+            p05 = mean(p05),
+            p10 = mean(p10),
+            p30 = mean(p30),
+            p50 = mean(p50),
+            p70 = mean(p70),
+            p90 = mean(p90),
+            p95 = mean(p95),
+            p99 = mean(p99)
+            ) %>%   
+  ungroup()
+
+#vrijmaken geheugenruimte, kan soms van pas komen
+  gc()
+```
+
+```{r nakijken-tijdreeks, eval=FALSE}
+
+#voor één simulatie
+d <- ruwedata %>% 
+  filter (meetpunt == "DORP002", year(dag) == 2000, simulatienr == 11) %>% 
+  arrange(meting_TAW)
+ p <- ggplot(dat = d, aes(x= row_number(meting_TAW), y= meting_TAW)) + geom_path() + 
+   geom_vline(xintercept = 365*0.05) + 
+   coord_cartesian(xlim = c(0, 365/10), ylim = c(min(d$meting_TAW), d %>% summarise(p05 = quantile(meting_TAW, 5/100)) %>% dplyr::pull(p05)))
+ p
+
+ dp05 <- d %>% summarise(p05 = quantile(meting_TAW, 5/100)) %>% dplyr::pull(p05) 
+
+ #voor alle simulaties
+ d.allesim <- ruwedata %>% 
+  filter (meetpunt == "DORP002", year(dag) == 2000) %>% 
+  arrange(meting_TAW)
+ 
+dp05.all <- d.allesim %>% summarise(p05 = quantile(meting_TAW, 5/100)) %>% dplyr::pull(p05)
+
+p.all <- ggplot(dat = d.allesim, aes(x= row_number(meting_TAW), y= meting_TAW)) + geom_path() + 
+ geom_vline(xintercept = 365) + 
+ coord_cartesian(xlim = c(365-50, 365+50), ylim = c(min(d.allesim$meting_TAW), max(dp05, dp05.all)))
+p.all 
+dp05.all <- d.allesim %>% summarise(p05 = quantile(meting_TAW, 5/100)) %>% dplyr::pull(p05)
+dp05.all
+ 
+d.allesim <- d.allesim %>% 
+   mutate(onderp05 = ifelse(meting_TAW< dp05.all, 1,0))
+d.allesim %>% count(onderp05)
+d.allesim %>% group_by(simulatienr) %>% filter (onderp05==1) %>% count(onderp05) %>% ungroup() %>%  summarise(mean(n))
+
+#eens het effect van 30 uitmiddelen berekenen voor één meetpunt
+d <- ruwedata %>% 
+  filter(dplyr::between(year(dag),1985,2014)) %>% 
+  filter (meetpunt == "DORP002") 
+
+d.check <- d %>% 
+  inner_join(absperc) %>% 
+  mutate(jaar = year(dag)) %>% 
+  group_by(jaar) %>% 
+  summarise(aantaldroog = sum(ifelse(meting_TAW < p05,1,0 ))) %>% 
+  ungroup() %>% 
+  summarise(gemdroog = mean(aantaldroog)/20)
+#dus meer dan 18
+
+#dit doen voor alle meetpunten
+#eens het effect van 30 uitmiddelen berekenen voor één meetpunt
+
+d.check <- ruwedata %>% 
+  filter(dplyr::between(year(dag),1985,2014)) %>% 
+  inner_join(absperc) %>% 
+  mutate(jaar = year(dag)) %>% 
+  group_by(jaar, meetpunt) %>% 
+  summarise(aantaldroog = sum(ifelse(meting_TAW < p05,1,0 ))) %>% 
+  ungroup() %>% 
+  group_by(meetpunt) %>% 
+  summarise(gemdroog = mean(aantaldroog)/20)
+#voor alle meetpunten ligt dit gemiddelde boven 18. Dit betekent dat voor alle meetpunten het aantal overschrijdingen van de drempel tijdens droge jaren niet gecompenseerd wordt door het aantal onderschrijdingen in natte jaren. Dit kan te maken hebben dat het aantal droge dagen per jaar nooit lager dan nul kan zijn.
+#gemiddeld is het 30 dagen
+
+#berekenen we een drempelwaarde over het totaal aantal metingen over 30 jaar. Is dit dan ook nog zo ?
+absperc.30 <- ruwedata %>% 
+  mutate(jaar = year(dag)) %>% 
+  filter(dplyr::between(jaar,1985,2014)) %>% 
+  group_by(meetpunt) %>% 
+  summarise(p01 = quantile(meting_TAW, 1/100),
+            p05 = quantile(meting_TAW, 5/100),
+            p10 = quantile(meting_TAW, 10/100),
+            p30 = quantile(meting_TAW, 30/100),
+            p50 = quantile(meting_TAW, 50/100),
+            p70 = quantile(meting_TAW, 70/100),
+            p90 = quantile(meting_TAW, 90/100),
+            p95 = quantile(meting_TAW, 95/100),
+            p99 = quantile(meting_TAW, 99/100)
+            ) %>% 
+  ungroup()
+
+d.check.30 <- ruwedata %>% 
+  filter(dplyr::between(year(dag),1985,2014)) %>% 
+  inner_join(absperc.30) %>% 
+  mutate(jaar = year(dag)) %>% 
+  group_by(jaar, meetpunt) %>% 
+  summarise(aantaldroog = sum(ifelse(meting_TAW < p05,1,0 ))) %>% 
+  ungroup() %>% 
+  group_by(meetpunt) %>% 
+  summarise(gemdroog = mean(aantaldroog)/20)
+#dit klopt dus: netjes 18.25 (behalve voor een meetpunt met slechts 29 meetjaren). Dit moest mathematisch wel kloppen.
+
+#Dit betekent dat het verschil wel degelijk komt door eerst jaargemiddelden te berekenen en hiervan het gemiddelde te nemen.
+#het feit dat het 30-jaargemiddelde duidelijk hoger is dan 18.25 (nl. ong. 30) ligt aan het feit dat een nat jaar nooit meer dan 18 dagen kan afwijken van een normaal jaar, terwijl een droog jaar tot wel 365 dagen kan afwijken => (28jaar * 18.25 + 1*365 + 1*0)/30 > 18.25
+
+```
+
+```{r schrikkeljaren, include=FALSE}
+
+schrikkeljaar <- ruwedata %>% 
+  mutate(jaar = year(dag)) %>%   
+  filter(meetpunt == 
+           ruwedata %>% 
+           dplyr::select(meetpunt) %>% 
+           head(1) %>% 
+           dplyr::pull(meetpunt)
+         ) %>% 
+  filter(day(dag) == 29, month(dag) == 2) %>% 
+  distinct(jaar) %>% 
+  arrange(jaar) %>% 
+  dplyr::pull(jaar)
+
+```
+
+```{r gwgroups, include=FALSE, eval = !file.exists(file.path("cache", "percentielen.rds" ))}
+#herijking grondwatertype-groepen, want er blijkt nog nauwelijks een verband te bestaan tussen de amplitude van een pb en de gw-typegroep waartoe het wordt gerekend
+absperc_gw <- absperc %>% 
+  inner_join(tubes_indicator %>% 
+               mutate(groep3 = ifelse(groupnr == 1, 2, groupnr)) %>% 
+               dplyr::select(-groupnr), by = c("meetpunt" = "loc_code")) %>% 
+  mutate(ampl = p99 - p01,
+         groep3n = case_when(
+           ampl < 0.25 ~2,
+           ampl < 0.4 ~3,
+           TRUE ~4),
+         meetpunt = factor(meetpunt)
+         )
+
+
+#wegschrijven in een RDS-bestand
+saveRDS(absperc_gw,file.path("cache", "percentielen.rds" ))
+
+write_vc(absperc_gw, file.path("data", "result", "percentielen-1985-2014"), root = projroot, sorting = c("meetpunt"))
+
+```
+
+```{r gwgroups-uit-cache, include=FALSE}
+absperc_gw <- readRDS(file.path("cache", "percentielen.rds" ))
+```
+
+```{r abs-indicator, eval = !file.exists(file.path("cache", "dagendroognat.rds" ))}
+
+dagen_droog_nat <- ruwedata %>% #oude objectnaam: indic_abs_basis
+  inner_join(absperc_gw, by = "meetpunt") %>% 
+  mutate(jaar = year(dag),
+         aantaldagen_jaar = if_else(jaar %in% schrikkeljaar, 366, 365 )
+         ) %>% 
+  mutate( 
+          dag_onder_p01 = if_else(meting_TAW < p01,1,0),
+          dag_onder_p05 = if_else(meting_TAW < p05,1,0),
+          dag_onder_p10 = if_else(meting_TAW < p10,1,0),
+          dag_onder_p30 = if_else(meting_TAW < p30,1,0),
+          dag_boven_p99 = if_else(meting_TAW > p99,1,0),
+          dag_boven_p95 = if_else(meting_TAW > p95,1,0),
+          dag_boven_p90 = if_else(meting_TAW > p90,1,0),
+          dag_boven_p70 = if_else(meting_TAW > p70,1,0)         
+  ) %>% 
+  group_by(meetpunt, simulatienr,jaar, aantaldagen_jaar, groep3, groep3n) %>% 
+  summarise_at(vars(dag_onder_p01:dag_boven_p70), sum) %>% 
+  ungroup() %>% 
+  mutate(jaar_factor = factor(jaar)
+  )
+
+# #met opgave gw-groep
+# indic_abs_basis_gw <- ruwedata %>% 
+#   inner_join(absperc_gw, by = "meetpunt") %>% 
+#   mutate(jaar = year(dag),
+#          meetpunt = factor(meetpunt),
+#          aantaldagen_jaar = if_else(jaar %in% schrikkeljaar, 366, 365 )
+#   ) %>% 
+#   mutate( 
+#     dag_onder_p01 = if_else(meting_TAW < p01,1,0),
+#     dag_onder_p05 = if_else(meting_TAW < p05,1,0),
+#     dag_onder_p10 = if_else(meting_TAW < p10,1,0),
+#     dag_onder_p30 = if_else(meting_TAW < p30,1,0),
+#     dag_boven_p01 = if_else(dag_onder_p01 == 0,1,0),
+#     dag_boven_p05 = if_else(dag_onder_p05 == 0,1,0),
+#     dag_boven_p10 = if_else(dag_onder_p10 == 0,1,0),
+#     dag_boven_p30 = if_else(dag_onder_p30 == 0,1,0)          
+#   ) %>% 
+#   group_by(groep3n, meetpunt, simulatienr,jaar, aantaldagen_jaar) %>% 
+#   summarise_at(vars(dag_onder_p01:dag_boven_p30), sum) %>% 
+#   ungroup() %>% 
+#   mutate(jaar_factor = factor(jaar)
+#   )
+
+
+```
+```{r rollend-gemiddelde, eval = !file.exists(file.path("cache", "dagendroognat.rds" ))}
+#berekenen van rollende gemiddelden
+
+modeldata <- dagen_droog_nat %>% 
+  group_by(meetpunt, simulatienr) %>% 
+  arrange(jaar) %>% 
+  summarise(dag_onder_p05.0 = dag_onder_p05,
+            dag_onder_p05.2 = movavg(dag_onder_p05, n = 2, "w"), #rollend gem, gewogen waarbij de gewichten een lin. trend volgen
+            dag_onder_p05.4 = movavg(dag_onder_p05, n = 4, "w"),
+            dag_onder_p05.6 = movavg(dag_onder_p05, n = 6, "w"),
+            dag_onder_p05.8 = movavg(dag_onder_p05, n = 8, "w"),
+            dag_onder_p05.10 = movavg(dag_onder_p05, n = 10, "w"),
+            dag_onder_p05.20 = movavg(dag_onder_p05, n = 20, "w"),
+            dag_onder_p05.30 = movavg(dag_onder_p05, n = 30, "w"),
+            dag_boven_p95.0 = dag_boven_p95,
+            dag_boven_p95.2 = movavg(dag_boven_p95, n = 2, "w"), 
+            dag_boven_p95.4 = movavg(dag_boven_p95, n = 4, "w"),
+            dag_boven_p95.6 = movavg(dag_boven_p95, n = 6, "w"),
+            dag_boven_p95.8 = movavg(dag_boven_p95, n = 8, "w"),
+            dag_boven_p95.10 = movavg(dag_boven_p95, n = 10, "w"),
+            dag_boven_p95.20 = movavg(dag_boven_p95, n = 20, "w"),
+            dag_boven_p95.30 = movavg(dag_boven_p95, n = 30, "w"),            
+            # dag_onder_p05.2 = movavg(dag_onder_p05, n = 2, "s"), # een ongewogen rollend gemiddelde
+            # dag_onder_p05.4 = movavg(dag_onder_p05, n = 4, "s"),
+            # dag_onder_p05.6 = movavg(dag_onder_p05, n = 6, "s"),
+            # dag_onder_p05.8 = movavg(dag_onder_p05, n = 8, "s"),
+            # dag_onder_p05.10 = movavg(dag_onder_p05, n = 10, "s"),
+            # dag_onder_p05.20 = movavg(dag_onder_p05, n = 20, "s"),            
+            # dag_onder_p05.30 = movavg(dag_onder_p05, n = 30, "s"),
+            # dag_onder_p05.2m = movavg(dag_onder_p05, n = 2, "m"), # 'modified', 
+            # dag_onder_p05.4m = movavg(dag_onder_p05, n = 4, "m"),
+            # dag_onder_p05.6m = movavg(dag_onder_p05, n = 6, "m"),
+            # dag_onder_p05.8m = movavg(dag_onder_p05, n = 8, "m"),
+            # dag_onder_p05.10m = movavg(dag_onder_p05, n = 10, "m"),
+            # dag_onder_p05.30m = movavg(dag_onder_p05, n = 30, "m"),   
+            # dag_onder_p05.2t = movavg(dag_onder_p05, n = 2, "t"), # 'triangulair' gewogen
+            # dag_onder_p05.4t = movavg(dag_onder_p05, n = 4, "t"),
+            # dag_onder_p05.6t = movavg(dag_onder_p05, n = 6, "t"),
+            # dag_onder_p05.8t = movavg(dag_onder_p05, n = 8, "t"),
+            # dag_onder_p05.10t = movavg(dag_onder_p05, n = 10, "t"),
+            # dag_onder_p05.30t = movavg(dag_onder_p05, n = 30, "t"),            
+            # dag_onder_p05.2e = movavg(dag_onder_p05, n = 2, "e"), # 'exponentieel' gewogen
+            # dag_onder_p05.4e = movavg(dag_onder_p05, n = 4, "e"),
+            # dag_onder_p05.6e = movavg(dag_onder_p05, n = 6, "e"),
+            # dag_onder_p05.8e = movavg(dag_onder_p05, n = 8, "e"),
+            # dag_onder_p05.10e = movavg(dag_onder_p05, n = 10, "e"),
+            # dag_onder_p05.30e = movavg(dag_onder_p05, n = 30, "e"),
+            jaar = jaar
+            ) %>% 
+  ungroup() 
+
+#omzetten naar integers (nodig voor binomiale verdelingen)
+modeldata <- modeldata %>% 
+  mutate_if(is.numeric, as.integer)
+
+dagen_droog_nat <- dagen_droog_nat %>% 
+  inner_join(modeldata)
+
+#wegschrijven in een RDS-bestand
+saveRDS(dagen_droog_nat,file.path("cache", "dagendroognat.rds" ))
+saveRDS(modeldata,file.path("cache", "modeldata.rds" ))
+```
+
+```{r abs-indicator-uit-cache}
+dagen_droog_nat <- readRDS(file.path("cache", "dagendroognat.rds" ))
+modeldata <- readRDS(file.path("cache", "modeldata.rds" ))
+```
+
+### Verdeling van de indicator {#h3:verdeling-indicator}
+
+De techniek die we wensen toe te passen bij de modelbouw is parametrisch: ze vereist dat er assumpties gemaakt worden over de verdeling van de afhankelijke variabele.
+
+We beschikken voor elk jaar en meetpunt over twintig simulaties.
+Dit laat in zekere mate toe de verdeling ervan te bestuderen.
+
+In theorie is de indicator te beschouwen als een discrete variabele. 
+Het feit dat er een kritische drempelwaarde is die al dan niet overschreden wordt en het aantal dagen van een jaar (= aantal 'pogingen') vast ligt, wijzen in de richting van een binomiale verdeling met n = 365 of 366 en $\pi$ = 0,05.
+
+Een probleem is dat één belangrijke conditie voor het gebruik van een verdeling wordt geschonden. 
+De 'trekkingen' gebeuren namelijk niet onafhankelijk van elkaar: de kans dat als het vandaag een droge dag is, het dat morgen of overmorgen ook zal zijn is veel groter dan 0,05 en vice versa. 
+Modellen die uitgaan van een binomiale of een andere verdeling gaan er van uit dat dit wel zo is. 
+Daarom werd de verdeling van de indicator niet alleen vergeleken met de negatief-binomiale, maar ook met de poisson- en de binomiale verdeling. 
+
+Voor deze vergelijking werd gebruikt gemaakt van zogenaamde QQ-plots. 
+QQ-plots tonen voor een variabele het waargenomen kwantiel en het kwantiel dat men bij een theoretische verdeling van die variabele mag verwachten. 
+Een kwantiel is Waarneming die hoort bij een bepaalde cumulatieve proportie. 
+Het kwantiel bij een cumulatieve proportie van bijvoorbeeld 0.6, is die waarneming waarvoor geldt dat 6/10e deel van alle waarnemingen er kleiner of gelijk aan is of m.a.w. de kans is 0.6 dat een waarneming kleiner of gelijk aan die kwantielwaarde zal zijn. 
+
+Een QQ-plot zet het waargenomen kwantiel voor een waarde van de variabele, voor deze studie het aantal droge dagen per jaar $d_{mjs}$, uit ten op zichte van de theoretische kans dat deze waarde of kleiner uit een bepaalde verdeling wordt getrokken.
+
+De verdelingen werden steekproefgewijs getest op een aantal meetpunten en jaren. 
+Deze testen gaven aan dat de verdeling vrij goed overeenkwam met de binomiale of negatief binomiale verdeling. 
+De overeenkomst met de poisson-verdeling was meestal relatief iets minder goed.
+
+
+```{r check-distribution-qq}
+
+checkdistributie <- dagen_droog_nat %>% 
+                                 filter(jaar == 2006, meetpunt == "ASBP003") %>% #ALMP003 ASBP003 BTRP001 COOP001 DYLP029 GSCP017
+        dplyr::pull(dag_onder_p05)
+
+```
+
+De figuren \@ref(fig:check-qq-poisson), \@ref(fig:check-qq-nbinom) en \@ref(fig:check-distribution-qq-binom) geven een voorbeeld van een QQ-plot voor resp. de poisson, de negatief-binomiale en binomiale verdeling.
+
+```{r check-qq-poisson, fig.cap = "QQ-plot poisson-verdeling"}
+
+poisson <- MASS::fitdistr(checkdistributie, "Poisson")
+car::qqPlot(checkdistributie, "pois", lambda = poisson$estimate, id = FALSE, xlab = "Theoretisch (o.b.v. kwantiel) verwachte waarde voor een poisson-verdeling ", ylab = "aantal droge dagen")
+
+```
+
+```{r check-qq-nbinom, fig.cap = "QQ-plot negatief binomiale-verdeling"}
+
+nbinom <- MASS::fitdistr(checkdistributie, "Negative Binomial")
+qqPlot(checkdistributie, "nbinom", size = nbinom$estimate[[1]], mu = nbinom$estimate[[2]], id = FALSE, xlab = "Theoretisch (o.b.v. kwantiel) verwachte waarde voor een negatief binomiale verdeling", ylab = "Aantal droge dagen")
+
+```
+
+```{r check-distribution-qq-binom, fig.cap="QQ-plot binomiale-verdeling"}
+invisible(capture.output(binom <- fitdistrplus::fitdist(checkdistributie, "binom", fix.arg = list(size = 365), start = list(prob = 0.05))
+))
+#summary(binom)
+
+  qqp(checkdistributie, "binom", size = 365, prob = binom$estimate, id = FALSE, xlab = "Theoretisch (o.b.v. kwantiel) verwachte waarde voor een binomiale verdeling", ylab = "Aantal droge dagen")
+
+
+```
+
+
+```{r check-distribution boxplot, eval = FALSE}
+boxplot(checkdistributie/365)
+
+#ggplot(data = checkdistributie, aes(dag_onder_p01)) + geom_histogram() 
+#ggplot(data = data.frame(checkdistributie), aes(dag_onder_p05)) + geom_histogram() 
+#ggplot(data = checkdistributie, aes(dag_onder_p10)) + geom_histogram()  
+#ggplot(data = checkdistributie, aes(dag_onder_p30)) + geom_histogram()
+```
+
+Wanneer we echter een model bouwen met een indicator met een binomiale verdeling, dan blijkt een dergelijk model te kampen met overdispersie.
+Dit treedt op wanneer de variantie die op basis van een binomiale verdeling verwacht wordt duidelijk kleiner is dan de waargenomen variantie. 
+Gaan we voor de modelbouw uit dat de indicator negatief binomiaal verdeeld is, blijkt de overdispersie veel beter binnen de perken.
+Er wordt daarom gekozen om negatief binomiale modellen te bouwen.
+
+```{r check, eval=FALSE}
+check <- dagen_droog_nat %>% 
+  group_by(meetpunt) %>% 
+  count()
+```
+
+## De droogte-indicator en zijn betrouwbaarheid {#h2:calc-indicator}
+
+De droogte-indicator is op zich vrij eenvoudig te berekenen door voor elk jaar het gemiddelde te berekenen van het aantal droge dagen $d_{mjs}$-waarden, cfr. \@ref(h2:methode-indicator).
+
+We wensen ook inzicht te krijgen in de onzekerheid die er op de droogte-indicator zit, m.a.w. wat is het betrouwbaarheidsinterval van de droogte-indicator.
+<!-- We doen hiervoor beroep op de formule van Rubin (\@ref(h2:methode-indicator)).  -->
+<!-- Deze formule laat toe de onzekerheid die inherent is aan de data (verschillen tussen de locaties) te scheiden van de onzekerheid door het ontbreken van gegevens. -->
+
+```{r abs-indic-model-without-trend-function}
+
+indic_abs_function_without_trend <- function(modeldata, suffix= "", respons, percentile, standardised, cache) { 
+  #bij deze berekening bekijken we elk jaar afzonderlijk. We beschouwen (nog) geen relatie tussen de jaren. Dit gaan we wel doen bij het onderzoek naar een trend.
+  #We kunnen dit bekijken als een mixed-model met vaste effecten obv jaar en random effect obv meetpunt
+  
+  #ivm de variatie op de meetpunten brengen we niet veel voorkennis in het model, om deze zoveel mogelijk door het model te laten bepalen
+  prec.prior.mp <- list(theta = list(prior = "pc.prec", param = c(0.025, 0.95)))# list(theta = list(prec = list(param = c(0.001, 0.001)))) 
+  #nog vrijer is om met de default-priors te werken en dus niets op te geven - model_free
+
+  
+  # prec.prior.mp.rw <- list(theta = list(prior = "pc.prec", param = c(0.5, 0.01)))
+
+  #rollend gemiddelde berekenen
+  for (ma in tijdvenster) {
+    respons.ma <- paste0(respons,".", ma )
+  
+    model_free <- as.formula(paste(respons.ma, "~", "jaar_factor + f(meetpunt, model = 'iid')", sep = " "))    
+
+    suffix <- ifelse(suffix == "", "", paste0("_", suffix))
+    resultname_stat <- paste0("indic_abs_p", percentile,".", ma, suffix, "_jaar_stat", if (standardised == TRUE) ("_std"))
+    resultname_stat_meetpunt <- paste0("indic_abs_p", percentile,".", ma, suffix, "_meetpunt_stat", if (standardised == TRUE) ("_std"))
+    resultname_fitted <- paste0("indic_abs_p", percentile,".", ma, suffix, "_fitted", if (standardised == TRUE) ("_std"))
+
+      print(paste("tijdvenster = ", ma, " respons = ", respons))    
+      #samenstellen van een tweeledig dataframe. De eerste 34 + 58 rijen (#jaren en #meetlocaties) zijn leeg en dienen om de gemiddelde waarden en de bijhorende fouten te berekenen. Het tweede deel dient om het model mee te bouwen    
+      mdata <- modeldata
+      jaren <- mdata %>% distinct(jaar)
+      meetpunten <- mdata %>% distinct(meetpunt)
+      mdata <- bind_rows(jaren, meetpunten, mdata)    
+      mdata <- mdata %>% 
+        mutate(jaar_factor =  factor(jaar))
+  
+      I1 <- inla(model_free, 
+                        control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+                        family = modelkeuze %>% filter(percentiel == percentile) %>% 
+                                dplyr::pull(model), 
+                        data = mdata
+      )
+
+      #linear_predictor : deze is niet teruggetransformeerd. We zijn hier alleen geïnteresseerd in de rijen met lege responsen: hier krijg je dan per jaar een gemiddelde predictie én de se.
+      #omdat jaar hier als een fixed-effect wordt beschouwd, kan je de predicties halen uit $summary.fixed. De eerste record is wel het  intercept (eerste jaar) en de volgende waarden zijn afwijkingen tov dat intercept. 
+      #een gemakkelijker alternatief is ze ook te laten berekenen via linear.predictor
+      intercept <- I1$summary.fixed[1,1]
+      # result_stat_i <- I1$summary.fixed %>% 
+      #   mutate(gemiddelde = ifelse(str_detect(pattern = "jaar", string = row.names(I1$summary.fixed[1])), mean + intercept, mean)) %>% 
+      #   bind_cols(jaren) %>% 
+      #   dplyr::select(-mode, -kld)    
+      # 
+      # result_stat_meetpunt_i <- I1$summary.linear.predictor %>% 
+      #   slice(1:nrow(meetpunten)) %>% 
+      #   bind_cols(meetpunten) %>% 
+      #   mutate(intercept = intercept) %>% 
+      #   dplyr::select(-mode, -kld)    
+
+      result_stat_i <- I1$summary.linear.predictor %>% 
+        slice(1:nrow(jaren)) %>% 
+        bind_cols(jaren) %>% 
+        mutate(intercept = intercept) %>% 
+        dplyr::select(-mode, -kld)    
+  
+      result_stat_meetpunt_i <- I1$summary.linear.predictor %>% 
+        slice((nrow(jaren) + 1):((nrow(jaren) + nrow(meetpunten)))) %>% 
+        bind_cols(meetpunten) %>% 
+        mutate(intercept = intercept) %>% 
+        dplyr::select(-mode, -kld)       
+      
+      # result_stat_rw_i <- I2_rw$summary.linear.predictor %>% 
+      #   slice(1:nrow(jaren)) %>% 
+      #   bind_cols(jaren) %>% 
+      #   mutate(intercept = I2_rw$summary.fixed$mean) %>% 
+      #   dplyr::select(-mode, -kld)    
+      # 
+      # result_stat_rw_meetpunt_i <- I2_rw$summary.linear.predictor %>% 
+      #   slice((nrow(jaren) + 1):((nrow(jaren) + nrow(meetpunten)))) %>% 
+      #   bind_cols(meetpunten) %>% 
+      #   mutate(intercept = I2_rw$summary.fixed$mean) %>% 
+      #   dplyr::select(-mode, -kld)           
+          #gefitte waarden (deze zijn wel teruggetransformeteerd)    
+      varname_mean <- paste0("p", percentile,".", ma, "_mean", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_sd <- paste0("p", percentile,".", ma, "_sd", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_p025 <- paste0("p", percentile,".", ma, "_p02.5", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_p975 <- paste0("p", percentile,".", ma, "_p97.5", if (standardised == TRUE) ("_std"), "_fitted")
+      result_fitted_i <-  I1$summary.fitted.values %>% 
+        rename(!!varname_mean := mean,
+               !!varname_sd := sd,
+               !!varname_p025 := '0.025quant',
+               !!varname_p975 := '0.975quant')
+  
+      mdata <- bind_cols(mdata, result_fitted_i) %>% 
+        slice(-(1:(nrow(jaren) + nrow(meetpunten)))) #de regels met lege responsen hieruit verwijderen    
+      
+      if (standardised == TRUE) {
+        varname_mean_backtransformed <- paste0(varname_mean, "_untr")
+        varname_p025_backtransformed <- paste0(varname_p025, "_untr")
+        varname_p975_backtransformed <- paste0(varname_p975, "_untr")
+        result_fitted_i <- result_fitted_i %>% 
+          mutate( !!varname_mean_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_mean),m,s),
+                  !!varname_p025_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_p025),m,s),
+                  !!varname_p975_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_p975),m,s)    
+          )
+      }
+
+        result_stat <- result_stat_i
+        result_stat_meetpunt <- result_stat_meetpunt_i
+        result_fitted <- mdata
+    
+        result_stat <- result_stat %>% 
+          rename( p02.5 = '0.025quant',
+                  p50 = '0.5quant',
+                  p97.5 = '0.975quant')
+        result_stat_meetpunt <- result_stat_meetpunt %>% 
+          rename( p02.5 = '0.025quant',
+                  p50 = '0.5quant',
+                  p97.5 = '0.975quant')   
+  
+        if (standardised == TRUE) {
+            result_stat <- result_stat %>% 
+              mutate(mean_untr = unscale(mean, m, s),
+                     og_berekend_untr = unscale(og_berekend, m, s),
+                     bg_berekend_untr = unscale(bg_berekend, m, s),
+                     p02.5_untr = unscale(p02.5, m, s),
+                     p97.5_untr = unscale(p97.5, m, s),
+                     se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+                                           (p02.5_untr  - mean_untr )/1.96)/2,
+              )
+            result_stat_meetpunt <- result_stat_meetpunt %>% 
+              mutate(mean_untr = unscale(mean, m, s),
+                     og_berekend_untr = unscale(og_berekend, m, s),
+                     bg_berekend_untr = unscale(bg_berekend, m, s),
+                     p02.5_untr = unscale(p02.5, m, s),
+                     p97.5_untr = unscale(p97.5, m, s),
+                     se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+                                           (p02.5_untr  - mean_untr )/1.96)/2,
+              )
+        }
+        resultlijst <- list( result_stat, 
+                             result_stat_meetpunt,
+                             result_fitted)
+        names(resultlijst) <- c(resultname_stat, resultname_stat_meetpunt, resultname_fitted)
+        list2env(resultlijst, envir = .GlobalEnv)
+        
+        if (varname_mean %in% colnames(dagen_droog_nat)) {
+          dagen_droog_nat <- dagen_droog_nat %>% 
+            dplyr::select(-!!varname_mean, -!!varname_sd, -!!varname_p025, -!!varname_p975) 
+        }
+        
+        dagen_droog_nat <- dagen_droog_nat %>% 
+           inner_join(result_fitted %>% 
+                        dplyr::select(contains("fitted"), 1:3), 
+                      by = c("meetpunt","simulatienr", "jaar")) 
+      
+    
+    #opslaan van de intermediaire tabellen en resultaat als rds-bestand
+    tabellen_lijst_rds <- list( 
+            naamdoeltabel = file.path(cache, paste0(c(resultname_stat, resultname_stat_meetpunt, resultname_fitted), ".rds")),
+            naambrontabel =  c(resultname_stat, resultname_stat_meetpunt, resultname_fitted)) 
+    sapply(1:length(tabellen_lijst_rds$naambrontabel), function(i) {
+            filename <- tabellen_lijst_rds$naamdoeltabel[i]
+            saveRDS(get(tabellen_lijst_rds$naambrontabel[i]), filename)
+        }) 
+    saveRDS(c(resultname_stat, resultname_stat_meetpunt, resultname_fitted), 
+            file.path(cache, paste0("model_namen_intermediair_geentrend.", ma, "_", respons,".rds" )))  
+  }
+  saveRDS(dagen_droog_nat, file.path(cache, paste0("modelresultaat_geentrend.rds" )))
+
+  return(dagen_droog_nat)
+}
+```
+
+```{r model-parameters-droog, include=FALSE}
+#keuze van parameters
+percentile <- "05"
+# indicatorname <- paste0("dag_onder_p",percentile)
+# indicatorname_inv <- paste0("dag_boven_p",percentile)
+standardised <- FALSE
+respons.f <- function(indicatorname, percentile, standardised = FALSE){paste0(indicatorname, percentile, if (standardised == TRUE) ("_std"))}
+
+respons <- respons.f("dag_onder_p", percentile = "05")
+workflow <- "nietrekenen"
+```
+
+```{r abs-indic-model-without-trend-droog, eval = !file.exists(file.path("cache", paste0("modelresultaat_geentrend.rds")))}
+#bij een eventuele herberekening moet de velden met de rekenresultaten eerst verwijderd worden
+dagen_droog_nat <- dagen_droog_nat %>% 
+  dplyr::select(-contains("fitted") )
+
+modelkeuze <- data.frame(percentiel = c("01", "05", "10", "30", "95" ), model = c("zeroinflatednbinomial2", "zeroinflatednbinomial0", "zeroinflatednbinomial0", "nbinomial", "zeroinflatednbinomial0"))
+modelkeuze$model <- as.character(modelkeuze$model)
+
+dagen_droog_nat <- indic_abs_function_without_trend(modeldata = modeldata, respons = respons, percentile = percentile, standardised = standardised, cache = "cache" )
+
+workflow <- "rekenen"
+
+```
+
+```{r model-parameters-nat, include=FALSE}
+#keuze van parameters
+percentile <- "95"
+# indicatorname <- paste0("dag_boven_p",percentile)
+# indicatorname_inv <- paste0("dag_onder_p",percentile)
+standardised <- FALSE
+respons <- respons.f("dag_boven_p", percentile = "95")
+```
+
+
+```{r abs-indic-model-without-trend-nat, eval = !file.exists(file.path("cache", paste0("modelresultaat_geentrend.rds"))) | workflow == "rekenen"}
+dagen_droog_nat <- indic_abs_function_without_trend(modeldata = modeldata, respons = respons, percentile = percentile, standardised = standardised, cache = "cache" )
+```
+
+
+```{r abs-indic-model-without-trend-uit-cache, include=FALSE}
+dagen_droog_nat <- readRDS(file.path("cache", paste0("modelresultaat_geentrend.rds" ) ))
+
+for (ma in tijdvenster) {
+  respons <- paste0(".", ma, "_", respons.f("dag_onder_p", percentile = "05"))
+  namen_intermediaire_tabellen <- readRDS(file.path("cache", paste0("model_namen_intermediair_geentrend",respons, ".rds" ) ))
+
+  for (i in 1:length(namen_intermediaire_tabellen)) {
+    assign(namen_intermediaire_tabellen[i], readRDS(paste0(file.path("cache", namen_intermediaire_tabellen[i]), ".rds" )))
+  }
+
+respons <- paste0(".", ma, "_",respons.f("dag_boven_p", percentile = "95"))
+namen_intermediaire_tabellen <- readRDS(file.path("cache", paste0("model_namen_intermediair_geentrend",respons, ".rds" ) ))
+
+  for (i in 1:length(namen_intermediaire_tabellen)) {
+    assign(namen_intermediaire_tabellen[i], readRDS(paste0(file.path("cache", namen_intermediaire_tabellen[i]), ".rds" )))
+  }
+}
+```
+
+```{r trend-data-without-trend-vc, include=FALSE}
+
+#bewaren resultaat
+write_vc(dagen_droog_nat, file.path("data", "result", "dagen_droog_nat"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
+
+```
+
+```{r trend-droog-rubin, message=FALSE, warning=FALSE, include=FALSE, eval = FALSE}
+
+#berekenen van indicator
+indic_abs_droog_gem <- dagen_droog_update %>% 
+  group_by(jaar) %>% 
+  summarise_at(vars(starts_with("dag_onder_p05.")), list(gem = mean, med = median)) %>% 
+  ungroup
+
+
+# rekening houden met multiple imputaties
+
+teller <- 1
+for (ma in tijdvenster) {
+  d <- get(paste0("indic_abs_p05.",ma,"_jaar_stat")) %>% 
+    group_by(jaar) %>% 
+    summarise(gem_jaar_t = mean(mean),
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - gem_jaar_t)^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>% 
+    ungroup() %>% 
+    mutate(tijdvenster = ma) %>% 
+    inner_join(droogte_ind_j_ma, by = c("jaar", "tijdvenster"))
+  
+  if (teller == 1) {
+    droogte_trend_05 <- d
+  } else {
+    droogte_trend_05 <- bind_rows(droogte_trend_05, d)
+  }
+
+  d <- get(paste0("indic_abs_p05.",ma,"_mov.average_stat")) %>%
+    group_by(jaar, duration) %>%
+    summarise(gem_jaar_t = mean(mean) + mean(intercept),
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - mean(mean))^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>%
+    ungroup() %>%
+    bind_rows(droogte_ind_j_ma %>% filter (tijdvenster == ma)) %>%
+    mutate(tijdvenster = ma)
+
+  if (teller == 1) {
+    droogte_trend.mov_05 <- d
+  } else {
+    droogte_trend.mov_05 <- bind_rows(droogte_trend.mov_05, d)
+  }
+  
+  teller <- teller + 1
+}
+```
+
+
+```{r droogte-nat-indicator-geentrend-met-ci, include=FALSE}
+teller <- 1
+for (ma in tijdvenster) {
+  d <- get(paste0("indic_abs_p05.",ma,"_jaar_stat"))
+  d <- d %>% mutate(tijdvenster = ma)  
+  if (teller == 1) {
+    droogte_basis_05 <- d
+  } else {
+    droogte_basis_05 <- bind_rows(droogte_basis_05, d)
+  }
+
+
+  d <- get(paste0("indic_abs_p95.",ma,"_jaar_stat"))
+  d <- d %>% mutate(tijdvenster = ma)
+  if (teller == 1) {
+    nat_basis_05 <- d
+  } else {
+    nat_basis_05 <- bind_rows(nat_basis_05, d)
+  }
+  
+  teller <- teller + 1 
+}
+droogte_basis_05 <- droogte_basis_05 %>% 
+  mutate( gem_jaar = exp(mean),
+          og_jaar = exp(p02.5),
+          bg_jaar = exp(p97.5)
+  )
+nat_basis_05 <- nat_basis_05 %>% 
+  mutate( gem_jaar = exp(mean),
+          og_jaar = exp(p02.5),
+          bg_jaar = exp(p97.5)
+  )  
+```
+
+```{r nat-indicator, include=FALSE, eval = FALSE}
+nat_ind_j <- dagen_droog_nat %>% 
+  group_by(jaar) %>% 
+  summarise(nat_ind_j = mean(dag_boven_p95)
+            ) %>% 
+  ungroup()
+
+```
+
+
+```{r droogte-indicator-met-ci, include=FALSE, eval = FALSE}
+
+droogte_ind_j_s <- dagen_droog_nat %>% 
+  group_by(jaar, simulatienr) %>% 
+  summarise(droogte_ind_j_s = mean(dag_onder_p05),
+            aantal = n(),
+            dagen_droog_se = sd(dag_onder_p05)/sqrt(aantal)
+            ) %>% 
+  ungroup()
+
+droogte_ind_j_var <- droogte_ind_j_s %>% 
+  inner_join(droogte_ind_j) %>% 
+  group_by(jaar) %>% 
+  summarise(dagen_droog_gem_var = mean(dagen_droog_se^2),
+            aantalsim = n(),
+            imput_var = (1 + 1/aantalsim) * sum((droogte_ind_j_s - droogte_ind_j)^2/(aantalsim-1)),
+            droogte_ind_j_var = dagen_droog_gem_var + imput_var
+            ) %>% 
+  ungroup() %>% 
+  dplyr::select (-aantalsim)
+
+droogte_ind_j_var <- droogte_ind_j_var %>% 
+  mutate (rel_bijdrage_imput = round(imput_var/droogte_ind_j_var*100,0))
+
+
+droogte_ind_j <- droogte_ind_j %>% 
+  inner_join(droogte_ind_j_var %>% 
+               dplyr::select(-starts_with(c("dagen", "imput", "rel")))) %>% 
+  mutate(lcl = droogte_ind_j - 1.96 * sqrt(droogte_ind_j_var),
+         ucl = droogte_ind_j + 1.96 * sqrt(droogte_ind_j_var)
+         )
+
+```
+
+
+```{r nat-indicator-met-ci, include=FALSE, eval = FALSE}
+
+nat_ind_j_s <- dagen_droog_nat %>% 
+  group_by(jaar, simulatienr) %>% 
+  summarise(nat_ind_j_s = mean(dag_boven_p95),
+            aantal = n(),
+            dagen_nat_se = sd(dag_boven_p95)/sqrt(aantal)
+            ) %>% 
+  ungroup()
+
+nat_ind_j_var <- nat_ind_j_s %>% 
+  inner_join(nat_ind_j) %>% 
+  group_by(jaar) %>% 
+  summarise(dagen_nat_gem_var = mean(dagen_nat_se^2),
+            aantalsim = n(),
+            imput_var = (1 + 1/aantalsim) * sum((nat_ind_j_s - nat_ind_j)^2/(aantalsim-1)),
+            nat_ind_j_var = dagen_nat_gem_var + imput_var
+            ) %>% 
+  ungroup() %>% 
+  dplyr::select (-aantalsim)
+
+nat_ind_j_var <- nat_ind_j_var %>% 
+  mutate (rel_bijdrage_imput = round(imput_var/nat_ind_j_var*100,0))
+
+
+nat_ind_j <- nat_ind_j %>% 
+  inner_join(nat_ind_j_var %>% 
+               dplyr::select(-starts_with(c("dagen", "imput", "rel")))) %>% 
+  mutate(lcl = nat_ind_j - 1.96 * sqrt(nat_ind_j_var),
+         ucl = nat_ind_j + 1.96 * sqrt(nat_ind_j_var)
+         )
+
+```
+
+
+```{r droogte-indicator-geentrend-met-ci-vc, include=FALSE}
+write_vc(droogte_basis_05, file.path("data", "result", "droogte_indicator"), sorting = c("tijdvenster", "jaar"), root = projroot)
+```
+
+```{r nat-indicator-geentrend-met-ci-vc, include=FALSE}
+write_vc(nat_basis_05, file.path("data", "result", "nat_indicator"), sorting = c("tijdvenster", "jaar"), root = projroot)
+```
+
+Onderstaande tabel geeft de berekende indicator-waarden inclusief het 95% betrouwbaarheidsinterval (CI).
+
+```{r droogte-indicator-ci-tbl, include = TRUE, fig.cap="Droogte-indicator inclusief p05-95-betrouwhaarheidsinterval 1985 - 2018"}
+dt <- droogte_basis_05
+row.names(dt) <- NULL
+dt <-  dt %>% 
+    filter(tijdvenster == 0) %>% 
+    dplyr::select(contains("jaar")) %>% 
+    column_to_rownames("jaar") %>% 
+    rename('ondergrens (05% CI)' = og_jaar,
+            'bovengrens (95% CI)' = bg_jaar,
+            indicator = gem_jaar
+            )
+
+if (interactive() || opts_knit$get("rmarkdown.pandoc.to") == "html") {
+# code for interactive (html) output
+  DT::datatable(dt,
+  caption = "Droogte-indicator inclusief p05-95 betrouwhaarheidsinterval (CI) 1985 - 2018"
+  ) %>% 
+  DT::formatRound(columns = 1:3,
+                  digits = 1)
+} else {
+# code for static (pdf) output
+  dt %>% 
+  mutate_at(1:3, format, digits = 1, nsmall = 0) %>% 
+  kbl(longtable = TRUE,
+      booktabs = TRUE,      
+      caption = "Droogte-indicator inclusief p05-95 betrouwhaarheidsinterval (CI) 1985 - 2018",
+      align = c("l", rep("r",3))
+      ) %>% 
+  kable_styling(full_width = FALSE, 
+                position = "center",
+                latex_options = c("striped","repeat_header"), 
+                repeat_header_text = "(vervolg)"
+                )
+}
+
+
+```
+
+
+Figuur \@ref(fig:droogte-indicator-met-ci-figuur) is hiervan een grafische weergave.
+De oranje streepjeslijn in de figuur geeft het aantal droge dagen dat jaarlijks gemiddeld verwacht wordt.
+
+Het grillige patroon van de indicator springt hierbij in het oog.
+Een 'normaal' jaar is eerder uitzondering dan regel.
+Als het droog is, is het ook vaak flink droog. 
+Natte jaren zijn minder opvallend, omdat de droogte-indicator niet onder nul kan gaan.
+Uitgezonderd voor het jaar 2018 zit er vrij weinig variatie in de hoogte van de pieken. 
+We zien wel een wijziging in de frequentie ervan, met een toename vanaf rond 2000.
+Dit wordt verder onderzocht in het onderzoek van de trend.
+
+(ref:droogte-indicator-met-ci-figuur) Droogte-indicator (rode volle lijn) met 95% betrouwbaarheid (grijze zone). De oranje streepjeslijn geeft het aantal droge dagen dat jaarlijks gemiddeld verwacht wordt.
+
+```{r droogte-indicator-met-ci-figuur, fig.cap= "(ref:droogte-indicator-met-ci-figuur)"}
+d <- droogte_basis_05 %>% filter(tijdvenster == 0)
+g <- ggplot(data = d, aes(x = jaar, y = gem_jaar)) + 
+  theme_inbo() +
+  geom_ribbon(aes(ymin = og_jaar, ymax = bg_jaar), fill = inbo_lichtgrijs) +
+  geom_hline(yintercept = 365 * 0.05, color = inbo_oranje, linetype = "dashed") +
+  geom_line(color = inbo_rood, size = 0.5) + 
+  labs(y = "aantal droge dagen") + 
+  scale_x_continuous(n.breaks = nrow(d)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, color = "black"))
+g
+```
+
+```{r nat-indicator-met-ci-figuur, fig.cap= "(ref:nat-indicator-met-ci-figuur)", eval=FALSE}
+d <- nat_basis_05 %>% filter(tijdvenster == 0)
+g <- ggplot(data = d, aes(x = jaar, y = gem_jaar)) + 
+  theme_inbo() +
+  geom_ribbon(aes(ymin = og_jaar, ymax = bg_jaar), fill = inbo_lichtgrijs) +
+  geom_hline(yintercept = 365 * 0.05, color = inbo_oranje, linetype = "dashed") +
+  geom_line(color = inbo_rood, size = 0.5) + 
+  labs(y = "aantal natte dagen") + 
+  scale_x_continuous(n.breaks = nrow(d)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, color = "black"))
+g
+```
+
+```{r verdroging-indicator-met-ci, eval=FALSE}
+#x1 - x2 +/- 1.96 * sqrt(sd1^2/n + sd2^2/n)
+
+verdroging_ind_j <- droogte_ind_j %>%
+  dplyr::select(-lcl, -ucl) %>% 
+  inner_join(nat_ind_j %>% 
+               dplyr::select(-lcl, -ucl), by = "jaar") %>% 
+  mutate(verdroging_ind_j = droogte_ind_j - nat_ind_j,
+         lcl = verdroging_ind_j - 1.96 * sqrt((droogte_ind_j_var + nat_ind_j_var)/2),
+         ucl = verdroging_ind_j + 1.96 * sqrt((droogte_ind_j_var + nat_ind_j_var)/2)  
+         )
+```
+
+
+```{r verdroging-indicator-met-ci-figuur, fig.cap= "(ref:nat-indicator-met-ci-figuur)", eval=FALSE}
+g <- ggplot(data = verdroging_ind_j, aes(x = jaar, y = verdroging_ind_j)) + 
+  theme_inbo() +
+  geom_ribbon(aes(ymin = lcl, ymax = ucl), fill = inbo_lichtgrijs) +
+  geom_line(color = inbo_rood, size = 0.5) + 
+  labs(y = "aantal droge dagen - aantal natte dagen") + 
+  scale_x_continuous(n.breaks = nrow(nat_ind_j)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, color = "black"))
+g
+```
+
+
+De formule van Rubin laat toe om in te schatten wat de kost is van het ontbreken van data op de betrouwbaarheid van het resultaat.
+Onderstaande figuur (\@ref(fig:droogte-indicator-imput-fig)) toont het aandeel van de bijkomende variatie door het schatten van ontbrekende gegevens in de totale variatie. 
+Dit is meestal meer dan 10% en kan tot 50% bedragen.
+Er zit een duidelijke neerwaartse trend in.
+Deze trend is te verklaren door de toegenomen meetintensiteit (zie figuur \@ref(fig:watina-metingen-fig).
+
+```{r droogte-indicator-imput-fig, fig.cap="Het aandeel in de totale variatie van de droogte-indicator dat veroorzaakt wordt door het schatten van ontbrekende gegevens (imputatie) over de jaren heen", message=FALSE}
+g <- ggplot(data = droogte_ind_j_var, aes(x = jaar, y = rel_bijdrage_imput)) + 
+  geom_line() + geom_smooth() + theme_inbo() +
+  labs(y = "aandeel variatie door imputatie in de totale variatie (%)") + 
+  scale_x_continuous(n.breaks = nrow(droogte_ind_j)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+g
+```
+
+## De trend in de droogte-indicator {#h4-3:trend}
+
+Bij deze indicator is het *verloop* van de waarden nog belangrijker dan de absolute waarden an sich.
+Zijn in onze de natuurgebieden de grondwaterpeilen ten gevolge van neerslagtekort aan het dalen ?
+
+Om dit te kunnen nagaan bekijken we eerst de rollende gemiddelden. 
+
+```{r rollend-gem-droog-met-ci, include=FALSE}
+dagen_droog_ma <- dagen_droog_nat %>% 
+  pivot_longer(cols = starts_with("dag_onder_p05."), names_to = "rollendgem", values_to = "waarde") %>% 
+  mutate(tijdvenster = as.integer(str_sub(rollendgem, 14 + 1,-1)),
+        rollendgem = "dag_onder_p05.ma"
+        ) %>% 
+  pivot_wider(names_from = rollendgem, values_from = waarde)
+
+droogte_ind_j_ma <- dagen_droog_ma %>% 
+  group_by(jaar, tijdvenster) %>% 
+  summarise(droogte_ind_j = mean(dag_onder_p05.ma)
+            ) %>% 
+  ungroup()
+
+droogte_ind_j_s <- dagen_droog_ma %>% 
+  group_by(jaar, simulatienr, tijdvenster) %>% 
+  summarise(droogte_ind_j_s = mean(dag_onder_p05.ma),
+            aantal = n(),
+            dagen_droog_se = sd(dag_onder_p05.ma)/sqrt(aantal)
+            ) %>% 
+  ungroup()
+
+droogte_ind_j_var <- droogte_ind_j_s %>% 
+  inner_join(droogte_ind_j_ma) %>% 
+  group_by(jaar, tijdvenster) %>% 
+  summarise(dagen_droog_gem_var = mean(dagen_droog_se^2),
+            aantalsim= n(),
+            imput_var = (1+1/aantalsim) * sum((droogte_ind_j_s - droogte_ind_j)^2/(aantalsim-1)),
+            droogte_ind_j_var = dagen_droog_gem_var + imput_var
+            ) %>% 
+  ungroup() %>% 
+  dplyr::select (-aantalsim)
+
+droogte_ind_j_var <- droogte_ind_j_var %>% 
+  mutate (rel_bijdrage_imput = round(imput_var/droogte_ind_j_var*100,0))
+
+
+droogte_ind_j_ma <- droogte_ind_j_ma %>% 
+  inner_join(droogte_ind_j_var %>% 
+               dplyr::select(-starts_with(c("dagen", "imput", "rel")))) %>% 
+  mutate(lcl = droogte_ind_j - 1.96*sqrt(droogte_ind_j_var),
+         ucl = droogte_ind_j + 1.96*sqrt(droogte_ind_j_var)
+         )
+
+```
+
+```{r rollend-gem-nat-met-ci, include=FALSE}
+dagen_nat_ma <- dagen_droog_nat %>% 
+  pivot_longer(cols = starts_with("dag_boven_p95."), names_to = "rollendgem", values_to = "waarde") %>% 
+  mutate(tijdvenster = as.integer(str_sub(rollendgem, 14 + 1,-1)),
+        rollendgem = "dag_boven_p95.ma"
+        ) %>% 
+  pivot_wider(names_from = rollendgem, values_from = waarde)
+
+nat_ind_j_ma <- dagen_nat_ma %>% 
+  group_by(jaar, tijdvenster) %>% 
+  summarise(nat_ind_j = mean(dag_boven_p95.ma)
+            ) %>% 
+  ungroup()
+
+nat_ind_j_s <- dagen_nat_ma %>% 
+  group_by(jaar, simulatienr, tijdvenster) %>% 
+  summarise(nat_ind_j_s = mean(dag_boven_p95.ma),
+            aantal = n(),
+            dagen_nat_se = sd(dag_boven_p95.ma)/sqrt(aantal)
+            ) %>% 
+  ungroup()
+
+nat_ind_j_var <- nat_ind_j_s %>% 
+  inner_join(nat_ind_j_ma) %>% 
+  group_by(jaar, tijdvenster) %>% 
+  summarise(dagen_nat_gem_var = mean(dagen_nat_se ^ 2),
+            aantalsim = n(),
+            imput_var = (1 + 1/aantalsim) * sum((nat_ind_j_s - nat_ind_j)^2/(aantalsim-1)),
+            nat_ind_j_var = dagen_nat_gem_var + imput_var
+            ) %>% 
+  ungroup() %>% 
+  dplyr::select (-aantalsim)
+
+nat_ind_j_var <- nat_ind_j_var %>% 
+  mutate (rel_bijdrage_imput = round(imput_var/nat_ind_j_var*100,0))
+
+
+nat_ind_j_ma <- nat_ind_j_ma %>% 
+  inner_join(nat_ind_j_var %>% 
+               dplyr::select(-starts_with(c("dagen", "imput", "rel")))) %>% 
+  mutate(lcl = nat_ind_j - 1.96*sqrt(nat_ind_j_var),
+         ucl = nat_ind_j + 1.96*sqrt(nat_ind_j_var)
+         )
+
+```
+
+
+```{r rollend-gem-verdroging-met-ci, include=FALSE}
+verdroging_ind_j_ma <- droogte_ind_j_ma %>%
+  dplyr::select(-lcl, -ucl) %>% 
+  inner_join(nat_ind_j_ma %>% 
+               dplyr::select(-lcl, -ucl), by = c("jaar","tijdvenster")) %>% 
+  mutate(verdroging_ind_j = droogte_ind_j - nat_ind_j,
+         lcl = verdroging_ind_j - 1.96 * sqrt((droogte_ind_j_var + nat_ind_j_var)/2),
+         ucl = verdroging_ind_j + 1.96 * sqrt((droogte_ind_j_var + nat_ind_j_var)/2)  
+         )
+
+```
+
+
+```{r rollend-gem-droog-met-ci-vc, include=FALSE}
+write_vc(droogte_ind_j_ma, file.path("data", "result", "droogte_indicator_rollendgem"), sorting = c("jaar", "tijdvenster"), root = projroot)
+```
+
+```{r rollend-gem-nat-met-ci-vc, include=FALSE}
+write_vc(nat_ind_j_ma, file.path("data", "result", "nat_indicator_rollendgem"), sorting = c("jaar", "tijdvenster"), root = projroot)
+```
+
+```{r rollend-gem-verdroging-met-ci-vc, include=FALSE}
+write_vc(verdroging_ind_j_ma, file.path("data", "result", "verdroging_indicator_rollendgem"), sorting = c("jaar", "tijdvenster"), root = projroot)
+```
+
+Figuur \@ref(fig:rollend-gem-droog-fig) geeft het effect weer van de verschillende tijdvensters.
+De droogte-indicator (figuur \@ref(fig:droogte-indicator-met-ci-figuur)) stemt overeen met de figuur voor het tijdvenster van 0 jaar.
+Op de figuren zijn de jaren met een onvolledig tijdvenster lichter gekleurd, omdat voor deze jaren de berekening van het rollend gemiddelde niet helemaal vergelijkbaar is met de jaren waarvoor het rollend gemiddelde wel op basis van een volledig jaarvenster kon gebeuren.
+Naarmate het tijdvenster vergroot, wordt de lijn logischerwijze rechtlijniger. 
+De trend vertoont een lichte stijging.
+ 
+```{r rollend-gem-droog-fig-save, fig.cap="rollend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plotma(droogte_ind_j_ma,"droogte_ind_j", 18)
+png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-rollendgem",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+```{r rollend-gem-droog-fig, fig.cap="De droogte-indicator (cfr. tijdvenster = 0 jaar) en verschillende hiervan afgeleide rollende gemiddelden",  message=FALSE, warning=FALSE}
+gplot
+```
+
+ 
+```{r rollend-gem-nat-fig-save, fig.cap="rollend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plotma(nat_ind_j_ma,"nat_ind_j", 18)
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-rollendgem",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+```{r rollend-gem-nat_fig, fig.cap="De droogte-indicator (cfr. tijdvenster = 0 jaar) en verschillende hiervan afgeleide rollende gemiddelden",  message=FALSE, warning=FALSE}
+gplot
+```
+
+ 
+```{r rollend-gem-verdroging-fig-save, fig.cap="rollend gemiddelde", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plotma(verdroging_ind_j_ma,"verdroging_ind_j", 0)
+png(paste0(file.path("data","result", "figures","dagen-verdroging-p95"),"-rollendgem",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+```{r rollend-gem-verdroging_fig, fig.cap="De verdroging-indicator (cfr. tijdvenster = 0 jaar) en verschillende hiervan afgeleide rollende gemiddelden",  message=FALSE, warning=FALSE}
+gplot
+```
+Daarna maken we een model op dat de variatie in de indicatorwaarden tracht te verklaren. 
+In het model is de factor tijd één van de verklarende variabelen.
+De andere verklarende factor is de locatie (de ene plaats kan een afwijkend gedrag vertonen t.o.v. een andere).
+We onderzoeken hier alleen het tijdsaspect. 
+Een mogelijke andere interessante vraag is of er regionale verschillen zijn tussen de waarden en waardoor deze dan  kunnen verklaard worden. 
+Om deze vraag te kunnen beantwoorden is het huidige en voorziene meetnet echter minstens een grootte-orde te klein! (\@ref(h3:calc-tijdreeks))
+
+Voor de berekening van de trend doen we beroep op Bayesiaanse modeltechnieken.
+Deze technieken laten toe om voorkennis over de data te gebruiken bij het modelleren. 
+We passen dit principe toe bij de vorm van de curve die we aan de trendlijn willen geven.
+Een model dat heel goed de data kan voorspellen zal ongeveer het grillige patroon volgen van de indicator. 
+We hebben dan wel een heel goed model, alleen bekomen we zo weinig extra informatie of er nu een geleidelijke verandering aan de gang is.
+Door uit te gaan of op te leggen dat de curve elk jaar niet veel mag veranderen, kunnen we de curve minder grillig laten zijn. 
+
+Het instellen van deze 'smoothing' (= het meer of minder grillig laten zijn van de trendlijn) is een subjectief gegeven en steunt ook op trial-and-error van de keuze van de smoothing-parameters.  
+De trendlijn is daarom te interpreteren als 'stel dat de toe- of afname (min of meer) rechtlijnig zou zijn, hoe zou die trendlijn er dan uitzien'.
+
+```{r abs-indic-model-function-exploratory, eval=FALSE}
+indic_abs_function <- function(modeldata, suffix= "", respons, percentile, indicatorname, standardised) {
+
+  #instellen van de priors. Dit is 
+  #prec.prior <- list(prec = list(param = c(0.001, 0.001)))
+  
+  #De instelling van de prior heeft een doorslaggevend effect op de vorm van de trendlijn. 
+  #Geven we het model de vrijheid om een trendlijn te bepalen dan voegen we weinig apriori-kennis toe aan het model
+  #Voor de random-walk van de tweede orde doen we dat via de prior voor de precisie. Deze bevat twee elementen: de standaarddeviatie en een alfa. Het eerste element geeft aan in welke mate we denken/willen dat de rw2 mag fluctueren en en de alfa de zekerheid die we daarover hebben. Wil je een quasi rechte lijn, dan moeten beide parameters klein ingesteld worden. Laat je ze vrij, dan kan de trend een grillig patroon gaan vertonen.
+  prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.025, 0.001)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  # prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.25, 0.001)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  # prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.25, 0.95)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  # prec.prior <- list(theta = list(prior = "pc.prec", param = c(2.5, 0.95)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  # prec.prior <- list(theta = list(prior = "pc.prec", param = c(2.5, 0.001)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  # prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.0025, 0.001)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  # prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.0025, 0.99)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  # prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.0025, 0.0001)))# list(theta = list(prec = list(param = c(0.001, 0.001))))  
+  prec.prior.mp <- list(theta = list(prior = "pc.prec", param = c(0.025, 0.95)))# list(theta = list(prec = list(param = c(0.001, 0.001)))) 
+  model <- as.formula(paste(respons, "~", "f(jaar, model =", "'rw2', scale.model = TRUE,
+                          hyper = prec.prior)+ f(meetpunt, model = 'iid', hyper = prec.prior.mp)", sep = " "))   
+  # model <- as.formula(paste(respons, "~", "1 + jaar_factor + f(meetpunt, model = 'iid', hyper = prec.prior)", sep = " "))     
+  suffix <- ifelse(suffix == "", "", paste0("_", suffix))
+  resultname_stat <- paste0("indic_abs_p", percentile, suffix, "_jaar_stat", if (standardised == TRUE) ("_std"))
+  resultname_fitted <- paste0("indic_abs_p", percentile, suffix, "_fitted", if (standardised == TRUE) ("_std"))
+  if (percentile == "01") {
+    reeks <- c(1:20) #1 model wou maar niet convergeren
+  } else {
+    reeks <- c(1:20)    
+  }  
+  teller <- 0
+  for (i in reeks) {
+    #i = 16
+    mdata <- modeldata[modeldata$simulatienr == i,]
+    jaren <- mdata %>% distinct(jaar) %>% mutate(simulatienr = i)
+    
+    #samenstellen van een tweeledig dataframe. De eerste 34 rijen (#jaren) zijn leeg en dienen om de gemiddelde waarden en de bijhorende fouten te berekenen. Het tweede deel dient om het model mee te bouwen
+    mdata <- bind_rows(jaren, mdata)    
+    # mdata[mdata[,respons] == 0,respons] <- 1e16
+    print(i)    
+    teller <- teller + 1
+    I2 <- inla(model, 
+                     control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+                     family = modelkeuze %>% filter(percentiel == percentile) %>% 
+                              dplyr::pull(model), 
+                     #Ntrials = aantaldagen_jaar,
+                     data = mdata
+    )
+
+    # I2b <- inla(model,
+    #            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+    #            family = "nbinomial",
+    #            #Ntrials = aantaldagen_jaar,
+    #            data = mdata
+    # )
+    # I2c <- inla(model,
+    #             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+    #             family = "zeroinflatednbinomial1",
+    #             #Ntrials = aantaldagen_jaar,
+    #             data = mdata,
+    #             verbose = FALSE
+    # )
+    # I2d <- inla(model,
+    #             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+    #             family = "zeroinflatednbinomial0",
+    #             #Ntrials = aantaldagen_jaar,
+    #             data = mdata
+    # )
+    # de negatieve binomiale modellen gebruiken de logit-link
+    #om de niet-getransformeerde waarden te krijgen moet men zowel de intercept als de coëfficiënten exponentiëren. Exp(standaardfout) heeft geen zin, maar het was moeilijker om deze uit te sluiten dan ze (verkeerdelijk) mee te nemen
+    #summary(I2)
+    # result_stat_i <-  I2$summary.random$jaar %>%
+    #   mutate_at(names(I2$summary.random$jaar)[2:6], exp) %>%
+    #   mutate_at(names(I2$summary.random$jaar)[2:6], function(x){x*exp(I2$summary.fixed$mean)}) %>%       mutate(simulatienr = i) %>%
+    #   dplyr::select(-sd, -mode, -kld)
+    
+    #linear_predictor : deze is niet teruggetransformeteerd. We zijn hier alleen geïnteresseerd in de rijen met lege responsen: hier krijg je dan per jaar een gemiddelde predictie én de se.
+    result_stat_i <- I2$summary.linear.predictor %>% 
+      slice(1:nrow(jaren)) %>% 
+      bind_cols(jaren) %>% 
+      mutate(intercept = I2$summary.fixed$mean) %>% 
+      dplyr::select(-mode, -kld)    
+    #summary(I2b)  
+    #modelkeuze %>% filter(percentiel == percentile) %>% dplyr::pull(model)
+
+    # sum(log(I2$cpo$cpo))
+    # sum(log(I2b$cpo$cpo))
+    # sum(log(I2c$cpo$cpo))
+    # sum(log(I2d$cpo$cpo))
+    # # sum(log(I2_binom$cpo$cpo))
+    # 
+    # sum(log(I2$dic$dic))
+    # sum(log(I2b$dic$dic))
+    # sum(log(I2c$dic$dic))
+    # sum(log(I2d$dic$dic))
+    # 
+    # sum(log(I2$waic$waic))
+    # sum(log(I2b$waic$waic))
+    # sum(log(I2c$waic$waic))
+    # sum(log(I2d$waic$waic))
+    # 
+    # sum(I2$mlik)
+    # sum(I2b$mlik)
+    # sum(I2c$mlik)
+    # sum(I2d$mlik)
+
+    # names(inla.models()$likelihood)
+    
+    # # Assess overdispersion (variantie / aantal vrijheidsgraden ~ 1)
+     # #voor binomiaal
+     # Pi   <- I2b$summary.fitted.values[,"mean"]
+     # ExpY <- Pi * mdata$aantaldagen_jaar
+     # VarY <- Pi * mdata$aantaldagen_jaar * (1 - Pi)
+     # E1   <- (mdata %>%
+     #               dplyr::pull(!!indicatorname) - ExpY) / sqrt(VarY)
+     # N    <- nrow(mdata)
+     # p <- nrow(I2b$summary.fixed)
+     # Dispersion <- sum(E1^2) / (N - p)
+     # Dispersion
+    
+    # #voor poisson
+    # Pi   <- I2c$summary.fitted.values[,"mean"]
+    # ExpY <- Pi #* mdata$aantaldagen_jaar
+    # VarY <- Pi #* mdata$aantaldagen_jaar * (1 - Pi)
+    # E1   <- (mdata %>%
+    #               dplyr::pull(!!indicatorname) - Pi) / sqrt(VarY)
+    # N    <- nrow(mdata)
+    # p <- nrow(I2c$summary.fixed)
+    # Dispersion <- sum(E1^2) / (N - p)
+    # Dispersion
+    
+    # #voor negatief binomiaal
+    # Pi  <- I2$summary.fitted.values[,"mean"] [-(1:nrow(jaren))]
+    # theta <- I2$summary.hyperpar[1,"mean"]
+    # E1 <- (mdata %>% slice(-(1:nrow(jaren))) %>%
+    #          dplyr::pull(!!indicatorname)  - Pi) / sqrt(Pi + Pi^2 / theta)
+    # sum(E1^2) / (nrow(mdata) - 1)
+    # 
+    # Pi  <- I2b$summary.fitted.values[,"mean"]
+    # theta <- I2b$summary.hyperpar[1,"mean"]
+    # E1 <- (mdata %>% slice(-(1:nrow(jaren))) %>%
+    #          dplyr::pull(!!indicatorname)  - Pi) / sqrt(Pi + Pi^2 / theta)
+    # sum(E1^2) / (nrow(mdata) - 1)
+
+
+    # 
+    # Pi  <- I2c$summary.fitted.values[,"mean"]
+    # theta <- I2c$summary.hyperpar[1,"mean"]
+    # E1 <- (mdata %>%
+    #          dplyr::pull(!!indicatorname)  - Pi) / sqrt(Pi + Pi^2 / theta)
+    # sum(E1^2) / (nrow(mdata) - 1)
+    # 
+    # 
+    # Pi  <- I2d$summary.fitted.values[,"mean"]
+    # theta <- I2d$summary.hyperpar[1,"mean"]
+    # E1 <- (mdata %>%
+    #          dplyr::pull(!!indicatorname)  - Pi) / sqrt(Pi + Pi^2 / theta)
+    # sum(E1^2) / (nrow(mdata) - 1)
+    # 
+    # # Pearson residuals
+    # par(mfrow = c(1,1), mar = c(5,5,2,2), cex.lab = 1.5)
+    # plot(x = Pi,
+    #      y = E1,
+    #      xlab = "Fitted values",
+    #      ylab = "Pearson residuals")
+    # abline(h = 0, lty = 2)
+    # 
+    # #names(inla.models()$likelihood)
+    # 
+    # # bekijk de gefitte waarden van het model
+    # # Plot the fitted values
+    # Fit1     <- I2$summary.fitted.values[,"mean"][-(1:nrow(jaren))]
+    # Fit1.025 <- I2$summary.fitted.values$"0.025quant"[-(1:nrow(jaren))]
+    # Fit1.975 <- I2$summary.fitted.values$"0.975quant"[-(1:nrow(jaren))]
+    # # 
+    # # Fit1     <- I2d$summary.fitted.values[,"mean"]
+    # # Fit1.025 <- I2d$summary.fitted.values$"0.025quant"
+    # # Fit1.975 <- I2d$summary.fitted.values$"0.975quant"
+    # # 
+    # check <- I2$summary.fitted.values[,"mean"][(1:nrow(jaren))] %>% bind_cols(jaren)
+    # check2 <- mdata2 %>%
+    #   group_by(jaar) %>%
+    #   summarise(gemj = mean(Fitted1))
+    # check <- check %>% inner_join(check2, by = "jaar")
+    # write_csv(check, "check.csv")
+    # result_stat_i2 <- result_stat_i2 %>%
+    #   mutate(terug = inla.link.log(mean, inverse = TRUE))
+    # #   #
+    # # check <- I2$summary.random$meetpunt
+    # #
+    # # result_fitted_i
+    # mdata2 <- mdata %>% slice(-(1:nrow(jaren)))
+    # mdata2$Fitted1  <- Fit1
+    # mdata2$Fit1.025 <- Fit1.025
+    # mdata2$Fit1.975 <- Fit1.975
+    # #gdata <- mdata %>% dplyr::select(!!respons, jaar, contains("Fit"))
+    # p <- ggplot(data = mdata2, aes_string(y = respons, x = "jaar"))
+    # p <- p + xlab("Jaar") + ylab(respons)
+    # p <- p + theme(text = element_text(size = 15))
+    # p <- p + geom_point(shape = 16, size = 2, col = "black")
+    # p <- p + geom_line(aes(x = jaar, y = Fitted1))
+    # p <- p + geom_ribbon(data = mdata2 %>% group_by(jaar) %>% summarise(ymax_data = max(Fit1.975), ymin_data = min(Fit1.025)), aes(x = jaar,
+    #                          ymax = ymax_data,
+    #                          ymin = ymin_data), inherit.aes = F,
+    #                      fill = grey(0.5),
+    #                      alpha = 0.4)
+    # p <- p + theme(strip.text = element_text(size = 15))
+    # p
+    # summary(I2)
+    # result_stat_i <-  I2$summary.random$jaar %>%
+    #   mutate(simulatienr = i)
+    #  result_stat_i <- result_stat_i %>%  rename (p0.025 = '0.025quant',
+    #                              p975.5 = '0.975quant',
+    #                              jaar =  ID)
+    #  gplot <- ggplot(data = result_stat_i, aes(x = jaar, y = mean)) +
+    #    geom_line(aes(x = jaar, y = p0.025), linetype = "longdash") +
+    #    geom_ribbon(aes(x = jaar, ymax = p975.5, ymin = p0.025)) +
+    #    geom_line(aes(x = jaar, y = p975.5), linetype = "longdash") +
+    #    geom_line(color = "lightblue") +
+    #    #geom_point(data = mdata, aes_string(x = "jaar", y = respons)) +
+    #    geom_hline(aes(yintercept = 0), linetype = "dotted") +
+    #    labs(x = "Jaar", y = "trend")
+    #  gplot
+    # 
+    # #conclusie negative binomiaal (bij 30 wel onderdispersed), gestandardiseerd met een gewijzigde non-informatieve prior
+    # 
+    # result_stat_i_meetpunt <-  I2$summary.random$meetpunt %>% 
+    #   mutate(simulatienr = i)
+    
+    # result_stat_i <- result_stat_i %>% 
+    #   mutate(og_berekend = mean - 1.96*sd,
+    #          bg_berekend = mean + 1.96*sd)
+    
+    #gefitte waarden (deze zijn wel teruggetransformeteerd)    
+    varname_mean <- paste0("p", percentile, "_mean", if (standardised == TRUE) ("_std"), "_fitted")
+    varname_sd <- paste0("p", percentile, "_sd", if (standardised == TRUE) ("_std"), "_fitted")
+    varname_p025 <- paste0("p", percentile, "_p02.5", if (standardised == TRUE) ("_std"), "_fitted")
+    varname_p975 <- paste0("p", percentile, "_p97.5", if (standardised == TRUE) ("_std"), "_fitted")
+    result_fitted_i <-  I2$summary.fitted.values %>% 
+      rename(!!varname_mean := mean,
+             !!varname_sd := sd,
+             !!varname_p025 := '0.025quant',
+             !!varname_p975 := '0.975quant')
+
+    mdata <- bind_cols(mdata, result_fitted_i) %>% 
+      slice(-(1:nrow(jaren))) #de regels met lege responsen hieruit verwijderen    
+    if (standardised == TRUE) {
+      varname_mean_backtransformed <- paste0(varname_mean, "_untr")
+      varname_p025_backtransformed <- paste0(varname_p025, "_untr")
+      varname_p975_backtransformed <- paste0(varname_p975, "_untr")
+      result_fitted_i <- result_fitted_i %>% 
+        mutate( !!varname_mean_backtransformed := unscale(result_fitted_i %>% 
+                                                            dplyr::pull(!!varname_mean),m,s),
+                !!varname_p025_backtransformed := unscale(result_fitted_i %>% 
+                                                            dplyr::pull(!!varname_p025),m,s),
+                !!varname_p975_backtransformed := unscale(result_fitted_i %>% 
+                                                            dplyr::pull(!!varname_p975),m,s)    
+        )
+    }
+    if (teller == 1) {
+      result_stat <- result_stat_i
+      result_fitted <- mdata
+      
+    } else {
+      result_stat <- bind_rows(result_stat, 
+                               result_stat_i)
+      result_fitted <- bind_rows(result_fitted, mdata)    
+    }
+    
+    if (teller == length(reeks)) {  
+      result_stat <- result_stat %>% 
+        rename( p02.5 = '0.025quant',
+                p50 = '0.5quant',
+                p97.5 = '0.975quant')
+      
+        if (standardised == TRUE) {
+          result_stat <- result_stat %>% 
+            mutate(mean_untr = unscale(mean, m, s),
+                   og_berekend_untr = unscale(og_berekend, m, s),
+                   bg_berekend_untr = unscale(bg_berekend, m, s),
+                   p02.5_untr = unscale(p02.5, m, s),
+                   p97.5_untr = unscale(p97.5, m, s),
+                   se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+                                         (p02.5_untr  - mean_untr )/1.96)/2,
+            )
+        }
+      resultlijst <- list( result_stat, 
+                           result_fitted)
+      names(resultlijst) <- c(resultname_stat, resultname_fitted)
+      list2env(resultlijst, envir = .GlobalEnv)
+      
+      if (varname_mean %in% colnames(dagen_droog_nat)) {
+        dagen_droog_nat <- dagen_droog_nat %>% 
+          dplyr::select(-!!varname_mean, -!!varname_sd, -!!varname_p025, -!!varname_p975) 
+      }
+      
+      dagen_droog_nat <- dagen_droog_nat %>% 
+         inner_join(result_fitted %>% 
+                      dplyr::select(contains("fitted"), 1:3), 
+                    by = c("meetpunt","simulatienr", "jaar")) 
+    }
+  }
+  return(dagen_droog_nat)
+}
+
+```
+
+```{r abs-indic-model-function-Rubin}
+indic_abs_function_Rubin <- function(modeldata, suffix= "", respons, percentile, indicatorname, standardised, cache, tijdvenster) {
+  #De instelling van de prior heeft een doorslaggevend effect op de vorm van de trendlijn. 
+  #Geven we het model de vrijheid om een trendlijn te bepalen dan voegen we weinig apriori-kennis toe aan het model
+  #Voor de random-walk van de tweede orde doen we dat via de prior voor de precisie. Deze bevat twee elementen: de standaarddeviatie en een alfa. Het eerste element geeft aan in welke mate we denken/willen dat de rw2 mag fluctueren en en de alfa de zekerheid die we daarover hebben. Wil je een quasi rechte lijn, dan moeten beide parameters klein ingesteld worden. Laat je ze vrij, dan kan de trend een grillig patroon gaan vertonen.
+  
+  #voor de trendlijn zijn we vrij streng om een min of meer rechte, zacht glooiende, lijn te krijgen
+  prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.025, 0.001)))
+  
+  #ivm de variatie op de meetpunten brengen we niet veel voorkennis in het model, om deze zoveel mogelijk door het model te laten bepalen
+  prec.prior.mp <- list(theta = list(prior = "pc.prec", param = c(0.025, 0.95)))# list(theta = list(prec = list(param = c(0.001, 0.001)))) 
+  #nog vrijer is om met de default-priors te werken en dus niets op te geven - model_free
+
+  
+  # prec.prior.mp.rw <- list(theta = list(prior = "pc.prec", param = c(0.5, 0.01)))
+  
+  #eenmalig aanmaken van moving-window venster
+  d_jaar <- dagen_droog_nat[dagen_droog_nat$simulatienr == 1,"jaar"]
+  lc_iyear <- rbind(
+    moving_trend(
+      n_year = max(d_jaar, na.rm = TRUE) - min(d_jaar, na.rm = TRUE), first_year = min(d_jaar, na.rm = TRUE),
+      trend_year = 2
+    ),
+    moving_trend(
+      n_year = max(d_jaar, na.rm = TRUE) - min(d_jaar, na.rm = TRUE), first_year = min(d_jaar, na.rm = TRUE),
+      trend_year = 6
+    ),
+    moving_trend(
+      n_year = max(d_jaar, na.rm = TRUE) - min(d_jaar, na.rm = TRUE), first_year = min(d_jaar, na.rm = TRUE),
+      trend_year = 10
+    ),
+    moving_trend(
+      n_year = max(d_jaar, na.rm = TRUE) - min(d_jaar, na.rm = TRUE), first_year = min(d_jaar, na.rm = TRUE),
+      trend_year = 30
+    )
+  )
+  lc <- inla.make.lincombs(jaar = lc_iyear) %>%
+    setNames(rownames(lc_iyear))
+  
+  #rollend gemiddelde berekenen
+  for (ma in tijdvenster) {
+    
+    
+    respons.ma <- paste0(respons,".", ma )
+    model <- as.formula(paste(respons.ma, "~", "f(jaar, model =", "'rw2', scale.model = TRUE,
+                            hyper = prec.prior) + f(meetpunt, model = 'iid', hyper = prec.prior.mp)", sep = " ")) 
+  
+    model_free <- as.formula(paste(respons.ma, "~", "f(jaar, model =", "'rw2', scale.model = TRUE,
+                            hyper = prec.prior) + f(meetpunt, model = 'iid')", sep = " "))   
+    # model_rwmp <- as.formula(paste(respons, "~", "f(jaar, model =", "'rw2', scale.model = TRUE,
+    #                         hyper = prec.prior) + f(meetpunt, model =", "'rw1', scale.model = TRUE,
+    #                         hyper = prec.prior.mp.rw)", sep = " ")) 
+    
+    suffix <- ifelse(suffix == "", "", paste0("_", suffix))
+    resultname_stat <- paste0("indic_abs_p", percentile,".", ma, suffix, "_jaar_stat", if (standardised == TRUE) ("_std"))
+    resultname_stat_meetpunt <- paste0("indic_abs_p", percentile,".", ma, suffix, "_meetpunt_stat", if (standardised == TRUE) ("_std"))
+    resultname_mov.average <- paste0("indic_abs_p", percentile,".", ma, suffix, "_mov.average_stat", if (standardised == TRUE) ("_std"))
+    resultname_fitted <- paste0("indic_abs_p", percentile,".", ma, suffix, "_fitted", if (standardised == TRUE) ("_std"))
+    if (percentile == "01") {
+      reeks <- c(1:20) #1 model wou maar niet convergeren
+    } else {
+      reeks <- c(1:20)    
+    }  
+    teller <- 0
+    for (i in reeks) {
+      #i = 16
+      
+      #samenstellen van een tweeledig dataframe. De eerste 34 rijen (#jaren) zijn leeg en dienen om de gemiddelde waarden en de bijhorende fouten te berekenen. Het tweede deel dient om het model mee te bouwen    
+      mdata <- modeldata[modeldata$simulatienr == i,]
+      jaren <- mdata %>% distinct(jaar) %>% mutate(simulatienr = i)
+      meetpunten <- mdata %>% distinct(meetpunt) %>% mutate(simulatienr = i)
+      mdata <- bind_rows(jaren, meetpunten, mdata)    
+  
+      print(paste("tijdvenster = ", ma, " simulatienr = ", i))    
+      teller <- teller + 1
+      I2 <- inla(model_free, 
+                        control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+                        #lincomb = lc,
+                        family = modelkeuze %>% filter(percentiel == percentile) %>% 
+                                dplyr::pull(model), 
+                        data = mdata
+      )
+      # I2_ma <- inla(model_free, 
+      #                   control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+      #                   lincomb = lc,
+      #                   family = modelkeuze %>% filter(percentiel == percentile) %>% 
+      #                           dplyr::pull(model), 
+      #                   data = mdata
+      # )
+      
+      
+      # I2_rw <- inla(model_rwmp, 
+      #                  control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+      #                  family = modelkeuze %>% filter(percentiel == percentile) %>% 
+      #                           dplyr::pull(model), 
+      #                  data = mdata
+      # )
+  
+      #linear_predictor : deze is niet teruggetransformeteerd. We zijn hier alleen geïnteresseerd in de rijen met lege responsen: hier krijg je dan per jaar een gemiddelde predictie én de se.
+      result_stat_i <- I2$summary.linear.predictor %>% 
+        slice(1:nrow(jaren)) %>% 
+        bind_cols(jaren) %>% 
+        mutate(intercept = I2$summary.fixed$mean) %>% 
+        dplyr::select(-mode, -kld)    
+  
+      result_stat_meetpunt_i <- I2$summary.linear.predictor %>% 
+        slice((nrow(jaren) + 1):((nrow(jaren) + nrow(meetpunten)))) %>% 
+        bind_cols(meetpunten) %>% 
+        mutate(intercept = I2$summary.fixed$mean) %>% 
+        dplyr::select(-mode, -kld)    
+      
+      result_mov.average_i <- I2$summary.lincomb.derived %>%
+        rownames_to_column(var = "parameter") %>%
+        extract(
+          .data$parameter, c("jaar", "duration"), "trend_(.*)_(.*)",
+          convert = TRUE
+          ) %>%
+      # transmute(
+      #   .data$jaar, duur = .data$duration, median = .data$`0.5quant`,
+      #   lcl = .data$`0.025quant`, ucl = .data$`0.975quant`
+      # )    
+        mutate(intercept = I2$summary.fixed$mean,
+               simulatienr = i) %>% 
+        dplyr::select(-mode, -kld, -ID)   
+    
+      # result_stat_rw_i <- I2_rw$summary.linear.predictor %>% 
+      #   slice(1:nrow(jaren)) %>% 
+      #   bind_cols(jaren) %>% 
+      #   mutate(intercept = I2_rw$summary.fixed$mean) %>% 
+      #   dplyr::select(-mode, -kld)    
+      # 
+      # result_stat_rw_meetpunt_i <- I2_rw$summary.linear.predictor %>% 
+      #   slice((nrow(jaren) + 1):((nrow(jaren) + nrow(meetpunten)))) %>% 
+      #   bind_cols(meetpunten) %>% 
+      #   mutate(intercept = I2_rw$summary.fixed$mean) %>% 
+      #   dplyr::select(-mode, -kld)           
+          #gefitte waarden (deze zijn wel teruggetransformeteerd)    
+      varname_mean <- paste0("p", percentile, ".", ma, "_mean", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_sd <- paste0("p", percentile, ".", ma, "_sd", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_p025 <- paste0("p", percentile, ".", ma, "_p02.5", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_p975 <- paste0("p", percentile, ".", ma, "_p97.5", if (standardised == TRUE) ("_std"), "_fitted")
+      result_fitted_i <-  I2$summary.fitted.values %>% 
+        rename(!!varname_mean := mean,
+               !!varname_sd := sd,
+               !!varname_p025 := '0.025quant',
+               !!varname_p975 := '0.975quant')
+  
+      mdata <- bind_cols(mdata, result_fitted_i) %>% 
+        slice(-(1:(nrow(jaren) + nrow(meetpunten)))) #de regels met lege responsen hieruit verwijderen    
+      
+      if (standardised == TRUE) {
+        varname_mean_backtransformed <- paste0(varname_mean, "_untr")
+        varname_p025_backtransformed <- paste0(varname_p025, "_untr")
+        varname_p975_backtransformed <- paste0(varname_p975, "_untr")
+        result_fitted_i <- result_fitted_i %>% 
+          mutate( !!varname_mean_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_mean),m,s),
+                  !!varname_p025_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_p025),m,s),
+                  !!varname_p975_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_p975),m,s)    
+          )
+      }
+      if (teller == 1) {
+        result_stat <- result_stat_i
+        result_stat_meetpunt <- result_stat_meetpunt_i
+        result_mov.average <- result_mov.average_i
+        result_fitted <- mdata
+        
+      } else {
+        result_stat <- bind_rows(result_stat, 
+                                 result_stat_i)
+        result_stat_meetpunt <- bind_rows(result_stat_meetpunt, 
+                                 result_stat_meetpunt_i)
+        result_mov.average <- bind_rows(result_mov.average,
+                                        result_mov.average_i)
+        result_fitted <- bind_rows(result_fitted, mdata)    
+      }
+      
+      if (teller == length(reeks)) {  
+        result_stat <- result_stat %>% 
+          rename( p02.5 = '0.025quant',
+                  p50 = '0.5quant',
+                  p97.5 = '0.975quant')
+        result_stat_meetpunt <- result_stat_meetpunt %>% 
+          rename( p02.5 = '0.025quant',
+                  p50 = '0.5quant',
+                  p97.5 = '0.975quant')   
+        result_mov.average <- result_mov.average %>% 
+          rename( p02.5 = '0.025quant',
+                  p50 = '0.5quant',
+                  p97.5 = '0.975quant')    
+        if (standardised == TRUE) {
+            result_stat <- result_stat %>% 
+              mutate(mean_untr = unscale(mean, m, s),
+                     og_berekend_untr = unscale(og_berekend, m, s),
+                     bg_berekend_untr = unscale(bg_berekend, m, s),
+                     p02.5_untr = unscale(p02.5, m, s),
+                     p97.5_untr = unscale(p97.5, m, s),
+                     se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+                                           (p02.5_untr  - mean_untr )/1.96)/2,
+              )
+            result_stat_meetpunt <- result_stat_meetpunt %>% 
+              mutate(mean_untr = unscale(mean, m, s),
+                     og_berekend_untr = unscale(og_berekend, m, s),
+                     bg_berekend_untr = unscale(bg_berekend, m, s),
+                     p02.5_untr = unscale(p02.5, m, s),
+                     p97.5_untr = unscale(p97.5, m, s),
+                     se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+                                           (p02.5_untr  - mean_untr )/1.96)/2,
+              )
+                    }
+        resultlijst <- list( result_stat, 
+                             result_stat_meetpunt,
+                             result_mov.average,
+                             result_fitted)
+        names(resultlijst) <- c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted)
+        list2env(resultlijst, envir = .GlobalEnv)
+        
+        if (varname_mean %in% colnames(dagen_droog_nat)) {
+          dagen_droog_nat <- dagen_droog_nat %>% 
+            dplyr::select(-!!varname_mean, -!!varname_sd, -!!varname_p025, -!!varname_p975) 
+        }
+        
+        dagen_droog_nat <- dagen_droog_nat %>% 
+           inner_join(result_fitted %>% 
+                        dplyr::select(contains("fitted"), 1:3), 
+                      by = c("meetpunt","simulatienr", "jaar")) 
+      }
+    }
+    #opslaan van de intermediaire tabellen en resultaat als rds-bestand
+    tabellen_lijst_rds <- list( 
+            naamdoeltabel = file.path(cache, paste0(c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted), ".rds")),
+            naambrontabel =  c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted)) 
+    sapply(1:length(tabellen_lijst_rds$naambrontabel), function(i) {
+            filename <- tabellen_lijst_rds$naamdoeltabel[i]
+            saveRDS(get(tabellen_lijst_rds$naambrontabel[i]), filename)
+        }) 
+    saveRDS(c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted), 
+            file.path(cache, paste0("model_namen_intermediair.",ma,"_",respons, ".rds" )))  
+  }
+  saveRDS(dagen_droog_nat, file.path(cache, paste0("modelresultaat_", respons, ".rds" )))
+
+  
+  return(dagen_droog_nat)
+}
+
+```
+
+```{r abs-indic-model-function-final}
+indic_abs_function <- function(modeldata, suffix= "", respons, percentile, indicatorname, standardised, cache, tijdvenster) {
+  #De instelling van de prior heeft een doorslaggevend effect op de vorm van de trendlijn. 
+  #Geven we het model de vrijheid om een trendlijn te bepalen dan voegen we weinig apriori-kennis toe aan het model
+  #Voor de random-walk van de tweede orde doen we dat via de prior voor de precisie. Deze bevat twee elementen: de standaarddeviatie en een alfa. Het eerste element geeft aan in welke mate we denken/willen dat de rw2 mag fluctueren en en de alfa de zekerheid die we daarover hebben. Wil je een quasi rechte lijn, dan moeten beide parameters klein ingesteld worden. Laat je ze vrij, dan kan de trend een grillig patroon gaan vertonen.
+  
+  #voor de trendlijn zijn we vrij streng om een min of meer rechte, zacht glooiende, lijn te krijgen
+  prec.prior <- list(theta = list(prior = "pc.prec", param = c(0.025, 0.001)))
+  
+  #ivm de variatie op de meetpunten brengen we niet veel voorkennis in het model, om deze zoveel mogelijk door het model te laten bepalen
+  prec.prior.mp <- list(theta = list(prior = "pc.prec", param = c(0.025, 0.95)))# list(theta = list(prec = list(param = c(0.001, 0.001)))) 
+  #nog vrijer is om met de default-priors te werken en dus niets op te geven - model_free
+
+  
+  # prec.prior.mp.rw <- list(theta = list(prior = "pc.prec", param = c(0.5, 0.01)))
+  
+  #eenmalig aanmaken van moving-window venster
+  d_jaar <- dagen_droog_nat[dagen_droog_nat$simulatienr == 1,"jaar"]
+  lc_iyear <- rbind(
+    moving_trend(
+      n_year = max(d_jaar, na.rm = TRUE) - min(d_jaar, na.rm = TRUE), first_year = min(d_jaar, na.rm = TRUE),
+      trend_year = 2
+    ),
+    moving_trend(
+      n_year = max(d_jaar, na.rm = TRUE) - min(d_jaar, na.rm = TRUE), first_year = min(d_jaar, na.rm = TRUE),
+      trend_year = 6
+    ),
+    moving_trend(
+      n_year = max(d_jaar, na.rm = TRUE) - min(d_jaar, na.rm = TRUE), first_year = min(d_jaar, na.rm = TRUE),
+      trend_year = 10
+    ),
+    moving_trend(
+      n_year = max(d_jaar, na.rm = TRUE) - min(d_jaar, na.rm = TRUE), first_year = min(d_jaar, na.rm = TRUE),
+      trend_year = 30
+    )
+  )
+  lc <- inla.make.lincombs(jaar = lc_iyear) %>%
+    setNames(rownames(lc_iyear))
+  
+  #rollend gemiddelde berekenen
+  for (ma in tijdvenster) {
+    
+    
+    respons.ma <- paste0(respons,".", ma )
+    model <- as.formula(paste(respons.ma, "~", "f(jaar, model =", "'rw2', scale.model = TRUE,
+                            hyper = prec.prior) + f(meetpunt, model = 'iid', hyper = prec.prior.mp)", sep = " ")) 
+  
+    model_free <- as.formula(paste(respons.ma, "~", "f(jaar, model =", "'rw2', scale.model = TRUE,
+                            hyper = prec.prior) + f(meetpunt, model = 'iid')", sep = " "))   
+    # model_rwmp <- as.formula(paste(respons, "~", "f(jaar, model =", "'rw2', scale.model = TRUE,
+    #                         hyper = prec.prior) + f(meetpunt, model =", "'rw1', scale.model = TRUE,
+    #                         hyper = prec.prior.mp.rw)", sep = " ")) 
+    
+    suffix <- ifelse(suffix == "", "", paste0("_", suffix))
+    resultname_stat <- paste0("indic_abs_p", percentile,".", ma, suffix, "_jaar_stat", if (standardised == TRUE) ("_std"))
+    resultname_stat_meetpunt <- paste0("indic_abs_p", percentile,".", ma, suffix, "_meetpunt_stat", if (standardised == TRUE) ("_std"))
+    resultname_mov.average <- paste0("indic_abs_p", percentile,".", ma, suffix, "_mov.average_stat", if (standardised == TRUE) ("_std"))
+    resultname_fitted <- paste0("indic_abs_p", percentile,".", ma, suffix, "_fitted", if (standardised == TRUE) ("_std"))
+    # if (percentile == "01") {
+    #   reeks <- c(1:20) #1 model wou maar niet convergeren
+    # } else {
+    #   reeks <- c(1:20)    
+    # }  
+    # teller <- 0
+    # for (i in reeks) {
+      #i = 16
+      
+      #samenstellen van een tweeledig dataframe. De eerste 34 + 58 rijen (#jaren en #meetlocaties) zijn leeg en dienen om de gemiddelde waarden en de bijhorende fouten te berekenen. Het tweede deel dient om het model mee te bouwen    
+      mdata <- modeldata
+      jaren <- mdata %>% distinct(jaar) 
+      meetpunten <- mdata %>% distinct(meetpunt)
+      mdata <- bind_rows(jaren, meetpunten, mdata)    
+  
+      print(paste("tijdvenster = ", ma, " simulatienr = ", i))    
+      teller <- teller + 1
+      I2 <- inla(model_free, 
+                        control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+                        lincomb = lc,
+                        family = modelkeuze %>% filter(percentiel == percentile) %>% 
+                                dplyr::pull(model), 
+                        data = mdata
+      )
+      # I2_ma <- inla(model_free, 
+      #                   control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+      #                   lincomb = lc,
+      #                   family = modelkeuze %>% filter(percentiel == percentile) %>% 
+      #                           dplyr::pull(model), 
+      #                   data = mdata
+      # )
+      
+      
+      # I2_rw <- inla(model_rwmp, 
+      #                  control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE),
+      #                  family = modelkeuze %>% filter(percentiel == percentile) %>% 
+      #                           dplyr::pull(model), 
+      #                  data = mdata
+      # )
+  
+      #linear_predictor : deze is niet teruggetransformeteerd. We zijn hier alleen geïnteresseerd in de rijen met lege responsen: hier krijg je dan per jaar een gemiddelde predictie én de se.
+      result_stat_i <- I2$summary.linear.predictor %>% 
+        slice(1:nrow(jaren)) %>% 
+        bind_cols(jaren) %>% 
+        mutate(intercept = I2$summary.fixed$mean) %>% 
+        dplyr::select(-mode, -kld)    
+  
+      result_stat_meetpunt_i <- I2$summary.linear.predictor %>% 
+        slice((nrow(jaren) + 1):((nrow(jaren) + nrow(meetpunten)))) %>% 
+        bind_cols(meetpunten) %>% 
+        mutate(intercept = I2$summary.fixed$mean) %>% 
+        dplyr::select(-mode, -kld)    
+      
+      result_mov.average_i <- I2$summary.lincomb.derived %>%
+        rownames_to_column(var = "parameter") %>%
+        extract(
+          .data$parameter, c("jaar", "duration"), "trend_(.*)_(.*)",
+          convert = TRUE
+          ) %>%
+      # transmute(
+      #   .data$jaar, duur = .data$duration, median = .data$`0.5quant`,
+      #   lcl = .data$`0.025quant`, ucl = .data$`0.975quant`
+      # )    
+        mutate(intercept = I2$summary.fixed$mean,
+               simulatienr = i) %>% 
+        dplyr::select(-mode, -kld, -ID)   
+    
+      # result_stat_rw_i <- I2_rw$summary.linear.predictor %>% 
+      #   slice(1:nrow(jaren)) %>% 
+      #   bind_cols(jaren) %>% 
+      #   mutate(intercept = I2_rw$summary.fixed$mean) %>% 
+      #   dplyr::select(-mode, -kld)    
+      # 
+      # result_stat_rw_meetpunt_i <- I2_rw$summary.linear.predictor %>% 
+      #   slice((nrow(jaren) + 1):((nrow(jaren) + nrow(meetpunten)))) %>% 
+      #   bind_cols(meetpunten) %>% 
+      #   mutate(intercept = I2_rw$summary.fixed$mean) %>% 
+      #   dplyr::select(-mode, -kld)           
+          #gefitte waarden (deze zijn wel teruggetransformeteerd)    
+      varname_mean <- paste0("p", percentile, ".", ma, "_mean", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_sd <- paste0("p", percentile, ".", ma, "_sd", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_p025 <- paste0("p", percentile, ".", ma, "_p02.5", if (standardised == TRUE) ("_std"), "_fitted")
+      varname_p975 <- paste0("p", percentile, ".", ma, "_p97.5", if (standardised == TRUE) ("_std"), "_fitted")
+      result_fitted_i <-  I2$summary.fitted.values %>% 
+        rename(!!varname_mean := mean,
+               !!varname_sd := sd,
+               !!varname_p025 := '0.025quant',
+               !!varname_p975 := '0.975quant')
+  
+      mdata <- bind_cols(mdata, result_fitted_i) %>% 
+        slice(-(1:(nrow(jaren) + nrow(meetpunten)))) #de regels met lege responsen hieruit verwijderen    
+      
+      if (standardised == TRUE) {
+        varname_mean_backtransformed <- paste0(varname_mean, "_untr")
+        varname_p025_backtransformed <- paste0(varname_p025, "_untr")
+        varname_p975_backtransformed <- paste0(varname_p975, "_untr")
+        result_fitted_i <- result_fitted_i %>% 
+          mutate( !!varname_mean_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_mean),m,s),
+                  !!varname_p025_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_p025),m,s),
+                  !!varname_p975_backtransformed := unscale(result_fitted_i %>% 
+                                                              dplyr::pull(!!varname_p975),m,s)    
+          )
+      }
+
+        result_stat <- result_stat_i
+        result_stat_meetpunt <- result_stat_meetpunt_i
+        result_mov.average <- result_mov.average_i
+        result_fitted <- mdata
+    
+        result_stat <- result_stat %>% 
+          rename( p02.5 = '0.025quant',
+                  p50 = '0.5quant',
+                  p97.5 = '0.975quant')
+        result_stat_meetpunt <- result_stat_meetpunt %>% 
+          rename( p02.5 = '0.025quant',
+                  p50 = '0.5quant',
+                  p97.5 = '0.975quant')   
+        result_mov.average <- result_mov.average %>% 
+          rename( p02.5 = '0.025quant',
+                  p50 = '0.5quant',
+                  p97.5 = '0.975quant')    
+        if (standardised == TRUE) {
+            result_stat <- result_stat %>% 
+              mutate(mean_untr = unscale(mean, m, s),
+                     og_berekend_untr = unscale(og_berekend, m, s),
+                     bg_berekend_untr = unscale(bg_berekend, m, s),
+                     p02.5_untr = unscale(p02.5, m, s),
+                     p97.5_untr = unscale(p97.5, m, s),
+                     se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+                                           (p02.5_untr  - mean_untr )/1.96)/2,
+              )
+            result_stat_meetpunt <- result_stat_meetpunt %>% 
+              mutate(mean_untr = unscale(mean, m, s),
+                     og_berekend_untr = unscale(og_berekend, m, s),
+                     bg_berekend_untr = unscale(bg_berekend, m, s),
+                     p02.5_untr = unscale(p02.5, m, s),
+                     p97.5_untr = unscale(p97.5, m, s),
+                     se_berekend_untr = ((p97.5_untr  - mean_untr )/1.96 - 
+                                           (p02.5_untr  - mean_untr )/1.96)/2,
+              )
+        }
+        resultlijst <- list( result_stat, 
+                             result_stat_meetpunt,
+                             result_mov.average,
+                             result_fitted)
+        names(resultlijst) <- c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted)
+        list2env(resultlijst, envir = .GlobalEnv)
+        
+        if (varname_mean %in% colnames(dagen_droog_nat)) {
+          dagen_droog_nat <- dagen_droog_nat %>% 
+            dplyr::select(-!!varname_mean, -!!varname_sd, -!!varname_p025, -!!varname_p975) 
+        }
+        
+        dagen_droog_nat <- dagen_droog_nat %>% 
+           inner_join(result_fitted %>% 
+                        dplyr::select(contains("fitted"), 1:3), 
+                      by = c("meetpunt","simulatienr", "jaar")) 
+      
+    
+    #opslaan van de intermediaire tabellen en resultaat als rds-bestand
+    tabellen_lijst_rds <- list( 
+            naamdoeltabel = file.path(cache, paste0(c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted), ".rds")),
+            naambrontabel =  c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted)) 
+    sapply(1:length(tabellen_lijst_rds$naambrontabel), function(i) {
+            filename <- tabellen_lijst_rds$naamdoeltabel[i]
+            saveRDS(get(tabellen_lijst_rds$naambrontabel[i]), filename)
+        }) 
+    saveRDS(c(resultname_stat, resultname_stat_meetpunt, resultname_mov.average, resultname_fitted), 
+            file.path(cache, paste0("model_namen_intermediair_final.",ma,"_",respons, ".rds" )))  
+  }
+  saveRDS(dagen_droog_nat, file.path(cache, paste0("modelresultaat_final_", respons, ".rds" )))
+
+  
+  return(dagen_droog_nat)
+}
+
+```
+```{r abs-indic-model-backup data}
+dagen_droog_bu <- dagen_droog_nat 
+```
+
+
+```{r abs-indic-model, include=FALSE, eval = !file.exists(file.path("cache", paste0("modelresultaat_", respons, ".rds" )))}
+#bij een eventuele herberekening moet de velden met de rekenresultaten eerst verwijderd worden
+dagen_droog_nat <- dagen_droog_nat %>% 
+  dplyr::select(-contains("fitted") )
+
+modelkeuze <- data.frame(percentiel = c("01", "05", "10", "30" ), model = c("zeroinflatednbinomial2", "zeroinflatednbinomial0", "zeroinflatednbinomial0", "nbinomial"))
+modelkeuze$model <- as.character(modelkeuze$model)
+
+dagen_droog_nat <- indic_abs_function(modeldata = modeldata, respons = respons, percentile = percentile, indicatorname = indicatorname, standardised = standardised, cache = "cache", tijdvenster = 0 )
+
+```
+
+```{r abs-indic-model-droog-uit-cache, include=FALSE}
+dagen_droog_update <- readRDS(file.path("cache", paste0("modelresultaat_", respons, ".rds" ) ))
+for (ma in tijdvenster) {
+  namen_intermediaire_tabellen <- readRDS(file.path("cache", paste0("model_namen_intermediair.",ma,"_",respons, ".rds" ) ))
+  for (i in 1:length(namen_intermediaire_tabellen)) {
+    assign(namen_intermediaire_tabellen[i], readRDS(paste0(file.path("cache", namen_intermediaire_tabellen[i]), ".rds" )))
+  }
+}
+```
+
+```{r model-parameters-nat, include=FALSE}
+#keuze van parameters
+percentile <- "95"
+indicatorname <- paste0("dag_boven_p",percentile)
+standardised <- FALSE
+respons <- paste0(indicatorname, if (standardised == TRUE) ("_std"))
+```
+
+
+```{r abs-indic-model-nat, include=FALSE, eval = !file.exists(file.path("cache", paste0("modelresultaat_", respons, ".rds" )))}
+#bij een eventuele herberekening moet de velden met de rekenresultaten eerst verwijderd worden
+
+modelkeuze <- data.frame(percentiel = c("01", "05", "10", "30", "95" ), model = c("zeroinflatednbinomial2", "zeroinflatednbinomial0", "zeroinflatednbinomial0", "nbinomial","zeroinflatednbinomial0"))
+modelkeuze$model <- as.character(modelkeuze$model)
+
+dagen_droog_nat <- indic_abs_function(modeldata = modeldata, respons = respons, percentile = percentile, indicatorname = indicatorname, standardised = standardised, cache = "cache", tijdvenster = tijdvenster)
+
+```
+
+
+```{r abs-indic-model-nat-uit-cache, include=FALSE}
+dagen_droog_update <- readRDS(file.path("cache", paste0("modelresultaat_", respons, ".rds" ) ))
+for (ma in tijdvenster) {
+  namen_intermediaire_tabellen <- readRDS(file.path("cache", paste0("model_namen_intermediair.",ma,"_",respons, ".rds" ) ))
+  for (i in 1:length(namen_intermediaire_tabellen)) {
+    assign(namen_intermediaire_tabellen[i], readRDS(paste0(file.path("cache", namen_intermediaire_tabellen[i]), ".rds" )))
+  }
+}
+```
+
+```{r trend-data-nat-vc, include=FALSE}
+
+#bewaren resultaat
+write_vc(dagen_droog_update, file.path("data", "result", "dagen_droog_nat"), sorting = c("jaar", "meetpunt", "simulatienr"), strict = FALSE)
+
+```
+
+```{r trend-droog-rubin, message=FALSE, warning=FALSE, include=FALSE}
+
+#berekenen van indicator
+indic_abs_droog_gem <- dagen_droog_update %>% 
+  group_by(jaar) %>% 
+  summarise_at(vars(starts_with("dag_onder_p05.")), list(gem = mean, med = median)) %>% 
+  ungroup
+
+
+# rekening houden met multiple imputaties
+
+teller <- 1
+for (ma in tijdvenster) {
+  d <- get(paste0("indic_abs_p05.",ma,"_jaar_stat")) %>% 
+    group_by(jaar) %>% 
+    summarise(gem_jaar_t = mean(mean),
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - gem_jaar_t)^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>% 
+    ungroup() %>% 
+    mutate(tijdvenster = ma) %>% 
+    inner_join(droogte_ind_j_ma, by = c("jaar", "tijdvenster"))
+  
+  if (teller == 1) {
+    droogte_trend_05 <- d
+  } else {
+    droogte_trend_05 <- bind_rows(droogte_trend_05, d)
+  }
+
+  d <- get(paste0("indic_abs_p05.",ma,"_mov.average_stat")) %>%
+    group_by(jaar, duration) %>%
+    summarise(gem_jaar_t = mean(mean) + mean(intercept),
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - mean(mean))^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>%
+    ungroup() %>%
+    bind_rows(droogte_ind_j_ma %>% filter (tijdvenster == ma)) %>%
+    mutate(tijdvenster = ma)
+
+  if (teller == 1) {
+    droogte_trend.mov_05 <- d
+  } else {
+    droogte_trend.mov_05 <- bind_rows(droogte_trend.mov_05, d)
+  }
+  
+  teller <- teller + 1
+}
+```
+
+```{r trend-nat-rubin, message=FALSE, warning=FALSE, include=FALSE}
+
+#berekenen van indicator
+indic_abs_nat_gem <- dagen_droog_update %>% 
+  group_by(jaar) %>% 
+  summarise_at(vars(starts_with("dag_boven_p95.")), list(gem = mean, med = median)) %>% 
+  ungroup
+
+
+# rekening houden met multiple imputaties
+
+teller <- 1
+for (ma in tijdvenster) {
+  d <- get(paste0("indic_abs_p95.",ma,"_jaar_stat")) %>% 
+    group_by(jaar) %>% 
+    summarise(gem_jaar_t = mean(mean),
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - gem_jaar_t)^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>% 
+    ungroup() %>% 
+    mutate(tijdvenster = ma) %>% 
+    inner_join(nat_ind_j_ma, by = c("jaar", "tijdvenster"))
+  
+  if (teller == 1) {
+    nat_trend_95 <- d
+  } else {
+    nat_trend_95 <- bind_rows(nat_trend_95, d)
+  }
+
+  d <- get(paste0("indic_abs_p95.",ma,"_mov.average_stat")) %>%
+    group_by(jaar, duration) %>%
+    summarise(gem_jaar_t = mean(mean) + mean(intercept),
+              var_sim = sum(sd^2) / 20 + (1 + 1/20) * sum((mean - mean(mean))^2)/(20 - 1),
+              og_jaar_t = gem_jaar_t - 1.96 * sqrt(var_sim),
+              bg_jaar_t = gem_jaar_t + 1.96 * sqrt(var_sim),
+              gem_jaar = exp(gem_jaar_t),
+              og_jaar = exp(og_jaar_t),
+              bg_jaar = exp(bg_jaar_t)
+    ) %>%
+    ungroup() %>%
+    bind_rows(nat_ind_j_ma %>% filter (tijdvenster == ma)) %>%
+    mutate(tijdvenster = ma)
+
+  if (teller == 1) {
+    nat_trend.mov_95 <- d
+  } else {
+    nat_trend.mov_95 <- bind_rows(nat_trend.mov_95, d)
+  }
+  
+  teller <- teller + 1
+}
+```
+
+Figuur \@ref(fig:trend-fitting-droog-fig) geeft het resultaat van de modelbouw. 
+Het model schat o.a. voor elk meetpunt het verwachte aantal droge dagen per jaar en wat de betrouwbaarheid van deze schatting is.
+De figuur toont de zowel de werkelijke waarden (licht blauwe punten) als de door het model geschatte gemiddelde waarden (rode lijn) met hun betrouwbaarheidsinterval. 
+De verticale rode lijnen geeft het bereik van het geschatte verwachte aantal droge dagen per jaar voor de 58 locaties. 
+
+
+```{r trend-fitting-droog-fig-save, message=FALSE, warning=FALSE, include=FALSE}
+#tabel met de indicatorwaarden (rollend gemiddelden) en trend berekening (model) omvormen naar een lange versie
+dagen_droog_lang_breed <- dagen_droog_update %>% 
+  pivot_longer(cols = starts_with("p05."), names_to = "statistiek", values_to = "waarde") %>% 
+  mutate(tijdvenster = as.integer(substr(statistiek, 4 + 1,  str_locate(string = statistiek, pattern = "_") - 1)),
+          statistiek = paste0(substr(statistiek,1,3), str_sub(statistiek, start = str_locate(string = statistiek, pattern = "_")[,1], -1)
+                                   )
+         ) %>% 
+  pivot_wider(names_from = statistiek, values_from = waarde) %>% 
+  pivot_longer(cols = starts_with("dag_onder_p05."), names_to = "rollendgem", values_to = "waarde") %>% 
+  mutate(tijdvenster2 = as.integer(str_sub(rollendgem, 14 + 1,-1)),
+        rollendgem = "dag_onder_p05.ma"
+        ) %>% 
+  filter(tijdvenster == tijdvenster2) %>% 
+  pivot_wider(names_from = rollendgem, values_from = waarde) %>% 
+  dplyr::select(-tijdvenster2)
+
+fig <- plotfitting(indic_basis = dagen_droog_lang_breed, respons = "dag_onder_p05.ma", gemid = "p05_mean_fitted", og = p05_p02.5_fitted, bg = p05_p97.5_fitted, yas = "Aantal dagen onder kritische drempelwaarde")
+png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-tijdreeks",".png"), width = 1500, height = 1500, res = 150)
+fig
+dev.off()
+
+```
+
+(ref:trend-fitting-droog-fig) Het aantal droogte-dagen (lichtblauwe bollen) in vergelijking tot het voor elk meetpunt modelmatig geschatte verwachte aantal droge dagen per jaar (rode lijn) en het betrouwbaarheidsinterval hiervan (grijze zone)
+
+```{r trend-fitting-droog-fig, fig.cap="(ref:trend-fitting-droog-fig)",  message=FALSE, warning=FALSE}
+fig
+```
+
+
+```{r trend-fitting-nat-fig-save, message=FALSE, warning=FALSE, include=FALSE}
+#tabel met de indicatorwaarden (rollend gemiddelden) en trend berekening (model) omvormen naar een lange versie
+dagen_nat_lang_breed <- dagen_droog_update %>% 
+  pivot_longer(cols = starts_with("p95."), names_to = "statistiek", values_to = "waarde") %>% 
+  mutate(tijdvenster = as.integer(substr(statistiek, 4 + 1,  str_locate(string = statistiek, pattern = "_") - 1)),
+          statistiek = paste0(substr(statistiek,1,3), str_sub(statistiek, start = str_locate(string = statistiek, pattern = "_")[,1], -1)
+                                   )
+         ) %>% 
+  pivot_wider(names_from = statistiek, values_from = waarde) %>% 
+  pivot_longer(cols = starts_with("dag_boven_p95."), names_to = "rollendgem", values_to = "waarde") %>% 
+  mutate(tijdvenster2 = as.integer(str_sub(rollendgem, 14 + 1,-1)),
+        rollendgem = "dag_boven_p95.ma"
+        ) %>% 
+  filter(tijdvenster == tijdvenster2) %>% 
+  pivot_wider(names_from = rollendgem, values_from = waarde) %>% 
+  dplyr::select(-tijdvenster2)
+
+fig <- plotfitting(indic_basis = dagen_nat_lang_breed, respons = "dag_boven_p95.ma", gemid = "p95_mean_fitted", og = p95_p02.5_fitted, bg = p95_p97.5_fitted, yas = "Aantal dagen boven drempelpeil")
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-tijdreeks",".png"), width = 1500, height = 1500, res = 150)
+fig
+dev.off()
+
+```
+
+```{r trend-fitting-nat-fig, fig.cap="(ref:trend-fitting-nat-fig)",  message=FALSE, warning=FALSE, include=FALSE}
+fig
+```
+
+Figuur \@ref(fig:trend-droog-fig) geeft de droogte-indicator (tijdvenster = 0 jaar) met zijn betrouwbaarheidsinterval in het rood en de trend met zijn betrouwbaarheidsinterval in het donkerblauw. 
+Tevens geeft de figuur ook de trend voor de verschillende rollende gemiddelden. 
+Het valt op dat het tijdreeksmodel de feitelijke indicatorwaarden niet volgt. 
+Het was een bewuste keuze bij het ontwerp om een uitgevlakte curve te berekenen (cfr. keuze voor random walk van de tweede orde i.p.v. de eerste orde). 
+Bij de rollende gemiddelden worden de pieken afgevlakt en dan is goed te zien dat naarmate deze uitvlakken (door het vergroten van het tijdvenster) het tijdreeksmodel de resulterende golfbeweging steeds beter kan bijhouden.
+Het valt bij de grotere tijdvensters ook op te merken dat de gemiddelde waarde duidelijk hoger is dan de referentie van 18 dagen. 
+Dit is volledig toe te schrijven aan de combinatie van de berekeningswijze van de kritische drempelwaarde, nl. een gemiddelde berekenen van afzonderlijke jaargemiddelden i.p.v. een gemiddelde voor het volledige tijdvenster (cfr. \@ref(h2:drempelwaarde)) en het feit dat range van mogelijke afwijkingen voor droge jaren veel groter is dan de range bij natte jaren.
+Daaruit kan men concluderen dat de referentie van 18 dagen enkel op jaarbasis mag gebruikt worden om te bepalen of het tijdens dat jaar al dan niet droog was.
+
+Op de vraag welk tijdvenster nu het meest toepasselijk is kan niet eenduidig worden geantwoord. 
+Dat hangt namelijk af van de responstijd van het (eco)systeem dat men beschouwt. 
+Voor snelle systemen zal eerder een klein tijdvenster het meest relevant zijn om de impact van droogte te duiden. 
+Voor trage systemen kunnen vooral de lange termijn-schommelingen een rol spelen.
+
+(ref:trend-fig) De droogte-indicator (tijdvenster = 0 jaar) en de hiervan afgeleide rollende gemiddelden met hun betrouwbaarheidsinterval (rood) en de modelmatig berekende trends met hun betrouwbaarheidsintervallen (resp. donkerblauw en grijs).
+ 
+```{r trend-droog-fig-save, fig.cap="trend", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plottrend(droogte_trend_05,"droogte_ind_j", 18, yrechts = "droogte-indicator")
+png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-trend-allevensters",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+```{r trend-droog-fig, fig.cap="(ref:trend-fig)",  message=FALSE, warning=FALSE}
+gplot
+```
+ 
+```{r trend-nat-fig-save, fig.cap="trend", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plottrend(nat_trend_95,"nat_ind_j", 18, yrechts = "nat-indicator")
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-trend-allevensters",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+```{r trend-nat-fig, fig.cap="(ref:trend-fig)",  message=FALSE, warning=FALSE, include=FALSE}
+gplot
+```
+
+```{r trend-voor-1-venster-droog-fig-save, fig.cap="trend één venster", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plottrend.1venster(droogte_trend_05,"droogte_ind_j", intercept = 18, tijdvenster = 0, yrechts = "droogte-indicator")
+png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-trend-origineel",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+gplot <- plottrend.1venster(droogte_trend_05,"droogte_ind_j", 18, tijdvenster = 8, yrechts = "droogte-indicator")
+png(paste0(file.path("data","result", "figures","dagen-droog-p05"),"-trend-8jaar",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+```{r trend-voor-1-venster-nat-fig-save, fig.cap="trend één venster", message=FALSE, warning=FALSE, include=FALSE}
+#plot van de trend
+gplot <- plottrend.1venster(nat_trend_95,"nat_ind_j", intercept = 18, tijdvenster = 0, yrechts = "nat-indicator")
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-trend-origineel",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+gplot <- plottrend.1venster(nat_trend_95,"nat_ind_j", 18, tijdvenster = 8, yrechts = "nat-indicator")
+png(paste0(file.path("data","result", "figures","dagen-nat-p95"),"-trend-8jaar",".png"), width = 1500, height = 1500, res = 150)
+gplot
+dev.off()
+```
+
+
+```{r trend-droog-vc, include=FALSE}
+#bewaren resultaten
+write_vc(droogte_trend_05, file.path("data", "result", "droogte_trend_05"), sorting = c("jaar", "tijdvenster"), root = projroot)
+
+dagen_droog_lang_breed <- dagen_droog_lang_breed %>% 
+  dplyr::select(-contains(c("boven", "p95")))
+write_vc(dagen_droog_lang_breed, file.path("data", "result", "droogte_fitting_05"), sorting = c("meetpunt", "jaar", "simulatienr", "tijdvenster"), root = projroot)
+```
+
+```{r trend-nat-vc, include=FALSE}
+#bewaren resultaten
+write_vc(nat_trend_95, file.path("data", "result", "nat_trend_05"), sorting = c("jaar", "tijdvenster"), root = projroot)
+
+dagen_nat_lang_breed <- dagen_nat_lang_breed %>% 
+  dplyr::select(-contains(c("onder", "p05")))
+write_vc(dagen_nat_lang_breed, file.path("data", "result", "nat_fitting_95"), sorting = c("meetpunt", "jaar", "simulatienr", "tijdvenster"), root = projroot)
+```
+
+
+```{r trend-droog-csv-voor-nara, include=FALSE}
+#bewaren data voor figuur in nara
+write_csv(droogte_trend_05 %>% 
+            dplyr::select(jaar, gem_jaar, og_jaar, bg_jaar, droogte_ind_j, lcl, ucl, tijdvenster) %>% 
+            rename(`aantal dagen onder kritisch minimum` = droogte_ind_j,
+                   og_jaar_trend =  og_jaar,
+                   bg_jaar_trend = bg_jaar,
+                   og_jaar_indicator = lcl,
+                   bg_jaar_indicator = ucl), file.path("data", "result", "figuur_droog_nara.csv"))
+```
+
+
+```{r trend-nat-csv-voor-nara, include=FALSE}
+#bewaren data voor figuur in nara
+write_csv(nat_trend_95 %>% 
+            dplyr::select(jaar, gem_jaar, og_jaar, bg_jaar, nat_ind_j, lcl, ucl, tijdvenster) %>% 
+            rename(`aantal dagen boven hoog drempelpeil` = nat_ind_j,
+                   og_jaar_trend =  og_jaar,
+                   bg_jaar_trend = bg_jaar,
+                   og_jaar_indicator = lcl,
+                   bg_jaar_indicator = ucl), file.path("data", "result", "figuur_nat_nara.csv"))
+```
+
+
+

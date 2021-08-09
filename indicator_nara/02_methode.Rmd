@@ -40,7 +40,7 @@ De absolute indicatorwaarde is het aantal dagen op een jaar $j$ dat het grondwat
 
 ```
 
-We berekenen deze waarde voor elke simulatie $s$ afzonderlijk en geven deze de notatie $d_{mjs}$.
+We berekenen de absolute indicatorwaarde voor elke simulatie $s$ afzonderlijk en geven deze de notatie $d_{mjs}$.
 Voor een periode van 34 jaar (van 1985 tot en met 2018), 58 meetlocaties en 20 simulaties betekent dit 34 * 58 * 20 = 39440 $d_{mjs}$-waarden
 
 De absolute indicatorwaarden vormen de basis voor het berekenen van een index, die we de droogte-indicator noemen.
@@ -56,26 +56,44 @@ Er zijn echter een honderdtal locaties voorzien waardoor mettertijd de droogte-i
 
 Het wordt complexer als we inzicht willen krijgen in de onzekerheid die er op de droogte-indicator $DI_j$ zit, m.a.w. wat is het betrouwbaarheidsinterval van de droogte-indicator ? 
 
-Hiervoor doen we een beroep op de formule van Rubin [@Rubin1987].
-We geven eerst de inhoudelijke betekenis, vooraleer we betrouwbaarheidsinterval mathematisch verder uitwerken.
-De totale variantie in de data kan beschouwd worden als een optelling van twee varianties, een variantie die inherent is aan de data en een bijkomende variantie die voorvloeit uit de onzekerheid over de schatting van ontbrekende waarden (= variantie door imputatie).
-Om deze twee varianties te kunnen onderscheiden, dient (eerst) de droogte-indicator voor elke simulatie afzonderlijk berekend te worden, $DI_{js}$ , in plaats van (onmiddellijk) dat op de volledige dataset te doen.
+Door het feit dat de gesimuleerde reeksen van eenzelfde meetpunt niet onafhankelijk zijn van elkaar (bv. voor een meetreeks zonder ontbrekende veldmetingen zijn ze zelfs identiek), kan een klassieke variantie-analyse geen uitkomst bieden. 
+Een rekenmodel waarbij de meetpunten als een random variabele worden beschouwd, houdt hiermee rekening. 
+Doordat we aan het model ook de jaren als verklarende variabele met een vast effect per jaar willen toevoegen, komen we tot een 'mixed model' (= een combinatie van een verklarende variabele met een vast effect en een random-variabel).
+We kiezen voor een Bayesiaans mixed model dat de kans inschat dat het aantal droge dagen per jaar $d_{mjs}$ zich onder de drempel bevindt.
 
-In het geval van de droogteindicator wordt (voor één bepaald jaar) dan de variantie die inherent is aan de data geschat op basis van de verschillen in de indicatorwaarden tussen de meetpunten binnen eenzelfde simulatie.
-De variantie door imputatie wordt geschat op basis van de verschillen tussen de $DI_{js}$. 
+Het aantal droge dagen per jaar volgt hierbij redelijk goed een zero-inflated negatieve binomiale verdeling.
+Deze verdeling werd bevonden op basis van een voorafgaand onderzoek.
+Op theoretische basis was een binomiale verdeling te verwachten, omdat de waarden, aantallen, steeds discreet zijn en deze waarden beperkt zijn tot het aantal dagen in een jaar. 
+Echter de waarneming of een dag in een jaar al dan niet droog is, is niet onafhankelijk. 
+Immers de kans dat als het vandaag een droge dag is, vergroot de kans dat het ook morgen droog zal zijn.
+Dit kan verklaren waarom de waargenomen verdeling afwijkt van een zuivere binomiale verdeling.
 
-Kennen we de variantie dan kan hiermee, op basis van de centrale limietstelling, voor elke $DI_j$ een betrouwbaarheidsinterval berekend worden.
+Het model berekent verwachte waarden voor het jaar-effect.
+Deze zijn gelijk aan de droogte-indicator $DI_j$.
+Het rekenmodel berekent ook de onzekerheid die er op de jaar-effecten zit.
+Deze wordt uitgedrukt door de standaarddeviatie $ \bar\sigma_{DI_j}$
+Op basis hiervan kan een betrouwbaarheidsinterval berekend worden.
 
-Mathematisch wordt het 95%-betrouwbaarheidsinterval door de hieronder gegeven formules berekend. 
+<!-- We geven eerst de inhoudelijke betekenis, vooraleer we betrouwbaarheidsinterval mathematisch verder uitwerken. -->
+<!-- De totale variantie in de data kan beschouwd worden als een optelling van twee varianties, een variantie die verbonden is aan de verschillen tussen de meetlocaties (= variantie tussen locaties) en een bijkomende variantie die voorvloeit uit de onzekerheid over de schatting van ontbrekende waarden (= variantie door imputatie). -->
 
-$${\mbox{de droogte-indicator voor één simulatie en één jaar : }}DI_{js} =  \sum_{m = 1}^{58}d_{mjs} / 58 $$
+<!-- Om deze twee varianties te kunnen onderscheiden, dient (eerst) de droogte-indicator voor elke simulatie afzonderlijk berekend te worden, $DI_{js}$ , in plaats van (onmiddellijk) dat op de volledige dataset te doen. -->
 
-$${\text {de droogte-indicator voor één jaar : }}DI_j =  \sum_{s = 1}^{20}(DI_{js}) /20 = \sum_{s = 1}^{20}(\frac{\sum_{m=1}^{58}d_{mjs}}{58}) / 20 = \frac{\sum_{s = 1}^{20}\sum_{m=1}^{58}d_{mjs}}{58 * 20} $$
+<!-- In het geval van de droogteindicator wordt (voor één bepaald jaar) dan de variantie die inherent is aan de data geschat op basis van de verschillen in de indicatorwaarden tussen de meetpunten binnen eenzelfde simulatie. -->
+<!-- De variantie door imputatie wordt geschat op basis van de verschillen tussen de $DI_{js}$.  -->
 
-De totale variantie $$ \bar\sigma^2_{DI_j}$$ kan dan berekend worden op basis van de formule van Rubin [@Rubin1987]
-$$ \bar\sigma^2_{DI_j} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{DI_{js}}}{20} + (1 + 1/20)\frac{\sum_{s=1}^{20}(DI_{js} - DI_j)^2}{(20 - 1)}$$
+<!-- Kennen we de variantie dan kan hiermee, op basis van de centrale limietstelling, voor elke $DI_j$ een betrouwbaarheidsinterval berekend worden. -->
 
-met $$\widehat{\sigma}^2_{DI_{js}} = \frac{\sum_{m = 1}^{58}(d_{mjs}-DI_{js})^2}{(58-1)}$$
+<!-- Mathematisch wordt het 95%-betrouwbaarheidsinterval door de hieronder gegeven formules berekend.  -->
+
+<!-- $${\mbox{de droogte-indicator voor één simulatie en één jaar : }}DI_{js} =  \sum_{m = 1}^{58}d_{mjs} / 58 $$ -->
+
+<!-- $${\text {de droogte-indicator voor één jaar : }}DI_j =  \sum_{s = 1}^{20}(DI_{js}) /20 = \sum_{s = 1}^{20}(\frac{\sum_{m=1}^{58}d_{mjs}}{58}) / 20 = \frac{\sum_{s = 1}^{20}\sum_{m=1}^{58}d_{mjs}}{58 * 20} $$ -->
+
+<!-- De totale variantie $$ \bar\sigma^2_{DI_j}$$ kan dan berekend worden op basis van de formule van Rubin [@Rubin1987] -->
+<!-- $$ \bar\sigma^2_{DI_j} = \frac{\sum_{s = 1}^{20}\widehat{\sigma}^2_{DI_{js}}}{20} + (1 + 1/20)\frac{\sum_{s=1}^{20}(DI_{js} - DI_j)^2}{(20 - 1)}$$ -->
+
+<!-- met $$\widehat{\sigma}^2_{DI_{js}} = \frac{\sum_{m = 1}^{58}(d_{mjs}-DI_{js})^2}{(58-1)}$$ -->
 
 De ondergrens van het betrouwbaarheidsinterval (LCL) voor een bepaald jaar $j$ wordt dan :
 
@@ -110,15 +128,6 @@ Net zoals bij de originele waarden kan ook voor een rollend gemiddelde met behul
 Een andere techniek om een trend in de data te vinden is het gebruik maken van tijdreeksmodellen.
 We kunnen deze toepassen zowel op de originele waarden als op de rollende gemiddelden. 
 Een voordeel van een tijdreeksmodel is dat het toelaat de invloed van andere, niet tijdsafhankelijke, factoren op de variatie van de indicator in te schatten.
-
-Voor elke simulatie verloopt die berekening als volgt: een Bayesiaans mixed model met jaar als factor en meetpunt als een random variabele schat de kans in dat het aantal droge dagen per jaar $d_{mjs}$ zich onder de drempel bevindt.
-Het aantal droge dagen per jaar kan ook slaan op een meerjarig gemiddelde.
-Het aantal droge dagen per jaar volgt hierbij redelijk goed een zero-inflated negatieve binomiale verdeling.
-Deze verdeling werd bevonden op basis van een voorafgaand onderzoek.
-Op theoretische basis was een binomiale verdeling te verwachten, omdat de waarden, aantallen, steeds discreet zijn en deze waarden beperkt zijn tot het aantal dagen in een jaar. 
-Echter de waarneming of een dag in een jaar al dan niet droog is, is niet onafhankelijk. 
-Immers de kans dat als het vandaag een droge dag is, vergroot de kans dat het ook morgen droog zal zijn.
-Dit kan verklaren waarom de waargenomen verdeling afwijkt van een zuivere binomiale verdeling.
 
 Het effect van de factor “jaar” beschrijven we door een random walk-functie van de tweede orde. 
 Met een random walk-functie van de tweede orde kunnen abrupte jaar tot jaar schommelingen ingeperkt worden.
