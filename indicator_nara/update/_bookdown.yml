@@ -1,0 +1,18 @@
+book_filename: "update_droogte_indicator.Rmd"
+output_dir: "./report"
+delete_merged_file: FALSE
+language:
+  label:
+    fig:    'Figuur '
+    tab:    'Tabel '
+    eq:     'Vergelijking '
+    thm:    'Theorema '
+    lem:    'Lemma '
+    def:    'Definitie '
+    cor:    'Gevolgtrekking '
+    prp:    'Bewering '
+    ex:     'Voorbeeld '
+    proof:  'Bewijs. '
+    remark: 'Opmerking. '
+  ui:
+    chapter_name: "Hoofdstuk "

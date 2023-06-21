@@ -27,6 +27,8 @@ vignettes/*.pdf
 # knitr and R markdown default cache directories
 /*_cache/
 /cache/
+/src/cache/*
+/update/cache/
 
 # Temporary files created by R markdown
 *.utf8.md
@@ -40,6 +42,9 @@ rsconnect/
 /figures/local/*
 /local/*
 
+# reports
+/report/
+
 #gis data
 data/result/meetnet/GIS/*
 data/result/indicator_nara/GIS/*
@@ -49,8 +54,12 @@ data/result/indicator_meetnet/GIS/*
 /temp/*
 /src/temp/*
 
-#cache
-/src/cache/*
+# older version not to be versionised
+/old/*
+
+#report files, excluding output
+/css/*
+/update/css/*
 
 # Other
 _bookdown_files/
@@ -62,3 +71,4 @@ _book/
 !header.html
 .Rproj.user
 droogteindicator_voor_nara.md
+droogteindicator_voor_nara.Rmd

@@ -1,41 +1,37 @@
 <!-- #setup -->
-```{r include=FALSE}
-knitr::opts_chunk$set(
-	eval = FALSE,
-	include = TRUE,
-	echo = FALSE,
-	cache = TRUE,
-  cache.path = "cache/",
-	dpi = 300
-)
-
+```{r lib-param, include=FALSE}
 options(stringsAsFactors = FALSE)
 
-#belangrijke opmerking: run dit programma in de 64-bit versie van R
-#Tijdens de uitvoering van het programma in de 32-bit versie van R ontstonden er op mijn laptop geheugenproblemen.
+#belangrijke opmerking: in deze code wordt het INLA-package gebruikt. INLA draait werkt alleen met de 64-bit versie van R
+
 library(knitr)
+library(kableExtra)
+library(INBOmd)
 library(tidyverse)
+library(INBOtheme)
 library(odbc)
 library(DBI)
 library(git2rdata)
+library(pracma)
 library(lubridate)
 library(MASS)
 library(car)
 library(lme4)
 library(INLA)
 
-output_format <- ifelse(
-  interactive(),
-  "html",
-  opts_knit$get("rmarkdown.pandoc.to")
-)
+# ingesteld in index.Rmd
+# output_format <- ifelse(
+#   interactive(),
+#   "html",
+#   opts_knit$get("rmarkdown.pandoc.to")
+# )
 
 #keuzen voor het aanmaken van een document
 #welke data verversen
 # 2: alles; 1: enkel de huidige google-drive-bestanden downloaden ; 0: enkel met lokale data
 if (params$refresh_data == 2) {
   datapath <- "G:/Mijn Drive/PRJ_Meetnet_Droogte/2_Uitvoering/data"
-  dir.create(file.path(datapath, "GIS/VoorR/"), recursive = TRUE)
+  dir.create(file.path(datapath, "GIS","R"), recursive = TRUE)
 }
 
 #figuren opnieuw aanmaken of inlezen
@@ -45,16 +41,24 @@ if (params$refresh_figures == 2) {
 }
 
 # lokale gitignored paden aanmaken
-if (!dir.exists(file.path("..", "data", "local"))) dir.create(file.path("..", "data", "local"), recursive = TRUE)
-if (!dir.exists(file.path("..", "figures", "local"))) dir.create(file.path("..", "figures", "local"), recursive = TRUE)
+dir.create(file.path("..", "data", "local"), recursive = TRUE, showWarnings = FALSE)
+dir.create(file.path("..", "figures", "local"), recursive = TRUE, showWarnings = FALSE)
 
 pdfmaken <- FALSE
 
 ```
 
 ```{r constanten, include= FALSE}
+#berekenen van rollende gemiddelden
+tijdvenster <- c(0,2,4,6,8,10,20,30)
+```
 
 
+```{r basis-voor-relatieve-paden, include= FALSE}
+
+#absolute paden naar resp. repo (droogtemeetnet) en project (nara_indicator) 
+gitroot <- repository()
+projroot <- rprojroot::find_root(rprojroot::is_rstudio_project)
 ```
 
 ```{r read-databases, include= FALSE}
